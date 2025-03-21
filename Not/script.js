@@ -4,7 +4,7 @@ const errorMessage = document.createElement('p');
 errorMessage.id = 'error-message';
 
 function fetchNews() {
-    fetch('adorocinema.rss')
+    fetch('https://rss.app/feeds/oXAvfy93n2v1WNW4.xml')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Erro ao buscar notícias.');
