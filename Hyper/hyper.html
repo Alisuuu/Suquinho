@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página Inicial</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="styles/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="icons">
+            <a href="https://hyperbeam.com/app" target="_blank" class="icon-link">
+                <i class="fas fa-user icon-img"></i> <span class="icon-label">Conta</span> </a>
+        </div>
+
+        <div class="link-box">
+            <input type="text" id="link-input" placeholder="Insira o link aqui" class="link-input">
+            <button id="go-btn" class="go-btn">
+                <i class="fas fa-arrow-right"></i> </button>
+        </div>
+    </div>
+
+    <script>
+        // Captura o botão "Ir" e o campo de entrada
+        const goBtn = document.getElementById('go-btn');
+        const linkInput = document.getElementById('link-input');
+
+        // Adiciona um evento de clique ao botão "Ir"
+        goBtn.addEventListener('click', () => {
+            const link = linkInput.value.trim(); // Pega o valor do campo de texto e remove espaços em branco
+
+            // Verifica se o link não está vazio
+            if (link) {
+                // Redireciona para o link inserido
+                window.location.href = link;
+            } else {
+                // Alerta o usuário se o campo estiver vazio
+                alert('Por favor, insira um link válido.');
+            }
+        });
+
+        // Permite pressionar "Enter" no campo de texto para acionar o botão "Ir"
+        linkInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                goBtn.click(); // Simula o clique no botão "Ir"
+            }
+        });
+    </script>
+</body>
+</html>
