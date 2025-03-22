@@ -15,12 +15,14 @@ body {
 }
 
 .icons {
-    display: grid; /* Usamos grid para organizar os botões */
-    grid-template-columns: 1fr 1fr; /* Duas colunas iguais */
-    grid-template-rows: 1fr 1fr; /* Duas linhas iguais */
-    gap: 20px; /* Espaçamento entre os botões */
-    width: 280px; /* Ajuste a largura do quadrado conforme necessário */
-    height: 280px; /* Ajuste a altura do quadrado conforme necessário */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 20px;
+    width: 280px;
+    height: 280px;
+    justify-content: center; /* Centraliza os botões horizontalmente */
+    align-items: center; /* Centraliza os botões verticalmente */
 }
 
 .icons a {
@@ -29,9 +31,9 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%; /* Os botões ocupam todo o espaço da célula da grade */
-    height: 100%; /* Os botões ocupam todo o espaço da célula da grade */
-    border-radius: 20px; /* Ajuste para o efeito de quadrado */
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
     background-color: #272727;
     transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
@@ -86,9 +88,9 @@ body {
 
 @media (max-width: 600px) {
     .icons {
-        gap: 10px; /* Reduz o espaçamento em telas menores */
-        width: 240px; /* Ajusta a largura do quadrado para telas menores */
-        height: 240px; /* Ajusta a altura do quadrado para telas menores */
+        gap: 10px;
+        width: 240px;
+        height: 240px;
     }
     .icons img, .icons i {
         width: 50px;
