@@ -19,8 +19,8 @@ body {
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
     gap: 20px;
-    width: 280px; /* Ajuste a largura do quadrado conforme necessário */
-    height: 280px; /* Ajuste a altura do quadrado conforme necessário */
+    width: 280px;
+    height: 280px;
     justify-content: center;
     align-items: center;
 }
@@ -31,9 +31,9 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 120px; /* Ajuste a largura dos botões redondos */
-    height: 120px; /* Ajuste a altura dos botões redondos */
-    border-radius: 50%; /* Mantém o formato circular */
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
     background-color: #272727;
     transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
@@ -89,12 +89,12 @@ body {
 @media (max-width: 600px) {
     .icons {
         gap: 10px;
-        width: 240px; /* Ajusta a largura do quadrado para telas menores */
-        height: 240px; /* Ajusta a altura do quadrado para telas menores */
+        width: 240px;
+        height: 240px;
     }
     .icons a {
-        width: 100px; /* Ajuste a largura dos botões redondos para telas menores */
-        height: 100px; /* Ajuste a altura dos botões redondos para telas menores */
+        width: 100px;
+        height: 100px;
     }
     .icons img, .icons i {
         width: 50px;
@@ -103,4 +103,54 @@ body {
     .icons i {
         font-size: 40px;
     }
+}
+
+#invisibleButton {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 35%;
+    opacity: 0;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+#invisibleButton.active {
+    opacity: 0.5;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+
+.spark {
+    position: absolute;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: sparkExplode 1.8s ease-out;
+}
+
+@keyframes sparkExplode {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(3.7);
+    }
+}
+
+.icon-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.icon-img {
+    width: 50px;
+    height: 50px;
 }
