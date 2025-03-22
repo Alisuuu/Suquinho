@@ -15,12 +15,12 @@ body {
 }
 
 .icons {
-    display: flex;
-    flex-wrap: wrap; /* Permite que os itens quebrem para a próxima linha */
-    justify-content: center; /* Centraliza os botões horizontalmente */
-    align-items: center; /* Centraliza os botões verticalmente */
-    height: 100vh; /* Garante que os botões ocupem toda a altura da tela */
-    gap: 20px; /* Reduz o gap para melhor adaptação em telas menores */
+    display: grid; /* Usamos grid para organizar os botões */
+    grid-template-columns: 1fr 1fr; /* Duas colunas iguais */
+    grid-template-rows: 1fr 1fr; /* Duas linhas iguais */
+    gap: 20px; /* Espaçamento entre os botões */
+    width: 280px; /* Ajuste a largura do quadrado conforme necessário */
+    height: 280px; /* Ajuste a altura do quadrado conforme necessário */
 }
 
 .icons a {
@@ -29,20 +29,16 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 45%; /* Ajusta a largura para que dois botões caibam em uma linha */
-    height: 120px;
-    border-radius: 50%;
+    width: 100%; /* Os botões ocupam todo o espaço da célula da grade */
+    height: 100%; /* Os botões ocupam todo o espaço da célula da grade */
+    border-radius: 20px; /* Ajuste para o efeito de quadrado */
     background-color: #272727;
     transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    position: relative;
-    overflow: hidden;
     opacity: 0;
     transform: translateY(20px);
     outline: none;
     -webkit-tap-highlight-color: transparent;
-    box-sizing: border-box; /* Garante que padding e border sejam incluídos na largura */
-    margin: 2.5%; /* Adiciona margem para espaçamento entre os botões */
 }
 
 @keyframes fadeInUp {
@@ -68,6 +64,14 @@ body {
     animation-delay: 0.4s;
 }
 
+.icons a:nth-child(3) {
+    animation-delay: 0.6s;
+}
+
+.icons a:nth-child(4) {
+    animation-delay: 0.8s;
+}
+
 .icons img, .icons i {
     width: 60px;
     height: 60px;
@@ -82,12 +86,9 @@ body {
 
 @media (max-width: 600px) {
     .icons {
-        gap: 10px; /* Reduz ainda mais o gap em telas menores */
-    }
-    .icons a {
-        width: 45%; /* Mantém a largura de 45% para telas menores */
-        height: 100px;
-        margin: 2.5%; /* Mantém a margem para espaçamento em telas menores */
+        gap: 10px; /* Reduz o espaçamento em telas menores */
+        width: 240px; /* Ajusta a largura do quadrado para telas menores */
+        height: 240px; /* Ajusta a altura do quadrado para telas menores */
     }
     .icons img, .icons i {
         width: 50px;
