@@ -1,34 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Carousel Centralizado (Sem Rolagem)</title>
+<title>Image Board Rolável (Vertical)</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 html, body {
-  height: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden; /* Desabilita a rolagem */
+  width: 100%;
 }
 
 body {
   background-color: #121212;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
-#carousel-container {
+#imageboard-container {
   width: 100%;
-  height: 100%;
 }
 
-.rssapp-carousel-item {
+.rssapp-imageboard-item {
   border: 1px solid #333;
 }
 </style>
 </head>
 <body>
-<rssapp-imageboard id="oXAvfy93n2v1WNW4"></rssapp-imageboard><script src="https://widget.rss.app/v1/imageboard.js" type="text/javascript" async></script>
+
+<div id="imageboard-container">
+  <rssapp-imageboard id="oXAvfy93n2v1WNW4"></rssapp-imageboard>
+</div>
+
+<script src="https://widget.rss.app/v1/imageboard.js" type="text/javascript" async></script>
+
 </body>
 </html>
