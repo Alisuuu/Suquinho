@@ -1,9 +1,9 @@
 body {
     font-family: sans-serif;
     margin: 0;
-    padding: 0; /* Adicionado para garantir que não haja preenchimento */
+    padding: 0;
     background-color: #181818;
-    overflow: hidden;
+    overflow: hidden; /* Mantém a rolagem desativada */
     color: white;
 }
 
@@ -23,7 +23,8 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: calc(100vh - 60px); /* Ajuste para compensar o header */
+    box-sizing: border-box; /* Garante que padding e border não afetem a altura */
 }
 
 .grid-container {
