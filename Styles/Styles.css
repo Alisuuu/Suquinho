@@ -19,10 +19,10 @@ body {
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
     gap: 20px;
-    width: 280px;
-    height: 280px;
-    justify-content: center; /* Centraliza os botões horizontalmente */
-    align-items: center; /* Centraliza os botões verticalmente */
+    width: 280px; /* Ajuste a largura do quadrado conforme necessário */
+    height: 280px; /* Ajuste a altura do quadrado conforme necessário */
+    justify-content: center;
+    align-items: center;
 }
 
 .icons a {
@@ -31,9 +31,9 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%;
-    height: 100%;
-    border-radius: 20px;
+    width: 120px; /* Ajuste a largura dos botões redondos */
+    height: 120px; /* Ajuste a altura dos botões redondos */
+    border-radius: 50%; /* Mantém o formato circular */
     background-color: #272727;
     transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
@@ -89,8 +89,12 @@ body {
 @media (max-width: 600px) {
     .icons {
         gap: 10px;
-        width: 240px;
-        height: 240px;
+        width: 240px; /* Ajusta a largura do quadrado para telas menores */
+        height: 240px; /* Ajusta a altura do quadrado para telas menores */
+    }
+    .icons a {
+        width: 100px; /* Ajuste a largura dos botões redondos para telas menores */
+        height: 100px; /* Ajuste a altura dos botões redondos para telas menores */
     }
     .icons img, .icons i {
         width: 50px;
