@@ -37,29 +37,5 @@ function createFireworks(event) {
     const y = event.clientY;
     const numSparks = 47;
 
-    for (let i = 0; i < numSparks; i++) {
-        const spark = document.createElement('div');
-        spark.className = 'spark';
-        spark.style.left = x + 'px';
-        spark.style.top = y + 'px';
-        spark.style.backgroundColor = getRandomColor();
-
-        const angle = Math.random() * 2 * Math.PI;
-        const speed = Math.random() * 7.5 + 3.75;
-        spark.style.animationDelay = Math.random() * 0.9 + 's';
-
-        spark.style.setProperty('--dx', Math.cos(angle) * speed + 'px');
-        spark.style.setProperty('--dy', Math.sin(angle) * speed + 'px');
-
-        document.body.appendChild(spark);
-    }
-}
-
-function getRandomColor() {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-}
+    for (let i = 0; i < numSparks;
+         
