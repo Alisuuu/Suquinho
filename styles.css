@@ -1,0 +1,92 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #0f0f0f;
+    color: white;
+}
+
+.icons {
+    display: flex;
+    gap: 40px;
+}
+
+.icons a {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-color: #272727;
+    transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px);
+    outline: none;
+    -webkit-tap-highlight-color: transparent; /* Adicionado para remover o destaque ao toque */
+}
+
+/* Animação de entrada */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Aplica a animação aos botões */
+.icons a {
+    animation: fadeInUp 2s ease forwards;
+}
+
+/* Delay para cada botão */
+.icons a:nth-child(1) {
+    animation-delay: 0.2s;
+}
+
+.icons a:nth-child(2) {
+    animation-delay: 0.4s;
+}
+
+.icons img, .icons i {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Ajuste específico para o ícone do YouTube */
+.icons i {
+    font-size: 50px;
+}
+
+/* Responsividade para celular */
+@media (max-width: 600px) {
+    .icons {
+        gap: 20px;
+    }
+    .icons a {
+        width: 100px;
+        height: 100px;
+    }
+    .icons img, .icons i {
+        width: 50px;
+        height: 50px;
+    }
+    .icons i {
+        font-size: 40px;
+    }
+}
