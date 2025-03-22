@@ -1,6 +1,7 @@
 body {
     font-family: sans-serif;
     margin: 0;
+    padding: 0; /* Adicionado para garantir que não haja preenchimento */
     background-color: #181818;
     overflow: hidden;
     color: white;
@@ -15,7 +16,7 @@ header {
     color: transparent;
     cursor: pointer;
     transition: color 0.3s ease;
-    user-select: none; /* Impede a seleção de texto */
+    user-select: none;
 }
 
 main {
@@ -46,7 +47,7 @@ main {
     text-decoration: none;
     color: white;
     outline: none;
-    -webkit-tap-highlight-color: transparent; /* Remove o destaque ao tocar */
+    -webkit-tap-highlight-color: transparent;
 }
 
 .grid-item i {
