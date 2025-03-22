@@ -73,6 +73,9 @@
         <a href="Not/not.html" target="_blank" class="icon-link">
             <i class="fas fa-newspaper icon-img"></i>
         </a>
+        <a href="#" class="icon-link txt-link" data-file="Links/links.txt">
+            <i class="fas fa-file-alt icon-img"></i>
+        </a>
     </div>
 
     <div id="invisibleButton"></div>
@@ -140,6 +143,17 @@
                 color += letters[Math.floor(Math.random() * 16)];
             }
             return color;
+        }
+
+        const txtLink = document.querySelector('.txt-link');
+        if (txtLink) {
+            txtLink.addEventListener('click', function(event) {
+                event.preventDefault(); // Impede o comportamento padrão do link
+                const filePath = this.getAttribute('data-file');
+                if (filePath) {
+                    window.open(filePath, '_blank');
+                }
+            });
         }
     </script>
 </body>
