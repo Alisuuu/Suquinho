@@ -1,7 +1,3 @@
-setTimeout(() => {
-    document.querySelector('.loader').style.display = 'none';
-    document.querySelector('.icons').style.display = 'flex';
-}, 2000);
 
 const invisibleButton = document.getElementById('invisibleButton');
 let clickCount = 0;
