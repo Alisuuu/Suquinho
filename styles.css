@@ -1,92 +1,69 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: sans-serif;
+    margin: 0;
+    background-color: #181818;
+    overflow: hidden;
+    color: white;
+}
+
+header {
+    text-align: center;
+    padding: 20px 0;
+}
+
+#suquinho {
+    color: transparent;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    user-select: none; /* Impede a seleção de texto */
+}
+
+main {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    margin: 0;
-    background-color: #0f0f0f;
-    color: white;
 }
 
-.icons {
-    display: flex;
-    gap: 40px;
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 100px);
+    grid-gap: 20px;
 }
 
-.icons a {
-    text-decoration: none;
-    color: inherit;
+.grid-item {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: none;
+    background-color: #282828;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, opacity 0.5s ease;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    background-color: #272727;
-    transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    position: relative;
-    overflow: hidden;
     opacity: 0;
-    transform: translateY(20px);
+    text-decoration: none;
+    color: white;
     outline: none;
-    -webkit-tap-highlight-color: transparent; /* Adicionado para remover o destaque ao toque */
+    -webkit-tap-highlight-color: transparent; /* Remove o destaque ao tocar */
 }
 
-/* Animação de entrada */
-@keyframes fadeInUp {
-    0% {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.grid-item i {
+    font-size: 24px;
 }
 
-/* Aplica a animação aos botões */
-.icons a {
-    animation: fadeInUp 2s ease forwards;
+.grid-item:hover {
+    background-color: #383838;
+    transform: scale(1.1);
 }
 
-/* Delay para cada botão */
-.icons a:nth-child(1) {
-    animation-delay: 0.2s;
+.grid-item.animate {
+    opacity: 1;
 }
 
-.icons a:nth-child(2) {
-    animation-delay: 0.4s;
-}
-
-.icons img, .icons i {
+.profile img {
     width: 60px;
     height: 60px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* Ajuste específico para o ícone do YouTube */
-.icons i {
-    font-size: 50px;
-}
-
-/* Responsividade para celular */
-@media (max-width: 600px) {
-    .icons {
-        gap: 20px;
-    }
-    .icons a {
-        width: 100px;
-        height: 100px;
-    }
-    .icons img, .icons i {
-        width: 50px;
-        height: 50px;
-    }
-    .icons i {
-        font-size: 40px;
-    }
+    border-radius: 50%;
 }
