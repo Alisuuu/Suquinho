@@ -16,7 +16,11 @@ body {
 
 .icons {
     display: flex;
-    gap: 40px;
+    flex-wrap: wrap; /* Permite que os itens quebrem para a próxima linha */
+    justify-content: center; /* Centraliza os botões horizontalmente */
+    align-items: center; /* Centraliza os botões verticalmente */
+    height: 100vh; /* Garante que os botões ocupem toda a altura da tela */
+    gap: 20px; /* Reduz o gap para melhor adaptação em telas menores */
 }
 
 .icons a {
@@ -25,7 +29,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 120px;
+    width: 45%; /* Ajusta a largura para que dois botões caibam em uma linha */
     height: 120px;
     border-radius: 50%;
     background-color: #272727;
@@ -37,6 +41,8 @@ body {
     transform: translateY(20px);
     outline: none;
     -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box; /* Garante que padding e border sejam incluídos na largura */
+    margin: 2.5%; /* Adiciona margem para espaçamento entre os botões */
 }
 
 @keyframes fadeInUp {
@@ -76,11 +82,12 @@ body {
 
 @media (max-width: 600px) {
     .icons {
-        gap: 20px;
+        gap: 10px; /* Reduz ainda mais o gap em telas menores */
     }
     .icons a {
-        width: 100px;
+        width: 45%; /* Mantém a largura de 45% para telas menores */
         height: 100px;
+        margin: 2.5%; /* Mantém a margem para espaçamento em telas menores */
     }
     .icons img, .icons i {
         width: 50px;
