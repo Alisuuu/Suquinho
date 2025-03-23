@@ -18,7 +18,7 @@ body {
 
 header {
     text-align: center;
-    padding: 20px 0;
+    padding: 70px 0;
 }
 
 #suquinho {
@@ -26,6 +26,7 @@ header {
     cursor: pointer;
     transition: color 0.3s ease;
     user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 main {
@@ -62,7 +63,7 @@ main {
 }
 
 .grid-item i {
-    font-size: 24px;
+    font-size: 25px;
 }
 
 .grid-item:hover {
