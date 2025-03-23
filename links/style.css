@@ -1,0 +1,116 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow-x: hidden; /* Adicionado para evitar scroll horizontal */
+}
+
+body {
+    font-family: sans-serif;
+    background-color: #000000ff;
+    color: white;
+}
+
+.container {
+    width: 80%;
+    max-width: 800px;
+    margin: 50px auto; /* Centraliza o container na página */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(255, 255, 255, 0.1); /* Sombra sutil para o container */
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: white; /* Mantém a cor do texto branco */
+}
+
+.input-container {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+input[type="text"] {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #282828;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: #282828;
+    color: white;
+}
+
+button {
+    background-color: #282828;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: 10px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #383838;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    background-color: #282828;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.3s ease;
+}
+
+li:hover {
+    background-color: #383838;
+}
+
+li a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.link-buttons {
+    display: flex;
+}
+
+.link-buttons button {
+    margin-left: 5px;
+    background-color: #282828;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.link-buttons button:hover {
+    background-color: #383838;
+}
+
+.link-buttons .edit-button {
+    color: #ffc107;
+}
+
+.link-buttons .remove-button {
+    color: #dc3545;
+}
