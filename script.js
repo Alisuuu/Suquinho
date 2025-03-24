@@ -20,8 +20,8 @@ gridItems.forEach((item, index) => {
 });
 
 function explodeSuquinho() {
-    suquinho.style.transition = 'transform 0.5s ease, opacity 0.5s ease, display 0.5s ease';
-    suquinho.style.transform = 'scale(2)';
+    suquinho.style.transition = 'transform 0.20s ease, opacity 0.5s ease, display 0.20s ease';
+    suquinho.style.transform = 'scale(7)';
     suquinho.style.opacity = '0';
     setTimeout(() => {
         suquinho.style.display = 'none';
