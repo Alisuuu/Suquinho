@@ -5,8 +5,8 @@ body {
     align-items: center;
     min-height: 100vh;
     margin: 0;
-    background-color: #000000ff /* Cinza escuro neutro */
-    color: #000000ff; /* Cinza claro neutro */
+    background-color: #121212 /* Cinza escuro neutro */
+    color: #121212; /* Cinza claro neutro */
 }
 
 .news-container {
@@ -28,7 +28,7 @@ body {
 }
 
 .news-article {
-    background-color: #333333; /* Cinza escuro neutro */
+    background-color: #121212; /* Cinza escuro neutro */
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
