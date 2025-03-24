@@ -27,3 +27,38 @@ function explodeSuquinho() {
         suquinho.style.display = 'none';
     }, 500);
 }
+
+function aplicarCores(corFundoAviso, corTextoAviso) {
+    const styleElement = document.getElementById('custom-colors');
+    styleElement.innerHTML = `
+        :root {
+            --aviso-fundo: ${corFundoAviso};
+            --aviso-texto: ${corTextoAviso};
+        }
+    `;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const orientacaoVertical = document.createElement('div');
+    orientacaoVertical.id = 'orientacao-vertical';
+    orientacaoVertical.innerHTML = '<i class="fas fa-arrows-rotate"></i><p>Por favor, gire seu dispositivo para a vertical.</p>';
+    document.body.appendChild(orientacaoVertical);
+
+    // Aplica as cores iniciais - Modifique aqui para personalizar
+    aplicarCores('#f0f0f0', '#333'); // Cores padrão: fundo cinza claro, texto preto
+
+    function checkOrientation() {
+        if (window.orientation === 90 || window.orientation === -90) {
+            // Orientação horizontal
+            document.getElementById('conteudo-principal').style.display = 'none'; // Oculta o conteúdo principal
+            document.getElementById('orientacao-vertical').style.display = 'flex'; // Exibe o aviso
+        } else {
+            // Orientação vertical
+            document.getElementById('conteudo-principal').style.display = 'block'; // Exibe o conteúdo principal
+            document.getElementById('orientacao-vertical').style.display = 'none'; // Oculta o aviso
+        }
+    }
+
+    window.addEventListener('orientationchange', checkOrientation);
+    checkOrientation(); // Verifica a orientação inicial
+});
