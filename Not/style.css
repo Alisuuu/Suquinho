@@ -5,8 +5,8 @@ body {
     align-items: center;
     min-height: 100vh;
     margin: 0;
-    background-color: #202020; /* Cinza escuro neutro */
-    color: #dcdcdc; /* Cinza claro neutro */
+    background-color: #000000ff /* Cinza escuro neutro */
+    color: #000000ff; /* Cinza claro neutro */
 }
 
 .news-container {
