@@ -12,6 +12,8 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
+    position: relative;
+    overflow: hidden; /* Evita a rolagem da página */
 }
 
 header {
@@ -21,6 +23,7 @@ header {
     width: 100%;
     text-align: center;
     padding: 20px 0;
+    z-index: 10;
 }
 
 #suquinho {
@@ -35,11 +38,13 @@ header {
     background-color: #282828;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    position: relative;
+    z-index: 2;
 }
 
 .pasta-header {
     padding: 15px;
-    border-bottom: 1px solid #282828;
+    border-bottom: 1px solid #383838;
 }
 
 .pasta-conteudo {
@@ -86,4 +91,22 @@ header {
     100% {
         box-shadow: 0 0 20px 50px rgba(138, 43, 226, 0);
     }
+}
+
+.planeta, .nave {
+    position: absolute;
+}
+
+.planeta {
+    bottom: 10%; /* Posiciona o planeta 10% acima da parte inferior */
+    left: 0;
+    width: 300px;
+}
+
+.nave {
+    top: 20%; /* Posiciona a nave 20% abaixo da parte superior */
+    left: 20%; /* Posiciona a nave 30% à direita da parte esquerda */
+    transform: translate(-50%, -50%);
+    width: 600px; /* Aumenta o tamanho da nave */
+    z-index: 3;
 }
