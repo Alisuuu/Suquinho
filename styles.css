@@ -43,8 +43,15 @@ header {
 }
 
 .pasta-header {
-    padding: 0px;
-    border-bottom: 0px solid #383838;
+    padding: 10px; /* Adicionei um pouco de padding para espaçamento */
+    border-bottom: 1px solid #A784FD; /* Adicionei uma borda sutil para separar o header (opcional) */
+}
+
+.pasta-header span { /* Estilo para o span (título) dentro do header */
+    color: #A784FD; /* Cor lilás */
+    text-align: center; /* Centraliza o título */
+    display: block; /* Faz o span ocupar a largura total do header (opcional) */
+    font-size: 1.2em; /* Ajusta o tamanho da fonte do título (opcional) */
 }
 
 .pasta-conteudo {
@@ -163,7 +170,7 @@ header {
 body {
     /* Verifique se você já tem isso no seu body, se não, adicione */
     --aviso-fundo: #121212; /* Cor de fundo padrão para o aviso */
-    --aviso-texto: #333; /* Cor do texto padrão para o aviso */
+    --aviso-texto: #A784FD; /* Cor do texto padrão para o aviso */
 }
 
 #orientacao-vertical {
