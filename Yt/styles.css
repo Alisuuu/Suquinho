@@ -124,7 +124,7 @@ body {
 
 .link-input {
     padding: 10px;
-    border: 2px solid #007bff;
+    border: 2px solid #A784FD;
     border-radius: 5px;
     width: 200px;
     transition: border-color 0.3s ease;
@@ -133,7 +133,7 @@ body {
 }
 
 .link-input:focus {
-    border-color: #0056b3;
+    border-color: #A784FD;
     outline: none;
 }
 
