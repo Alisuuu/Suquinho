@@ -33,7 +33,7 @@ body {
     width: 120px;
     height: 120px;
     border-radius: 50%;
-    background-color: #272727;
+    background-color: #7435DE;
     transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     position: relative;
@@ -129,11 +129,11 @@ body {
     width: 200px;
     transition: border-color 0.3s ease;
     background-color: rgba(255, 255, 255, 0.8);
-    color: #593BA2;
+    color: #A784FD;
 }
 
 .link-input:focus {
-    border-color: #A784FD;
+    border-color: #593BA2;
     outline: none;
 }
 
