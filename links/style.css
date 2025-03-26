@@ -106,7 +106,7 @@ ul#link-list li {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: #272727;
+    background-color: #121212;
     padding: 10px;
     border-radius: 5px;
 }
@@ -122,17 +122,17 @@ ul#link-list li a {
 }
 
 ul#link-list li .copy-button {
-    background-color: #3d3d3d;
+    background-color: #A784FD;
     color: white;
     border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
+    padding: 18px 20px;
+    border-radius: 100px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
 ul#link-list li .copy-button:hover {
-    background-color: #555;
+    background-color: #A784FD;
 }
 
 @media (max-width: 600px) {
