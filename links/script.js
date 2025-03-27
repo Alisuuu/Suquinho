@@ -33,7 +33,7 @@ function addLinkToList(link) {
     const copyButton = listItem.querySelector('.copy-button');
     copyButton.addEventListener('click', () => {
         navigator.clipboard.writeText(link);
-        alert('Link copiado!');
+        ('Link copiado!');
     });
     console.log(`Link "${link}" adicionado à lista.`);
 }
