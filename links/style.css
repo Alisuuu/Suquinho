@@ -132,7 +132,8 @@ ul#link-list li .copy-button {
 }
 
 ul#link-list li .copy-button:hover {
-    background-color: #593BA2;
+    background-color: #080015;
+    -webkit-tap-highlight-color: transparent;
 }
 
 @media (max-width: 600px) {
