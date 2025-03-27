@@ -197,7 +197,9 @@ body {
 /* Cor de fundo do modal */
 .swal2-popup {
   background-color: #121212 !important;
-  padding: 50px 1px;
+  width: 60%;
+  border-radius: 40px;
+  height: 80%;
 }
 
 /* Cor do título */
@@ -215,11 +217,12 @@ body {
   background-color: #593BA2 !important;
   border-color: #593BA2 !important;
   color: white !important;
+  border-radius: 100px;
 }
 
 .swal2-confirm:hover {
   background-color: #1e7e34 !important;
-}
+} 
 
 /* Cor de fundo do botão de cancelar (se houver) */
 .swal2-cancel {
