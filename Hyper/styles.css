@@ -194,3 +194,40 @@ body {
         height: 40px;
     }
 }
+/* Cor de fundo do modal */
+.swal2-popup {
+  background-color: #121212 !important;
+  padding: 50px 1px;
+}
+
+/* Cor do título */
+.swal2-title {
+  color: #593BA2 !important;
+}
+
+/* Cor do texto da mensagem */
+.swal2-html-container {
+  color: #495057 !important;
+}
+
+/* Cor de fundo do botão de confirmação */
+.swal2-confirm {
+  background-color: #593BA2 !important;
+  border-color: #593BA2 !important;
+  color: white !important;
+}
+
+.swal2-confirm:hover {
+  background-color: #1e7e34 !important;
+}
+
+/* Cor de fundo do botão de cancelar (se houver) */
+.swal2-cancel {
+  background-color: #593BA2 !important;
+  border-color: #dc3545 !important;
+  color: white !important;
+}
+
+.swal2-cancel:hover {
+  background-color: #c82333 !important;
+}
