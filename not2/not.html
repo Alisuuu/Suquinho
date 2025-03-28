@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <titleÚltimas notícias</title>
+    <title>Últimas notícias</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,6 +14,7 @@
             margin: 0;
             background-color: #121212;
             color: white;
+            overflow-x: hidden; /* Desativa a rolagem horizontal */
         }
 
         .container {
@@ -43,6 +44,7 @@
             padding: 25px; /* Espaçamento interno nos cartões */
             margin-bottom: 0; /* Removendo a margem inferior padrão */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Adicionando uma sombra sutil aos cartões */
+            overflow: hidden; /* Garante que o conteúdo interno não cause overflow */
         }
 
         .feed-item:last-child {
@@ -71,6 +73,15 @@
         .item-description {
             color: #ccc;
             line-height: 1.6;
+            overflow-x: auto; /* Adicionado para permitir rolagem horizontal apenas no conteúdo, se necessário */
+            word-break: break-word; /* Quebra palavras longas para evitar overflow */
+        }
+
+        .item-description img {
+            max-width: 100%; /* Garante que as imagens não ultrapassem a largura do contêiner */
+            height: auto;
+            display: block; /* Evita espaços extras abaixo da imagem */
+            margin: 10px 0; /* Adiciona um pouco de espaço acima e abaixo das imagens */
         }
 
         .loading {
@@ -87,7 +98,7 @@
 </head>
 <body>
     <div class="container">
-        <h1></h1>Últimas notícias</h1>
+        <h1>Últimas notícias</h1>
         <div id="rss-feed">
             <p class="loading">Carregando feeds...</p>
         </div>
