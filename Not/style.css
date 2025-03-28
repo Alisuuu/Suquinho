@@ -1,89 +1,121 @@
+/* Reset de estilos e estilos básicos para o body */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Uma fonte moderna e limpa */
+    background-color: #121212; /* Fundo preto conforme solicitado */
+    color: #f0f0f0; /* Texto branco ou quase branco para bom contraste */
+    padding-bottom: 50px;
+    background-image: radial-gradient(circle, rgba(27, 27, 27, 0.8), #121212); /* Ajustei o gradiente para combinar com o fundo preto */
+    min-height: 100vh; /* Garante que o fundo cubra toda a altura da tela */
+}
+
+.container {
+    max-width: 100%;
+    margin: 0 auto; /* Centraliza o conteúdo se necessário */
+    padding: 20px;
+}
+
+h1 {
+    color: #593BA2; /* Cor para os detalhes */
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#rss-feed {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    background-color: #121212 /* Cinza escuro neutro */
-    color: #121212; /* Cinza claro neutro */
+    padding: 20px 0;
 }
 
-.news-container {
-    width: 80%;
-    max-width: 1200px;
-    padding: 20px;
-}
-
-.news-title {
-    text-align: center;
-    margin-bottom: 30px;
-    color: #FFFFFF; /* Cinza claro quase branco neutro */
-}
-
-.news-articles {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-}
-
-.news-article {
-    background-color: #121212; /* Cinza escuro neutro */
-    border-radius: 8px;
+.news-ball {
+    width: 350px;
+    min-height: 200px;
+    border-radius: 30px;
+    margin: 20px 0;
+    cursor: pointer;
+    transition: transform 0.2s ease-out, opacity 0.2s ease-out, border-color 0.2s ease-out;
+    transform: translateY(10px) scale(0.95);
+    opacity: 0.8;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Alinhar o conteúdo à esquerda */
+    text-align: left;
+    padding: 25px 15px 15px 15px; /* Aumentar o padding superior para a imagem */
     overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s ease;
+    background-color: #282828;
+    border: 1px solid #444;
+    position: relative; /* Para posicionar a imagem */
 }
 
-.news-article:hover {
-    transform: translateY(-5px);
+.news-ball:hover {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.01);
+    border-color: #593BA2; /* Cor para os detalhes no hover */
 }
 
-.news-image {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
+.news-ball.jump-forward {
+    animation: jumpForward 0.5s ease-out forwards;
 }
 
-.article-title {
-    padding: 15px;
-    margin: 0;
-    color: #e0e0e0; /* Cinza claro neutro para os títulos dos artigos */
-}
-
-.article-summary {
-    padding: 0 15px 15px;
-    margin: 0;
-}
-
-.read-more {
-    display: inline-block;
-    background-color: #404040; /* Cinza escuro neutro */
-    color: #dcdcdc;
-    padding: 10px 15px;
-    text-decoration: none;
-    border-radius: 4px;
-    margin: 15px;
-}
-
-.read-more:hover {
-    background-color: #505050; /* Cinza escuro neutro */
-}
-
-#loading-message {
-    text-align: center;
-    font-style: italic;
-    padding: 20px;
-}
-
-#error-message {
-    text-align: center;
-    color: #ff4040; /* Vermelho mais neutro */
-    padding: 20px;
-}
-
-@media (max-width: 768px) {
-    .news-container {
-        width: 95%;
+@keyframes jumpForward {
+    0% {
+        transform: translateY(10px) scale(0.95);
+        opacity: 0.8;
     }
+    50% {
+        transform: translateY(-10px) scale(1.05);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.ball-title {
+    color: #eee;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.ball-description {
+    color: #ddd;
+    font-size: 0.9em;
+    line-height: 1.4;
+    margin-bottom: 12px;
+    overflow: hidden; /* Esconde o texto que não couber */
+    display: -webkit-box;
+    -webkit-line-clamp: 6; /* Aumentei para 6 linhas */
+    -webkit-box-orient: vertical;
+}
+
+.ball-date {
+    color: #777;
+    font-size: 0.8em;
+    text-align: right;
+}
+
+/* Estilo para a imagem de enfeite */
+.ball-decoration {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%; /* Para torná-la circular */
+    background-color: #555; /* Cor de fundo placeholder */
+    overflow: hidden;
+}
+
+.ball-decoration img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Para cobrir o círculo sem distorcer */
 }
