@@ -1,2 +1,2 @@
 https://observatoriodocinema.com.br/feed/
-https://cors-anywhere.herokuapp.com/https://observatoriodocinema.com.br/feed/
+
