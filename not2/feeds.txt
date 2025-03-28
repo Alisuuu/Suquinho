@@ -1,2 +1,2 @@
 https://observatoriodocinema.com.br/feed/
-
+https://api.jovemnerd.com.br/feed/
