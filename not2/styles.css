@@ -1,0 +1,121 @@
+/* Reset de estilos e estilos básicos para o body */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Uma fonte moderna e limpa */
+    background-color: #121212; /* Fundo preto conforme solicitado */
+    color: #f0f0f0; /* Texto branco ou quase branco para bom contraste */
+    padding-bottom: 50px;
+    background-image: radial-gradient(circle, rgba(27, 27, 27, 0.8), #121212); /* Ajustei o gradiente para combinar com o fundo preto */
+    min-height: 100vh; /* Garante que o fundo cubra toda a altura da tela */
+}
+
+.container {
+    max-width: 100%;
+    margin: 0 auto; /* Centraliza o conteúdo se necessário */
+    padding: 20px;
+}
+
+h1 {
+    color: #593BA2; /* Cor para os detalhes */
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#rss-feed {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.news-ball {
+    width: 350px;
+    min-height: 200px;
+    border-radius: 30px;
+    margin: 20px 0;
+    cursor: pointer;
+    transition: transform 0.2s ease-out, opacity 0.2s ease-out, border-color 0.2s ease-out;
+    transform: translateY(10px) scale(0.95);
+    opacity: 0.8;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Alinhar o conteúdo à esquerda */
+    text-align: left;
+    padding: 25px 15px 15px 15px; /* Aumentar o padding superior para a imagem */
+    overflow: hidden;
+    background-color: #282828;
+    border: 1px solid #444;
+    position: relative; /* Para posicionar a imagem */
+}
+
+.news-ball:hover {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.01);
+    border-color: #593BA2; /* Cor para os detalhes no hover */
+}
+
+.news-ball.jump-forward {
+    animation: jumpForward 0.5s ease-out forwards;
+}
+
+@keyframes jumpForward {
+    0% {
+        transform: translateY(10px) scale(0.95);
+        opacity: 0.8;
+    }
+    50% {
+        transform: translateY(-10px) scale(1.05);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.ball-title {
+    color: #eee;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.ball-description {
+    color: #ddd;
+    font-size: 0.9em;
+    line-height: 1.4;
+    margin-bottom: 12px;
+    overflow: hidden; /* Esconde o texto que não couber */
+    display: -webkit-box;
+    -webkit-line-clamp: 6; /* Aumentei para 6 linhas */
+    -webkit-box-orient: vertical;
+}
+
+.ball-date {
+    color: #777;
+    font-size: 0.8em;
+    text-align: right;
+}
+
+/* Estilo para a imagem de enfeite */
+.ball-decoration {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%; /* Para torná-la circular */
+    background-color: #555; /* Cor de fundo placeholder */
+    overflow: hidden;
+}
+
+.ball-decoration img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Para cobrir o círculo sem distorcer */
+}
