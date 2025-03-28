@@ -1,1 +1,1 @@
-https://cinemacomrapadura.com.br/feed/
+https://cors-anywhere.herokuapp.com/https://cinemacomrapadura.com.br/feed/
