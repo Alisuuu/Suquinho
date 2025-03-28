@@ -1,29 +1,30 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-<title>Wall Rolável (Vertical)</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-}
-
-body {
-  background-color: #121212;
-}
-
-#wall-container {
-  width: 100%;
-}
-
-.rssapp-wall-item {
-  border: 1px solid #333;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>últimas notícias</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* Estilos básicos para o container para garantir a rolagem */
+        body {
+            margin: 0;
+            font-family: sans-serif;
+            background-color: #121212;
+            color: white;
+            padding-bottom: 50px; /* Adiciona um pouco de espaço na parte inferior para os últimos itens */
+        }
+    </style>
 </head>
 <body>
-<rssapp-wall id="8U5gx20p0dAfCFKe"></rssapp-wall><script src="https://widget.rss.app/v1/wall.js" type="text/javascript" async></script>
+    <div class="container">
+        <h1>últimas notícias</h1>
+        <div id="rss-feed">
+            <p class="loading">Carregando feeds...</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
