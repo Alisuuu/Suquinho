@@ -87,7 +87,7 @@ h2 {
     align-items: center;
     width: 90px; /* Reduced button size */
     height: 90px; /* Reduced button size */
-    border-radius: 50%;
+    border-radius: 30%;
     background-color: #593BA2;
     transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
