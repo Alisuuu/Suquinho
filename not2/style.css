@@ -1,0 +1,214 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: #121212;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden; /* Prevent scrolling */
+}
+
+.titulo-container {
+    text-align: center;
+    margin-bottom: 40px;
+    cursor: pointer; /* Indica que é clicável inicialmente */
+    transition: margin-bottom 0.5s ease, transform 0.5s ease; /* Transição suave para o movimento */
+    position: relative; /* Para o posicionamento do topo */
+}
+
+.titulo-container-top {
+    position: absolute;
+    top: 20px; /* Ajuste a distância do topo conforme necessário */
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 20px; /* Mantenha alguma margem inferior se desejar */
+    cursor: default; /* Altera o cursor para o padrão, indicando que não é mais um link/botão */
+}
+
+.titulo-imagem {
+    max-width: 80px;
+    height: auto;
+    transition: transform 0.3s ease-in-out;
+    animation: pulse 1s infinite alternate, bob 1.5s infinite alternate;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+}
+
+@keyframes bob {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(-15px);
+    }
+}
+
+h2 {
+    text-align: center;
+    color: #593BA2;
+    margin-bottom: 20px;
+}
+
+.sorteio-container {
+    text-align: center;
+}
+
+#opcoesSorteio {
+    display: none; /* Initially hide */
+    flex-direction: column;
+    align-items: center;
+    gap: 30px; /* Reduced gap for better fit */
+}
+
+.series-categorias {
+    display: none; /* Initially hide */
+    display: flex;
+    justify-content: center; /* Ensure centering of series buttons */
+    gap: 30px; /* Reduced gap for better fit */
+}
+
+.opcao-btn {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column; /* Arrange icon and label vertically */
+    justify-content: center;
+    align-items: center;
+    width: 110px; /* Reduced button size */
+    height: 110px; /* Reduced button size */
+    border-radius: 50%;
+    background-color: #593BA2;
+    transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+    opacity: 1;
+    transform: translateY(0);
+    border: none;
+    padding: 10px; /* Add padding for the label */
+    -webkit-tap-highlight-color: transparent;
+}
+
+.opcao-btn:hover {
+    transform: scale(1.1);
+    background-color: #7a52c9;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+}
+
+.opcao-btn:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.opcao-btn i {
+    font-size: 40px; /* Reduced icon size */
+    margin-bottom: 5px; /* Space between icon and label */
+}
+
+.opcao-btn span {
+    font-size: 14px;
+    text-align: center;
+}
+
+.conteudo-container {
+    margin-top: 20px;
+    width: 90%;
+    max-width: 1200px;
+}
+
+.categoria-titulo {
+    margin-bottom: 10px;
+    color: white;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.card {
+    background-color: #212121;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.card img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.titulo {
+    margin-top: 5px;
+    font-weight: bold;
+    color: white;
+    font-size: 1.1em;
+}
+
+.nota {
+    color: #A784FD;
+    font-weight: bold;
+}
+
+.carregando {
+    text-align: center;
+    font-style: italic;
+    color: #777;
+}
+
+.swal2-popup {
+    background-color: #121212 !important;
+    color: white !important;
+    border-radius: 20px !important;
+    width: 90% !important;
+    max-width: 600px !important;
+    max-height: 90% !important;
+    overflow-y: auto !important;
+}
+
+.swal2-title {
+    color: #593BA2 !important;
+}
+
+.swal2-html-container {
+    color: #f4f4f4 !important;
+    overflow-y: auto !important;
+    max-height: 70vh !important;
+}
+
+.swal2-confirm {
+    background-color: #593BA2 !important;
+    border-color: #593BA2 !important;
+    color: white !important;
+    border-radius: 25px !important;
+}
+
+.swal2-confirm:hover {
+    background-color: #7a52c9 !important;
+}
+
+.swal2-html-container ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.swal2-html-container ul li {
+    margin-bottom: 5px;
+}

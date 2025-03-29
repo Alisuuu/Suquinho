@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Sugestões de Filmes e Séries do TMDb</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <div class="titulo-container">
+        <img src="p2.png" alt="Sugestões de Filmes e Séries do TMDb" class="titulo-imagem">
+    </div>
+
+    <div class="sorteio-container">
+        <div id="opcoesSorteio" class="opcoes-sorteio">
+            <button id="sortearFilmeBtn" class="opcao-btn">
+                <i class="fas fa-film"></i>
+                <span>Filme</span>
+            </button>
+            <div class="series-categorias">
+                <button id="sortearSerieBtn" class="opcao-btn">
+                    <i class="fas fa-tv"></i>
+                    <span>Série</span>
+                </button>
+                <button id="sortearSeriePopularBtn" class="opcao-btn">
+                    <i class="fas fa-fire"></i>
+                    <span>Popular</span>
+                </button>
+                <button id="sortearSerieTopRatedBtn" class="opcao-btn">
+                    <i class="fas fa-star"></i>
+                    <span>mais votado</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="script.js"></script>
+</body>
+</html>
