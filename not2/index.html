@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sugestões de Filmes e Séries do TMDb</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="titulo-container">
+        <img src="p2.png" alt="Sugestões de Filmes e Séries do TMDb" class="titulo-imagem">
+    </div>
+
+    <div class="sorteio-container">
+        <button id="sorteioBtn" class="sorteio-btn">Sorteio</button>
+        <div id="opcoesSorteio" class="opcoes-sorteio">
+            <button id="sortearFilmeBtn" class="opcao-btn">Filme</button>
+            <button id="sortearSerieBtn" class="opcao-btn">Série</button>
+        </div>
+    </div>
+
+    <div class="conteudo-container">
+        <h2 class="categoria-titulo">Filmes Populares</h2>
+        <div id="filmes-container" class="grid-container">
+            <p class="carregando">Carregando filmes...</p>
+        </div>
+    </div>
+
+    <div class="conteudo-container">
+        <h2 class="categoria-titulo">Séries Populares</h2>
+        <div id="series-container" class="grid-container">
+            <p class="carregando">Carregando séries...</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="script.js"></script>
+</body>
+</html>
