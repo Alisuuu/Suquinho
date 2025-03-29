@@ -16,6 +16,7 @@ body {
     cursor: pointer; /* Indica que é clicável inicialmente */
     transition: margin-bottom 0.5s ease, transform 0.5s ease; /* Transição suave para o movimento */
     position: relative; /* Para o posicionamento do topo */
+    -webkit-tap-highlight-color: transparent;
 }
 
 .titulo-container-top {
@@ -25,6 +26,7 @@ body {
     transform: translateX(-50%);
     margin-bottom: 20px; /* Mantenha alguma margem inferior se desejar */
     cursor: default; /* Altera o cursor para o padrão, indicando que não é mais um link/botão */
+    -webkit-tap-highlight-color: transparent;
 }
 
 .titulo-imagem {
@@ -32,6 +34,7 @@ body {
     height: auto;
     transition: transform 0.3s ease-in-out;
     animation: pulse 1s infinite alternate, bob 1.5s infinite alternate;
+    -webkit-tap-highlight-color: transparent;
 }
 
 @keyframes pulse {
