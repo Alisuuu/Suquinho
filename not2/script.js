@@ -28,7 +28,7 @@ window.addEventListener('scroll', () => {
 async function buscarSugestoesTMDb() {
     try {
         const filmesPopularesUrl = `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=${idioma}&page=1`;
-        const seriesPopularesUrl = `https://api.themoviedb.org/3/tv/popular?api_key=${apiKey}&language=${idioma}&page=1`;
+        const seriesPopularesUrl = `https://api.themoviedb.org/3/tv/popular?api_key=${apiKey}&language=${idioma}&page=1`; // Voltando a buscar todas as séries populares
 
         const respostaFilmes = await fetch(filmesPopularesUrl);
         const dataFilmes = await respostaFilmes.json();
@@ -37,8 +37,10 @@ async function buscarSugestoesTMDb() {
         const dataSeries = await respostaSeries.json();
 
         if (dataFilmes.results && dataSeries.results) {
-            exibirFilmes(dataFilmes.results);
-            exibirSeries(dataSeries.results);
+            const filmesComSinopse = dataFilmes.results.filter(filme => filme.overview);
+            const seriesComSinopse = dataSeries.results.filter(serie => serie.overview && !serie.genre_ids.includes(16)); // Filtrando animes
+            exibirFilmes(filmesComSinopse);
+            exibirSeries(seriesComSinopse);
         } else {
             document.getElementById("filmes-container").innerHTML = "<p>Erro ao carregar filmes.</p>";
             document.getElementById("series-container").innerHTML = "<p>Erro ao carregar séries.</p>";
@@ -56,20 +58,22 @@ function exibirFilmes(filmes) {
 
     if (filmes && filmes.length > 0) {
         filmes.forEach(filme => {
-            const card = document.createElement("div");
-            card.classList.add("card");
-            card.dataset.filmeId = filme.id;
-            const titulo = filme.title || filme.original_title;
-            const posterPath = filme.poster_path ? baseUrlImagem + filme.poster_path : 'imagem_nao_disponivel.png';
-            const nota = filme.vote_average ? (filme.vote_average * 10).toFixed(0) + '%' : 'N/A';
+            if (filme.overview) {
+                const card = document.createElement("div");
+                card.classList.add("card");
+                card.dataset.filmeId = filme.id;
+                const titulo = filme.title || filme.original_title;
+                const posterPath = filme.poster_path ? baseUrlImagem + filme.poster_path : 'imagem_nao_disponivel.png';
+                const nota = filme.vote_average ? (filme.vote_average * 10).toFixed(0) + '%' : 'N/A';
 
-            card.innerHTML = `
-                <img src="${posterPath}" alt="Pôster de ${titulo}">
-                <h3 class="titulo">${titulo}</h3>
-                <p class="nota">Nota: ${nota}</p>
-            `;
-            card.addEventListener('click', () => mostrarDetalhesFilme(filme.id));
-            container.appendChild(card);
+                card.innerHTML = `
+                    <img src="${posterPath}" alt="Pôster de ${titulo}">
+                    <h3 class="titulo">${titulo}</h3>
+                    <p class="nota">Nota: ${nota}</p>
+                `;
+                card.addEventListener('click', () => mostrarDetalhesFilme(filme.id));
+                container.appendChild(card);
+            }
         });
     } else {
         container.innerHTML = "<p>Nenhuma sugestão de filme encontrada.</p>";
@@ -82,20 +86,22 @@ function exibirSeries(series) {
 
     if (series && series.length > 0) {
         series.forEach(serie => {
-            const card = document.createElement("div");
-            card.classList.add("card");
-            card.dataset.serieId = serie.id;
-            const titulo = serie.name || serie.original_name;
-            const posterPath = serie.poster_path ? baseUrlImagem + serie.poster_path : 'imagem_nao_disponivel.png';
-            const nota = serie.vote_average ? (serie.vote_average * 10).toFixed(0) + '%' : 'N/A';
+            if (serie.overview && !serie.genre_ids.includes(16)) { // Adicionando filtro de anime aqui também
+                const card = document.createElement("div");
+                card.classList.add("card");
+                card.dataset.serieId = serie.id;
+                const titulo = serie.name || serie.original_name;
+                const posterPath = serie.poster_path ? baseUrlImagem + serie.poster_path : 'imagem_nao_disponivel.png';
+                const nota = serie.vote_average ? (serie.vote_average * 10).toFixed(0) + '%' : 'N/A';
 
-            card.innerHTML = `
-                <img src="${posterPath}" alt="Pôster de ${titulo}">
-                <h3 class="titulo">${titulo}</h3>
-                <p class="nota">Nota: ${nota}</p>
-            `;
-            card.addEventListener('click', () => mostrarDetalhesSerie(serie.id));
-            container.appendChild(card);
+                cardinnerHTML = `
+                    <img src="${posterPath}" alt="Pôster de ${titulo}">
+                    <h3 class="titulo">${titulo}</h3>
+                    <p class="nota">Nota: ${nota}</p>
+                `;
+                card.addEventListener('click', () => mostrarDetalhesSerie(serie.id));
+                container.appendChild(card);
+            }
         });
     } else {
         container.innerHTML = "<p>Nenhuma sugestão de série encontrada.</p>";
@@ -179,14 +185,38 @@ async function sortearFilme() {
 
 async function sortearSerie() {
     try {
-        const numPages = 5;
+        const numPages = 20; // Mantendo o número de páginas
         let allSeries = [];
+        // const allowedGenres = [
+        //     // Adicione os IDs dos gêneros preferidos aqui
+        // ];
+        // const excludedGenres = [
+        //     // Remova ou descomente os gêneros que não quiser excluir
+        // ];
+        // const allowedGenresString = allowedGenres.join(',');
+        // const excludedGenresString = excludedGenres.join(',');
+        // const anoMinimo = '2009-01-01'; // Descomente se quiser filtrar por data
+
+        let url = `https://api.themoviedb.org/3/discover/tv?api_key=${apiKey}&language=${idioma}&sort_by=first_air_date.desc&page=`; // Ordenando por data de lançamento descendente
+        // url += `&first_air_date.gte=${anoMinimo}`; // Descomente se quiser filtrar por data
+
+        // if (allowedGenresString) {
+        //     url += `&with_genres=${allowedGenresString}`;
+        // }
+
+        // if (excludedGenresString) {
+        //     url += `&without_genres=${excludedGenresString}`;
+        // }
+
         for (let page = 1; page <= numPages; page++) {
-            const url = `https://api.themoviedb.org/3/tv/popular?api_key=${apiKey}&language=${idioma}&page=${page}`;
-            const resposta = await fetch(url);
+            const resposta = await fetch(url + page);
             const data = await resposta.json();
             if (data.results) {
-                allSeries = allSeries.concat(data.results);
+                for (let i = 0; i < data.results.length; i++) {
+                    if (data.results[i].poster_path && (data.results[i].name || data.results[i].original_name) && data.results[i].overview && !data.results[i].genre_ids.includes(16)) { // Verifica poster, título, sinopse e exclui anime
+                        allSeries.push(data.results[i]);
+                    }
+                }
             }
         }
 
@@ -194,7 +224,7 @@ async function sortearSerie() {
             const serieSorteada = allSeries[Math.floor(Math.random() * allSeries.length)];
             mostrarDetalhesSerie(serieSorteada.id);
         } else {
-            Swal.fire('Ops!', 'Não foi possível sortear uma série.', 'info');
+            Swal.fire('Ops!', 'Não foi possível sortear uma série com os critérios definidos.', 'info');
         }
     } catch (error) {
         console.error("Erro ao sortear série:", error);
