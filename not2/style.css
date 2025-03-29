@@ -85,8 +85,8 @@ h2 {
     flex-direction: column; /* Arrange icon and label vertically */
     justify-content: center;
     align-items: center;
-    width: 110px; /* Reduced button size */
-    height: 110px; /* Reduced button size */
+    width: 90px; /* Reduced button size */
+    height: 90px; /* Reduced button size */
     border-radius: 50%;
     background-color: #593BA2;
     transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
