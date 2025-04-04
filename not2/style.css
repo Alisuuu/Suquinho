@@ -16,6 +16,7 @@ body {
     cursor: pointer; /* Indicate it's clickable */
     transition: margin-bottom 0.5s ease, transform 0.5s ease; /* Smooth transition for the movement */
     position: relative; /* For positioning at the top */
+        -webkit-tap-highlight-color: transparent;
 }
 
 .titulo-container-top {
