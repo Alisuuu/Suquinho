@@ -361,5 +361,5 @@ function setBackgroundPoster(posterPath) {
 
 // Inicializar os fundos dos botões
 document.addEventListener('DOMContentLoaded', function() {
-    setInitialButtonBackgrounds();
+    setInitialButtonBackgrounds(none);
 });
