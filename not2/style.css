@@ -86,17 +86,18 @@ h2 {
     justify-content: center;
     align-items: center;
     width: 110px; /* Reduced button size */
-    height: 220px; /* Reduced button size */
-    border-radius: 5%;
-    background-color: #593BA2;
+    height: 130px; /* Reduced button size */
+    border-radius: 20%;
+    background-color: #121212;
     transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 100px 100px rgba(100, 0, 70, 0.2);
     position: relative;
     overflow: hidden;
     opacity: 1;
     transform: translateY(0);
-    border: none;
-    padding: 0px; /* Add padding for the label */
+    border: 100px;
+    padding: 1px; /* Add padding for the label */
+    opacity: 70%;
     -webkit-tap-highlight-color: transparent;
 }
 
@@ -112,21 +113,21 @@ h2 {
 }
 
 .opcao-btn i {
-    font-size: 40px; /* Reduced icon size */
-    margin-bottom: 5px; /* Space between icon and label */
-    color: #A784FD;
+    font-size: 20px; /* Reduced icon size */
+    margin-bottom: 20px; /* Space between icon and label */
+    color: #F8F8FF;
 }
 
 .opcao-btn span {
-    font-size: 30px;
+    font-size: 20px;
     text-align: center;
-    color: #A784FD;
+    color: #F8F8FF;
 }
 
 .conteudo-container {
     margin-top: 20px;
     width: 90%;
-    max-width: 200px;
+    max-width: 100px;
 }
 
 .categoria-titulo {
@@ -181,7 +182,7 @@ h2 {
     border-radius: 20px !important;
     width: 100% !important;
     max-width: 1000px !important;
-    max-height: 100% !important;
+    max-height: 90% !important;
     overflow-y: auto !important;
 }
 
@@ -192,7 +193,7 @@ h2 {
 .swal2-html-container {
     color: #f4f4f4 !important;
     overflow-y: none !important;
-    max-height: 70vh !important;
+    max-height: 100vh !important;
 }
 
 .swal2-confirm {
@@ -212,5 +213,5 @@ h2 {
 }
 
 .swal2-html-container ul li {
-    margin-bottom: 5px;
+    margin-bottom: 10px;
 }
