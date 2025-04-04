@@ -16,7 +16,9 @@ const seriesCategorias = document.querySelector('.series-categorias');
 let filmesSorteados = [];
 let seriesSorteadas = [];
 
+// Garantindo que o ouvinte de clique esteja aqui
 tituloImagem.addEventListener('click', () => {
+    console.log('A imagem do título foi clicada!'); // Para verificar no console
     opcoesSorteio.style.display = 'flex';
     seriesCategorias.style.display = 'flex';
     tituloContainer.classList.add('titulo-container-top');
@@ -31,19 +33,38 @@ const providerIcons = {
     // Adicione outros provedores e suas classes de ícones aqui
 };
 
+async function fetchData(url) {
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(`Erro ao buscar dados: ${response.status}`);
+        }
+        return data.results || [];
+    } catch (error) {
+        console.error("Erro ao buscar dados:", error);
+        Swal.fire('Erro', 'Erro ao buscar dados do servidor.', 'error');
+        return [];
+    }
+}
+
 async function mostrarDetalhesFilme(filmeId) {
+    console.log('Mostrar detalhes do filme com ID:', filmeId);
     const detalhesUrl = `https://api.themoviedb.org/3/movie/${filmeId}?api_key=${apiKey}&language=${idioma}`;
     const watchProvidersUrl = `https://api.themoviedb.org/3/movie/${filmeId}/watch/providers?api_key=${apiKey}&language=${idioma}`;
     const creditsUrl = `https://api.themoviedb.org/3/movie/${filmeId}/credits?api_key=${apiKey}&language=${idioma}`;
     try {
         const respostaDetalhes = await fetch(detalhesUrl);
         const dataDetalhes = await respostaDetalhes.json();
+        console.log('Detalhes do Filme:', dataDetalhes);
 
         const respostaProviders = await fetch(watchProvidersUrl);
         const dataProviders = await respostaProviders.json();
+        console.log('Provedores do Filme:', dataProviders);
 
         const respostaCredits = await fetch(creditsUrl);
         const dataCredits = await respostaCredits.json();
+        console.log('Créditos do Filme:', dataCredits);
 
         if (dataDetalhes) {
             const dataLancamento = dataDetalhes.release_date ? new Date(dataDetalhes.release_date).toLocaleDateString() : 'Não informado';
@@ -110,18 +131,22 @@ async function mostrarDetalhesFilme(filmeId) {
 }
 
 async function mostrarDetalhesSerie(serieId) {
+    console.log('Mostrar detalhes da série com ID:', serieId);
     const detalhesUrl = `https://api.themoviedb.org/3/tv/${serieId}?api_key=${apiKey}&language=${idioma}`;
     const watchProvidersUrl = `https://api.themoviedb.org/3/tv/${serieId}/watch/providers?api_key=${apiKey}&language=${idioma}`;
     const creditsUrl = `https://api.themoviedb.org/3/tv/${serieId}/credits?api_key=${apiKey}&language=${idioma}`;
     try {
         const respostaDetalhes = await fetch(detalhesUrl);
         const dataDetalhes = await respostaDetalhes.json();
+        console.log('Detalhes da Série:', dataDetalhes);
 
         const respostaProviders = await fetch(watchProvidersUrl);
         const dataProviders = await respostaProviders.json();
+        console.log('Provedores da Série:', dataProviders);
 
         const respostaCredits = await fetch(creditsUrl);
         const dataCredits = await respostaCredits.json();
+        console.log('Créditos da Série:', dataCredits);
 
         if (dataDetalhes) {
             const dataLancamento = dataDetalhes.first_air_date ? new Date(dataDetalhes.first_air_date).toLocaleDateString() : 'Não informado';
@@ -187,32 +212,20 @@ async function mostrarDetalhesSerie(serieId) {
 }
 
 async function sortearFilme() {
-    Swal.fire({
-        title: 'Sorteando...',
-        html: 'Carregando...', // Texto de carregamento simples
-        showConfirmButton: false,
-        allowOutsideClick: false,
-        customClass: {
-            popup: 'swal2-popup'
-        }
-    });
+    Swal.fire({ title: 'Sorteando...', html: 'Carregando...', showConfirmButton: false, allowOutsideClick: false, customClass: { popup: 'swal2-popup' } });
     try {
         const numPages = 5;
         let allFilmes = [];
         for (let page = 1; page <= numPages; page++) {
             const url = `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=${idioma}&page=${page}`;
-            const resposta = await fetch(url);
-            const data = await resposta.json();
-            if (data.results) {
-                allFilmes = allFilmes.concat(data.results);
-            }
+            const results = await fetchData(url);
+            allFilmes = allFilmes.concat(results);
         }
 
         if (allFilmes.length > 0) {
             let filmeSorteado;
             let tentativas = 0;
             const maxTentativas = allFilmes.length;
-
             do {
                 filmeSorteado = allFilmes[Math.floor(Math.random() * allFilmes.length)];
                 tentativas++;
@@ -222,18 +235,8 @@ async function sortearFilme() {
                     return;
                 }
             } while (filmesSorteados.includes(filmeSorteado.id));
-
             filmesSorteados.push(filmeSorteado.id);
-
-            // Usar o pôster do filme sorteado como fundo do botão
-            const posterPath = filmeSorteado.poster_path;
-            if (posterPath && sortearFilmeBtn) {
-                sortearFilmeBtn.style.backgroundImage = `url("${baseUrlImagem}${posterPath}")`;
-                sortearFilmeBtn.style.backgroundSize = 'cover';
-                sortearFilmeBtn.style.backgroundRepeat = 'no-repeat';
-                sortearFilmeBtn.style.color = '#fff'; // Ajuste a cor do texto conforme necessário
-            }
-
+            setBackgroundPoster(filmeSorteado.poster_path);
             Swal.close();
             mostrarDetalhesFilme(filmeSorteado.id);
         } else {
@@ -248,50 +251,43 @@ async function sortearFilme() {
 }
 
 async function sortearSerie(categoria = 'discover') {
-    Swal.fire({
-        title: 'Sorteando...',
-        html: 'Carregando...', // Texto de carregamento simples
-        showConfirmButton: false,
-        allowOutsideClick: false,
-        customClass: {
-            popup: 'swal2-popup'
-        }
-    });
+    Swal.fire({ title: 'Sorteando...', html: 'Carregando...', showConfirmButton: false, allowOutsideClick: false, customClass: { popup: 'swal2-popup' } });
     try {
-        let url = '';
+        let urlBase = '';
+        let params = '';
         let numPages = 20;
 
         switch (categoria) {
             case 'popular':
-                url = `https://api.themoviedb.org/3/tv/popular?api_key=${apiKey}&language=${idioma}&page=`;
+                urlBase = `https://api.themoviedb.org/3/tv/popular`;
+                params = `api_key=${apiKey}&language=${idioma}&page=`;
                 break;
             case 'top_rated':
-                url = `https://api.themoviedb.org/3/tv/top_rated?api_key=${apiKey}&language=${idioma}&page=`;
+                urlBase = `https://api.themoviedb.org/3/tv/top_rated`;
+                params = `api_key=${apiKey}&language=${idioma}&page=`;
                 break;
             case 'discover':
             default:
-                url = `https://api.themoviedb.org/3/discover/tv?api_key=${apiKey}&language=${idioma}&sort_by=first_air_date.desc&page=`;
+                urlBase = `https://api.themoviedb.org/3/discover/tv`;
+                params = `api_key=${apiKey}&language=${idioma}&sort_by=first_air_date.desc&page=`;
                 break;
         }
 
         let allSeries = [];
         for (let page = 1; page <= numPages; page++) {
-            const resposta = await fetch(url + page);
-            const data = await resposta.json();
-            if (data.results) {
-                for (let i = 0; i < data.results.length; i++) {
-                    if (data.results[i].poster_path && (data.results[i].name || data.results[i].original_name) && data.results[i].overview && !data.results[i].genre_ids.includes(16)) {
-                        allSeries.push(data.results[i]);
-                    }
+            const url = `${urlBase}?${params}${page}`;
+            const results = await fetchData(url);
+            results.forEach(serie => {
+                if (serie.poster_path && (serie.name || serie.original_name) && serie.overview && !serie.genre_ids.includes(16)) {
+                    allSeries.push(serie);
                 }
-            }
+            });
         }
 
         if (allSeries.length > 0) {
             let serieSorteada;
             let tentativas = 0;
             const maxTentativas = allSeries.length;
-
             do {
                 serieSorteada = allSeries[Math.floor(Math.random() * allSeries.length)];
                 tentativas++;
@@ -301,27 +297,8 @@ async function sortearSerie(categoria = 'discover') {
                     return;
                 }
             } while (seriesSorteadas.includes(serieSorteada.id));
-
             seriesSorteadas.push(serieSorteada.id);
-
-            // Usar o pôster da série sorteada como fundo do botão
-            const posterPath = serieSorteada.poster_path;
-            let buttonToUpdate;
-            if (categoria === 'popular') {
-                buttonToUpdate = sortearSeriePopularBtn;
-            } else if (categoria === 'top_rated') {
-                buttonToUpdate = sortearSerieTopRatedBtn;
-            } else {
-                buttonToUpdate = sortearSerieBtn;
-            }
-
-            if (posterPath && buttonToUpdate) {
-                buttonToUpdate.style.backgroundImage = `url("${baseUrlImagem}${posterPath}")`;
-                buttonToUpdate.style.backgroundSize = 'cover';
-                buttonToUpdate.style.backgroundRepeat = 'no-repeat';
-                buttonToUpdate.style.color = '#fff'; // Ajuste a cor do texto conforme necessário
-            }
-
+            setBackgroundPoster(serieSorteada.poster_path);
             Swal.close();
             mostrarDetalhesSerie(serieSorteada.id);
         } else {
@@ -348,4 +325,41 @@ sortearSerieBtn.addEventListener('click', () => sortearSerie('discover'));
 sortearSeriePopularBtn.addEventListener('click', sortearSeriePopular);
 sortearSerieTopRatedBtn.addEventListener('click', sortearSerieTopRated);
 
-// Removendo a parte que definia imagens de fundo estáticas
+async function setInitialButtonBackground(buttonElement, apiUrl) {
+    try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        if (data.results && data.results.length > 0 && buttonElement) {
+            const posterPath = data.results[0].poster_path;
+            buttonElement.style.backgroundImage = `url("${baseUrlImagem}${posterPath}")`;
+            buttonElement.style.backgroundSize = 'cover';
+            buttonElement.style.backgroundRepeat = 'no-repeat';
+            buttonElement.style.color = '#fff'; // Adjust as needed
+        }
+    } catch (error) {
+        console.error(`Erro ao buscar pôster inicial para ${buttonElement.id}:`, error);
+    }
+}
+
+async function setInitialButtonBackgrounds() {
+    setInitialButtonBackground(sortearFilmeBtn, `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=${idioma}&page=1`);
+    setInitialButtonBackground(sortearSerieBtn, `https://api.themoviedb.org/3/discover/tv?api_key=${apiKey}&language=${idioma}&sort_by=first_air_date.desc&page=1`);
+    setInitialButtonBackground(sortearSeriePopularBtn, `https://api.themoviedb.org/3/tv/popular?api_key=${apiKey}&language=${idioma}&page=1`);
+    setInitialButtonBackground(sortearSerieTopRatedBtn, `https://api.themoviedb.org/3/tv/top_rated?api_key=${apiKey}&language=${idioma}&page=1`);
+}
+
+function setBackgroundPoster(posterPath) {
+    if (posterPath) {
+        document.body.style.backgroundImage = `url("${baseUrlImagem}${posterPath}")`;
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundRepeat = 'no-repeat';
+        document.body.style.backgroundAttachment = 'fixed'; // Para manter o fundo fixo durante a rolagem
+    } else {
+        document.body.style.backgroundImage = ''; // Remove o fundo
+    }
+}
+
+// Inicializar os fundos dos botões
+document.addEventListener('DOMContentLoaded', function() {
+    setInitialButtonBackgrounds();
+});
