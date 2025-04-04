@@ -102,7 +102,7 @@ h2 {
 
 .opcao-btn:hover {
     transform: scale(1.1);
-    background-color: #7a52c9;
+    background-color: #593BA2;
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
 }
 
@@ -114,17 +114,18 @@ h2 {
 .opcao-btn i {
     font-size: 40px; /* Reduced icon size */
     margin-bottom: 5px; /* Space between icon and label */
+    color: #A784FD;
 }
 
 .opcao-btn span {
-    font-size: 14px;
+    font-size: 30px;
     text-align: center;
 }
 
 .conteudo-container {
     margin-top: 20px;
     width: 90%;
-    max-width: 1200px;
+    max-width: 200px;
 }
 
 .categoria-titulo {
@@ -177,9 +178,9 @@ h2 {
     background-color: #121212 !important;
     color: white !important;
     border-radius: 20px !important;
-    width: 90% !important;
-    max-width: 600px !important;
-    max-height: 90% !important;
+    width: 100% !important;
+    max-width: 1000px !important;
+    max-height: 100% !important;
     overflow-y: auto !important;
 }
 
@@ -189,7 +190,7 @@ h2 {
 
 .swal2-html-container {
     color: #f4f4f4 !important;
-    overflow-y: auto !important;
+    overflow-y: none !important;
     max-height: 70vh !important;
 }
 
@@ -206,7 +207,7 @@ h2 {
 
 .swal2-html-container ul {
     list-style-type: none;
-    padding-left: 0;
+    padding-left: 100;
 }
 
 .swal2-html-container ul li {
