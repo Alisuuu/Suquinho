@@ -13,20 +13,17 @@ body {
 .titulo-container {
     text-align: center;
     margin-bottom: 40px;
-    cursor: pointer; /* Indica que é clicável inicialmente */
-    transition: margin-bottom 0.5s ease, transform 0.5s ease; /* Transição suave para o movimento */
-    position: relative; /* Para o posicionamento do topo */
-    -webkit-tap-highlight-color: transparent;
+    cursor: pointer; /* Indicate it's clickable */
+    transition: margin-bottom 0.5s ease, transform 0.5s ease; /* Smooth transition for the movement */
+    position: relative; /* For positioning at the top */
 }
 
 .titulo-container-top {
     position: absolute;
-    top: 20px; /* Ajuste a distância do topo conforme necessário */
+    top: 20px; /* Adjust top distance as needed */
     left: 50%;
     transform: translateX(-50%);
-    margin-bottom: 20px; /* Mantenha alguma margem inferior se desejar */
-    cursor: default; /* Altera o cursor para o padrão, indicando que não é mais um link/botão */
-    -webkit-tap-highlight-color: transparent;
+    margin-bottom: 20px; /* Maintain some bottom margin if desired */
 }
 
 .titulo-imagem {
@@ -34,7 +31,6 @@ body {
     height: auto;
     transition: transform 0.3s ease-in-out;
     animation: pulse 1s infinite alternate, bob 1.5s infinite alternate;
-    -webkit-tap-highlight-color: transparent;
 }
 
 @keyframes pulse {
@@ -88,9 +84,9 @@ h2 {
     flex-direction: column; /* Arrange icon and label vertically */
     justify-content: center;
     align-items: center;
-    width: 100px; /* Reduced button size */
-    height: 90px; /* Reduced button size */
-    border-radius: 30%;
+    width: 80px; /* Reduced button size */
+    height: 150px; /* Reduced button size */
+    border-radius: 5%;
     background-color: #593BA2;
     transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
@@ -99,7 +95,7 @@ h2 {
     opacity: 1;
     transform: translateY(0);
     border: none;
-    padding: 10px; /* Add padding for the label */
+    padding: 50px; /* Add padding for the label */
     -webkit-tap-highlight-color: transparent;
 }
 
