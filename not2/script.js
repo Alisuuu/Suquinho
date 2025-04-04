@@ -13,6 +13,9 @@ const tituloImagem = document.querySelector('.titulo-imagem');
 const tituloContainer = document.querySelector('.titulo-container');
 const seriesCategorias = document.querySelector('.series-categorias');
 
+let filmesSorteados = [];
+let seriesSorteadas = [];
+
 tituloImagem.addEventListener('click', () => {
     opcoesSorteio.style.display = 'flex';
     seriesCategorias.style.display = 'flex';
@@ -206,7 +209,31 @@ async function sortearFilme() {
         }
 
         if (allFilmes.length > 0) {
-            const filmeSorteado = allFilmes[Math.floor(Math.random() * allFilmes.length)];
+            let filmeSorteado;
+            let tentativas = 0;
+            const maxTentativas = allFilmes.length;
+
+            do {
+                filmeSorteado = allFilmes[Math.floor(Math.random() * allFilmes.length)];
+                tentativas++;
+                if (tentativas > maxTentativas) {
+                    Swal.close();
+                    Swal.fire('Ops!', 'Não foi possível sortear um filme inédito (todos já foram mostrados).', 'info');
+                    return;
+                }
+            } while (filmesSorteados.includes(filmeSorteado.id));
+
+            filmesSorteados.push(filmeSorteado.id);
+
+            // Usar o pôster do filme sorteado como fundo do botão
+            const posterPath = filmeSorteado.poster_path;
+            if (posterPath && sortearFilmeBtn) {
+                sortearFilmeBtn.style.backgroundImage = `url("${baseUrlImagem}${posterPath}")`;
+                sortearFilmeBtn.style.backgroundSize = 'cover';
+                sortearFilmeBtn.style.backgroundRepeat = 'no-repeat';
+                sortearFilmeBtn.style.color = '#fff'; // Ajuste a cor do texto conforme necessário
+            }
+
             Swal.close();
             mostrarDetalhesFilme(filmeSorteado.id);
         } else {
@@ -261,7 +288,40 @@ async function sortearSerie(categoria = 'discover') {
         }
 
         if (allSeries.length > 0) {
-            const serieSorteada = allSeries[Math.floor(Math.random() * allSeries.length)];
+            let serieSorteada;
+            let tentativas = 0;
+            const maxTentativas = allSeries.length;
+
+            do {
+                serieSorteada = allSeries[Math.floor(Math.random() * allSeries.length)];
+                tentativas++;
+                if (tentativas > maxTentativas) {
+                    Swal.close();
+                    Swal.fire('Ops!', 'Não foi possível sortear uma série inédita (todas já foram mostradas).', 'info');
+                    return;
+                }
+            } while (seriesSorteadas.includes(serieSorteada.id));
+
+            seriesSorteadas.push(serieSorteada.id);
+
+            // Usar o pôster da série sorteada como fundo do botão
+            const posterPath = serieSorteada.poster_path;
+            let buttonToUpdate;
+            if (categoria === 'popular') {
+                buttonToUpdate = sortearSeriePopularBtn;
+            } else if (categoria === 'top_rated') {
+                buttonToUpdate = sortearSerieTopRatedBtn;
+            } else {
+                buttonToUpdate = sortearSerieBtn;
+            }
+
+            if (posterPath && buttonToUpdate) {
+                buttonToUpdate.style.backgroundImage = `url("${baseUrlImagem}${posterPath}")`;
+                buttonToUpdate.style.backgroundSize = 'cover';
+                buttonToUpdate.style.backgroundRepeat = 'no-repeat';
+                buttonToUpdate.style.color = '#fff'; // Ajuste a cor do texto conforme necessário
+            }
+
             Swal.close();
             mostrarDetalhesSerie(serieSorteada.id);
         } else {
@@ -287,3 +347,5 @@ sortearFilmeBtn.addEventListener('click', sortearFilme);
 sortearSerieBtn.addEventListener('click', () => sortearSerie('discover'));
 sortearSeriePopularBtn.addEventListener('click', sortearSeriePopular);
 sortearSerieTopRatedBtn.addEventListener('click', sortearSerieTopRated);
+
+// Removendo a parte que definia imagens de fundo estáticas
