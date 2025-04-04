@@ -24,6 +24,7 @@ body {
     left: 50%;
     transform: translateX(-50%);
     margin-bottom: 20px; /* Maintain some bottom margin if desired */
+    -webkit-tap-highlight-color: transparent;
 }
 
 .titulo-imagem {
@@ -84,8 +85,8 @@ h2 {
     flex-direction: column; /* Arrange icon and label vertically */
     justify-content: center;
     align-items: center;
-    width: 80px; /* Reduced button size */
-    height: 150px; /* Reduced button size */
+    width: 110px; /* Reduced button size */
+    height: 220px; /* Reduced button size */
     border-radius: 5%;
     background-color: #593BA2;
     transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
@@ -95,7 +96,7 @@ h2 {
     opacity: 1;
     transform: translateY(0);
     border: none;
-    padding: 50px; /* Add padding for the label */
+    padding: 0px; /* Add padding for the label */
     -webkit-tap-highlight-color: transparent;
 }
 
