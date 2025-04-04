@@ -13,24 +13,34 @@ const tituloImagem = document.querySelector('.titulo-imagem');
 const tituloContainer = document.querySelector('.titulo-container');
 const seriesCategorias = document.querySelector('.series-categorias');
 
-const handleTituloClick = () => {
+tituloImagem.addEventListener('click', () => {
     opcoesSorteio.style.display = 'flex';
     seriesCategorias.style.display = 'flex';
     tituloContainer.classList.add('titulo-container-top');
-    tituloImagem.removeEventListener('click', handleTituloClick); // Remove o listener após o primeiro clique
-};
+});
 
-tituloImagem.addEventListener('click', handleTituloClick);
+// Mapeamento de nomes de provedores para classes de ícones do Font Awesome (adicione mais conforme necessário)
+const providerIcons = {
+    'Netflix': 'fa-brands fa-netflix',
+    'Amazon Prime Video': 'fa-brands fa-amazon',
+    'Disney+': 'fa-brands fa-disney',
+    'HBO Max': 'fa-solid fa-play', // Exemplo, procure um ícone melhor se houver
+    // Adicione outros provedores e suas classes de ícones aqui
+};
 
 async function mostrarDetalhesFilme(filmeId) {
     const detalhesUrl = `https://api.themoviedb.org/3/movie/${filmeId}?api_key=${apiKey}&language=${idioma}`;
     const watchProvidersUrl = `https://api.themoviedb.org/3/movie/${filmeId}/watch/providers?api_key=${apiKey}&language=${idioma}`;
+    const creditsUrl = `https://api.themoviedb.org/3/movie/${filmeId}/credits?api_key=${apiKey}&language=${idioma}`;
     try {
         const respostaDetalhes = await fetch(detalhesUrl);
         const dataDetalhes = await respostaDetalhes.json();
 
         const respostaProviders = await fetch(watchProvidersUrl);
         const dataProviders = await respostaProviders.json();
+
+        const respostaCredits = await fetch(creditsUrl);
+        const dataCredits = await respostaCredits.json();
 
         if (dataDetalhes) {
             const dataLancamento = dataDetalhes.release_date ? new Date(dataDetalhes.release_date).toLocaleDateString() : 'Não informado';
@@ -40,25 +50,38 @@ async function mostrarDetalhesFilme(filmeId) {
             htmlDetalhes += `<p><strong>Data de Lançamento:</strong> ${dataLancamento}</p>`;
             htmlDetalhes += `<p><strong>Duração:</strong> ${duracao}</p>`;
 
+            if (dataCredits && dataCredits.cast && dataCredits.cast.length > 0) {
+                let elencoHTML = '<p><strong>Elenco:</strong></p><div style="display: flex; overflow-x: auto;">';
+                dataCredits.cast.slice(0, 10).forEach(ator => { // Mostrar até 10 atores
+                    const fotoUrl = ator.profile_path ? baseUrlImagem + ator.profile_path : 'p2.png'; // Use uma imagem padrão se não houver foto
+                    elencoHTML += `<div style="margin-right: 10px; text-align: center;">
+                                    <img src="${fotoUrl}" alt="${ator.name}" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; margin-bottom: 5px;">
+                                    <p style="font-size: 0.8em;">${ator.name}</p>
+                                </div>`;
+                });
+                elencoHTML += '</div>';
+                htmlDetalhes += elencoHTML;
+            }
+
             if (dataProviders && dataProviders.results && dataProviders.results[regiao]) {
                 const providers = dataProviders.results[regiao];
-                let ondeAssistir = '<p><strong>Onde assistir:</strong></p><ul>';
-                if (providers.flatrate) {
-                    providers.flatrate.forEach(provider => {
-                        ondeAssistir += `<li>${provider.provider_name} (Streaming)</li>`;
-                    });
-                }
-                if (providers.rent) {
-                    providers.rent.forEach(provider => {
-                        ondeAssistir += `<li>${provider.provider_name} (Aluguel)</li>`;
-                    });
-                }
-                if (providers.buy) {
-                    providers.buy.forEach(provider => {
-                        ondeAssistir += `<li>${provider.provider_name} (Compra)</li>`;
-                    });
-                }
-                ondeAssistir += '</ul>';
+                let ondeAssistir = '<p><strong>Onde assistir:</strong></p><div style="display: flex; flex-wrap: wrap; gap: 10px;">';
+                const addProviders = (providerArray, type) => {
+                    if (providerArray) {
+                        providerArray.forEach(provider => {
+                            const iconClass = providerIcons[provider.provider_name];
+                            if (iconClass) {
+                                ondeAssistir += `<i class="${iconClass}" title="${provider.provider_name} (${type})" style="font-size: 1.5em;"></i>`;
+                            } else {
+                                ondeAssistir += `<span title="${provider.provider_name} (${type})">${provider.provider_name}</span>`;
+                            }
+                        });
+                    }
+                };
+                addProviders(providers.flatrate, 'Streaming');
+                addProviders(providers.rent, 'Aluguel');
+                addProviders(providers.buy, 'Compra');
+                ondeAssistir += '</div>';
                 htmlDetalhes += ondeAssistir;
             } else {
                 htmlDetalhes += '<p><strong>Onde assistir:</strong> Informação não disponível para o Brasil.</p>';
@@ -86,12 +109,16 @@ async function mostrarDetalhesFilme(filmeId) {
 async function mostrarDetalhesSerie(serieId) {
     const detalhesUrl = `https://api.themoviedb.org/3/tv/${serieId}?api_key=${apiKey}&language=${idioma}`;
     const watchProvidersUrl = `https://api.themoviedb.org/3/tv/${serieId}/watch/providers?api_key=${apiKey}&language=${idioma}`;
+    const creditsUrl = `https://api.themoviedb.org/3/tv/${serieId}/credits?api_key=${apiKey}&language=${idioma}`;
     try {
         const respostaDetalhes = await fetch(detalhesUrl);
         const dataDetalhes = await respostaDetalhes.json();
 
         const respostaProviders = await fetch(watchProvidersUrl);
         const dataProviders = await respostaProviders.json();
+
+        const respostaCredits = await fetch(creditsUrl);
+        const dataCredits = await respostaCredits.json();
 
         if (dataDetalhes) {
             const dataLancamento = dataDetalhes.first_air_date ? new Date(dataDetalhes.first_air_date).toLocaleDateString() : 'Não informado';
@@ -100,25 +127,38 @@ async function mostrarDetalhesSerie(serieId) {
             let htmlDetalhes = `<p>${dataDetalhes.overview || 'Sinopse não disponível.'}</p>`;
             htmlDetalhes += `<p><strong>Data de Lançamento:</strong> ${dataLancamento}</p>`;
 
+            if (dataCredits && dataCredits.cast && dataCredits.cast.length > 0) {
+                let elencoHTML = '<p><strong>Elenco:</strong></p><div style="display: flex; overflow-x: auto;">';
+                dataCredits.cast.slice(0, 10).forEach(ator => { // Mostrar até 10 atores
+                    const fotoUrl = ator.profile_path ? baseUrlImagem + ator.profile_path : 'p2.png'; // Use uma imagem padrão se não houver foto
+                    elencoHTML += `<div style="margin-right: 10px; text-align: center;">
+                                    <img src="${fotoUrl}" alt="${ator.name}" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; margin-bottom: 5px;">
+                                    <p style="font-size: 0.8em;">${ator.name}</p>
+                                </div>`;
+                });
+                elencoHTML += '</div>';
+                htmlDetalhes += elencoHTML;
+            }
+
             if (dataProviders && dataProviders.results && dataProviders.results[regiao]) {
                 const providers = dataProviders.results[regiao];
-                let ondeAssistir = '<p><strong>Onde assistir:</strong></p><ul>';
-                if (providers.flatrate) {
-                    providers.flatrate.forEach(provider => {
-                        ondeAssistir += `<li>${provider.provider_name} (Streaming)</li>`;
-                    });
-                }
-                if (providers.rent) {
-                    providers.rent.forEach(provider => {
-                        ondeAssistir += `<li>${provider.provider_name} (Aluguel)</li>`;
-                    });
-                }
-                if (providers.buy) {
-                    providers.buy.forEach(provider => {
-                        ondeAssistir += `<li>${provider.provider_name} (Compra)</li>`;
-                    });
-                }
-                ondeAssistir += '</ul>';
+                let ondeAssistir = '<p><strong>Onde assistir:</strong></p><div style="display: flex; flex-wrap: wrap; gap: 10px;">';
+                const addProviders = (providerArray, type) => {
+                    if (providerArray) {
+                        providerArray.forEach(provider => {
+                            const iconClass = providerIcons[provider.provider_name];
+                            if (iconClass) {
+                                ondeAssistir += `<i class="${iconClass}" title="${provider.provider_name} (${type})" style="font-size: 1.5em;"></i>`;
+                            } else {
+                                ondeAssistir += `<span title="${provider.provider_name} (${type})">${provider.provider_name}</span>`;
+                            }
+                        });
+                    }
+                };
+                addProviders(providers.flatrate, 'Streaming');
+                addProviders(providers.rent, 'Aluguel');
+                addProviders(providers.buy, 'Compra');
+                ondeAssistir += '</div>';
                 htmlDetalhes += ondeAssistir;
             } else {
                 htmlDetalhes += '<p><strong>Onde assistir:</strong> Informação não disponível para o Brasil.</p>';
