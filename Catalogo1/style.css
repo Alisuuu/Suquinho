@@ -131,4 +131,5 @@ h1 {
 .swal2-confirm {
     background-color: #5e35b1 !important; /* Cor do botão de confirmar */
     color: #f0f0f0 !important;
+        border-radius: 50px !important; /* Opcional: arredonda as bordas da imagem do popup também */
 }
