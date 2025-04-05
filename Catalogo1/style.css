@@ -40,6 +40,7 @@ body.has-backdrop::before {
     max-width: 1200px;
     position: relative; /* Garante que o conteúdo fique acima do fundo borrado */
     z-index: 1;
+user-select: none;
 }
 h1 {
     color: #593BA2;
@@ -88,6 +89,7 @@ h1 {
     width: 100%;
     transition: transform 0.2s ease-in-out;
     cursor: pointer;
+    user-select: none;
 }
 .item-card:hover {
     transform: scale(1.05);
@@ -114,6 +116,7 @@ h1 {
     background-color: rgb(12, 12, 12, 0.8) !important; /* Fundo mais transparente */
     border-radius: 25px !important; /* Bordas arredondadas */
     color: #121212 !important; /* Garante que o texto no popup seja branco */
+    user-select: none;
 }
 
 .swal2-title {
