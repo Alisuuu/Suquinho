@@ -41,11 +41,11 @@ async function fetchData(url, categoryName) {
                 renderItems(topRatedMovies, topRatedMoviesList);
                 break;
             case 'popularSeries':
-                popularSeries = results;
+                popularSeries = results.map(item => ({ ...item, media_type: 'tv' })); // Adicione media_type para séries também
                 renderItems(popularSeries, popularSeriesList);
                 break;
             case 'topRatedSeries':
-                topRatedSeries = results;
+                topRatedSeries = results.map(item => ({ ...item, media_type: 'tv' })); // Adicione media_type para séries também
                 renderItems(topRatedSeries, topRatedSeriesList);
                 break;
         }
@@ -68,11 +68,20 @@ function renderItems(items, container) {
         const listItem = document.createElement('li');
         listItem.className = 'item-card';
         listItem.onclick = () => showDetails(item);
+
+        let releaseDate = '';
+        if (item.media_type === 'movie' && item.release_date) {
+            releaseDate = new Date(item.release_date).toLocaleDateString();
+        } else if (item.media_type === 'tv' && item.first_air_date) {
+            releaseDate = new Date(item.first_air_date).toLocaleDateString();
+        }
+
         listItem.innerHTML = `
             <img src="${getItemPoster(item)}" alt="${getItemTitle(item)}" class="item-poster">
             <div class="item-info">
                 <h2 class="item-title">${getItemTitle(item)}</h2>
                 ${item.media_type ? `<span class="media-type ${item.media_type}">${item.media_type === 'movie' ? 'Filme' : 'Série'}</span>` : ''}
+                ${releaseDate ? `<p class="release-date">${releaseDate}</p>` : ''}
             </div>
         `;
         container.appendChild(listItem);
@@ -86,6 +95,14 @@ async function fetchSearchedItems() {
             if (response.ok) {
                 const data = await response.json();
                 searchResults = data.results;
+                searchResults = searchResults.map(item => {
+                    if (item.media_type === 'movie' && item.release_date) {
+                        item.release_date_formatted = new Date(item.release_date).toLocaleDateString();
+                    } else if (item.media_type === 'tv' && item.first_air_date) {
+                        item.first_air_date_formatted = new Date(item.first_air_date).toLocaleDateString();
+                    }
+                    return item;
+                });
                 renderItems(searchResults, searchResultsList);
                 searchResultsSection.style.display = 'block';
                 originalSections.forEach(section => section.style.display = 'none');
@@ -157,10 +174,18 @@ async function showDetails(item) {
             watchProvidersHTML += '<p>Nenhuma informação de streaming ou compra disponível para o Brasil.</p>';
         }
 
+        let releaseDate = '';
+        if (detailsData.release_date) {
+            releaseDate = new Date(detailsData.release_date).toLocaleDateString();
+        } else if (detailsData.first_air_date) {
+            releaseDate = new Date(detailsData.first_air_date).toLocaleDateString();
+        }
+
         Swal.fire({
             title: getItemTitle(item),
             html: `
                 <div style="padding: 20px; border-radius: 10px; color: #f0f0f0;">
+                    ${releaseDate ? `<p><strong>Data de Lançamento:</strong> ${releaseDate}</p>` : ''}
                     <p><strong>Sinopse:</strong> ${detailsData.overview || 'Sinopse não disponível.'}</p>
                     ${castList ? `<h3>Elenco Principal</h3><div style="overflow-x: auto; white-space: nowrap; padding-bottom: 10px;">${castList}</div>` : ''}
                     ${watchProvidersHTML ? `<h3>Onde Assistir (Brasil)</h3>${watchProvidersHTML}` : '<p>Informações sobre onde assistir não disponíveis.</p>'}
