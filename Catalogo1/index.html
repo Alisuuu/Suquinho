@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@5/dark.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+</head>
+<body>
+    <div class="movie-catalog">
+        <h1></h1>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Buscar filmes e séries...">
+        </div>
+        <section id="searchResultsSection" style="display: none;">
+            <h2>Resultados da Busca</h2>
+            <div class="item-list-container">
+                <ul class="item-list horizontal-scroll" id="searchResultsList">
+                    </ul>
+            </div>
+        </section>
+        <section id="popularMoviesSection">
+            <h2>Filmes Populares</h2>
+            <div class="item-list-container">
+                <ul class="item-list horizontal-scroll" id="popularMoviesList">
+                    </ul>
+            </div>
+        </section>
+        <section id="topRatedMoviesSection">
+            <h2>Filmes Mais Bem Avaliados</h2>
+            <div class="item-list-container">
+                <ul class="item-list horizontal-scroll" id="topRatedMoviesList">
+                    </ul>
+            </div>
+        </section>
+        <section id="popularSeriesSection">
+            <h2>Séries Populares</h2>
+            <div class="item-list-container">
+                <ul class="item-list horizontal-scroll" id="popularSeriesList">
+                    </ul>
+            </div>
+        </section>
+        <section id="topRatedSeriesSection">
+            <h2>Séries Mais Bem Avaliados</h2>
+            <div class="item-list-container">
+                <ul class="item-list horizontal-scroll" id="topRatedSeriesList">
+                    </ul>
+            </div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
