@@ -105,10 +105,10 @@ h1 {
     padding: 15px;
 }
 .item-title {
-    display: 14px; /* Esconde os nomes dos filmes e séries */
+    display: 9px; /* Esconde os nomes dos filmes e séries */
 }
 .media-type {
-    display: 5px; /* Esconde os rótulos de Filme e Série */
+    display: 4px; /* Esconde os rótulos de Filme e Série */
 }
 
 /* Estilos customizados para o popup do SweetAlert2 */
