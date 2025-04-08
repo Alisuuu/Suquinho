@@ -37,7 +37,7 @@ body.has-backdrop::before {
     flex-direction: column;
     align-items: center;
     width: 98%;
-    max-width: 1200px;
+    max-width: 400px;
     position: relative; /* Garante que o conteúdo fique acima do fundo borrado */
     z-index: 1;
 user-select: none;
@@ -69,7 +69,7 @@ h1 {
 }
 .item-list-container {
     width: 100%;
-    max-width: 1200px;
+    max-width: 500px;
     margin-bottom: 30px;
 }
 .item-list.horizontal-scroll {
@@ -102,10 +102,10 @@ h1 {
     object-fit: contain;
 }
 .item-info {
-    padding: 15px;
+    padding: 9px;
 }
 .item-title {
-    display: 9px; /* Esconde os nomes dos filmes e séries */
+    display: none; /* Esconde os nomes dos filmes e séries */
 }
 .media-type {
     display: 4px; /* Esconde os rótulos de Filme e Série */
@@ -128,11 +128,11 @@ h1 {
 }
 
 .swal2-close {
-    color: #f0f0f0 !important; /* Cor do botão de fechar */
+    color: none !important; /* Cor do botão de fechar */
 }
 
 .swal2-confirm {
     background-color: #5e35b1 !important; /* Cor do botão de confirmar */
-    color: #f0f0f0 !important;
+    color: none !important;
         border-radius: 50px !important; /* Opcional: arredonda as bordas da imagem do popup também */
 }
