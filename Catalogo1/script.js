@@ -152,8 +152,8 @@ async function showDetails(item) {
         const creditsData = creditsResponse.ok ? await creditsResponse.json() : { cast: [] };
         const castList = creditsData.cast.map(actor => `
             <div style="display: inline-block; margin-right: 15px; width: 100px; text-align: center;">
-                <img src="${actor.profile_path ? IMAGE_BASE_URL.replace('w185', 'w185') + actor.profile_path : './p2.png'}" alt="${actor.name}" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; margin-bottom: 5px;">
-                <div style="font-size: 0.9em;">${actor.name}</div>
+                <img src="${actor.profile_path ? IMAGE_BASE_URL.replace('w185', 'w185') + actor.profile_path : './p2.png'}" alt="${actor.name}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-bottom: 5px;">
+                <div style="font-size: 0.5em;">${actor.name}</div>
             </div>
         `).join('');
 
