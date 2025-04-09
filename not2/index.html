@@ -35,6 +35,34 @@
       transform: scale(1.2);
     }
 
+    .titulo-container-top {
+      position: absolute;
+      top: 10px;  /* Distância do topo */
+      left: 43%;
+      transform: translateX(-50%);
+      z-index: 10;  /* Garantir que fique acima do fundo */
+      animation: pulsar 1.5s infinite ease-in-out;
+      text-align: center;
+    }
+
+    @keyframes pulsar {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .titulo-img {
+      width: 50px;  /* Tamanho da imagem reduzido */
+      height: auto;
+      border-radius: 8px;
+    }
+
     .swal2-popup {
       position: fixed !important;
       top: 5vh !important;
@@ -42,36 +70,14 @@
       transform: translateX(-50%) !important;
       max-height: 90vh !important;
       overflow: auto !important;
-      background: rgba(18, 18, 18, 0.9) !important; /* Fundo mais transparente */
-      border-radius: 12px; /* Bordas arredondadas para suavizar o visual */
+      background: rgba(18, 18, 18, 0.9) !important;
+      border-radius: 12px;
     }
 
     .swal2-html-container {
       overflow-y: auto !important;
       max-height: 65vh;
       padding: 10px 20px;
-    }
-
-    .swal2-html-container::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    .swal2-html-container::-webkit-scrollbar-thumb {
-      background-color: rgba(255, 255, 255, 0.3);
-      border-radius: 10px;
-    }
-
-    .titulo-img {
-      max-width: 50px;
-      height: auto;
-      animation: pulseLilas 1.5s infinite alternate;
-      user-select: none;
-      pointer-events: none;
-    }
-
-    @keyframes pulseLilas {
-      0% { filter: drop-shadow(0 0 0px #593BA2); transform: scale(1); }
-      100% { filter: drop-shadow(0 0 10px #593BA2); transform: scale(1.1); }
     }
 
     .opcao-btn {
@@ -81,7 +87,7 @@
       cursor: pointer;
       border-radius: 8px;
       border: none;
-      background-color: rgba(89, 59, 162, 0.8); /* Botão mais transparente */
+      background-color: rgba(89, 59, 162, 0.8);
       color: white;
       display: flex;
       align-items: center;
@@ -90,7 +96,7 @@
     }
 
     .opcao-btn:hover {
-      background-color: rgba(89, 59, 162, 1); /* Cor mais forte no hover */
+      background-color: rgba(89, 59, 162, 1);
     }
 
     .elenco-container {
@@ -106,7 +112,6 @@
       border-radius: 50%;
       object-fit: cover;
       margin: 5px auto;
-      display: block;
     }
 
     .elenco-item {
@@ -115,7 +120,7 @@
     }
 
     .trailer-btn {
-      background: rgba(89, 59, 162, 0.8); /* Botão mais transparente */
+      background: rgba(89, 59, 162, 0.8);
       color: white;
       padding: 10px 20px;
       border: none;
@@ -123,11 +128,10 @@
       cursor: pointer;
       font-size: 16px;
       margin-top: 15px;
-      transition: background-color 0.3s;
     }
 
     .trailer-btn:hover {
-      background: rgba(89, 59, 162, 1); /* Cor mais forte no hover */
+      background: rgba(89, 59, 162, 1);
     }
   </style>
 </head>
@@ -152,8 +156,8 @@
   <script>
     const API_KEY = '5e5da432e96174227b25086fe8637985';
     const API_BASE = 'https://api.themoviedb.org/3';
-    const EXCLUIDOS = ['Reality', 'Talk', 'News', 'Documentary', 'Soap', 'Reality Show']; // Adicionando "Reality Show" como exemplo
-    let ultimoPopup = null;
+    const EXCLUIDOS = [10764, 10766, 16]; // IDs dos gêneros a serem excluídos
+    let ultimoSorteio = null; // Armazena o último item sorteado
 
     function atualizarBackground(url) {
       const estilo = document.createElement('style');
@@ -187,22 +191,27 @@
         let item = null;
         let tentativas = 0;
 
-        while ((!item || !item.overview || (tipo === 'movie' && parseInt(item.release_date?.substring(0, 4)) < 2000) || (tipo === 'tv' && parseInt(item.first_air_date?.substring(0, 4)) < 2000)) && tentativas < 20) {
+        // Evita repetir o último sorteio
+        while ((!item || !item.overview || (tipo === 'movie' && parseInt(item.release_date?.substring(0, 4)) < 2000) || (tipo === 'tv' && parseInt(item.first_air_date?.substring(0, 4)) < 2000) || (ultimoSorteio && item.id === ultimoSorteio.id)) && tentativas < 20) {
           const page = Math.floor(Math.random() * 30) + 1;
           const url = `${API_BASE}/${tipo}/${categoria}?api_key=${API_KEY}&language=pt-BR&page=${page}`;
           const res = await fetch(url);
           const data = await res.json();
+          
+          // Filtrando os itens com base nos gêneros
           const filtrados = data.results.filter(i =>
             i && i.genre_ids &&
-            !EXCLUIDOS.some(nome => i.name?.includes(nome) || i.original_name?.includes(nome)) &&
-            !['ko', 'zh', 'ja', 'hi', 'cn'].includes(i.original_language) &&
-            i.media_type !== 'tv' // Garantindo que programas de TV não sejam sorteados
+            !EXCLUIDOS.some(id => i.genre_ids.includes(id)) &&  // Excluindo os gêneros por ID
+            !['ko', 'zh', 'ja', 'hi', 'cn'].includes(i.original_language)
           );
           item = filtrados[Math.floor(Math.random() * filtrados.length)];
           tentativas++;
         }
 
         if (!item) throw new Error("Nenhum item válido encontrado.");
+
+        // Armazena o item sorteado para não repetir
+        ultimoSorteio = item;
 
         const detalhes = await fetch(`${API_BASE}/${tipo}/${item.id}?api_key=${API_KEY}&language=pt-BR&append_to_response=videos,credits,watch/providers`);
         const info = await detalhes.json();
@@ -251,13 +260,13 @@
         `;
 
         ultimoPopup = {
-          title: `${tipo === 'movie' ? 'Filme' : 'Série'} `,
+          title: `${tipo === 'movie' ? 'Filme' : 'Série'} Sorteado`,
           html: htmlContent,
           width: '90%',
           background: '#121212',
           showCloseButton: true,
           focusConfirm: false,
-          confirmButtonText: 'fechar',
+          confirmButtonText: 'Sortear outro',
           didOpen: () => {
             if (trailer) {
               const btn = document.createElement('button');
@@ -266,6 +275,13 @@
               btn.onclick = () => abrirTrailer(trailer.key);
               Swal.getHtmlContainer().appendChild(btn);
             }
+
+            // Função para chamar novo sorteio ao clicar no botão "Sortear outro"
+            Swal.getConfirmButton().onclick = () => {
+              Swal.close();
+              sortear(tipo);
+            };
+
             Swal.getPopup().scrollTo({ top: 0, behavior: 'smooth' });
           }
         };
