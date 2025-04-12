@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, user-scalable=no" />
+  <title>Lista de Links</title>
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="top-section">
+      <div class="icons">
+        <a class="main-icon" onclick="abrirVideo()">
+          <i class="fa-solid fa-link"></i>
+        </a>
+      </div>
+      <button class="refresh-button" onclick="carregarLinks()">
+        <i class="fa-solid fa-rotate-right"></i> Atualizar
+      </button>
+    </div>
+
+    <div class="link-list-container">
+      <ul id="link-list"></ul>
+    </div>
+  </div>
+
+  <script>
+    function carregarLinks() {
+      fetch('links.txt')
+        .then(response => response.text())
+        .then(texto => {
+          const lista = document.getElementById('link-list');
+          lista.innerHTML = '';
+          texto.split('\n').forEach(link => {
+            link = link.trim();
+            if (link) {
+              const li = document.createElement('li');
+              const linkText = document.createElement('a');
+              linkText.textContent = link;
+              linkText.href = "#";
+              linkText.onclick = e => e.preventDefault();
+
+              const copyBtn = document.createElement('button');
+              copyBtn.className = 'copy-button';
+              copyBtn.textContent = 'Copiar';
+              copyBtn.onclick = () => {
+                navigator.clipboard.writeText(link);
+                copyBtn.textContent = 'Copiado!';
+                setTimeout(() => copyBtn.textContent = 'Copiar', 1500);
+              };
+
+              li.appendChild(linkText);
+              li.appendChild(copyBtn);
+              lista.appendChild(li);
+            }
+          });
+        });
+    }
+
+    function abrirVideo() {
+      const video = document.createElement('video');
+      video.src = 'vi.mp4';
+      video.controls = true;
+      video.autoplay = true;
+      video.style.width = '100%';
+      video.style.marginTop = '20px';
+
+      document.querySelector('.container').appendChild(video);
+    }
+
+    window.onload = carregarLinks;
+  </script>
+</body>
+</html>
