@@ -42,7 +42,7 @@ body.modal-open {
     padding: 20px;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: auto;
     width: 98%;
     max-width: 400px;
     position: relative; /* Garante que o conteúdo fique acima do fundo borrado */
@@ -82,7 +82,7 @@ h1 {
 .item-list-container {
     width: 100%;
     max-width: 500px;
-    margin-bottom: 30px;
+    margin-bottom: 5px;
 }
 
 .item-list.horizontal-scroll {
@@ -91,12 +91,12 @@ h1 {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
-    padding-bottom: 20px;
+    padding-bottom: 0px;
     -webkit-overflow-scrolling: touch;
 }
 
 .item-card {
-    background-color: #121212;
+    background-color: rgb(12,12,12, 0.2);
     border-radius: 12px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     overflow: hidden;
@@ -147,7 +147,7 @@ font-size: 20px;
 .modal-content {
     background-color: rgba(12, 12, 12, 0.2); /* Black w/ opacity */
     margin: 15% auto; /* 15% from the top and centered */
-    padding: 20px;
+    padding: 15px;
     border: 0px solid #888;
     width: 80%; /* Could be more or less, depending on screen size */
     max-width: 500px;
