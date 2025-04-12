@@ -1,380 +1,405 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <title>Sorteio de Filmes e Séries</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <style>
-    /* Estilos básicos para o modal */
-    .modal {
-      display: none; /* Hidden by default */
-      position: fixed; /* Stay in place */
-      z-index: 1000; /* Sit on top */
-      left: 0;
-      top: 0;
-      width: 100%; /* Full width */
-      height: 100%; /* Full height */
-      overflow: auto; /* Enable scroll if needed */
-      background-color: rgba(0,0,0,0.8); /* Black w/ opacity */
-    }
+ <!DOCTYPE html>
+ <html lang="pt-BR">
+ <head>
+   <meta charset="UTF-8" />
+   <title>Sorteio de Filmes e Séries</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+   <link rel="stylesheet" href="style.css">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+   <style>
+     /* Estilos básicos para o modal */
+     .modal {
+       display: none; /* Hidden by default */
+       position: fixed; /* Stay in place */
+       z-index: 1000; /* Sit on top */
+       left: 0;
+       top: 0;
+       width: 100%; /* Full width */
+       height: 100%; /* Full height */
+       overflow: auto; /* Enable scroll if needed */
+       background-color: rgba(0,0,0,0.8); /* Black w/ opacity */
+     }
 
-    .modal-conteudo {
-      background-color: rgba(12,12,12,0.1); /* Black w/ opacity */
-      margin: 15% auto; /* Adjust top margin as needed */
-      padding: 20px;
-      border: 0px solid #888;
-      width: 80%; /* Adjust width as needed */
-      border-radius: 25px;
-      position: relative;
-      color: none;
-      max-height: 85vh;
-      overflow: hidden; /* Prevent modal content overflow */
-    }
+     .modal-conteudo {
+       background-color: rgba(12,12,12,0.1); /* Black w/ opacity */
+       margin: 15% auto; /* Adjust top margin as needed */
+       padding: 20px;
+       border: 0px solid #888;
+       width: 80%; /* Adjust width as needed */
+       border-radius: 25px;
+       position: relative;
+       color: none;
+       max-height: 85vh;
+       overflow: hidden; /* Prevent modal content overflow */
+     }
 
-    .modal-texto {
-      overflow-y: auto;
-      max-height: calc(85vh - 100px); /* Adjusted to accommodate the new button */
-      padding-right: 10px; /* Space for scrollbar */
-      margin-bottom: 15px; /* Space for the new button */
-    }
+     .modal-texto {
+       overflow-y: auto;
+       max-height: calc(85vh - 100px); /* Adjusted to accommodate the new button */
+       padding-right: 10px; /* Space for scrollbar */
+       margin-bottom: 15px; /* Space for the new button */
+     }
 
-    .fechar-modal {
-      color: #aaa;
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+     /* Esconde a barra de rolagem em navegadores WebKit (Chrome, Safari, Edge) */
+     .modal-texto::-webkit-scrollbar {
+       display: none;
+     }
 
-    .fechar-modal:hover,
-    .fechar-modal:focus {
-      color: white;
-      text-decoration: none;
-    }
+     /* Esconde a barra de rolagem no Firefox */
+     .modal-texto {
+       scrollbar-width: none; /* "auto" ou "thin" para mostrar, "none" para esconder */
+     }
 
-    .sortear-novamente-btn {
-      background: rgba(50, 50, 50, 0.8);
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
-      display: block;
-      width: fit-content;
-      margin-left: auto;
-      margin-right: auto;
-      margin-top: 10px;
-    }
+     .fechar-modal {
+       color: #aaa;
+       position: absolute;
+       top: 10px;
+       right: 15px;
+       font-size: 28px;
+       font-weight: bold;
+       cursor: pointer;
+     }
 
-    .sortear-novamente-btn:hover {
-      background: rgba(70, 70, 70, 1);
-    }
+     .fechar-modal:hover,
+     .fechar-modal:focus {
+       color: white;
+       text-decoration: none;
+     }
 
-    .elenco-container-modal {
-      display: flex;
-      overflow-x: auto;
-      gap: 10px;
-      padding: 10px 0;
-      margin-bottom: 15px; /* Espaço para o trailer */
-    }
+     .sortear-novamente-btn {
+       background: rgba(50, 50, 50, 0.8);
+       color: white;
+       padding: 10px 20px;
+       border: none;
+       border-radius: 8px;
+       cursor: pointer;
+       font-size: 16px;
+       display: block;
+       width: fit-content;
+       margin-left: auto;
+       margin-right: auto;
+       margin-top: 10px;
+     }
 
-    .elenco-img-modal {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin: 5px auto;
-    }
+     .sortear-novamente-btn:hover {
+       background: rgba(70, 70, 70, 1);
+     }
 
-    .elenco-item-modal {
-      text-align: center;
-      min-width: 70px;
-    }
+     .elenco-container-modal {
+       display: flex;
+       overflow-x: auto;
+       gap: 10px;
+       padding: 10px 0;
+       margin-bottom: 15px; /* Espaço para o trailer */
+     }
 
-    .poster-modal {
-      width: 150px;
-      border-radius: 10px;
-      margin-bottom: 10px;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-    }
+     .elenco-img-modal {
+       width: 60px;
+       height: 60px;
+       border-radius: 50%;
+       object-fit: cover;
+       margin: 5px auto;
+     }
 
-    .titulo-modal {
-      font-size: 1.3em;
-      font-weight: bold;
-      text-align: center;
-      margin-bottom: 5px;
-    }
+     .elenco-item-modal {
+       text-align: center;
+       min-width: 70px;
+     }
 
-    .tagline-modal {
-      font-style: italic;
-      text-align: center;
-      margin-bottom: 10px;
-    }
+     .poster-modal {
+       width: 150px;
+       border-radius: 10px;
+       margin-bottom: 10px;
+       display: block;
+       margin-left: auto;
+       margin-right: auto;
+     }
 
-    .sinopse-modal {
-      margin-bottom: 15px;
-      text-align: center;
-    }
+     .titulo-modal {
+       font-size: 1.3em;
+       font-weight: bold;
+       text-align: center;
+       margin-bottom: 5px;
+     }
 
-    .info-modal {
-      margin-bottom: 8px;
-      text-align: center;
-    }
+     .tagline-modal {
+       font-style: italic;
+       text-align: center;
+       margin-bottom: 10px;
+     }
 
-    .trailer-container-modal {
-      width: 100%;
-      margin-top: 15px;
-      border-radius: 10px;
-      overflow: hidden; /* Para garantir que as bordas arredondadas do iframe funcionem */
-    }
+     .sinopse-modal {
+       margin-bottom: 15px;
+       text-align: center;
+     }
 
-    .trailer-iframe-modal {
-      width: 100%;
-      height: 300px; /* Altura padrão do trailer */
-      border: none;
-    }
+     .info-modal {
+       margin-bottom: 8px;
+       text-align: center;
+     }
 
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100vh;
-      width: 100vw;
-      position: fixed;
-      overscroll-behavior: contain !important;
-    }
+     .trailer-container-modal {
+       width: 100%;
+       margin-top: 15px;
+       border-radius: 10px;
+       overflow: hidden; /* Para garantir que as bordas arredondadas do iframe funcionem */
+     }
 
-    body::before {
-      content: "";
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      filter: brightness(0.2);
-      z-index: -1;
-      transition: background-image 0.5s ease-in-out, transform 0.5s ease-in-out;
-      transform: scale(1.2);
-    }
+     .trailer-iframe-modal {
+       width: 100%;
+       height: 300px; /* Altura padrão do trailer */
+       border: none;
+     }
 
-    .titulo-container-top {
-      position: absolute;
-      top: 10px;
-      left: 43%;
-      transform: translateX(-50%);
-      z-index: 10;
-      animation: pulsar 1.5s infinite ease-in-out;
-      text-align: center;
-    }
+     html, body {
+       margin: 0;
+       padding: 0;
+       height: 100vh;
+       width: 100vw;
+       position: fixed;
+       overscroll-behavior: contain !important;
+     }
 
-    @keyframes pulsar {
-      0% {
-        transform: scale(1);
-      }
-      50% {
-        transform: scale(1.05);
-      }
-      100% {
-        transform: scale(1);
-      }
-    }
+     body::before {
+       content: "";
+       position: fixed;
+       top: 0;
+       left: 0;
+       width: 100%;
+       height: 100%;
+       background-size: cover;
+       background-position: center;
+       background-repeat: no-repeat;
+       background-attachment: fixed;
+       filter: brightness(0.2);
+       z-index: -1;
+       transition: background-image 0.5s ease-in-out, transform 0.5s ease-in-out;
+       transform: scale(1.2);
+     }
 
-    .titulo-img {
-      width: 50px;
-      height: auto;
-      border-radius: 8px;
-    }
+     .titulo-container-top {
+       position: fixed; /* Fixa o elemento no viewport */
+       top: 10px;
+       left: 50%; /* Centraliza horizontalmente */
+       transform: translateX(-50%); /* Ajusta para o centro exato */
+       z-index: 10;
+       animation: pulsar 1.5s infinite ease-in-out;
+       text-align: center;
+     }
 
-    .opcao-btn {
-      margin: 10px;
-      padding: 10px 20px;
-      font-size: 18px;
-      cursor: pointer;
-      border-radius: 8px;
-      border: none;
-      background-color: rgba(12, 12, 12, 0.6);
-      color: white;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      transition: background-color 0.3s;
-    }
+     @keyframes pulsar {
+       0% {
+         transform: scale(1) translateX(-50%);
+       }
+       50% {
+         transform: scale(1.05) translateX(-50%);
+       }
+       100% {
+         transform: scale(1) translateX(-50%);
+       }
+     }
 
-    .opcao-btn:hover {
-      background-color: rgba(89, 59, 162, 1);
-    }
+     .titulo-img {
+       width: 50px;
+       height: auto;
+       border-radius: 8px;
+     }
 
-    .opcoes-sorteio-escondidas {
-      display: none !important;
-    }
-  </style>
-</head>
-<body>
-  <div class="titulo-container-top">
-    <img src="p2.png" alt="Título" class="titulo-img">
-  </div>
+     .opcao-btn {
+       margin: 10px;
+       padding: 10px 20px;
+       font-size: 18px;
+       cursor: pointer;
+       border-radius: 8px;
+       border: none;
+       background-color: rgba(12, 12, 12, 0.6);
+       color: white;
+       display: flex;
+       align-items: center;
+       gap: 10px;
+       transition: background-color 0.3s;
+     }
 
-  <div class="sorteio-container">
-    <div id="opcoesSorteio">
-      <button class="opcao-btn" onclick="sortear('movie')">
-        <i class="fas fa-film"></i>
-        <span>Filmes</span>
-      </button>
-      <button class="opcao-btn" onclick="sortear('tv')">
-        <i class="fas fa-tv"></i>
-        <span>Séries</span>
-      </button>
-    </div>
-  </div>
+     .opcao-btn:hover {
+       background-color: rgba(89, 59, 162, 1);
+     }
 
-  <div id="infoModal" class="modal">
-    <div class="modal-conteudo">
-      <span class="fechar-modal">×</span>
-      <div class="modal-texto">
-        </div>
-      <button class="sortear-novamente-btn" onclick="sortearNovamente()">Sortear Novamente</button>
-    </div>
-  </div>
+     .opcoes-sorteio-escondidas {
+       display: none !important;
+     }
 
-  <script>
-    const API_KEY = '5e5da432e96174227b25086fe8637985';
-    const API_BASE = 'https://api.themoviedb.org/3';
-    const EXCLUIDOS = [10764, 10766, 16]; // IDs dos gêneros a serem excluídos
-    let ultimoSorteio = null; // Armazena o último item sorteado
-    let ultimoTipoSorteado = null; // Armazena o último tipo sorteado ('movie' ou 'tv')
-    const modal = document.getElementById('infoModal');
-    const modalTexto = document.querySelector('#infoModal .modal-texto');
-    const fecharModalBtn = document.querySelector('#infoModal .fechar-modal');
-    const opcoesSorteioDiv = document.getElementById('opcoesSorteio');
+     .sorteio-container {
+       display: flex;
+       flex-direction: column;
+       align-items: center; /* Centraliza os botões horizontalmente */
+       justify-content: center; /* Centraliza os botões verticalmente */
+       height: calc(100vh - 70px); /* Ajusta a altura para não sobrepor o título */
+       padding-top: 60px; /* Espaço para o título fixo */
+     }
 
-    function atualizarBackground(url) {
-      const estilo = document.createElement('style');
-      estilo.innerHTML = `body::before { background-image: url('${url}') !important; }`;
-      document.head.appendChild(estilo);
-    }
+     #opcoesSorteio {
+       display: flex;
+       gap: 20px;
+     }
+   </style>
+ </head>
+ <body>
+   <div class="titulo-container-top">
+     <img src="p2.png" alt="Título" class="titulo-img">
+   </div>
 
-    function fecharModal() {
-      modal.style.display = "none";
-      opcoesSorteioDiv.classList.remove('opcoes-sorteio-escondidas'); // Mostrar botões de sorteio
-    }
+   <div class="sorteio-container">
+     <div id="opcoesSorteio">
+       <button class="opcao-btn" onclick="sortear('movie')">
+         <i class="fas fa-film"></i>
+         <span>Filmes</span>
+       </button>
+       <button class="opcao-btn" onclick="sortear('tv')">
+         <i class="fas fa-tv"></i>
+         <span>Séries</span>
+       </button>
+     </div>
+   </div>
 
-    fecharModalBtn.onclick = fecharModal;
+   <div id="infoModal" class="modal">
+     <div class="modal-conteudo">
+       <span class="fechar-modal">×</span>
+       <div class="modal-texto">
+         </div>
+       <button class="sortear-novamente-btn" onclick="sortearNovamente()">Sortear Novamente</button>
+     </div>
+   </div>
 
-    window.onclick = function(event) {
-      if (event.target == modal) {
-        fecharModal();
-      }
-    }
+   <script>
+     const API_KEY = '5e5da432e96174227b25086fe8637985';
+     const API_BASE = 'https://api.themoviedb.org/3';
+     const EXCLUIDOS = [10764, 10766, 16]; // IDs dos gêneros a serem excluídos
+     let ultimoSorteio = null; // Armazena o último item sorteado
+     let ultimoTipoSorteado = null; // Armazena o último tipo sorteado ('movie' ou 'tv')
+     const modal = document.getElementById('infoModal');
+     const modalTexto = document.querySelector('#infoModal .modal-texto');
+     const fecharModalBtn = document.querySelector('#infoModal .fechar-modal');
+     const opcoesSorteioDiv = document.getElementById('opcoesSorteio');
 
-    function sortearNovamente() {
-      if (ultimoTipoSorteado) {
-        sortear(ultimoTipoSorteado);
-        // Rolar para o topo do modal ao sortear novamente
-        modalTexto.scrollTop = 0;
-      }
-    }
+     function atualizarBackground(url) {
+       const estilo = document.createElement('style');
+       estilo.innerHTML = `body::before { background-image: url('${url}') !important; }`;
+       document.head.appendChild(estilo);
+     }
 
-    async function sortear(tipo) {
-      try {
-        ultimoTipoSorteado = tipo; // Salvar o tipo sorteado
-        opcoesSorteioDiv.classList.add('opcoes-sorteio-escondidas');
-        let item = null;
-        let tentativas = 0;
-        const categorias = tipo === 'movie' ? ['popular', 'top_rated', 'now_playing'] : ['top_rated', 'on_the_air'];
-        const categoria = categorias[Math.floor(Math.random() * categorias.length)];
+     function fecharModal() {
+       modal.style.display = "none";
+       opcoesSorteioDiv.classList.remove('opcoes-sorteio-escondidas'); // Mostrar botões de sorteio
+     }
 
-        while ((!item || !item.overview || (tipo === 'movie' && parseInt(item.release_date?.substring(0, 4)) < 2000) || (tipo === 'tv' && parseInt(item.first_air_date?.substring(0, 4)) < 2000) || (ultimoSorteio && item.id === ultimoSorteio.id)) && tentativas < 20) {
-          const page = Math.floor(Math.random() * 30) + 1;
-          const url = `${API_BASE}/${tipo}/${categoria}?api_key=${API_KEY}&language=pt-BR&page=${page}`;
-          const res = await fetch(url);
-          const data = await res.json();
-          const filtrados = data.results.filter(i =>
-            i && i.genre_ids &&
-            !EXCLUIDOS.some(id => i.genre_ids.includes(id)) &&
-            !['ko', 'zh', 'ja', 'hi', 'cn'].includes(i.original_language)
-          );
-          item = filtrados[Math.floor(Math.random() * filtrados.length)];
-          tentativas++;
-        }
+     fecharModalBtn.onclick = fecharModal;
 
-        if (!item) throw new Error("Nenhum item válido encontrado.");
-        ultimoSorteio = item;
+     window.onclick = function(event) {
+       if (event.target == modal) {
+         fecharModal();
+       }
+     }
 
-        const detalhes = await fetch(`${API_BASE}/${tipo}/${item.id}?api_key=${API_KEY}&language=pt-BR&append_to_response=videos,credits,watch/providers`);
-        const info = await detalhes.json();
+     function sortearNovamente() {
+       if (ultimoTipoSorteado) {
+         sortear(ultimoTipoSorteado);
+         // Rolar para o topo do modal ao sortear novamente
+         modalTexto.scrollTop = 0;
+       }
+     }
 
-        const trailer = info.videos?.results.find(v => v.type === 'Trailer' && v.site === 'YouTube');
-        const generos = info.genres?.map(g => g.name).join(', ') || 'Não informado';
-        const ondeAssistir = info["watch/providers"]?.results?.BR?.flatrate?.map(p => p.provider_name).join(', ') || "Não disponível";
+     async function sortear(tipo) {
+       try {
+         ultimoTipoSorteado = tipo; // Salvar o tipo sorteado
+         opcoesSorteioDiv.classList.add('opcoes-sorteio-escondidas');
+         let item = null;
+         let tentativas = 0;
+         const categorias = tipo === 'movie' ? ['popular', 'top_rated', 'now_playing'] : ['top_rated', 'on_the_air'];
+         const categoria = categorias[Math.floor(Math.random() * categorias.length)];
 
-        const elencoHtml = `
-          <div class="elenco-container-modal">
-            ${
-              info.credits?.cast?.slice(0, 10).map(ator => {
-                const imagem = ator.profile_path
-                  ? `https://image.tmdb.org/t/p/w185${ator.profile_path}`
-                  : 'p2.png';
-                return `
-                  <div class="elenco-item-modal">
-                    <img src="${imagem}" class="elenco-img-modal" alt="${ator.name}" />
-                    <div style="font-size: 0.8em;">${ator.name}</div>
-                  </div>
-                `;
-              }).join('') || 'Elenco não informado.'
-            }
-          </div>
-        `;
+         while ((!item || !item.overview || (tipo === 'movie' && parseInt(item.release_date?.substring(0, 4)) < 2000) || (tipo === 'tv' && parseInt(item.first_air_date?.substring(0, 4)) < 2000) || (ultimoSorteio && item.id === ultimoSorteio.id)) && tentativas < 20) {
+           const page = Math.floor(Math.random() * 30) + 1;
+           const url = `${API_BASE}/${tipo}/${categoria}?api_key=${API_KEY}&language=pt-BR&page=${page}`;
+           const res = await fetch(url);
+           const data = await res.json();
+           const filtrados = data.results.filter(i =>
+             i && i.genre_ids &&
+             !EXCLUIDOS.some(id => i.genre_ids.includes(id)) &&
+             !['ko', 'zh', 'ja', 'hi', 'cn'].includes(i.original_language)
+           );
+           item = filtrados[Math.floor(Math.random() * filtrados.length)];
+           tentativas++;
+         }
 
-        const titulo = tipo === 'movie' ? info.title : info.name;
-        const dataLancamento = tipo === 'movie' ? info.release_date : info.first_air_date;
-        const sinopse = info.overview || 'Sinopse não disponível.';
-        const banner = info.backdrop_path ? `https://image.tmdb.org/t/p/original${info.backdrop_path}` : null;
-        const poster = info.poster_path ? `https://image.tmdb.org/t/p/w500${info.poster_path}` : '';
+         if (!item) throw new Error("Nenhum item válido encontrado.");
+         ultimoSorteio = item;
 
-        if (banner) atualizarBackground(banner);
+         const detalhes = await fetch(`${API_BASE}/${tipo}/${item.id}?api_key=${API_KEY}&language=pt-BR&append_to_response=videos,credits,watch/providers`);
+         const info = await detalhes.json();
 
-        let htmlContent = `
-          <img src="${poster}" alt="poster" class="poster-modal"><br>
-          <strong class="titulo-modal">${titulo}</strong><br>
-          <em class="tagline-modal">${info.tagline || ''}</em><br><br>
-          <strong>Sinopse:</strong><br> <p class="sinopse-modal">${sinopse}</p><br>
-          <p class="info-modal"><strong>Data de lançamento:</strong> ${dataLancamento}</p>
-          <p class="info-modal"><strong>Gêneros:</strong> ${generos}</p>
-          <p class="info-modal"><strong>Onde assistir:</strong> ${ondeAssistir}</p><br>
-          <strong>Elenco:</strong><br>${elencoHtml}
-        `;
+         const trailer = info.videos?.results.find(v => v.type === 'Trailer' && v.site === 'YouTube');
+         const generos = info.genres?.map(g => g.name).join(', ') || 'Não informado';
+         const ondeAssistir = info["watch/providers"]?.results?.BR?.flatrate?.map(p => p.provider_name).join(', ') || "Não disponível";
 
-        if (trailer) {
-          htmlContent += `
-            <div class="trailer-container-modal">
-              <iframe class="trailer-iframe-modal" src="https://www.youtube.com/embed/${trailer.key}" frameborder="0" allowfullscreen style="border-radius:10px;"></iframe>
-            </div>
-          `;
-        }
+         const elencoHtml = `
+           <div class="elenco-container-modal">
+             ${
+               info.credits?.cast?.slice(0, 10).map(ator => {
+                 const imagem = ator.profile_path
+                   ? `https://image.tmdb.org/t/p/w185${ator.profile_path}`
+                   : 'p2.png';
+                 return `
+                   <div class="elenco-item-modal">
+                     <img src="${imagem}" class="elenco-img-modal" alt="${ator.name}" />
+                     <div style="font-size: 0.8em;">${ator.name}</div>
+                   </div>
+                 `;
+               }).join('') || 'Elenco não informado.'
+             }
+           </div>
+         `;
 
-        modalTexto.innerHTML = htmlContent;
-        modal.style.display = "block";
-        modalTexto.scrollTop = 0; // Garantir que o conteúdo comece no topo ao abrir
-      } catch (error) {
-        console.error(error);
-        alert('Não foi possível carregar os dados.');
-        opcoesSorteioDiv.classList.remove('opcoes-sorteio-escondidas');
-      }
-    }
+         const titulo = tipo === 'movie' ? info.title : info.name;
+         const dataLancamento = tipo === 'movie' ? info.release_date : info.first_air_date;
+         const sinopse = info.overview || 'Sinopse não disponível.';
+         const banner = info.backdrop_path ? `https://image.tmdb.org/t/p/original${info.backdrop_path}` : null;
+         const poster = info.poster_path ? `https://image.tmdb.org/t/p/w500${info.poster_path}` : '';
 
-    window.onload = () => {
-      opcoesSorteioDiv.style.display = 'flex';
-    };
-  </script>
-</body>
-</html>
+         if (banner) atualizarBackground(banner);
+
+         let htmlContent = `
+           <img src="${poster}" alt="poster" class="poster-modal"><br>
+           <strong class="titulo-modal">${titulo}</strong><br>
+           <em class="tagline-modal">${info.tagline || ''}</em><br><br>
+           <strong>Sinopse:</strong><br> <p class="sinopse-modal">${sinopse}</p><br>
+           <p class="info-modal"><strong>Data de lançamento:</strong> ${dataLancamento}</p>
+           <p class="info-modal"><strong>Gêneros:</strong> ${generos}</p>
+           <p class="info-modal"><strong>Onde assistir:</strong> ${ondeAssistir}</p><br>
+           <strong>Elenco:</strong><br>${elencoHtml}
+         `;
+
+         if (trailer) {
+           htmlContent += `
+             <div class="trailer-container-modal">
+               <iframe class="trailer-iframe-modal" src="https://www.youtube.com/embed/${trailer.key}" frameborder="0" allowfullscreen style="border-radius:10px;"></iframe>
+             </div>
+           `;
+         }
+
+         modalTexto.innerHTML = htmlContent;
+         modal.style.display = "block";
+         modalTexto.scrollTop = 0; // Garantir que o conteúdo comece no topo ao abrir
+       } catch (error) {
+         console.error(error);
+         alert('Não foi possível carregar os dados.');
+         opcoesSorteioDiv.classList.remove('opcoes-sorteio-escondidas');
+       }
+     }
+
+     window.onload = () => {
+       opcoesSorteioDiv.style.display = 'flex';
+     };
+   </script>
+ </body>
+ </html>
+ 
