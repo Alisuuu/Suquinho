@@ -21,10 +21,10 @@ body::before {
     height: 100%;
     z-index: -2; /* Behind the modal backdrop */
     background-size: cover;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+    background-repeat: repeat;
+    background-attachment: auto;
     filter: blur(10px); /* Ajuste o valor do blur conforme necessário */
-    background-image: none; /* Padrão sem fundo */
+    background-image: auto; /* Padrão sem fundo */
     opacity: 0;
     transition: opacity 0.3s ease-in-out;
 }
@@ -58,7 +58,7 @@ h1 {
 
 .search-bar {
     margin-bottom: 30px;
-    width: 90%;
+    width: 100%;
     max-width: 600px;
 }
 
@@ -82,7 +82,7 @@ h1 {
 .item-list-container {
     width: 100%;
     max-width: 500px;
-    margin-bottom: 5px;
+    margin-bottom: 0px;
 }
 
 .item-list.horizontal-scroll {
@@ -97,34 +97,37 @@ h1 {
 
 .item-card {
     background-color: rgb(12,12,12, 0.2);
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.0);
     overflow: hidden;
     width: 100%;
-    transition: transform 0.2s ease-in-out;
+    transition: transform 0.3s ease-in-out;
     cursor: pointer;
     user-select: none;
 }
 
 .item-card:hover {
-    transform: scale(1.05);
+    transform: scale(1.20);
 }
 
 .item-poster {
     width: 100%;
-    height: auto;
-    display: block;
-    border-radius: 12px 12px 0 0;
+    height: 100;
+    display: auto;
+    border-radius: 40px 50px 0 0;
     object-fit: contain;
+    border-radius: 30px;
 }
 
 .item-info {
     padding: none;
+    display: none; /* Esconde os nomes dos filmes e séries */
 }
 
 .item-title {
     display: auto; /* Esconde os nomes dos filmes e séries */
-font-size: 20px;
+font-size: 15px;
+color: #93908C;
 }
 
 .media-type {
