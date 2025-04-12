@@ -142,6 +142,7 @@ font-size: 20px;
     height: 100%; /* Full height */
     overflow: auto; /* Enable scroll if needed */
     background-color: rgba(0, 0, 0, 0.8); /* Black w/ opacity */
+    filter: blur(5px);
 }
 
 .modal-content {
