@@ -62,3 +62,10 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('orientationchange', checkOrientation);
     checkOrientation(); // Verifica a orientação inicial
 });
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(reg => console.log('Service Worker registrado:', reg))
+      .catch(err => console.error('Erro ao registrar Service Worker:', err));
+  });
+}
