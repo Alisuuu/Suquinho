@@ -35,11 +35,11 @@ header {
 
 .pasta {
     width: 300px;
+    background-color: rgba(28,28,28, 0.3);
     border-radius: 8px;
-    box-shadow: rgba(12, 12, 12, 0.2);
     position: relative;
     z-index: 2;
-    opacity: 90%;
+    opacity: 100%;
 }
 
 .pasta-header {
