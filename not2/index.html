@@ -12,7 +12,6 @@
     html, body {
       margin: 0;
       padding: 0;
-      overflow: hidden !important;
       height: 100vh;
       width: 100vw;
       position: fixed;
@@ -63,24 +62,15 @@
       border-radius: 8px;
     }
 
-    /* Esconder a imagem do título na versão para PC */
-    @media (min-width: 768px) {
-      .titulo-img {
-        display: none;
-      }
-    }
-
     .swal2-popup {
       position: fixed !important;
       top: 10vh !important;
       left: 50% !important;
       transform: translateX(-50%) !important;
       max-height: 85vh !important;
-      overflow-y: auto !important;
-      background: rgba(12, 12, 12, 0.8) !important;
+      overflow: auto !important;
+      background: rgba(12, 12, 12, 0.2) !important;
       border-radius: 25px;
-      width: 90%;
-      padding: 20px;
     }
 
     .swal2-html-container {
@@ -141,6 +131,18 @@
 
     .trailer-btn:hover {
       background: rgba(89, 59, 162, 1);
+    }
+
+    /* Esconder barra de rolagem no PC */
+    @media (min-width: 768px) {
+      body, html {
+        overflow: hidden;
+      }
+    }
+
+    /* Esconder botões de filmes e séries */
+    .opcoes-sorteio-escondidas {
+      display: none !important;
     }
   </style>
 </head>
@@ -277,6 +279,7 @@
           focusConfirm: false,
           confirmButtonText: 'Sortear outro',
           didOpen: () => {
+            document.getElementById('opcoesSorteio').classList.add('opcoes-sorteio-escondidas');
             if (trailer) {
               const btn = document.createElement('button');
               btn.className = 'trailer-btn';
@@ -292,6 +295,9 @@
             };
 
             Swal.getPopup().scrollTo({ top: 0, behavior: 'smooth' });
+          },
+          willClose: () => {
+            document.getElementById('opcoesSorteio').classList.remove('opcoes-sorteio-escondidas');
           }
         };
 
