@@ -63,15 +63,24 @@
       border-radius: 8px;
     }
 
+    /* Esconder a imagem do título na versão para PC */
+    @media (min-width: 768px) {
+      .titulo-img {
+        display: none;
+      }
+    }
+
     .swal2-popup {
       position: fixed !important;
       top: 10vh !important;
       left: 50% !important;
       transform: translateX(-50%) !important;
       max-height: 85vh !important;
-      overflow: auto !important;
+      overflow-y: auto !important;
       background: rgba(12, 12, 12, 0.8) !important;
       border-radius: 25px;
+      width: 90%;
+      padding: 20px;
     }
 
     .swal2-html-container {
