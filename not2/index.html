@@ -5,16 +5,149 @@
   <title>Sorteio de Filmes e Séries</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
   <style>
+    /* Estilos básicos para o modal */
+    .modal {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      z-index: 1000; /* Sit on top */
+      left: 0;
+      top: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    .modal-conteudo {
+      background-color: #121212;
+      margin: 10% auto; /* Adjust top margin as needed */
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%; /* Adjust width as needed */
+      border-radius: 25px;
+      position: relative;
+      color: white;
+      max-height: 85vh;
+      overflow: hidden; /* Prevent modal content overflow */
+    }
+
+    .modal-texto {
+      overflow-y: auto;
+      max-height: calc(85vh - 100px); /* Adjusted to accommodate the new button */
+      padding-right: 10px; /* Space for scrollbar */
+      margin-bottom: 15px; /* Space for the new button */
+    }
+
+    .fechar-modal {
+      color: #aaa;
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .fechar-modal:hover,
+    .fechar-modal:focus {
+      color: white;
+      text-decoration: none;
+    }
+
+    .sortear-novamente-btn {
+      background: rgba(50, 50, 50, 0.8);
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      display: block;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 10px;
+    }
+
+    .sortear-novamente-btn:hover {
+      background: rgba(70, 70, 70, 1);
+    }
+
+    .elenco-container-modal {
+      display: flex;
+      overflow-x: auto;
+      gap: 10px;
+      padding: 10px 0;
+      margin-bottom: 15px; /* Espaço para o trailer */
+    }
+
+    .elenco-img-modal {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 5px auto;
+    }
+
+    .elenco-item-modal {
+      text-align: center;
+      min-width: 70px;
+    }
+
+    .poster-modal {
+      width: 150px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .titulo-modal {
+      font-size: 1.3em;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 5px;
+    }
+
+    .tagline-modal {
+      font-style: italic;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .sinopse-modal {
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .info-modal {
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .trailer-container-modal {
+      width: 100%;
+      margin-top: 15px;
+      border-radius: 10px;
+      overflow: hidden; /* Para garantir que as bordas arredondadas do iframe funcionem */
+    }
+
+    .trailer-iframe-modal {
+      width: 100%;
+      height: 300px; /* Altura padrão do trailer */
+      border: none;
+    }
+
     html, body {
       margin: 0;
       padding: 0;
       height: 100vh;
       width: 100vw;
       position: fixed;
+      overscroll-behavior: contain !important;
     }
 
     body::before {
@@ -36,10 +169,10 @@
 
     .titulo-container-top {
       position: absolute;
-      top: 10px;  /* Distância do topo */
+      top: 10px;
       left: 43%;
       transform: translateX(-50%);
-      z-index: 10;  /* Garantir que fique acima do fundo */
+      z-index: 10;
       animation: pulsar 1.5s infinite ease-in-out;
       text-align: center;
     }
@@ -57,26 +190,9 @@
     }
 
     .titulo-img {
-      width: 50px;  /* Tamanho da imagem reduzido */
+      width: 50px;
       height: auto;
       border-radius: 8px;
-    }
-
-    .swal2-popup {
-      position: fixed !important;
-      top: 10vh !important;
-      left: 50% !important;
-      transform: translateX(-50%) !important;
-      max-height: 85vh !important;
-      overflow: auto !important;
-      background: rgba(12, 12, 12, 0.2) !important;
-      border-radius: 25px;
-    }
-
-    .swal2-html-container {
-      overflow-y: auto !important;
-      max-height: 400vh;
-      padding: 10px 20px;
     }
 
     .opcao-btn {
@@ -98,49 +214,6 @@
       background-color: rgba(89, 59, 162, 1);
     }
 
-    .elenco-container {
-      display: flex;
-      overflow-x: auto;
-      gap: 10px;
-      padding: 10px 0;
-    }
-
-    .elenco-img {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin: 5px auto;
-    }
-
-    .elenco-item {
-      text-align: center;
-      min-width: 70px;
-    }
-
-    .trailer-btn {
-      background: rgba(89, 59, 162, 0.8);
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
-      margin-top: 15px;
-    }
-
-    .trailer-btn:hover {
-      background: rgba(89, 59, 162, 1);
-    }
-
-    /* Esconder barra de rolagem no PC */
-    @media (min-width: 768px) {
-      body, html {
-        overflow: hidden;
-      }
-    }
-
-    /* Esconder botões de filmes e séries */
     .opcoes-sorteio-escondidas {
       display: none !important;
     }
@@ -164,11 +237,25 @@
     </div>
   </div>
 
+  <div id="infoModal" class="modal">
+    <div class="modal-conteudo">
+      <span class="fechar-modal">×</span>
+      <div class="modal-texto">
+        </div>
+      <button class="sortear-novamente-btn" onclick="sortearNovamente()">Sortear Novamente</button>
+    </div>
+  </div>
+
   <script>
     const API_KEY = '5e5da432e96174227b25086fe8637985';
     const API_BASE = 'https://api.themoviedb.org/3';
     const EXCLUIDOS = [10764, 10766, 16]; // IDs dos gêneros a serem excluídos
     let ultimoSorteio = null; // Armazena o último item sorteado
+    let ultimoTipoSorteado = null; // Armazena o último tipo sorteado ('movie' ou 'tv')
+    const modal = document.getElementById('infoModal');
+    const modalTexto = document.querySelector('#infoModal .modal-texto');
+    const fecharModalBtn = document.querySelector('#infoModal .fechar-modal');
+    const opcoesSorteioDiv = document.getElementById('opcoesSorteio');
 
     function atualizarBackground(url) {
       const estilo = document.createElement('style');
@@ -176,43 +263,44 @@
       document.head.appendChild(estilo);
     }
 
-    function abrirTrailer(trailerKey) {
-      Swal.fire({
-        title: 'Trailer',
-        html: `<iframe width="100%" height="300" src="https://www.youtube.com/embed/${trailerKey}" frameborder="0" allowfullscreen style="border-radius:10px;"></iframe>`,
-        width: '80%',
-        background: '#121212',
-        showConfirmButton: false,
-        showCloseButton: true,
-        backdrop: false,
-        willClose: () => {
-          if (ultimoPopup) {
-            Swal.fire(ultimoPopup);
-          }
-        }
-      });
+    function fecharModal() {
+      modal.style.display = "none";
+      opcoesSorteioDiv.classList.remove('opcoes-sorteio-escondidas'); // Mostrar botões de sorteio
+    }
+
+    fecharModalBtn.onclick = fecharModal;
+
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        fecharModal();
+      }
+    }
+
+    function sortearNovamente() {
+      if (ultimoTipoSorteado) {
+        sortear(ultimoTipoSorteado);
+        // Rolar para o topo do modal ao sortear novamente
+        modalTexto.scrollTop = 0;
+      }
     }
 
     async function sortear(tipo) {
       try {
-        const categorias = tipo === 'movie'
-          ? ['popular', 'top_rated', 'now_playing']
-          : ['top_rated', 'on_the_air'];
-        const categoria = categorias[Math.floor(Math.random() * categorias.length)];
+        ultimoTipoSorteado = tipo; // Salvar o tipo sorteado
+        opcoesSorteioDiv.classList.add('opcoes-sorteio-escondidas');
         let item = null;
         let tentativas = 0;
+        const categorias = tipo === 'movie' ? ['popular', 'top_rated', 'now_playing'] : ['top_rated', 'on_the_air'];
+        const categoria = categorias[Math.floor(Math.random() * categorias.length)];
 
-        // Evita repetir o último sorteio
         while ((!item || !item.overview || (tipo === 'movie' && parseInt(item.release_date?.substring(0, 4)) < 2000) || (tipo === 'tv' && parseInt(item.first_air_date?.substring(0, 4)) < 2000) || (ultimoSorteio && item.id === ultimoSorteio.id)) && tentativas < 20) {
           const page = Math.floor(Math.random() * 30) + 1;
           const url = `${API_BASE}/${tipo}/${categoria}?api_key=${API_KEY}&language=pt-BR&page=${page}`;
           const res = await fetch(url);
           const data = await res.json();
-          
-          // Filtrando os itens com base nos gêneros
           const filtrados = data.results.filter(i =>
             i && i.genre_ids &&
-            !EXCLUIDOS.some(id => i.genre_ids.includes(id)) &&  // Excluindo os gêneros por ID
+            !EXCLUIDOS.some(id => i.genre_ids.includes(id)) &&
             !['ko', 'zh', 'ja', 'hi', 'cn'].includes(i.original_language)
           );
           item = filtrados[Math.floor(Math.random() * filtrados.length)];
@@ -220,8 +308,6 @@
         }
 
         if (!item) throw new Error("Nenhum item válido encontrado.");
-
-        // Armazena o item sorteado para não repetir
         ultimoSorteio = item;
 
         const detalhes = await fetch(`${API_BASE}/${tipo}/${item.id}?api_key=${API_KEY}&language=pt-BR&append_to_response=videos,credits,watch/providers`);
@@ -232,15 +318,15 @@
         const ondeAssistir = info["watch/providers"]?.results?.BR?.flatrate?.map(p => p.provider_name).join(', ') || "Não disponível";
 
         const elencoHtml = `
-          <div class="elenco-container">
+          <div class="elenco-container-modal">
             ${
               info.credits?.cast?.slice(0, 10).map(ator => {
                 const imagem = ator.profile_path
                   ? `https://image.tmdb.org/t/p/w185${ator.profile_path}`
                   : 'p2.png';
                 return `
-                  <div class="elenco-item">
-                    <img src="${imagem}" class="elenco-img" alt="${ator.name}" />
+                  <div class="elenco-item-modal">
+                    <img src="${imagem}" class="elenco-img-modal" alt="${ator.name}" />
                     <div style="font-size: 0.8em;">${ator.name}</div>
                   </div>
                 `;
@@ -257,60 +343,37 @@
 
         if (banner) atualizarBackground(banner);
 
-        const htmlContent = `
-          <div style="text-align:center;">
-            <img src="${poster}" alt="poster" style="width:150px; border-radius:10px; margin-bottom:10px;"><br>
-            <strong style="font-size:1.3em">${titulo}</strong><br>
-            <em>${info.tagline || ''}</em><br><br>
-            <strong>Sinopse:</strong><br> ${sinopse}<br><br>
-            <strong>Data de lançamento:</strong> ${dataLancamento}<br>
-            <strong>Gêneros:</strong> ${generos}<br>
-            <strong>Onde assistir:</strong> ${ondeAssistir}<br><br>
-            <strong>Elenco:</strong><br>${elencoHtml}
-          </div>
+        let htmlContent = `
+          <img src="${poster}" alt="poster" class="poster-modal"><br>
+          <strong class="titulo-modal">${titulo}</strong><br>
+          <em class="tagline-modal">${info.tagline || ''}</em><br><br>
+          <strong>Sinopse:</strong><br> <p class="sinopse-modal">${sinopse}</p><br>
+          <p class="info-modal"><strong>Data de lançamento:</strong> ${dataLancamento}</p>
+          <p class="info-modal"><strong>Gêneros:</strong> ${generos}</p>
+          <p class="info-modal"><strong>Onde assistir:</strong> ${ondeAssistir}</p><br>
+          <strong>Elenco:</strong><br>${elencoHtml}
         `;
 
-        ultimoPopup = {
-          title: `${tipo === 'movie' ? 'Filme' : 'Série'} `,
-          html: htmlContent,
-          width: '90%',
-          background: '#121212',
-          showCloseButton: true,
-          focusConfirm: false,
-          confirmButtonText: 'Sortear outro',
-          didOpen: () => {
-            document.getElementById('opcoesSorteio').classList.add('opcoes-sorteio-escondidas');
-            if (trailer) {
-              const btn = document.createElement('button');
-              btn.className = 'trailer-btn';
-              btn.innerHTML = '<i class="fas fa-play"></i> Ver Trailer';
-              btn.onclick = () => abrirTrailer(trailer.key);
-              Swal.getHtmlContainer().appendChild(btn);
-            }
+        if (trailer) {
+          htmlContent += `
+            <div class="trailer-container-modal">
+              <iframe class="trailer-iframe-modal" src="https://www.youtube.com/embed/${trailer.key}" frameborder="0" allowfullscreen style="border-radius:10px;"></iframe>
+            </div>
+          `;
+        }
 
-            // Função para chamar novo sorteio ao clicar no botão "Sortear outro"
-            Swal.getConfirmButton().onclick = () => {
-              Swal.close();
-              sortear(tipo);
-            };
-
-            Swal.getPopup().scrollTo({ top: 0, behavior: 'smooth' });
-          },
-          willClose: () => {
-            document.getElementById('opcoesSorteio').classList.remove('opcoes-sorteio-escondidas');
-          }
-        };
-
-        Swal.fire(ultimoPopup);
-
+        modalTexto.innerHTML = htmlContent;
+        modal.style.display = "block";
+        modalTexto.scrollTop = 0; // Garantir que o conteúdo comece no topo ao abrir
       } catch (error) {
         console.error(error);
-        Swal.fire('Erro', 'Não foi possível carregar os dados.', 'error');
+        alert('Não foi possível carregar os dados.');
+        opcoesSorteioDiv.classList.remove('opcoes-sorteio-escondidas');
       }
     }
 
     window.onload = () => {
-      document.getElementById('opcoesSorteio').style.display = 'flex';
+      opcoesSorteioDiv.style.display = 'flex';
     };
   </script>
 </body>
