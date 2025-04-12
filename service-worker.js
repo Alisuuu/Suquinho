@@ -15,6 +15,9 @@ const urlsToCache = [
   '/game/index.html',
   '/links/index.html',
   '/not2/index.html'
+  '/Hyper/styles.css',
+  '/Hyper/script.js',
+  '/Yt/styles.css',
 ];
 
 self.addEventListener('install', event => {
