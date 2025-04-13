@@ -13,7 +13,6 @@ const urlsToCache = [
   '/Hyper/index.html',
   '/Yt/index.html',
   '/game/index.html',
-  '/links/index.html',
   '/not2/index.html'
   '/Hyper/styles.css',
   '/Hyper/script.js',
