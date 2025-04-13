@@ -9,7 +9,24 @@ body {
     color: white;
     overflow: hidden;
 }
+.stars {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  overflow: hidden;
+}
 
+.star {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.6;
+  animation: twinkle 2s infinite ease-in-out;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
+}
 .container {
     display: flex;
     flex-direction: column;
@@ -234,4 +251,18 @@ body {
 
 .swal2-cancel:hover {
   background-color: #c82333 !important;
+}
+.stars {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  overflow: hidden;
+}
+
+.star {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.6;
+  animation: twinkle 2s infinite ease-in-out;
 }
