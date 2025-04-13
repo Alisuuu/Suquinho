@@ -106,7 +106,7 @@ function getItemTitle(item) {
 }
 
 function getItemPoster(item) {
-    return item.poster_path ? `${IMAGE_BASE_URL.replace('w185', 'w342')}${item.poster_path}` : './p2.png';
+    return item.poster_path ? `${IMAGE_BASE_URL.replace('w185', 'w342')}${item.poster_path}` : '../p2.png';
 }
 
 function renderItems(items, container) {
