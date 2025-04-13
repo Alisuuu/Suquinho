@@ -126,11 +126,10 @@ body {
 
 .spaceship {
   position: absolute;
-  top: 25%;
+  top: 18%;
   right: 0;
   width: 600px;
   max-width: 90vw;
-  z-index: 998;
   object-fit: cover;
 }
 
