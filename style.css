@@ -103,6 +103,7 @@ body {
   cursor: pointer;
   transition: transform 0.2s;
   -webkit-tap-highlight-color: transparent;
+ z-index: 999;
 }
 
 .icon-button img {
@@ -125,11 +126,11 @@ body {
 
 .spaceship {
   position: absolute;
-  top: 35%;
+  top: 25%;
   right: 0;
   width: 600px;
   max-width: 90vw;
-  z-index: 999;
+  z-index: 998;
   object-fit: cover;
 }
 
