@@ -9,18 +9,17 @@ body {
   color: white;
   font-family: sans-serif;
   height: 100vh;
-  overflow: hidden;  /* Evita qualquer rolagem */
+  width: 100vw;
+  overflow: hidden;
   position: relative;
-  width: 100vw;  /* Garante que o corpo tenha a largura total da tela */
 }
 
 .stars {
   position: fixed;
   width: 100%;
   height: 100%;
-  overflow: hidden;
   z-index: -2;
-  overflow-x: hidden;  /* Impede a rolagem horizontal */
+  overflow: hidden;
 }
 
 .star {
@@ -37,20 +36,22 @@ body {
 
 .top-bar {
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   padding: 15px;
   z-index: 10;
   position: relative;
+  width: 100%;
 }
 
 #suquinhoBtn {
-  width: 36px;
-  height: 36px;
+  width: 50px;
+  height: 50px;
+  max-width: 100%;
+  object-fit: contain;
   cursor: pointer;
   transition: transform 0.3s ease;
   -webkit-tap-highlight-color: transparent;
-  overflow-x: hidden;
 }
 
 #suquinhoBtn.enlarged {
@@ -62,28 +63,30 @@ body {
   border-radius: 20px;
   backdrop-filter: blur(1px);
   -webkit-backdrop-filter: blur(1px);
-  padding: 140px;
-  width: 30px;
+  padding: 40px 20px;
+  width: 300px;
+  max-width: 90vw;
   position: absolute;
-  bottom: 5px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
   z-index: 5;
-height: 500px;
+  height: auto;
 }
 
 .glass-box h2 {
   color: #a367dc;
-  margin-bottom: 0px;
+  margin-bottom: 20px;
   font-size: 22px;
 }
 
 .grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 20px;
 }
 
@@ -113,26 +116,39 @@ height: 500px;
 
 .planet {
   position: absolute;
-  bottom: 0%;
-  left: 0%;
+  bottom: 0;
+  left: 0;
   width: 400px;
   z-index: 0;
-  max-width: 100%;  /* Garante que a nave não ultrapasse a largura */
+  max-width: 100%;
 }
 
 .spaceship {
   position: absolute;
-  top: 30%;
-  right: 0px;
-  width: 400px;
+  top: 35%;
+  right: 0;
+  width: 600px;
+  max-width: 90vw;
   z-index: 999;
-  max-width: 100%;  /* Garante que a nave não ultrapasse a largura */
-object-fit: cover;
+  object-fit: cover;
 }
 
-@media (max-width: 100px) {
+/* Responsivo para paisagem */
+@media screen and (orientation: landscape) {
   .glass-box {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 30px 20px;
+    width: auto;
+    height: auto;
+  }
+
+  .glass-box h2 {
     width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
   }
 
   .icon-button {
@@ -143,5 +159,10 @@ object-fit: cover;
   .icon-button img {
     width: 36px;
     height: 36px;
+  }
+
+  .spaceship {
+    width: 200px;
+    top: 10%;
   }
 }
