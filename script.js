@@ -6,7 +6,7 @@ suquinho.addEventListener("click", () => {
   if (clicks >= 7 && clicks < 10) {
     suquinho.classList.add("enlarged");
   } else if (clicks >= 10) {
-    window.location.href = "Game/index.html";
+    window.location.href = "game/index.html";
   }
 });
 
