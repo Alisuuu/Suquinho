@@ -1,0 +1,147 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: black;
+  color: white;
+  font-family: sans-serif;
+  height: 100vh;
+  overflow: hidden;  /* Evita qualquer rolagem */
+  position: relative;
+  width: 100vw;  /* Garante que o corpo tenha a largura total da tela */
+}
+
+.stars {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -2;
+  overflow-x: hidden;  /* Impede a rolagem horizontal */
+}
+
+.star {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.6;
+  animation: twinkle 2s infinite ease-in-out;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  z-index: 10;
+  position: relative;
+}
+
+#suquinhoBtn {
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
+}
+
+#suquinhoBtn.enlarged {
+  transform: scale(3);
+}
+
+.glass-box {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+  padding: 140px;
+  width: 30px;
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 5;
+height: 500px;
+}
+
+.glass-box h2 {
+  color: #a367dc;
+  margin-bottom: 0px;
+  font-size: 22px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.icon-button {
+  background-color: #5e3aa5;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.icon-button img {
+  width: 40px;
+  height: 40px;
+}
+
+.icon-button:hover {
+  transform: scale(1.1);
+}
+
+.planet {
+  position: absolute;
+  bottom: 0%;
+  left: 0%;
+  width: 400px;
+  z-index: 0;
+  max-width: 100%;  /* Garante que a nave não ultrapasse a largura */
+}
+
+.spaceship {
+  position: absolute;
+  top: 30%;
+  right: 0px;
+  width: 400px;
+  z-index: 999;
+  max-width: 100%;  /* Garante que a nave não ultrapasse a largura */
+object-fit: cover;
+}
+
+@media (max-width: 100px) {
+  .glass-box {
+    width: 100%;
+  }
+
+  .icon-button {
+    width: 70px;
+    height: 70px;
+  }
+
+  .icon-button img {
+    width: 36px;
+    height: 36px;
+  }
+}
