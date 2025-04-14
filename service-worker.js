@@ -15,9 +15,7 @@ const urlsToCache = [
   '/Yt/index.html',
   '/game/index.html',
   '/not2/index.html'
-  '/Hyper/styles.css',
   '/Hyper/script.js',
-  '/Yt/styles.css',
   '/links/links.txt',
 '/links/script.js',
 '/Styles/styles.css',
