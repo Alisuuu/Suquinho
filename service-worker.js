@@ -7,6 +7,7 @@ const urlsToCache = [
   '/favicon.ico',
   '/nave.png',
   '/p.png',
+  '/p2.png',
   '/planeta.webp',
   // arquivos das pastas
   '/Catalogo1/index.html',
