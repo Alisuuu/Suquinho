@@ -259,3 +259,18 @@ color: #93908C;
     width: 100%;
     aspect-ratio: 16 / 9; /* Proporção padrão de vídeos */
 }
+.back-button {
+    position: absolute;
+    top: 30px;
+    left: 35px;
+    font-size: 22px;
+    color: white;
+    text-decoration: none;
+    z-index: 1000;
+    background-color: transparent;
+    border: none;
+    position: fixed; 
+ z-index: 9999;
+ text-decoration: none;
+ -webkit-tap-highlight-color: transparent;
+}
