@@ -1,7 +1,6 @@
 const CACHE_NAME = 'suquinho-cache-v1';
 const urlsToCache = [
   '/',
-  '/index.html',
   '/styles.css',
   '/script.js',
   '/favicon.ico',
@@ -10,11 +9,6 @@ const urlsToCache = [
   '/p2.png',
   '/planeta.webp',
   // arquivos das pastas
-  '/Catalogo1/index.html',
-  '/Hyper/index.html',
-  '/Yt/index.html',
-  '/game/index.html',
-  '/not2/index.html'
   '/Hyper/script.js',
   '/links/links.txt',
 '/links/script.js',
