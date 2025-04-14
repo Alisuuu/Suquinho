@@ -35,8 +35,21 @@
       </a>
     </div>
   </div>
-
   <img src="planeta.webp" class="planet" alt="Planeta" />
   <img src="nave.png" class="spaceship" alt="Nave" />
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker
+          .register('/service-work.js')
+          .then(reg => {
+            console.log('Service Worker registrado com sucesso:', reg.scope);
+          })
+          .catch(err => {
+            console.error('Erro ao registrar o Service Worker:', err);
+          });
+      });
+    }
+  </script>
 </body>
 </html>
