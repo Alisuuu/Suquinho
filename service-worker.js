@@ -18,6 +18,8 @@ const urlsToCache = [
   '/Hyper/script.js',
   '/Yt/styles.css',
   '/links/links.txt',
+'/links/script.js',
+'/Styles/styles.css',
 ];
 
 self.addEventListener('install', event => {
