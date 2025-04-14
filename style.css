@@ -107,8 +107,8 @@ body {
 }
 
 .icon-button img {
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 45px;
 }
 
 .icon-button:hover {
@@ -139,30 +139,36 @@ body {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 20px;
-    padding: 30px 20px;
-    width: auto;
-    height: auto;
+    gap: auto;
+    padding: 0px 0px;
+    width: 300px;
+    height: 250px;
+    top: 10%;
   }
 
   .glass-box h2 {
-    width: 100%;
+    width: auto;
     text-align: center;
-    margin-bottom: 100px;
+    margin-bottom: flex;
   }
 
   .icon-button {
-    width: 70px;
-    height: 70px;
+    width: 80px;
+    height: 80px;
   }
 
   .icon-button img {
-    width: 36px;
-    height: 36px;
+    width: 45px;
+    height: 45px;
   }
 
   .spaceship {
-    width: 200px;
-    top: 10%;
+    position: absolute;
+  top: 5%;
+  right: 0;
+  width: 400px;
+  max-width: 90vw;
+  object-fit: cover;
+  left: 52%;
   }
 }
