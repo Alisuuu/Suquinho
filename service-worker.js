@@ -9,6 +9,7 @@ const urlsToCache = [
   '/p2.png',
   '/planeta.webp',
   // arquivos das pastas
+  '/not2/index.html',
   '/Hyper/script.js',
   '/links/links.txt',
 '/links/script.js',
