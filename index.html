@@ -38,18 +38,15 @@
   <img src="planeta.webp" class="planet" alt="Planeta" />
   <img src="nave.png" class="spaceship" alt="Nave" />
   <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker
-          .register('/service-work.js')
-          .then(reg => {
-            console.log('Service Worker registrado com sucesso:', reg.scope);
-          })
-          .catch(err => {
-            console.error('Erro ao registrar o Service Worker:', err);
-          });
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(function (registration) {
+        console.log('Service Worker registrado com sucesso:', registration);
+      })
+      .catch(function (error) {
+        console.log('Erro ao registrar o Service Worker:', error);
       });
-    }
+  }
   </script>
 </body>
 </html>
