@@ -216,7 +216,7 @@ async function showDetails(item) {
         const creditsData = creditsResponse.ok ? await creditsResponse.json() : { cast: [] };
         const castListHTML = creditsData.cast.slice(0, 5).map(actor => `
             <div class="actor-card">
-                <img src="${actor.profile_path ? IMAGE_BASE_URL.replace('w185', 'w185') + actor.profile_path : './p2.png'}" alt="${actor.name}">
+                <img src="${actor.profile_path ? IMAGE_BASE_URL.replace('w185', 'w185') + actor.profile_path : '../p2.png'}" alt="${actor.name}">
                 <div class="actor-name">${actor.name}</div>
             </div>
         `).join('');
