@@ -144,7 +144,7 @@ background-color: transparent;
     left: 0;
     top: 0;
     width: 100%;
-    height: 100vh;
+    height: 110vh;
     overflow: auto;
     background-color: rgba(0,0,0,0.0); /* Fundo da overlay, totalmente transparente */
 }
@@ -162,7 +162,7 @@ background-color: transparent;
     background-color: rgba(12,12,12,0.2); /* Fundo semi-transparente para o conteúdo do modal */
     padding: 20px;
     border: 0px solid #888;
-    width: 310px; /* Ajusta a largura do conteúdo do modal */
+    width: 390px; /* Ajusta a largura do conteúdo do modal */
     border-radius: 50px;
     color: #BDBCB8; /* Define a cor do texto para o conteúdo */
     max-height: calc(100vh - 40px); /* Altura máxima, descontando margem do topo/baixo */
@@ -175,7 +175,7 @@ background-color: transparent;
 
 .modal-texto {
     overflow-y: auto; /* Adiciona scroll apenas ao texto se necessário */
-    max-height: calc(100vh - 180px); /* Altura máxima ajustada para o conteúdo scrollável (considerando botão e padding) */
+    max-height: calc(110vh - 180px); /* Altura máxima ajustada para o conteúdo scrollável (considerando botão e padding) */
     padding-right: 10px; /* Espaço para scrollbar */
     margin-bottom: 15px; /* Espaço antes do conteúdo abaixo do texto */
     color: #BDBCB8;
@@ -227,13 +227,13 @@ background-color: transparent;
     margin: auto;
     width: 270px; /* Largura explícita: 310px (largura do modal-conteudo) - 20px (padding esq) - 20px (padding dir) */
     height: 40px;
-    bottom: 20px; /* Posição acima da borda inferior do viewport */
+    bottom: 0px; /* Posição acima da borda inferior do viewport */
     position: fixed;
     z-index: 101; /* Garante que o botão esteja acima do conteúdo do modal */
     -webkit-tap-highlight-color: transparent;
     user-select: none;
     text-align: center; /* Centraliza o texto dentro do botão */
-    line-height: 20px; /* Ajusta a altura da linha para centralizar verticalmente o texto */
+    line-height: 0px; /* Ajusta a altura da linha para centralizar verticalmente o texto */
 
     display: none; /* Oculta o botão por padrão */
 }
@@ -327,6 +327,8 @@ background-color: transparent;
     color: #ccc; /* Cor suave para o texto */
     font-size: 0.9em;
     z-index: 999; /* Garante que fique acima de outros elementos, exceto o modal e seus componentes fixos */
+ -webkit-tap-highlight-color: transparent;
+    user-select: none;
 }
 
 .modal-open .assinatura {
