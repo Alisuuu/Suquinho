@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Notícias de Cinema, Filmes e Séries</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Removido o header para não ter barra no topo -->
+    <main id="news-container">
+        <p>Carregando notícias...</p>
+    </main>
+
+    <script>
+        async function fetchNews() {
+            const newsContainer = document.getElementById('news-container');
+            newsContainer.innerHTML = '<p>Carregando notícias...</p>'; // Limpa e mostra carregando
+
+            try {
+                // Chama a API que você configurou no backend
+                const response = await fetch('/api/news');
+                const data = await response.json();
+
+                if (data.status === 'ok' && data.articles && data.articles.length > 0) {
+                    newsContainer.innerHTML = ''; // Limpa a mensagem de carregamento
+                    data.articles.forEach(article => {
+                        const articleElement = document.createElement('article');
+                        articleElement.classList.add('news-item');
+
+                        // Adiciona a imagem (pôster) se existir
+                        if (article.urlToImage) {
+                            const img = document.createElement('img');
+                            img.src = article.urlToImage;
+                            img.alt = article.title || 'Imagem da notícia'; // Adiciona alt com fallback
+                            img.loading = 'lazy'; // Carregamento preguiçoso
+                            articleElement.appendChild(img);
+                        } else {
+                            // Se não tiver imagem, exibe uma imagem padrão
+                            const img = document.createElement('img');
+                            img.src = 'default-image.jpg';  // Imagem padrão
+                            img.alt = 'Imagem não disponível';
+                            img.loading = 'lazy';
+                            articleElement.appendChild(img);
+                        }
+
+                        const contentDiv = document.createElement('div');
+                        contentDiv.classList.add('news-content');
+
+                        // Título da notícia com link
+                        const title = document.createElement('h2');
+                        const link = document.createElement('a');
+                        link.href = article.url;
+                        link.target = "_blank"; // Abre em uma nova aba
+                        link.textContent = article.title;
+                        title.appendChild(link);
+                        contentDiv.appendChild(title);
+
+                        // Descrição ou trecho do conteúdo
+                        if (article.description) {
+                            const description = document.createElement('p');
+                            description.textContent = article.description;
+                            contentDiv.appendChild(description);
+                        }
+
+                        // Adiciona a fonte e data
+                        const footer = document.createElement('p');
+                        const date = new Date(article.publishedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                        footer.textContent = `${article.source.name} - ${date}`;
+                        contentDiv.appendChild(footer);
+
+                        articleElement.appendChild(contentDiv);
+                        newsContainer.appendChild(articleElement);
+                    });
+                } else {
+                    newsContainer.innerHTML = '<p>Nenhuma notícia encontrada no momento.</p>';
+                }
+
+            } catch (error) {
+                console.error('Erro ao buscar notícias:', error);
+                newsContainer.innerHTML = '<p>Ocorreu um erro ao carregar as notícias. Tente novamente mais tarde.</p>';
+            }
+        }
+
+        // Carrega as notícias ao carregar a página
+        window.onload = fetchNews;
+    </script>
+</body>
+</html>
