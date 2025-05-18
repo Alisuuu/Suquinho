@@ -1,31 +1,47 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Rick Roll</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       background: black;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .container {
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      height: 100%;
+      width: 100%;
+    }
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
   </style>
 </head>
 <body>
-  <div class="tenor-gif-embed" data-postid="22113173" data-share-method="host" data-aspect-ratio="0.84375" data-width="100%">
-    <a href="https://tenor.com/view/rick-roll-rick-ashley-never-gonna-give-you-up-gif-22113173">Rick Roll Rick Ashley GIF</a>
-    from <a href="https://tenor.com/search/rick+roll-gifs">Rick Roll GIFs</a>
+  <div class="container" id="content">
+    <img src="gif.gif" alt="Rick Roll">
   </div>
-  <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
+
   <script>
     setTimeout(() => {
-      window.close();
-      // Se não conseguir fechar (em alguns navegadores), tenta redirecionar
-      window.location.href = 'about:blank';
+      // Tenta fechar a aba
+      const closed = window.close();
+      
+      // Se não fechar, exibe mensagem e redireciona
+      setTimeout(() => {
+        document.body.innerHTML = "<h1 style='color: white; text-align: center; margin-top: 40vh;'>Encerrando...</h1>";
+        setTimeout(() => {
+          window.location.href = 'about:blank';
+        }, 1000);
+      }, 100);
     }, 5000);
   </script>
 </body>
