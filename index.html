@@ -1,14 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-    <title>Fechar Navegador</title>
-    <script>
-        window.onload = function() {
-            window.open('', '_self').close();
-        };
-    </script>
+  <meta charset="UTF-8" />
+  <title>Rick Roll</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+  </style>
 </head>
 <body>
-    <p></p>
+  <div class="tenor-gif-embed" data-postid="22113173" data-share-method="host" data-aspect-ratio="0.84375" data-width="100%">
+    <a href="https://tenor.com/view/rick-roll-rick-ashley-never-gonna-give-you-up-gif-22113173">Rick Roll Rick Ashley GIF</a>
+    from <a href="https://tenor.com/search/rick+roll-gifs">Rick Roll GIFs</a>
+  </div>
+  <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
+  <script>
+    setTimeout(() => {
+      window.close();
+      // Se não conseguir fechar (em alguns navegadores), tenta redirecionar
+      window.location.href = 'about:blank';
+    }, 5000);
+  </script>
 </body>
 </html>
