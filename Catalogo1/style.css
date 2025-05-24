@@ -5,29 +5,28 @@ body {
 }
 /* General Modal Styling */
 .modal-base {
-    display: none;
+   display: none; /* Oculto por padrão */
     position: fixed;
-    z-index: 1000;
+    z-index: 100; /* Garante que o modal fique acima de outros elementos */
     left: 0;
-    top: 0;
+    top: 2%;
     width: 100%;
-    height: 100%;
+    height: 110vh;
     overflow: auto;
-    background-color: rgba(0,0,0,8.92); /* Even darker overlay */
-    padding: 20px;
-    align-items: center; /* For vertical centering of modal-content */
-    justify-content: center; /* For horizontal centering */
+    background-color: rgba(0,0,0,0.80); /* Fundo da overlay, totalmente transparente */
 }
 .modal-content-base {
-    background-color: #0a0a0a; /* Near black */
-    margin: auto; /* Used with flex align/justify on modal-base */
-    padding: 25px; /* Increased padding */
-    border: 1px solid #581c87; /* Darker Lilac/Purple border (violet-800) */
-    width: 100%;
-    border-radius: 1rem; /* rounded-xl */
-    position: relative;
-    color: #d1d5db;
-    box-shadow: 0 10px 25px rgba(139, 92, 246, 0.1), 0 5px 10px rgba(139, 92, 246, 0.08); /* Softer lilac shadow */
+    background-color: rgba(12,12,12,0.80); /* Fundo semi-transparente para o conteúdo do modal */
+    padding: 20px;
+    border: 0px solid #888;
+    width: 390px; /* Ajusta a largura do conteúdo do modal */
+    border-radius: 50px;
+    color: #BDBCB8; /* Define a cor do texto para o conteúdo */
+    max-height: calc(100vh - 40px); /* Altura máxima, descontando margem do topo/baixo */
+    overflow: hidden; /* Controla overflow do conteúdo */
+    padding-bottom: 70px; /* Espaço no final para o botão "Sortear Novamente" */
+    position: relative; /* Volta para o fluxo normal dentro do flex container pai (.modal) */
+    z-index: 101; /* Garante que o conteúdo fique acima da overlay */
 }
 /* Main Item Modal */
 #itemModal .modal-content-base {
@@ -45,7 +44,7 @@ body {
     color: #a78bfa; /* Lilac (violet-400) */
     position: absolute;
     top: 0px; /* Adjusted for padding */
-    right: 10px; /* Adjusted for padding */
+    right: 29px; /* Adjusted for padding */
     font-size: 25px; /* Slightly larger */
     font-weight: bold;
     cursor: pointer;
