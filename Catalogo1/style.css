@@ -23,7 +23,7 @@ body {
     margin: auto; /* Used with flex align/justify on modal-base */
     padding: 25px; /* Increased padding */
     border: 1px solid #581c87; /* Darker Lilac/Purple border (violet-800) */
-    width: 90%;
+    width: 100%;
     border-radius: 1rem; /* rounded-xl */
     position: relative;
     color: #d1d5db;
