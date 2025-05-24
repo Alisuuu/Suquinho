@@ -1,0 +1,241 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #000000; /* AMOLED Black */
+    color: #e0e0e0;
+}
+/* General Modal Styling */
+.modal-base {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.92); /* Even darker overlay */
+    padding: 20px;
+    align-items: center; /* For vertical centering of modal-content */
+    justify-content: center; /* For horizontal centering */
+}
+.modal-content-base {
+    background-color: #0a0a0a; /* Near black */
+    margin: auto; /* Used with flex align/justify on modal-base */
+    padding: 25px; /* Increased padding */
+    border: 1px solid #581c87; /* Darker Lilac/Purple border (violet-800) */
+    width: 90%;
+    border-radius: 1rem; /* rounded-xl */
+    position: relative;
+    color: #d1d5db;
+    box-shadow: 0 10px 25px rgba(139, 92, 246, 0.1), 0 5px 10px rgba(139, 92, 246, 0.08); /* Softer lilac shadow */
+}
+/* Main Item Modal */
+#itemModal .modal-content-base {
+    max-width: 850px;
+}
+/* Episode Player Modal (Second Modal) */
+#episodePlayerModal .modal-content-base {
+    max-width: 700px;
+    background-color: #080808;
+}
+#episodePlayerModal {
+    z-index: 1050;
+} /* Ensure it's on top */
+.close-button {
+    color: #a78bfa; /* Lilac (violet-400) */
+    position: absolute;
+    top: 18px; /* Adjusted for padding */
+    right: 25px; /* Adjusted for padding */
+    font-size: 38px; /* Slightly larger */
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s, transform 0.2s;
+}
+.close-button:hover,
+.close-button:focus {
+    color: #c4b5fd; /* Lighter Lilac (violet-300) */
+    transform: scale(1.1);
+}
+.search-input {
+    background-color: #181818; /* Darker input bg */
+    border: 1px solid #4a0072; /* Lilac/Purple border */
+    color: #e0e0e0;
+    border-radius: 0.75rem; /* rounded-lg */
+    padding: 0.9rem 1.1rem; /* Increased padding */
+}
+.search-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.5); /* Lilac focus ring (violet-500) */
+    border-color: #8b5cf6;
+}
+.item-card {
+    background-color: #101010; /* Darker gray for cards */
+    border: 1px solid #252525;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    overflow: hidden;
+    border-radius: 0.75rem; /* rounded-lg */
+}
+.item-card:hover {
+    transform: translateY(-6px); /* Increased hover effect */
+    box-shadow: 0 12px 20px -4px rgba(167, 139, 250, 0.2), 0 5px 10px -3px rgba(167, 139, 250, 0.15);
+    border-color: #8b5cf6;
+}
+.item-card img {
+    transition: transform 0.3s ease;
+    border-radius: 0.75rem 0.75rem 0 0; /* Rounded top corners for image */
+}
+.item-card:hover img {
+    transform: scale(1.05);
+}
+.loader, .gemini-loader {
+    border: 4px solid #4a0072;
+    border-top: 4px solid #a78bfa;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+}
+.loader {
+    width: 50px;
+    height: 50px;
+    margin: 25px auto; /* Increased margin */
+    border-width: 5px;
+}
+.gemini-loader {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 10px; /* Increased margin */
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.modal-body::-webkit-scrollbar, .episode-list-container::-webkit-scrollbar {
+    width: 10px; /* Slightly thicker scrollbar */
+}
+.modal-body::-webkit-scrollbar-track, .episode-list-container::-webkit-scrollbar-track {
+    background: #1a1a1a;
+    border-radius: 10px;
+}
+.modal-body::-webkit-scrollbar-thumb, .episode-list-container::-webkit-scrollbar-thumb {
+    background: #8b5cf6;
+    border-radius: 10px;
+    border: 2px solid #1a1a1a; /* Border around thumb */
+}
+.modal-body::-webkit-scrollbar-thumb:hover, .episode-list-container::-webkit-scrollbar-thumb:hover {
+    background: #7c3aed;
+}
+#EmbedderIframeContainer iframe, #EpisodeEmbedderIframeContainer iframe {
+    width: 100%;
+    height: 450px;
+    border-radius: 0.75rem; /* rounded-lg */
+    background-color: #000;
+}
+.gemini-section, .player-section, .seasons-section {
+    margin-top: 25px; /* Increased margin */
+    padding-top: 25px; /* Increased padding */
+    border-top: 1px solid #4a0072;
+}
+.gemini-output {
+    background-color: #1f1f1f;
+    border: 1px solid #4a0072;
+    padding: 15px; /* Increased padding */
+    border-radius: 0.75rem; /* rounded-lg */
+    margin-top: 12px;
+    font-size: 0.9em;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    color: #c4b5fd;
+}
+.action-button, .gemini-button, .category-button, .episode-button, .season-button {
+    background-color: #7c3aed;
+    color: white;
+    padding: 12px 20px; /* Larger padding */
+    border-radius: 0.75rem; /* rounded-lg */
+    font-size: 0.95em;
+    font-weight: 500;
+    transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 10px;
+    border: none;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.25);
+}
+.action-button:hover, .gemini-button:hover, .category-button:hover, .episode-button:hover, .season-button:hover {
+    background-color: #6d28d9;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+    transform: translateY(-1px);
+}
+.action-button:active, .gemini-button:active, .category-button:active, .episode-button:active, .season-button:active {
+    transform: translateY(0px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.action-button:disabled, .gemini-button:disabled, .category-button:disabled, .episode-button:disabled, .season-button:disabled {
+    background-color: #581c87;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: translateY(0px);
+}
+.category-button.active {
+    background-color: #8b5cf6;
+    color: #fff;
+    font-weight: 600;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.15), 0 1px 2px rgba(139,92,246,0.6);
+}
+.season-button {
+    width: 100%;
+    justify-content: space-between;
+    background-color: #2a0045; /* Darker base for season buttons */
+    margin-bottom: 6px;
+}
+.season-button.active { /* Style for expanded season */
+    background-color: #8b5cf6;
+}
+.episode-list-container {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 10px; /* Space for scrollbar */
+    margin-top: 8px;
+    background-color: rgba(255,255,255,0.03);
+    border-radius: 0.5rem; /* rounded-md */
+    padding: 8px;
+}
+.episode-button {
+    width: 100%;
+    text-align: left;
+    padding: 10px 15px;
+    font-size: 0.9em;
+    background-color: #3c1a56; /* Base for episode buttons */
+    margin-bottom: 5px;
+}
+.episode-button:hover {
+    background-color: #4a0072;
+}
+.toast-message {
+    position: fixed;
+    bottom: 25px; /* Increased offset */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #a78bfa;
+    color: #0d0d0d;
+    padding: 12px 22px; /* Increased padding */
+    border-radius: 0.75rem; /* rounded-lg */
+    z-index: 2050; /* Above episode modal */
+    font-size: 0.95em;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.35);
+}
+.section-title {
+    font-size: 2rem; /* text-3xl equivalent */
+    font-weight: 700; /* font-bold */
+    color: #c4b5fd;
+    margin-bottom: 1.25rem; /* mb-5 */
+    padding-bottom: 0.75rem; /* pb-3 */
+    border-bottom: 2px solid #581c87;
+}
+#episodePlayerTitle { /* Styling for episode player modal title */
+    color: #c4b5fd;
+    font-size: 1.5rem; /* text-2xl */
+    font-weight: 600; /* font-semibold */
+    margin-bottom: 1rem;
+}
