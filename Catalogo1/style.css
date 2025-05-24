@@ -73,7 +73,7 @@ html, body {
 }
 .item-card {
     background-color: #101010;
-    border: 1px solid #252525;
+    border: 0px solid #252525;
     transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
     overflow: hidden;
     border-radius: 0.75rem;
@@ -96,7 +96,7 @@ html, body {
     border-radius: 50%;
     width: 30px;
     height: 30px;
-    animation: spin 1s linear infinite;
+    animation: spin 5s linear infinite;
 }
 .loader {
     width: 50px;
@@ -114,15 +114,15 @@ html, body {
     100% { transform: rotate(360deg); }
 }
 .modal-body::-webkit-scrollbar, .episode-list-container::-webkit-scrollbar {
-    width: 10px;
+    width: 0px;
 }
 .modal-body::-webkit-scrollbar-track, .episode-list-container::-webkit-scrollbar-track {
     background: #1a1a1a;
-    border-radius: 10px;
+    border-radius: 0px;
 }
 .modal-body::-webkit-scrollbar-thumb, .episode-list-container::-webkit-scrollbar-thumb {
     background: #8b5cf6;
-    border-radius: 10px;
+    border-radius: 0px;
     border: 2px solid #1a1a1a;
 }
 .modal-body::-webkit-scrollbar-thumb:hover, .episode-list-container::-webkit-scrollbar-thumb:hover {
