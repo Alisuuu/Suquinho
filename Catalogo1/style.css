@@ -13,7 +13,7 @@ body {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0,0,0,0.92); /* Even darker overlay */
+    background-color: rgba(0,0,0,8.92); /* Even darker overlay */
     padding: 20px;
     align-items: center; /* For vertical centering of modal-content */
     justify-content: center; /* For horizontal centering */
@@ -31,7 +31,7 @@ body {
 }
 /* Main Item Modal */
 #itemModal .modal-content-base {
-    max-width: 850px;
+    max-width: 1000px;
 }
 /* Episode Player Modal (Second Modal) */
 #episodePlayerModal .modal-content-base {
@@ -44,9 +44,9 @@ body {
 .close-button {
     color: #a78bfa; /* Lilac (violet-400) */
     position: absolute;
-    top: 18px; /* Adjusted for padding */
-    right: 25px; /* Adjusted for padding */
-    font-size: 38px; /* Slightly larger */
+    top: 0px; /* Adjusted for padding */
+    right: 10px; /* Adjusted for padding */
+    font-size: 25px; /* Slightly larger */
     font-weight: bold;
     cursor: pointer;
     transition: color 0.3s, transform 0.2s;
