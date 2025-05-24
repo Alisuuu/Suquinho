@@ -63,7 +63,7 @@ App.EventListeners.fetchMovies = async () => {
 };
 
 App.EventListeners.fetchSeries = async () => {
-    await App.UI.initDisplay('discover/tv', "Séries Populares", App.UI.elements.btnSeries, { sort_by: 'popularity.desc' });
+    await App.UI.initDisplay('discover/tv', "Séries Populares", App.UI.elements.btnSeries, { sort_by: 'vote_count.desc' });
 };
 
 App.EventListeners.searchItems = async (query) => {
