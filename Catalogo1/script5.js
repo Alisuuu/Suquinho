@@ -55,7 +55,7 @@ App.EventListeners.handleCopyEpisodeLinkBtn = () => {
 
 // Funções para buscar e exibir conteúdo (replicadas aqui para serem chamadas diretamente pelos listeners)
 App.EventListeners.fetchTrending = async () => {
-    await App.UI.initDisplay('trending/all/week', "Explorando o que está em alta", App.UI.elements.btnExplore);
+    await App.UI.initDisplay('trending/all/week', "", App.UI.elements.btnExplore);
 };
 
 App.EventListeners.fetchMovies = async () => {
