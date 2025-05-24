@@ -121,7 +121,7 @@ App.ModalHandlers.displayModal = async (item, mediaType) => {
                     App.UI.state.currentItemModalEmbedderUrl = '';
                 }
             } catch (error) {
-                if (embedderPlayerMessageEl) embedderPlayerMessageEl.innerHTML = `Falha ao verificar (Erro: ${error.message}). <br>Tentando carregar player...`;
+                if (embedderPlayerMessageEl) embedderPlayerMessageEl.innerHTML = ` . <br>Tentando carregar player...`;
                 App.UI.embedderPlugin('filme', imdbId, null, null, 'EmbedderIframeContainer');
                 if (copyMainPlayerLinkBtn && App.UI.state.currentItemModalEmbedderUrl) copyMainPlayerLinkBtn.disabled = false; else if (copyMainPlayerLinkBtn) copyMainPlayerLinkBtn.disabled = true;
             }
