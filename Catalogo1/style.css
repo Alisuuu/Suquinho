@@ -1,0 +1,230 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #000000; /* AMOLED Black */
+    color: #e0e0e0;
+}
+/* General Modal Styling */
+.modal-base {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.92); /* Even darker overlay */
+    padding: 20px;
+    align-items: center; /* For vertical centering of modal-content */
+    justify-content: center; /* For horizontal centering */
+}
+.modal-content-base {
+    background-color: #0a0a0a; /* Near black */
+    margin: auto; /* Used with flex align/justify on modal-base */
+    padding: 25px; /* Increased padding */
+    border: 1px solid #581c87; /* Darker Lilac/Purple border (violet-800) */
+    width: 100%;
+    border-radius: 1rem; /* rounded-xl */
+    position: relative;
+    color: #d1d5db;
+    box-shadow: 0 10px 25px rgba(139, 92, 246, 0.1), 0 5px 10px rgba(139, 92, 246, 0.08); /* Softer lilac shadow */
+}
+/* Main Item Modal */
+#itemModal .modal-content-base {
+    max-width: 850px;
+}
+/* Episode Player Modal (Second Modal) */
+#episodePlayerModal .modal-content-base {
+    max-width: 700px;
+    background-color: #080808;
+}
+#episodePlayerModal {
+    z-index: 1050;
+} /* Ensure it's on top */
+.close-button {
+    color: #a78bfa; /* Lilac (violet-400) */
+    position: absolute;
+    top: 0px;
+    right: 5px;
+    font-size: 38px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s, transform 0.2s;
+}
+.close-button:hover,
+.close-button:focus {
+    color: #c4b5fd;
+    transform: scale(1.1);
+}
+.search-input {
+    background-color: #181818;
+    border: 1px solid #4a0072;
+    color: #e0e0e0;
+    border-radius: 0.75rem;
+    padding: 0.9rem 1.1rem;
+}
+.search-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.5);
+    border-color: #8b5cf6;
+}
+.item-card {
+    background-color: #101010;
+    border: 1px solid #252525;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    overflow: hidden;
+    border-radius: 0.75rem;
+}
+.item-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 20px -4px rgba(167, 139, 250, 0.2), 0 5px 10px -3px rgba(167, 139, 250, 0.15);
+    border-color: #8b5cf6;
+}
+.item-card img {
+    transition: transform 0.3s ease;
+    border-radius: 0.75rem 0.75rem 0 0;
+}
+.item-card:hover img {
+    transform: scale(1.05);
+}
+.loader, .gemini-loader { /* Manter .gemini-loader por enquanto no CSS caso algum elemento ainda use */
+    border: 4px solid #4a0072;
+    border-top: 4px solid #a78bfa;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+}
+.loader {
+    width: 50px;
+    height: 50px;
+    margin: 25px auto;
+    border-width: 5px;
+}
+.gemini-loader {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 10px;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.modal-body::-webkit-scrollbar, .episode-list-container::-webkit-scrollbar {
+    width: 10px;
+}
+.modal-body::-webkit-scrollbar-track, .episode-list-container::-webkit-scrollbar-track {
+    background: #1a1a1a;
+    border-radius: 10px;
+}
+.modal-body::-webkit-scrollbar-thumb, .episode-list-container::-webkit-scrollbar-thumb {
+    background: #8b5cf6;
+    border-radius: 10px;
+    border: 2px solid #1a1a1a;
+}
+.modal-body::-webkit-scrollbar-thumb:hover, .episode-list-container::-webkit-scrollbar-thumb:hover {
+    background: #7c3aed;
+}
+#EmbedderIframeContainer iframe, #EpisodeEmbedderIframeContainer iframe {
+    width: 100%;
+    height: 450px;
+    border-radius: 0.75rem;
+    background-color: #000;
+}
+.player-section, .seasons-section { /* Removido .gemini-section daqui */
+    margin-top: 25px;
+    padding-top: 25px;
+    border-top: 1px solid #4a0072;
+}
+/* Removido estilos para .gemini-output e botões gemini específicos */
+.action-button, .category-button, .episode-button, .season-button { /* Removido .gemini-button */
+    background-color: #7c3aed;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 0.75rem;
+    font-size: 0.95em;
+    font-weight: 500;
+    transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 10px;
+    border: none;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.25);
+}
+.action-button:hover, .category-button:hover, .episode-button:hover, .season-button:hover { /* Removido .gemini-button */
+    background-color: #6d28d9;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+    transform: translateY(-1px);
+}
+.action-button:active, .category-button:active, .episode-button:active, .season-button:active { /* Removido .gemini-button */
+    transform: translateY(0px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.action-button:disabled, .category-button:disabled, .episode-button:disabled, .season-button:disabled { /* Removido .gemini-button */
+    background-color: #581c87;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: translateY(0px);
+}
+.category-button.active {
+    background-color: #8b5cf6;
+    color: #fff;
+    font-weight: 600;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.15), 0 1px 2px rgba(139,92,246,0.6);
+}
+.season-button {
+    width: 100%;
+    justify-content: space-between;
+    background-color: #2a0045;
+    margin-bottom: 6px;
+}
+.season-button.active {
+    background-color: #8b5cf6;
+}
+.episode-list-container {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 10px;
+    margin-top: 8px;
+    background-color: rgba(255,255,255,0.03);
+    border-radius: 0.5rem;
+    padding: 8px;
+}
+.episode-button {
+    width: 100%;
+    text-align: left;
+    padding: 10px 15px;
+    font-size: 0.9em;
+    background-color: #3c1a56;
+    margin-bottom: 5px;
+}
+.episode-button:hover {
+    background-color: #4a0072;
+}
+.toast-message {
+    position: fixed;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #a78bfa;
+    color: #0d0d0d;
+    padding: 12px 22px;
+    border-radius: 0.75rem;
+    z-index: 2050;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.35);
+}
+.section-title {
+    font-size: 2rem; /* text-3xl equivalent */
+    font-weight: 700; /* font-bold */
+    color: #c4b5fd;
+    margin-bottom: 1.25rem; /* mb-5 */
+    padding-bottom: 0.75rem; /* pb-3 */
+    border-bottom: 2px solid #581c87;
+}
+#episodePlayerTitle {
+    color: #c4b5fd;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
