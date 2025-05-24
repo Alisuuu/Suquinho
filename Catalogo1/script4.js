@@ -33,7 +33,7 @@ App.ModalHandlers.displayModal = async (item, mediaType) => {
         playerSectionHTML = `
             <div class="player-section">
                 <div class="flex justify-between items-center mb-2">
-                    <h4 class="text-xl font-semibold text-violet-200">Player (Embedder.net)</h4>
+                    <h4 class="text-xl font-semibold text-violet-200">Player ()</h4>
                     <button id="copyMainPlayerLinkBtn" class="action-button text-xs py-1 px-3 rounded-md" title="Copiar link do player">
                         Copiar Link
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
