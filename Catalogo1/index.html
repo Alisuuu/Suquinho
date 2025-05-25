@@ -301,6 +301,44 @@
             font-weight: 600;
             margin-bottom: 1rem;
         }
+
+        /* NOVO: Estilos para os botões de rolagem */
+        .scroll-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(139, 92, 246, 0.7); /* Violeta semi-transparente */
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .scroll-button:hover {
+            background-color: rgba(139, 92, 246, 0.9); /* Mais opaco no hover */
+            transform: translateY(-50%) scale(1.1);
+        }
+        .scroll-button:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+        .scroll-button.left {
+            left: 5px;
+        }
+        .scroll-button.right {
+            right: 5px;
+        }
+        /* Oculta os botões em telas grandes (PC) */
+        @media (min-width: 1024px) { /* lg breakpoint */
+            .scroll-button {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body class="flex flex-col">
@@ -330,10 +368,18 @@
         <div id="loader" class="loader hidden"></div>
     </div>
 
-    <div class="w-full overflow-x-auto pb-4 flex-grow min-h-[300px] sm:min-h-[350px] md:min-h-[400px] lg:min-h-[450px] xl:min-h-[500px]">
-        <div id="resultsGrid" class="flex flex-nowrap pl-2 pr-2 snap-x mandatory
+    <div class="relative w-full pb-4 flex-grow min-h-[300px] sm:min-h-[350px] md:min-h-[400px] lg:min-h-[450px] xl:min-h-[500px]">
+        <button id="scrollLeftBtn" class="scroll-button left">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+
+        <div id="resultsGrid" class="flex flex-nowrap pl-2 pr-2 snap-x mandatory overflow-x-auto
                                   lg:grid lg:grid-cols-4 lg:gap-4 lg:overflow-x-visible lg:snap-none lg:pl-4 lg:pr-4">
             </div>
+
+        <button id="scrollRightBtn" class="scroll-button right">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
     </div>
 
     <p id="noResults" class="text-center text-gray-500 hidden mt-12 text-lg flex-shrink-0"></p>
@@ -361,11 +407,63 @@
             </div>
         </div>
     </div>
+
+    <footer class="text-center flex-shrink-0 mt-8 py-4">
+        <p class="text-gray-500">Catálogo Suquin © 2025</p>
+    </footer>
+
     <script src="script1.js"></script>
     <script src="script2.js"></script>
     <script src="script3.js"></script>
     <script src="script4.js"></script>
     <script src="script5.js"></script>
+
+    <script>
+        // JavaScript para a funcionalidade de rolagem dos botões
+        document.addEventListener('DOMContentLoaded', () => {
+            const resultsGrid = document.getElementById('resultsGrid');
+            const scrollLeftBtn = document.getElementById('scrollLeftBtn');
+            const scrollRightBtn = document.getElementById('scrollRightBtn');
+
+            if (resultsGrid && scrollLeftBtn && scrollRightBtn) {
+                scrollLeftBtn.addEventListener('click', () => {
+                    // Rola para a esquerda pela largura visível do contêiner
+                    resultsGrid.scrollBy({
+                        left: -resultsGrid.clientWidth,
+                        behavior: 'smooth'
+                    });
+                });
+
+                scrollRightBtn.addEventListener('click', () => {
+                    // Rola para a direita pela largura visível do contêiner
+                    resultsGrid.scrollBy({
+                        left: resultsGrid.clientWidth,
+                        behavior: 'smooth'
+                    });
+                });
+
+                // Ocultar/mostrar botões se não houver rolagem possível (para mobile)
+                // Isso pode ser aprimorado com um IntersectionObserver para maior precisão
+                const checkScrollButtonsVisibility = () => {
+                    // Apenas mostra os botões se a tela for menor que 'lg' (mobile/tablet)
+                    if (window.innerWidth < 1024) { // 1024px é o breakpoint 'lg' do Tailwind
+                        scrollLeftBtn.style.display = resultsGrid.scrollLeft > 0 ? 'flex' : 'none';
+                        scrollRightBtn.style.display = resultsGrid.scrollWidth > resultsGrid.clientWidth + resultsGrid.scrollLeft ? 'flex' : 'none';
+                    } else {
+                        // Esconde os botões em desktop
+                        scrollLeftBtn.style.display = 'none';
+                        scrollRightBtn.style.display = 'none';
+                    }
+                };
+
+                // Verifica a visibilidade ao carregar e ao rolar
+                resultsGrid.addEventListener('scroll', checkScrollButtonsVisibility);
+                window.addEventListener('resize', checkScrollButtonsVisibility);
+                // Chama uma vez para definir o estado inicial
+                checkScrollButtonsVisibility();
+            }
+        });
+    </script>
 </body>
 </html>
 
