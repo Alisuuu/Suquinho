@@ -2,23 +2,23 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
     <title>Catálogo Suquin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Estilos CSS fornecidos pelo usuário e ajustes para rolagem e responsividade */
+        /* Estilos CSS gerais para o corpo da página */
         html, body {
             font-family: 'Inter', sans-serif;
             background-color: #000000; /* AMOLED Black */
             color: #e0e0e0;
-            touch-action: pan-x; /* Permite apenas rolagem horizontal, desabilita zoom e rolagem vertical */
-            overflow: hidden; /* Remove rolagem vertical e horizontal global */
+            overflow-x: hidden; /* Garante que não haja rolagem horizontal indesejada no body */
+            overflow-y: auto; /* Permite rolagem vertical quando o conteúdo excede a altura da tela */
             min-height: 100vh; /* Garante que o body ocupe a altura mínima da viewport */
             width: 100vw; /* Garante que o body ocupe a largura total da viewport */
         }
 
-        /* General Modal Styling - ORIGINAL DO USUÁRIO */
+        /* Estilos base para modais */
         .modal-base {
             display: none;
             position: fixed;
@@ -28,36 +28,37 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0,0,0,0.92); /* Even darker overlay */
+            background-color: rgba(0,0,0,0.92); /* Overlay mais escuro */
             padding: 20px;
-            align-items: center; /* For vertical centering of modal-content */
-            justify-content: center; /* For horizontal centering */
+            align-items: center; /* Centralização vertical do conteúdo do modal */
+            justify-content: center; /* Centralização horizontal do conteúdo do modal */
         }
         .modal-content-base {
-            background-color: #0a0a0a; /* Near black */
-            margin: auto; /* Used with flex align/justify on modal-base */
-            padding: 25px; /* Increased padding */
-            border: 1px solid #581c87; /* Darker Lilac/Purple border (violet-800) */
+            background-color: #0a0a0a; /* Quase preto */
+            margin: auto; /* Usado com flex align/justify no modal-base */
+            padding: 25px; /* Preenchimento aumentado */
+            border: 1px solid #581c87; /* Borda roxa escura (violet-800) */
             width: 100%;
-            border-radius: 1rem; /* rounded-xl */
+            border-radius: 1rem; /* Cantos arredondados (rounded-xl) */
             position: relative;
             color: #d1d5db;
-            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.1), 0 5px 10px rgba(139, 92, 246, 0.08); /* Softer lilac shadow */
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.1), 0 5px 10px rgba(139, 92, 246, 0.08); /* Sombra suave lilás */
         }
-        /* Main Item Modal - ORIGINAL DO USUÁRIO */
+        /* Estilos específicos para o modal principal de item */
         #itemModal .modal-content-base {
             max-width: 850px;
         }
-        /* Episode Player Modal (Second Modal) - ORIGINAL DO USUÁRIO */
+        /* Estilos específicos para o modal do player de episódio */
         #episodePlayerModal .modal-content-base {
             max-width: 700px;
             background-color: #080808;
         }
         #episodePlayerModal {
-            z-index: 1050;
-        } /* Ensure it's on top */
+            z-index: 1050; /* Garante que esteja acima do modal principal */
+        }
+        /* Estilos para o botão de fechar modal */
         .close-button {
-            color: #a78bfa; /* Lilac (violet-400) */
+            color: #a78bfa; /* Lilás (violet-400) */
             position: absolute;
             top: 0px;
             right: 5px;
@@ -71,86 +72,81 @@
             color: #c4b5fd;
             transform: scale(1.1);
         }
+        /* Estilos para o campo de busca */
         .search-input {
-            background-color: transparent; /* Changed to transparent for integration with parent */
-            border: none; /* Removed border */
+            background-color: transparent; /* Transparente para integração com o pai */
+            border: none; /* Sem borda */
             color: #e0e0e0;
-            border-radius: 0.75rem; /* Keep if needed for internal rounding */
-            padding: 0.5rem 0.75rem; /* Smaller padding */
-            font-size: 0.9em; /* Smaller font size */
-            box-sizing: border-box; /* Include padding and border in the element's total width and height */
-            min-width: 0; /* ADDED: Allows the input to shrink within the flex container */
+            border-radius: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.9em;
+            box-sizing: border-box;
+            min-width: 0; /* Permite que o input encolha dentro do contêiner flex */
         }
         .search-input:focus {
             outline: none;
-            /* Removed box-shadow and border-color here as parent div will handle visual focus */
         }
+
+        /* Estilos para os cards (agora unificados para todas as seções) */
         .item-card {
             background-color: #101010;
             border: 0px solid #252525;
             transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
             overflow: hidden;
             border-radius: 0.75rem;
-            flex-shrink: 0; /* Prevents cards from shrinking */
-            width: calc(70vw - 0.5rem); /* Adjusted for tighter padding */
-            margin-right: 0.5rem; /* Adjusted for tighter spacing */
-            scroll-snap-align: start; /* Snap to the start of the card */
-            height: 100vh;
-    
+            flex-shrink: 0; /* Impede que os cards encolham no layout flex móvel */
+            height: 100%; /* Garante que o card ocupe a altura total disponível no contêiner flex/grid */
         }
-        /* Responsive adjustments for item-card */
+        /* Larguras responsivas para .item-card (mobile: rolagem lateral, PC: grid) */
+        .item-card {
+            width: calc(80vw - 1rem); /* Padrão para telas pequenas (mobile) */
+            margin-right: 0.5rem; /* Espaçamento entre os cards no mobile */
+            scroll-snap-align: start; /* Para o "snap" de rolagem no mobile */
+        }
         @media (min-width: 640px) { /* sm breakpoint */
             .item-card {
-                width: calc(100vw - 1.5rem);
+                width: calc(45vw - 0.75rem);
                 margin-right: 0.75rem;
             }
         }
         @media (min-width: 768px) { /* md breakpoint */
             .item-card {
-                width: calc(100vw - 1.5rem);
-                margin-right: 1rem;
+                width: calc(30vw - 0.75rem);
+                margin-right: 0.75rem;
             }
         }
-        @media (min-width: 1024px) { /* lg breakpoint */
+        @media (min-width: 1024px) { /* lg breakpoint (PC) */
             .item-card {
-                /* On larger screens, if container max-width is applied, adjust card width relative to that */
-                width: calc(100% - 1.5rem); /* Adjust to parent width */
-                margin-right: 1rem;
+                width: 100%; /* Preenche a célula do grid */
+                margin-right: 0; /* Remove a margem direita para o layout de grid */
+                scroll-snap-align: none; /* Desabilita o snap no PC */
+            }
+        }
+        @media (min-width: 1280px) { /* xl breakpoint (PC) */
+            .item-card {
+                width: 100%; /* Ainda 100% da célula do grid */
+                margin-right: 0;
             }
         }
 
+        /* Estilos para imagens dentro dos cards */
         .item-card img {
             transition: transform 0.3s ease;
             border-radius: 0.75rem 0.75rem 0 0;
-            width: 100%; /* Ensure image fills card width */
-            height: 360px; /* INCREASED: Default height for mobile */
-            object-fit: cover; /* Cover the area without distortion */
-           height: 60vh;
-        }
-        /* Responsive adjustments for item-card img height */
-        @media (min-width: 640px) { /* sm breakpoint */
-            .item-card img {
-                height: 400px; /* INCREASED */
-            }
-        }
-        @media (min-width: 768px) { /* md breakpoint */
-            .item-card img {
-                height: 450px; /* INCREASED */
-            }
-        }
-        @media (min-width: 1024px) { /* lg breakpoint */
-            .item-card img {
-                height: 500px; /* INCREASED */
-            }
+            width: 100%; /* Garante que a imagem preencha a largura do card */
+            height: 100%; /* A imagem preenche 100% da altura do card */
+            object-fit: cover; /* Cobre a área sem distorção */
         }
 
+        /* Efeitos de hover para os cards */
         .item-card:hover {
             transform: translateY(-6px);
             box-shadow: 0 12px 20px -4px rgba(167, 139, 250, 0.2), 0 5px 10px -3px rgba(167, 139, 250, 0.15);
             border-color: #8b5cf6;
         }
 
-        .loader, .gemini-loader { /* Manter .gemini-loader por enquanto no CSS caso algum elemento ainda use */
+        /* Estilos para loaders */
+        .loader, .gemini-loader {
             border: 4px solid #4a0072;
             border-top: 4px solid #a78bfa;
             border-radius: 50%;
@@ -173,51 +169,53 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        /* Custom scrollbar for horizontal content (resultsGrid) */
+
+        /* Scrollbar customizada para a seção de rolagem horizontal */
         #resultsGrid::-webkit-scrollbar {
-            height: 10px; /* MADE VISIBLE AND THICKER */
+            height: 10px;
         }
         #resultsGrid::-webkit-scrollbar-track {
-            background: #1a1a1a; /* Dark track for visibility */
-            border-radius: 5px; /* Rounded track */
+            background: #1a1a1a;
+            border-radius: 5px;
         }
         #resultsGrid::-webkit-scrollbar-thumb {
-            background: #8b5cf6; /* Purple thumb */
-            border-radius: 5px; /* Rounded thumb */
+            background: #8b5cf6;
+            border-radius: 5px;
         }
         #resultsGrid::-webkit-scrollbar-thumb:hover {
-            background: #7c3aed; /* Slightly darker purple on hover */
+            background: #7c3aed;
         }
-        /* For modal body scrollbars (if they have overflow-y) - ORIGINAL DO USUÁRIO */
+        /* Scrollbar customizada para o corpo dos modais */
         .modal-body::-webkit-scrollbar, .episode-list-container::-webkit-scrollbar {
-            width: 0px; /* ORIGINAL DO USUÁRIO */
+            width: 8px;
         }
         .modal-body::-webkit-scrollbar-track, .episode-list-container::-webkit-scrollbar-track {
-            background: #1a1a1a; /* ORIGINAL DO USUÁRIO */
-            border-radius: 0px; /* ORIGINAL DO USUÁRIO */
+            background: #1a1a1a;
+            border-radius: 0px;
         }
         .modal-body::-webkit-scrollbar-thumb, .episode-list-container::-webkit-scrollbar-thumb {
-            background: #8b5cf6; /* ORIGINAL DO USUÁRIO */
-            border-radius: 0px; /* ORIGINAL DO USUÁRIO */
-            border: 2px solid #1a1a1a; /* ORIGINAL DO USUÁRIO */
+            background: #8b5cf6;
+            border-radius: 0px;
+            border: 2px solid #1a1a1a;
         }
         .modal-body::-webkit-scrollbar-thumb:hover, .episode-list-container::-webkit-scrollbar-thumb:hover {
-            background: #7c3aed; /* ORIGINAL DO USUÁRIO */
+            background: #7c3aed;
         }
 
+        /* Ajuste para iframes - ocupar 100% da largura do contêiner */
         #EmbedderIframeContainer iframe, #EpisodeEmbedderIframeContainer iframe {
-            width: 70%;
+            width: 100%;
             height: 300px;
             border-radius: 0.75rem;
             background-color: #000;
         }
-        .player-section, .seasons-section { /* Removido .gemini-section daqui */
+        .player-section, .seasons-section {
             margin-top: 25px;
             padding-top: 25px;
             border-top: 1px solid #4a0072;
         }
-        /* Removido estilos para .gemini-output e botões gemini específicos */
-        .action-button, .category-button, .episode-button, .season-button { /* Removido .gemini-button */
+        /* Estilos para botões de ação e categoria */
+        .action-button, .category-button, .episode-button, .season-button {
             background-color: #7c3aed;
             color: white;
             padding: 12px 20px;
@@ -232,22 +230,21 @@
             border: none;
             box-shadow: 0 3px 6px rgba(0,0,0,0.25);
         }
-        .action-button:hover, .category-button:hover, .episode-button:hover, .season-button:hover { /* Removido .gemini-button */
+        .action-button:hover, .category-button:hover, .episode-button:hover, .season-button:hover {
             background-color: #6d28d9;
             box-shadow: 0 5px 10px rgba(0,0,0,0.3);
             transform: translateY(-1px);
         }
-        .action-button:active, .category-button:active, .episode-button:active, .season-button:active { /* Removido .gemini-button */
+        .action-button:active, .category-button:active, .episode-button:active, .season-button:active {
             transform: translateY(0px);
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
-        .action-button:disabled, .category-button:disabled, .episode-button:disabled, .season-button:disabled { /* Removido .gemini-button */
+        .action-button:disabled, .category-button:disabled, .episode-button:disabled, .season-button:disabled {
             background-color: #581c87;
             cursor: not-allowed;
             box-shadow: none;
             transform: translateY(0px);
         }
-        /* category-button.active is already defined in your provided CSS */
         .season-button {
             width: 100%;
             justify-content: space-between;
@@ -289,12 +286,13 @@
             z-index: 2050;
             box-shadow: 0 4px 15px rgba(0,0,0,0.35);
         }
+        /* Estilos para títulos de seção */
         .section-title {
-            font-size: 2rem; /* text-3xl equivalent */
-            font-weight: 700; /* font-bold */
+            font-size: 2rem; /* Equivalente a text-3xl */
+            font-weight: 700; /* Negrito */
             color: #c4b5fd;
-            margin-bottom: 1.25rem; /* mb-5 */
-            padding-bottom: 0.75rem; /* pb-3 */
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
             border-bottom: 2px solid #581c87;
         }
         #episodePlayerTitle {
@@ -332,8 +330,9 @@
         <div id="loader" class="loader hidden"></div>
     </div>
 
-    <div class="w-full overflow-x-auto pb-4 flex-grow scroll-snap-type-x-mandatory">
-        <div id="resultsGrid" class="flex flex-nowrap pl-2 pr-2">
+    <div class="w-full overflow-x-auto pb-4 flex-grow min-h-[300px] sm:min-h-[350px] md:min-h-[400px] lg:min-h-[450px] xl:min-h-[500px]">
+        <div id="resultsGrid" class="flex flex-nowrap pl-2 pr-2 snap-x mandatory
+                                  lg:grid lg:grid-cols-4 lg:gap-4 lg:overflow-x-visible lg:snap-none lg:pl-4 lg:pr-4">
             </div>
     </div>
 
@@ -363,8 +362,8 @@
         </div>
     </div>
 
-    <footer class="text-center flex-shrink-0">
-        <p class="text-gray-500"></p>
+    <footer class="text-center flex-shrink-0 mt-8 py-4">
+        <p class="text-gray-500">Catálogo Suquin © 2025</p>
     </footer>
 
     <script src="script1.js"></script>
