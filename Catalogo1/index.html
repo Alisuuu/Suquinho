@@ -7,342 +7,61 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Estilos CSS gerais para o corpo da página */
-        html, body {
-            font-family: 'Inter', sans-serif;
-            background-color: #000000; /* AMOLED Black */
-            color: #e0e0e0;
-            overflow-x: hidden; /* Garante que não haja rolagem horizontal indesejada no body */
-            overflow-y: auto; /* Permite rolagem vertical quando o conteúdo excede a altura da tela */
-            min-height: 100vh; /* Garante que o body ocupe a altura mínima da viewport */
-            width: 100vw; /* Garante que o body ocupe a largura total da viewport */
-        }
-
-        /* Estilos base para modais */
-        .modal-base {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.92); /* Overlay mais escuro */
-            padding: 20px;
-            align-items: center; /* Centralização vertical do conteúdo do modal */
-            justify-content: center; /* Centralização horizontal do conteúdo do modal */
-        }
-        .modal-content-base {
-            background-color: #0a0a0a; /* Quase preto */
-            margin: auto; /* Usado com flex align/justify no modal-base */
-            padding: 25px; /* Preenchimento aumentado */
-            border: 1px solid #581c87; /* Borda roxa escura (violet-800) */
-            width: 100%;
-            border-radius: 1rem; /* Cantos arredondados (rounded-xl) */
-            position: relative;
-            color: #d1d5db;
-            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.1), 0 5px 10px rgba(139, 92, 246, 0.08); /* Sombra suave lilás */
-        }
-        /* Estilos específicos para o modal principal de item */
-        #itemModal .modal-content-base {
-            max-width: 850px;
-        }
-        /* Estilos específicos para o modal do player de episódio */
-        #episodePlayerModal .modal-content-base {
-            max-width: 700px;
-            background-color: #080808;
-        }
-        #episodePlayerModal {
-            z-index: 1050; /* Garante que esteja acima do modal principal */
-        }
-        /* Estilos para o botão de fechar modal */
-        .close-button {
-            color: #a78bfa; /* Lilás (violet-400) */
-            position: absolute;
-            top: 0px;
-            right: 5px;
-            font-size: 38px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: color 0.3s, transform 0.2s;
-        }
-        .close-button:hover,
-        .close-button:focus {
-            color: #c4b5fd;
-            transform: scale(1.1);
-        }
-        /* Estilos para o campo de busca */
-        .search-input {
-            background-color: transparent; /* Transparente para integração com o pai */
-            border: none; /* Sem borda */
-            color: #e0e0e0;
-            border-radius: 0.75rem;
-            padding: 0.5rem 0.75rem;
-            font-size: 0.9em;
-            box-sizing: border-box;
-            min-width: 0; /* Permite que o input encolha dentro do contêiner flex */
-        }
-        .search-input:focus {
-            outline: none;
-        }
-
-        /* Estilos para os cards (agora unificados para todas as seções) */
-        .item-card {
-            background-color: #101010;
-            border: 0px solid #252525;
-            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-            overflow: hidden;
-            border-radius: 0.75rem;
-            flex-shrink: 0; /* Impede que os cards encolham no layout flex móvel */
-            height: 100%; /* Garante que o card ocupe a altura total disponível no contêiner flex/grid */
-        }
-        /* Larguras responsivas para .item-card (mobile: rolagem lateral, PC: grid) */
-        .item-card {
-            width: calc(80vw - 1rem); /* Padrão para telas pequenas (mobile) */
-            margin-right: 0.5rem; /* Espaçamento entre os cards no mobile */
-            scroll-snap-align: start; /* Para o "snap" de rolagem no mobile */
-        }
-        @media (min-width: 640px) { /* sm breakpoint */
-            .item-card {
-                width: calc(45vw - 0.75rem);
-                margin-right: 0.75rem;
-            }
-        }
-        @media (min-width: 768px) { /* md breakpoint */
-            .item-card {
-                width: calc(30vw - 0.75rem);
-                margin-right: 0.75rem;
-            }
-        }
-        @media (min-width: 1024px) { /* lg breakpoint (PC) */
-            .item-card {
-                width: 100%; /* Preenche a célula do grid */
-                margin-right: 0; /* Remove a margem direita para o layout de grid */
-                scroll-snap-align: none; /* Desabilita o snap no PC */
-            }
-        }
-        @media (min-width: 1280px) { /* xl breakpoint (PC) */
-            .item-card {
-                width: 100%; /* Ainda 100% da célula do grid */
-                margin-right: 0;
-            }
-        }
-
-        /* Estilos para imagens dentro dos cards */
-        .item-card img {
-            transition: transform 0.3s ease;
-            border-radius: 0.75rem 0.75rem 0 0;
-            width: 100%; /* Garante que a imagem preencha a largura do card */
-            height: 100%; /* A imagem preenche 100% da altura do card */
-            object-fit: cover; /* Cobre a área sem distorção */
-        }
-
-        /* Efeitos de hover para os cards */
-        .item-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 12px 20px -4px rgba(167, 139, 250, 0.2), 0 5px 10px -3px rgba(167, 139, 250, 0.15);
-            border-color: #8b5cf6;
-        }
-
-        /* Estilos para loaders */
-        .loader, .gemini-loader {
-            border: 4px solid #4a0072;
-            border-top: 4px solid #a78bfa;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 5s linear infinite;
-        }
-        .loader {
-            width: 50px;
-            height: 50px;
-            margin: 25px auto;
-            border-width: 5px;
-        }
-        .gemini-loader {
-            display: inline-block;
-            vertical-align: middle;
-            margin-left: 10px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Scrollbar customizada para a seção de rolagem horizontal */
-        #resultsGrid::-webkit-scrollbar {
-            height: 0px;
-        }
-        #resultsGrid::-webkit-scrollbar-track {
-            background: #1a1a1a;
-            border-radius: 0px;
-        }
-        #resultsGrid::-webkit-scrollbar-thumb {
-            background: #8b5cf6;
-            border-radius: 0px;
-        }
-        #resultsGrid::-webkit-scrollbar-thumb:hover {
-            background: #7c3aed;
-        }
-        /* Scrollbar customizada para o corpo dos modais */
-        .modal-body::-webkit-scrollbar, .episode-list-container::-webkit-scrollbar {
-            width: 0px;
-        }
-        .modal-body::-webkit-scrollbar-track, .episode-list-container::-webkit-scrollbar-track {
-            background: #1a1a1a;
-            border-radius: 0px;
-        }
-        .modal-body::-webkit-scrollbar-thumb, .episode-list-container::-webkit-scrollbar-thumb {
-            background: #8b5cf6;
-            border-radius: 0px;
-            border: 2px solid #1a1a1a;
-        }
-        .modal-body::-webkit-scrollbar-thumb:hover, .episode-list-container::-webkit-scrollbar-thumb:hover {
-            background: #7c3aed;
-        }
-
-        /* Ajuste para iframes - ocupar 100% da largura do contêiner */
-        #EmbedderIframeContainer iframe, #EpisodeEmbedderIframeContainer iframe {
-            width: 100%;
-            height: 300px;
-            border-radius: 0.75rem;
-            background-color: #000;
-        }
-        .player-section, .seasons-section {
-            margin-top: 25px;
-            padding-top: 25px;
-            border-top: 1px solid #4a0072;
-        }
-        /* Estilos para botões de ação e categoria */
-        .action-button, .category-button, .episode-button, .season-button {
-            background-color: #7c3aed;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 0.75rem;
-            font-size: 0.95em;
-            font-weight: 500;
-            transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            margin-bottom: 10px;
-            border: none;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.25);
-        }
-        .action-button:hover, .category-button:hover, .episode-button:hover, .season-button:hover {
-            background-color: #6d28d9;
-            box-shadow: 0 5px 10px rgba(0,0,0,0.3);
-            transform: translateY(-1px);
-        }
-        .action-button:active, .category-button:active, .episode-button:active, .season-button:active {
-            transform: translateY(0px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        .action-button:disabled, .category-button:disabled, .episode-button:disabled, .season-button:disabled {
-            background-color: #581c87;
-            cursor: not-allowed;
-            box-shadow: none;
-            transform: translateY(0px);
-        }
-        .season-button {
-            width: 100%;
-            justify-content: space-between;
-            background-color: #2a0045;
-            margin-bottom: 6px;
-        }
-        .season-button.active {
-            background-color: #8b5cf6;
-        }
-        .episode-list-container {
-            max-height: 300px;
-            overflow-y: auto;
-            padding-right: 10px;
-            margin-top: 8px;
-            background-color: rgba(255,255,255,0.03);
-            border-radius: 0.5rem;
-            padding: 8px;
-        }
-        .episode-button {
-            width: 100%;
-            text-align: left;
-            padding: 10px 15px;
-            font-size: 0.9em;
-            background-color: #3c1a56;
-            margin-bottom: 5px;
-        }
-        .episode-button:hover {
-            background-color: #4a0072;
-        }
-        .toast-message {
-            position: fixed;
-            bottom: 25px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #a78bfa;
-            color: #0d0d0d;
-            padding: 12px 22px;
-            border-radius: 0.75rem;
-            z-index: 2050;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.35);
-        }
-        /* Estilos para títulos de seção */
-        .section-title {
-            font-size: 2rem; /* Equivalente a text-3xl */
-            font-weight: 700; /* Negrito */
-            color: #c4b5fd;
-            margin-bottom: 1.25rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 2px solid #581c87;
-        }
-        #episodePlayerTitle {
-            color: #c4b5fd;
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        /* NOVO: Estilos para os botões de rolagem */
-        .scroll-button {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: rgba(139, 92, 246, 0.7); /* Violeta semi-transparente */
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 10;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-        }
-        .scroll-button:hover {
-            background-color: rgba(139, 92, 246, 0.9); /* Mais opaco no hover */
-            transform: translateY(-50%) scale(1.1);
-        }
-        .scroll-button:active {
-            transform: translateY(-50%) scale(0.95);
-        }
-        .scroll-button.left {
-            left: 5px;
-        }
-        .scroll-button.right {
-            right: 5px;
-        }
-        /* Oculta os botões em telas grandes (PC) */
-        @media (min-width: 1024px) { /* lg breakpoint */
-            .scroll-button {
-                display: none;
-            }
-        }
+        html,body{font-family:'Inter',sans-serif;background-color:#000;color:#e0e0e0;overflow-x:hidden;overflow-y:hidden;min-height:100vh;width:100vw}
+        .modal-base{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;overflow:auto;background-color:rgba(0,0,0,.92);padding:20px;align-items:center;justify-content:center}
+        .modal-content-base{background-color:#0a0a0a;margin:auto;padding:25px;border:1px solid #581c87;width:100%;border-radius:1rem;position:relative;color:#d1d5db;box-shadow:0 10px 25px rgba(139,92,246,.1),0 5px 10px rgba(139,92,246,.08)}
+        #itemModal .modal-content-base{max-width:850px}
+        #episodePlayerModal .modal-content-base{max-width:700px;background-color:#080808}
+        #episodePlayerModal{z-index:1050}
+        .close-button{color:#a78bfa;position:absolute;top:0;right:5px;font-size:38px;font-weight:700;cursor:pointer;transition:color .3s,transform .2s}
+        .close-button:hover,.close-button:focus{color:#c4b5fd;transform:scale(1.1)}
+        .search-input{background-color:transparent;border:none;color:#e0e0e0;border-radius:.75rem;padding:.5rem .75rem;font-size:.9em;box-sizing:border-box;min-width:0}
+        .search-input:focus{outline:none}
+        .item-card{background-color:#101010;border:0 solid #252525;transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease;overflow:hidden;border-radius:.75rem;flex-shrink:0;display:flex;flex-direction:column}
+        .item-card{width:calc(90vw - 1rem);margin-right:.5rem;scroll-snap-align:start}
+        @media (min-width:640px){.item-card{width:calc(48vw - .75rem);margin-right:.75rem}}
+        @media (min-width:768px){.item-card{width:calc(32vw - .75rem);margin-right:.75rem}}
+        @media (min-width:1024px){.item-card{width:100%;margin-right:0;scroll-snap-align:none}}
+        @media (min-width:1280px){.item-card{width:100%;margin-right:0}}
+        .item-card img{transition:transform .3s ease;border-radius:.75rem .75rem 0 0;width:100%;height:29rem;object-fit:cover}
+        .item-card:hover{transform:translateY(-6px);box-shadow:0 12px 20px -4px rgba(167,139,250,.2),0 5px 10px -3px rgba(167,139,250,.15);border-color:#8b5cf6}
+        .item-card-content{padding:1rem;display:flex;flex-direction:column;flex-grow:1}
+        .item-card-content p{flex-grow:1;margin-bottom:.75rem}
+        .loader,.gemini-loader{border:4px solid #4a0072;border-top:4px solid #a78bfa;border-radius:50%;width:30px;height:30px;animation:spin 5s linear infinite}
+        .loader{width:50px;height:50px;margin:25px auto;border-width:5px}
+        .gemini-loader{display:inline-block;vertical-align:middle;margin-left:10px}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        #resultsGrid::-webkit-scrollbar{height:0}
+        #resultsGrid::-webkit-scrollbar-track{background:#1a1a1a;border-radius:0}
+        #resultsGrid::-webkit-scrollbar-thumb{background:#8b5cf6;border-radius:0}
+        #resultsGrid::-webkit-scrollbar-thumb:hover{background:#7c3aed}
+        .modal-body::-webkit-scrollbar,.episode-list-container::-webkit-scrollbar{width:0}
+        .modal-body::-webkit-scrollbar-track,.episode-list-container::-webkit-scrollbar-track{background:#1a1a1a;border-radius:0}
+        .modal-body::-webkit-scrollbar-thumb,.episode-list-container::-webkit-scrollbar-thumb{background:#8b5cf6;border-radius:0;border:2px solid #1a1a1a}
+        .modal-body::-webkit-scrollbar-thumb:hover,.episode-list-container::-webkit-scrollbar-thumb:hover{background:#7c3aed}
+        #EmbedderIframeContainer iframe,#EpisodeEmbedderIframeContainer iframe{width:70%;height:300px;border-radius:.75rem;background-color:#000}
+        .player-section,.seasons-section{margin-top:25px;padding-top:25px;border-top:1px solid #4a0072}
+        .action-button,.category-button,.episode-button,.season-button{background-color:#7c3aed;color:#fff;padding:12px 20px;border-radius:.75rem;font-size:.95em;font-weight:500;transition:background-color .2s,box-shadow .2s,transform .1s;cursor:pointer;display:inline-flex;align-items:center;margin-bottom:10px;border:none;box-shadow:0 3px 6px rgba(0,0,0,.25)}
+        .action-button:hover,.category-button:hover,.episode-button:hover,.season-button:hover{background-color:#6d28d9;box-shadow:0 5px 10px rgba(0,0,0,.3);transform:translateY(-1px)}
+        .action-button:active,.category-button:active,.episode-button:active,.season-button:active{transform:translateY(0);box-shadow:0 2px 4px rgba(0,0,0,.2)}
+        .action-button:disabled,.category-button:disabled,.episode-button:disabled,.season-button:disabled{background-color:#581c87;cursor:not-allowed;box-shadow:none;transform:translateY(0)}
+        .season-button{width:100%;justify-content:space-between;background-color:#2a0045;margin-bottom:6px}
+        .season-button.active{background-color:#8b5cf6}
+        .episode-list-container{max-height:300px;overflow-y:auto;padding-right:10px;margin-top:8px;background-color:rgba(255,255,255,.03);border-radius:.5rem;padding:8px}
+        .episode-button{width:100%;text-align:left;padding:10px 15px;font-size:.9em;background-color:#3c1a56;margin-bottom:5px}
+        .episode-button:hover{background-color:#4a0072}
+        .toast-message{position:fixed;bottom:25px;left:50%;transform:translateX(-50%);background-color:#a78bfa;color:#0d0d0d;padding:12px 22px;border-radius:.75rem;z-index:2050;box-shadow:0 4px 15px rgba(0,0,0,.35)}
+        .section-title{display:none;font-size:2rem;font-weight:700;color:#c4b5fd;margin-bottom:1.25rem;padding-bottom:.75rem;border-bottom:2px solid #581c87}
+        #episodePlayerTitle{color:#c4b5fd;font-size:1.5rem;font-weight:600;margin-bottom:1rem}
+        .scroll-button{position:absolute;top:50%;transform:translateY(-50%);background-color:rgba(139,92,246,.7);color:#fff;border:none;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10;transition:background-color .3s ease,transform .3s ease}
+        .scroll-button:hover{background-color:rgba(139,92,246,.9);transform:translateY(-50%) scale(1.1)}
+        .scroll-button:active{transform:translateY(-50%) scale(.95)}
+        .scroll-button.left{left:5px}
+        .scroll-button.right{right:5px}
+        @media (min-width:1024px){.scroll-button{display:none!important}}
     </style>
 </head>
 <body class="flex flex-col">
-
     <div class="container mx-auto px-4 pt-4 flex flex-col items-center flex-shrink-0 lg:max-w-screen-2xl">
         <div class="mb-4 w-full flex justify-center">
             <div class="rounded-full bg-purple-800 flex items-center p-1 w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-2xl">
@@ -352,46 +71,32 @@
                     </svg>
                     <span class="font-medium">Buscar</span>
                 </button>
-                <input type="text" id="searchInput"
-                       class="search-input flex-1 placeholder-gray-400"
-                       placeholder="Buscar por filmes ou séries...">
+                <input type="text" id="searchInput" class="search-input flex-1 placeholder-gray-400" placeholder="Buscar por filmes ou séries...">
             </div>
         </div>
-
         <nav class="mb-4 flex justify-around w-full max-w-md lg:max-w-3xl">
             <button id="btnExplore" class="category-button active">Explorar</button>
             <button id="btnMovies" class="category-button">Filmes</button>
             <button id="btnSeries" class="category-button">Séries</button>
         </nav>
-
         <h2 id="currentViewTitle" class="section-title text-center text-2xl mb-4 w-full lg:text-3xl">Últimos Lançamentos</h2>
         <div id="loader" class="loader hidden"></div>
     </div>
-
-    <div class="relative w-full pb-4 flex-grow min-h-[300px] sm:min-h-[350px] md:min-h-[400px] lg:min-h-[450px] xl:min-h-[500px]">
+    <div class="relative w-full flex-grow min-h-[660px] sm:min-h-[810px] md:min-h-[960px] lg:min-h-[1060px] xl:min-h-[1160px]">
         <button id="scrollLeftBtn" class="scroll-button left">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg>
         </button>
-
-        <div id="resultsGrid" class="flex flex-nowrap pl-2 pr-2 snap-x mandatory overflow-x-auto
-                                  lg:grid lg:grid-cols-4 lg:gap-4 lg:overflow-x-visible lg:snap-none lg:pl-4 lg:pr-4">
-            </div>
-
+        <div id="resultsGrid" class="flex flex-nowrap pl-2 pr-2 snap-x mandatory overflow-x-auto lg:grid lg:grid-cols-3 lg:gap-4 lg:overflow-x-visible lg:snap-none lg:pl-4 lg:pr-4"></div>
         <button id="scrollRightBtn" class="scroll-button right">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
         </button>
     </div>
-
-    <p id="noResults" class="text-center text-gray-500 hidden mt-12 text-lg flex-shrink-0"></p>
-
     <div id="itemModal" class="modal-base">
         <div class="modal-content-base">
             <span class="close-button" id="closeModalButton">×</span>
-            <div id="modalBody" class="modal-body max-h-[80vh] overflow-y-auto pr-3">
-            </div>
+            <div id="modalBody" class="modal-body max-h-[80vh] overflow-y-auto pr-3"></div>
         </div>
     </div>
-
     <div id="episodePlayerModal" class="modal-base">
         <div class="modal-content-base">
             <span class="close-button" id="closeEpisodeModalButton">×</span>
@@ -407,57 +112,15 @@
             </div>
         </div>
     </div>
+    <div id="toastMessage" class="toast-message hidden">Link copiado!</div>
     <script src="script1.js"></script>
     <script src="script2.js"></script>
     <script src="script3.js"></script>
     <script src="script4.js"></script>
     <script src="script5.js"></script>
-
     <script>
-        // JavaScript para a funcionalidade de rolagem dos botões
-        document.addEventListener('DOMContentLoaded', () => {
-            const resultsGrid = document.getElementById('resultsGrid');
-            const scrollLeftBtn = document.getElementById('scrollLeftBtn');
-            const scrollRightBtn = document.getElementById('scrollRightBtn');
-
-            if (resultsGrid && scrollLeftBtn && scrollRightBtn) {
-                scrollLeftBtn.addEventListener('click', () => {
-                    // Rola para a esquerda pela largura visível do contêiner
-                    resultsGrid.scrollBy({
-                        left: -resultsGrid.clientWidth,
-                        behavior: 'smooth'
-                    });
-                });
-
-                scrollRightBtn.addEventListener('click', () => {
-                    // Rola para a direita pela largura visível do contêiner
-                    resultsGrid.scrollBy({
-                        left: resultsGrid.clientWidth,
-                        behavior: 'smooth'
-                    });
-                });
-
-                // Ocultar/mostrar botões se não houver rolagem possível (para mobile)
-                // Isso pode ser aprimorado com um IntersectionObserver para maior precisão
-                const checkScrollButtonsVisibility = () => {
-                    // Apenas mostra os botões se a tela for menor que 'lg' (mobile/tablet)
-                    if (window.innerWidth < 1024) { // 1024px é o breakpoint 'lg' do Tailwind
-                        scrollLeftBtn.style.display = resultsGrid.scrollLeft > 0 ? 'flex' : 'none';
-                        scrollRightBtn.style.display = resultsGrid.scrollWidth > resultsGrid.clientWidth + resultsGrid.scrollLeft ? 'flex' : 'none';
-                    } else {
-                        // Esconde os botões em desktop
-                        scrollLeftBtn.style.display = 'none';
-                        scrollRightBtn.style.display = 'none';
-                    }
-                };
-
-                // Verifica a visibilidade ao carregar e ao rolar
-                resultsGrid.addEventListener('scroll', checkScrollButtonsVisibility);
-                window.addEventListener('resize', checkScrollButtonsVisibility);
-                // Chama uma vez para definir o estado inicial
-                checkScrollButtonsVisibility();
-            }
-        });
+        function showToast(message){const toastMessage=document.getElementById('toastMessage');toastMessage.textContent=message;toastMessage.classList.remove('hidden');setTimeout(()=>{toastMessage.classList.add('hidden')},3000)}
+        document.addEventListener('DOMContentLoaded',()=>{const resultsGrid=document.getElementById('resultsGrid');const scrollLeftBtn=document.getElementById('scrollLeftBtn');const scrollRightBtn=document.getElementById('scrollRightBtn');if(resultsGrid&&scrollLeftBtn&&scrollRightBtn){scrollLeftBtn.addEventListener('click',()=>{resultsGrid.scrollBy({left:-resultsGrid.clientWidth,behavior:'smooth'})});scrollRightBtn.addEventListener('click',()=>{resultsGrid.scrollBy({left:resultsGrid.clientWidth,behavior:'smooth'})});const checkScrollButtonsVisibility=()=>{if(window.innerWidth<1024){scrollLeftBtn.style.display=resultsGrid.scrollLeft>0?'flex':'none';scrollRightBtn.style.display=resultsGrid.scrollWidth>resultsGrid.clientWidth+resultsGrid.scrollLeft+1?'flex':'none'}else{scrollLeftBtn.style.display='none';scrollRightBtn.style.display='none'}};resultsGrid.addEventListener('scroll',checkScrollButtonsVisibility);window.addEventListener('resize',checkScrollButtonsVisibility);checkScrollButtonsVisibility()}})
     </script>
 </body>
 </html>
