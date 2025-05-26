@@ -213,9 +213,9 @@ body {
 
 /* --- ESTILOS DO BOTÃO DE EXCLAMAÇÃO E SUA MENSAGEM --- */
 .exclamation-button {
-    position: fixed; top: 20px; right: 20px; z-index: 1000;
+    position: fixed; top: 30px; right: 20px; z-index: 1000;
     width: 40px; height: 40px;
-    background-color: #593BA2;
+    background-color: none;
     border-radius: 50%;
     display: flex; justify-content: center; align-items: center;
     color: #fff; font-size: 24px; font-weight: bold;
@@ -224,7 +224,7 @@ body {
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 .exclamation-button:hover {
-    background-color: #6C4FB7;
+    background-color: none;
     transform: scale(1.05);
 }
 .exclamation-button:active {
