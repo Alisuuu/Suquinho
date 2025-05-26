@@ -2,89 +2,98 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Página Inicial</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="../Styles/styles.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"> <!- Adicione esta linha ->
+    <link rel="stylesheet" href="styles.css"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 <body>
-    <a href="javascript:history.back()" style="position: fixed; top: 20px; left: 20px; z-index: 9999; text-decoration: none; -webkit-tap-highlight-color: transparent;
-user-select: none;">
-  <div style="
-    width: 50px;
-    height: 50px;
-    background-color: #111;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-  ">
-    <i class="fas fa-arrow-left" style="color: white; font-size: 22px; line-height: 1;"></i>
-  </div>
+    <a href="javascript:history.back()" style="position: fixed; top: 20px; left: 20px; z-index: 9999; text-decoration: none; -webkit-tap-highlight-color: transparent; user-select: none;">
+        <div style="width: 50px; height: 50px; background-color: #111; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-sizing: border-box;">
+            <i class="fas fa-arrow-left" style="color: white; font-size: 22px; line-height: 1;"></i>
+        </div>
     </a>
-  <div class="stars" id="stars"></div>
+
+    <div class="stars" id="stars"></div>
+
     <div class="container">
         <div class="icons">
             <a href="https://hyperbeam.com/app" target="_blank" class="icon-link">
-                <i class="fas fa-user icon-img"></i> <span class="icon-label">Conta</span> </a>
+                <i class="fas fa-user icon-img"></i> <span class="icon-label">Conta</span>
+            </a>
         </div>
 
         <div class="link-box">
             <input type="text" id="link-input" placeholder="Insira o link aqui" class="link-input">
             <button id="go-btn" class="go-btn">
-                <i class="fas fa-arrow-right"></i> </button>
+                <i class="fas fa-arrow-right"></i>
+            </button>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script> <!- Adicione esta linha ->
-<script>
-        // Captura o botão "Ir" e o campo de entrada
+    <div class="exclamation-button" id="exclamationButton">!</div>
+    <div class="notification-message-box" id="notificationMessageBox">
+        O botão de convidar por link não está funcionando, adicione o seu amigo para o chamar.
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <script>
+        // Lógica para o campo de link e botão "Ir"
         const goBtn = document.getElementById('go-btn');
         const linkInput = document.getElementById('link-input');
 
-        // Adiciona um evento de clique ao botão "Ir"
-        goBtn.addEventListener('click', () => {
-            const link = linkInput.value.trim(); // Pega o valor do campo de texto e remove espaços em branco
+        if (goBtn && linkInput) {
+            goBtn.addEventListener('click', () => {
+                const link = linkInput.value.trim();
+                if (link) {
+                    window.location.href = link;
+                } else {
+                    Swal.fire({
+                      icon: 'warning',
+                      title: 'Atenção!',
+                      text: 'Por favor, insira um link válido.',
+                    });
+                }
+            });
 
-            // Verifica se o link não está vazio
-            if (link) {
-                // Redireciona para o link inserido
-                window.location.href = link;
-            } else {
-                // Alerta o usuário se o campo estiver vazio
-                Swal.fire({
-                  icon: 'warning',
-                  title: 'Atenção!',
-                  text: 'Por favor, insira um link válido.',
-                })
+            linkInput.addEventListener('keypress', (event) => {
+                if (event.key === 'Enter') {
+                    goBtn.click();
+                }
+            });
+        }
+
+        // Lógica para as estrelas dinâmicas
+        const starContainer = document.getElementById('stars');
+        const colors = ['#ffffff', '#ffd700', '#00ffff', '#ff69b4', '#ffa07a'];
+
+        if (starContainer) {
+            for (let i = 0; i < 40; i++) {
+                const star = document.createElement('div');
+                const size = Math.random() * 3 + 1;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                star.classList.add('star');
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.background = color;
+                star.style.animationDuration = `${Math.random() * 2 + 1}s`;
+                starContainer.appendChild(star);
             }
-        });
+        }
 
-        // Permite pressionar "Enter" no campo de texto para acionar o botão "Ir"
-        linkInput.addEventListener('keypress', (event) => {
-            if (event.key === 'Enter') {
-                goBtn.click(); // Simula o clique no botão "Ir"
-            }
-        });
-// Criar estrelas dinamicamente
-const starContainer = document.getElementById('stars');
-const colors = ['#ffffff', '#ffd700', '#00ffff', '#ff69b4', '#ffa07a'];
+        // Lógica para o botão de exclamação e a caixa de mensagem
+        const exclamationButton = document.getElementById('exclamationButton');
+        const notificationMessageBox = document.getElementById('notificationMessageBox');
 
-for (let i = 0; i < 40; i++) {
-  const star = document.createElement('div');
-  const size = Math.random() * 3 + 1;
-  const color = colors[Math.floor(Math.random() * colors.length)];
-  star.classList.add('star');
-  star.style.width = `${size}px`;
-  star.style.height = `${size}px`;
-  star.style.top = `${Math.random() * 100}%`;
-  star.style.left = `${Math.random() * 100}%`;
-  star.style.background = color;
-  star.style.animationDuration = `${Math.random() * 2 + 1}s`;
-  starContainer.appendChild(star);
-}
+        if (exclamationButton && notificationMessageBox) {
+            exclamationButton.addEventListener('click', () => {
+                notificationMessageBox.classList.toggle('show');
+            });
+        } else {
+            console.warn('Um dos elementos (exclamationButton ou notificationMessageBox) não foi encontrado no DOM.');
+        }
     </script>
 </body>
 </html>
