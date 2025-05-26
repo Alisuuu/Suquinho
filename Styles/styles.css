@@ -5,35 +5,38 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    background-color: #000000;
+    background-color: #000;
     color: white;
     overflow: hidden;
 }
+
 .stars {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  z-index: -2;
-  overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+    overflow: hidden;
 }
 
 .star {
-  position: absolute;
-  border-radius: 50%;
-  opacity: 0.6;
-  animation: twinkle 2s infinite ease-in-out;
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.6;
+    animation: twinkle 2s infinite ease-in-out;
 }
+
 @keyframes twinkle {
-  0%, 100% { opacity: 0.2; }
-  50% { opacity: 1; }
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 1; }
 }
+
 .container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 100vh;
-    background-color: #000000;
+    background-color: #000;
     color: white;
 }
 
@@ -58,35 +61,18 @@ body {
     overflow: hidden;
     opacity: 0;
     transform: translateY(20px);
-    -webkit-tap-highlight-color: transparent; /* Adicionado para remover o destaque ao toque */
-}
-
-@keyframes fadeInUp {
-    0% {
-        opacity: 0;
-        transform: translateY(1px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(1px);
-    }
-}
-
-.icons a {
+    -webkit-tap-highlight-color: transparent;
     animation: fadeInUp 0s ease forwards;
 }
 
-.icons a:nth-child(1) {
-    animation-delay: 0.0s;
+@keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(1px); }
+    100% { opacity: 1; transform: translateY(1px); }
 }
 
-.icons a:nth-child(2) {
-    animation-delay: 0.0s;
-}
-
-.icons a:nth-child(3) {
-    animation-delay: 0.0s;
-}
+.icons a:nth-child(1) { animation-delay: 0s; }
+.icons a:nth-child(2) { animation-delay: 0s; }
+.icons a:nth-child(3) { animation-delay: 0s; }
 
 .icons a::before {
     content: '';
@@ -97,7 +83,7 @@ body {
     height: 300%;
     background: radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent);
     transform: translate(-50%, -50%) scale(0);
-    transition: transform 0.0s ease;
+    transition: transform 0s ease;
     opacity: 0;
 }
 
@@ -145,7 +131,7 @@ body {
     border: 2px solid #593BA2;
     border-radius: 5px;
     width: 200px;
-    transition: border-color 0.0s ease;
+    transition: border-color 0s ease;
     background-color: rgba(255, 255, 255, 0.8);
     color: #A784FD;
 }
@@ -162,13 +148,13 @@ body {
     padding: 10px 20px;
     border-radius: 50%;
     cursor: pointer;
-    transition: background-color 0.0s ease, transform 0.2s ease;
+    transition: background-color 0s ease, transform 0.2s ease;
     display: flex;
     justify-content: center;
     align-items: center;
     width: 50px;
     height: 50px;
-    -webkit-tap-highlight-color: transparent; /* Adicionado para remover o destaque ao toque */
+    -webkit-tap-highlight-color: transparent;
 }
 
 .go-btn i {
@@ -185,84 +171,82 @@ body {
 }
 
 @media (max-width: 600px) {
-    .icons {
-        gap: 20px;
-    }
-    .icons a {
-        width: 100px;
-        height: 100px;
-    }
-    .icons img, .icons i {
-        width: 50px;
-        height: 50px;
-    }
-    .icons i {
-        font-size: 40px;
-    }
-    .link-box {
-        flex-direction: column;
-        gap: 10px;
-    }
-    .link-input {
-        width: 80%;
-    }
-    .go-btn {
-        width: 0%;
-        border-radius: 100px;
-        height: 40px;
-    }
+    .icons { gap: 20px; }
+    .icons a { width: 100px; height: 100px; }
+    .icons img, .icons i { width: 50px; height: 50px; }
+    .icons i { font-size: 40px; }
+    .link-box { flex-direction: column; gap: 10px; }
+    .link-input { width: 80%; }
+    .go-btn { width: 0%; border-radius: 100px; height: 40px; }
 }
-/* Cor de fundo do modal */
+
+/* Estilos para o SweetAlert2 */
 .swal2-popup {
-  background-color: #121212 !important;
-  width: 60%;
-  border-radius: 40px;
-  height: 80%;
+    background-color: #121212 !important;
+    width: 60%;
+    border-radius: 40px;
+    height: 80%;
 }
-
-/* Cor do título */
 .swal2-title {
-  color: #593BA2 !important;
+    color: #593BA2 !important;
 }
-
-/* Cor do texto da mensagem */
 .swal2-html-container {
-  color: #495057 !important;
+    color: #495057 !important;
 }
-
-/* Cor de fundo do botão de confirmação */
 .swal2-confirm {
-  background-color: #593BA2 !important;
-  border-color: #593BA2 !important;
-  color: white !important;
-  border-radius: 100px;
+    background-color: #593BA2 !important;
+    border-color: #593BA2 !important;
+    color: white !important;
+    border-radius: 100px;
 }
-
 .swal2-confirm:hover {
-  background-color: #1e7e34 !important;
-} 
-
-/* Cor de fundo do botão de cancelar (se houver) */
+    background-color: #1e7e34 !important;
+}
 .swal2-cancel {
-  background-color: #593BA2 !important;
-  border-color: #dc3545 !important;
-  color: white !important;
+    background-color: #593BA2 !important;
+    border-color: #dc3545 !important;
+    color: white !important;
 }
-
 .swal2-cancel:hover {
-  background-color: #c82333 !important;
-}
-.stars {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  z-index: -2;
-  overflow: hidden;
+    background-color: #c82333 !important;
 }
 
-.star {
-  position: absolute;
-  border-radius: 50%;
-  opacity: 0.6;
-  animation: twinkle 2s infinite ease-in-out;
+/* --- ESTILOS DO BOTÃO DE EXCLAMAÇÃO E SUA MENSAGEM --- */
+.exclamation-button {
+    position: fixed; top: 20px; right: 20px; z-index: 1000;
+    width: 40px; height: 40px;
+    background-color: #593BA2;
+    border-radius: 50%;
+    display: flex; justify-content: center; align-items: center;
+    color: #fff; font-size: 24px; font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.exclamation-button:hover {
+    background-color: #6C4FB7;
+    transform: scale(1.05);
+}
+.exclamation-button:active {
+    transform: scale(0.95);
+}
+
+.notification-message-box {
+    position: fixed; top: 70px; right: 20px; z-index: 999;
+    background-color: #1a1a1a;
+    border: 1px solid #593BA2;
+    border-radius: 8px;
+    padding: 10px 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+    max-width: 250px;
+    color: #e0e0e0;
+    font-size: 14px;
+    line-height: 1.4;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+.notification-message-box.show {
+    display: block;
+    opacity: 1;
 }
