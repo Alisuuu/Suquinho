@@ -3,7 +3,7 @@ html, body {
     font-family: 'Inter', sans-serif;
     background-color: #000;
     color: #e0e0e0;
-    overflow: auto; /* Prevents all scrolling on the main page */
+    overflow-y: auto; /* Prevents all scrolling on the main page */
     height: 100vh;
     width: 100vw;
 }
