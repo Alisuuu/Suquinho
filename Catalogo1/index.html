@@ -192,13 +192,13 @@
         .modal-body::-webkit-scrollbar-track,
         .episode-list-container::-webkit-scrollbar-track {
             background: #1a1a1a;
-            border-radius: 0;
+            border-radius: 10;
         }
 
         .modal-body::-webkit-scrollbar-thumb,
         .episode-list-container::-webkit-scrollbar-thumb {
             background: #8b5cf6;
-            border-radius: 0;
+            border-radius: 10;
             border: 2px solid #1a1a1a;
         }
 
@@ -241,7 +241,7 @@
             align-items: center;
             margin-bottom: 10px;
             border: none;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, .25);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 8.25);
         }
 
         .action-button:hover,
@@ -249,14 +249,16 @@
         .episode-button:hover,
         .season-button:hover {
             background-color: #6d28d9;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, .3);
-            
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 10.3);
+            transform: translateY(-1px);
+        }
 
         .action-button:active,
         .category-button:active,
         .episode-button:active,
         .season-button:active {
-            box-shadow: 0 2px 4px rgba(0, 0, 0, .2);
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 9.2);
         }
 
         .action-button:disabled,
@@ -266,6 +268,7 @@
             background-color: #581c87;
             cursor: not-allowed;
             box-shadow: none;
+            transform: translateY(0);
         }
 
         /* Season buttons */
@@ -287,7 +290,7 @@
             padding-right: 10px;
             margin-top: 8px;
             background-color: rgba(255, 255, 255, .03);
-            border-radius: .5rem;
+            border-radius: 2.5rem;
             padding: 8px;
         }
 
