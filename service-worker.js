@@ -1,7 +1,7 @@
 const CACHE_NAME = 'suquinho-cache-v1';
 
 const urlsToCache = [
-  '/', '/styles.css', '/script.js', '/favicon.ico', '/nave.png',
+  '/index.html', '/styles.css', '/script.js', '/favicon.ico', '/nave.png',
   '/p.png', '/p2.png', '/planeta.webp',
   '/not2/index.html', '/Hyper/script.js',
   '/links/links.txt', '/links/script.js', '/Styles/styles.css', 'Catalogo1/script1.js', 'Catalogo1/script2.js', 'Catalogo1/script3.js', 'Catalogo1/script4.js', 'Catalogo1/script5.js', 'Catalogo1/index.html',
