@@ -219,13 +219,11 @@
         let iframeLoadFired = false; 
 
         newsFrame.addEventListener('load', function handleIframeLoad() {
-          // Verifica se o evento load já foi disparado para este src específico para evitar múltiplos hides
-          // Isso é útil se o iframe fizer reloads internos que disparam o evento 'load'
           if (iframeLoadFired && newsFrame.dataset.lastLoadedSrc === this.src) {
             return; 
           }
           iframeLoadFired = true;
-          newsFrame.dataset.lastLoadedSrc = this.src; // Armazena o src que disparou o load
+          newsFrame.dataset.lastLoadedSrc = this.src;
           console.log("Iframe 'load' event disparado. Src:", this.src);
           
           setTimeout(() => {
@@ -248,13 +246,37 @@
         }
       }
 
+      // Contador de cliques para o Easter Egg
       const suquinhoBtn = document.getElementById('suquinhoBtn');
+      let clickCount = 0;
+      const CLICKS_NEEDED = 10;
+      const TIMEOUT_DURATION = 2000; // 2 segundos para resetar o contador
+      let clickTimeout;
+      
       if (suquinhoBtn) {
         suquinhoBtn.addEventListener('click', () => {
+          // Resetar contador se passou muito tempo desde o último clique
+          clearTimeout(clickTimeout);
+          clickTimeout = setTimeout(() => {
+            clickCount = 0;
+            console.log('Contador de cliques resetado');
+          }, TIMEOUT_DURATION);
+          
+          // Incrementar contador
+          clickCount++;
+          console.log(`Clique ${clickCount} de ${CLICKS_NEEDED}`);
+          
+          // Animação normal
           suquinhoBtn.classList.toggle('enlarged');
           setTimeout(() => {
             suquinhoBtn.classList.remove('enlarged');
-          }, 300); 
+          }, 300);
+          
+          // Verificar se atingiu o número necessário de cliques
+          if (clickCount >= CLICKS_NEEDED) {
+            console.log('Easter Egg ativado! Redirecionando para o jogo...');
+            window.location.href = 'game/index.html';
+          }
         });
       }
 
@@ -263,26 +285,21 @@
         button.addEventListener('click', function(event) {
           event.preventDefault(); 
           const targetUrl = this.href;
-          // const currentFrameSrc = newsFrame ? newsFrame.src : ''; // Não é mais necessário para a lógica especial de reload aqui
           const navigationDelay = 50; 
 
           setTimeout(() => {
-            // Como o botão de notícias foi removido, a lógica especial para recarregar o iframe
-            // se o link for o mesmo do feed de notícias não será mais acionada por um botão dedicado.
-            // Se algum outro botão, por acaso, apontar para a URL do iframe, ele recarregaria o iframe.
-            // Mas, geralmente, os outros botões navegarão para outras páginas.
             if (newsFrame && targetUrl === newsFrame.src) {
                 if(newsFrame.contentWindow) { 
                     try {
-                        newsFrame.contentWindow.location.reload(); // Tenta um reload interno
+                        newsFrame.contentWindow.location.reload();
                         console.log("Iframe recarregado (mesmo link).");
                     } catch (e) {
                         console.error("Erro ao tentar recarregar o iframe:", e);
-                        newsFrame.src = targetUrl; // Fallback: reseta o src
+                        newsFrame.src = targetUrl;
                     }
                 }
             } else if (targetUrl && targetUrl !== window.location.href + "#" && !targetUrl.toLowerCase().startsWith('javascript:')) {
-              window.location.href = targetUrl; // Navega a página principal para outros links
+              window.location.href = targetUrl;
             }
           }, navigationDelay);
         });
