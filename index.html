@@ -3,53 +3,301 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
-  <title>Suquinho</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js" defer></script>
-  <script src="script.js" defer></script>
+  <title>Suquinho News Portal v7</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* Reset básico e estilos globais */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: black; 
+      color: white;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      width: 100vw;
+      position: relative;
+    }
+
+    /* Iframe de Tela Cheia para Notícias */
+    #newsFrame {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      z-index: 0; 
+      filter: brightness(0.7) contrast(0.95); 
+      background-color: #1a1a1a; 
+    }
+
+    /* Barra do topo com o logo "Suquinho" */
+    .top-bar { 
+      display: flex; 
+      justify-content: center; 
+      align-items: center;
+      padding: 15px;
+      z-index: 1000; 
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: auto; 
+      background-color: rgba(0,0,0,0.3); 
+      border-radius: 0 0 10px 10px; 
+    }
+    #suquinhoBtn { 
+      width: 55px;
+      height: 55px;
+      object-fit: contain; 
+      cursor: pointer;
+      transition: transform 0.3s ease; 
+      -webkit-tap-highlight-color: transparent;
+    }
+    #suquinhoBtn:hover { transform: scale(1.1); }
+    #suquinhoBtn.enlarged { transform: scale(1.3); }
+
+    /* Botões Flutuantes */
+    .sidebar-buttons { 
+      position: fixed; 
+      left: 10px; 
+      top: 50%; 
+      transform: translateY(-50%);
+      display: flex; 
+      flex-direction: column; 
+      align-items: center;
+      padding: 10px 5px; 
+      z-index: 999; 
+      gap: 18px; 
+      pointer-events: none; 
+    }
+    .sidebar-buttons > * {
+        pointer-events: auto; 
+    }
+    .icon-button {
+      background-color: rgba(106, 13, 173, 0.9); 
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 50%;
+      width: 60px; 
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px; 
+      color: white;
+      cursor: pointer;
+      transition: transform 0.25s ease-out, background-color 0.25s ease-out, box-shadow 0.25s ease-out;
+      -webkit-tap-highlight-color: transparent;
+      text-decoration: none; 
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5); 
+    }
+    .icon-button img {
+      width: 32px; 
+      height: 32px;
+    }
+    .icon-button:hover {
+      transform: scale(1.12) translateY(-2px) rotate(3deg); 
+      background-color: #8a2be2; 
+      box-shadow: 0 7px 22px rgba(138, 43, 226, 0.6);
+    }
+    .icon-button:active { transform: scale(1.03); }
+
+    /* Animação de Carregamento com a Nave */
+    .loading-spaceship {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 180px; 
+      height: auto;
+      z-index: 2000; 
+      animation: spinAndBob 2s linear infinite;
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.7s ease-out, visibility 0s linear 0s; 
+    }
+    .loading-spaceship.hidden {
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.7s ease-out, visibility 0s linear 0.7s; 
+    }
+    @keyframes spinAndBob {
+      0% { transform: translate(-50%, -50%) rotate(0deg) translateY(0px) scale(1); }
+      25% { transform: translate(-50%, -50%) rotate(90deg) translateY(-15px) scale(1.05); }
+      50% { transform: translate(-50%, -50%) rotate(180deg) translateY(0px) scale(1); }
+      75% { transform: translate(-50%, -50%) rotate(270deg) translateY(15px) scale(1.05); }
+      100% { transform: translate(-50%, -50%) rotate(360deg) translateY(0px) scale(1); }
+    }
+    
+    /* RESPONSIVIDADE */
+    @media screen and (max-width: 768px) { 
+      #suquinhoBtn { width: 50px; height: 50px; }
+      .sidebar-buttons { left: 8px; padding: 8px 4px; gap: 15px; } 
+      .icon-button { 
+        width: 56px; 
+        height: 56px; 
+        font-size: 26px; 
+      }
+      .icon-button img { 
+        width: 30px; 
+        height: 30px; 
+      }
+      .loading-spaceship { width: 150px; }
+    }
+
+    @media screen and (max-width: 480px) { 
+      #suquinhoBtn { width: 45px; height: 45px; }
+      .top-bar { padding: 10px; }
+      .sidebar-buttons { left: 5px; padding: 6px 3px; gap: 12px; }
+      .icon-button { 
+        width: 48px; 
+        height: 48px; 
+        font-size: 22px; 
+      }
+      .icon-button img { 
+        width: 26px; 
+        height: 26px; 
+      }
+      .loading-spaceship { width: 120px; }
+    }
+
+    @media screen and (max-height: 450px) and (orientation: landscape) and (max-width: 768px) {
+        #suquinhoBtn { width: 42px; height: 42px; }
+        .sidebar-buttons { gap: 10px; padding: 5px 2px; }
+        .icon-button {
+            width: 44px;
+            height: 44px;
+            font-size: 20px;
+        }
+        .icon-button img {
+            width: 23px;
+            height: 23px;
+        }
+        .loading-spaceship { width: 110px; }
+    }
+  </style>
 </head>
 <body>
-  <div class="stars" id="stars"></div>
+
+  <iframe id="newsFrame" src="https://feed-pearl.vercel.app/" title="Feed de Notícias"></iframe>
+
+  <img src="nave.png" class="loading-spaceship" id="loadingSpaceship" alt="Carregando..." />
 
   <div class="top-bar">
     <img src="p2.png" alt="Suquinho" id="suquinhoBtn">
   </div>
 
-  <div class="glass-box">
-    <h2></h2>
-    <div class="grid">
-      <a href="Hyper/hyper" class="icon-button">
-        <img src="p.png" alt="Gato">
-      </a>
-      <a href="Yt/yt" class="icon-button">
-        <i class="fa-brands fa-youtube"></i>
-      </a>
-      <a href="not2/index" class="icon-button">
-        <i class="fa-solid fa-cube"></i>
-      </a>
-      <a href="links/links" class="icon-button">
-        <i class="fa-solid fa-link"></i>
-      </a>
-      <a href="Catalogo1/index" class="icon-button">
-        <i class="fa-solid fa-film"></i>
-      </a>
-  <a href="https://feed-pearl.vercel.app/" class="icon-button">
-<i class="fa-solid fa-newspaper"></i>
-      </a>
+  <div class="sidebar-buttons">
+    <a href="Hyper/hyper" class="icon-button" title="Hyper">
+      <img src="p.png" alt="Gato">
+    </a>
+    <a href="Yt/yt" class="icon-button" title="YouTube">
+      <i class="fa-brands fa-youtube"></i>
+    </a>
+    <a href="not2/index" class="icon-button" title="Not2">
+      <i class="fa-solid fa-cube"></i>
+    </a>
+    <a href="links/links" class="icon-button" title="Links">
+      <i class="fa-solid fa-link"></i>
+    </a>
+    <a href="Catalogo1/index" class="icon-button" title="Catálogo">
+      <i class="fa-solid fa-film"></i>
+    </a>
     </div>
-  </div>
-  <img src="planeta.webp" class="planet" alt="Planeta" />
-  <img src="nave.png" class="spaceship" alt="Nave" />
+
   <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js')
-      .then(function (registration) {
-        console.log('Service Worker registrado com sucesso:', registration);
-      })
-      .catch(function (error) {
-        console.log('Erro ao registrar o Service Worker:', error);
+    document.addEventListener('DOMContentLoaded', function() {
+      const newsFrame = document.getElementById('newsFrame');
+      const loadingSpaceship = document.getElementById('loadingSpaceship');
+
+      if (newsFrame && loadingSpaceship) {
+        console.log("Inicializando: Nave de carregamento deve estar visível.");
+        let iframeLoadFired = false; 
+
+        newsFrame.addEventListener('load', function handleIframeLoad() {
+          // Verifica se o evento load já foi disparado para este src específico para evitar múltiplos hides
+          // Isso é útil se o iframe fizer reloads internos que disparam o evento 'load'
+          if (iframeLoadFired && newsFrame.dataset.lastLoadedSrc === this.src) {
+            return; 
+          }
+          iframeLoadFired = true;
+          newsFrame.dataset.lastLoadedSrc = this.src; // Armazena o src que disparou o load
+          console.log("Iframe 'load' event disparado. Src:", this.src);
+          
+          setTimeout(() => {
+            loadingSpaceship.classList.add('hidden');
+            console.log("Classe '.hidden' adicionada à nave de carregamento.");
+          }, 300);
+        });
+
+        newsFrame.addEventListener('error', function() {
+          console.error("Iframe 'error' event disparado.");
+          loadingSpaceship.classList.add('hidden');
+          console.log("Classe '.hidden' adicionada à nave devido a erro no iframe.");
+        });
+      } else {
+        if (!newsFrame) console.error("Elemento newsFrame não encontrado!");
+        if (!loadingSpaceship) {
+            console.error("Elemento loadingSpaceship não encontrado!");
+        } else {
+            loadingSpaceship.classList.add('hidden');
+        }
+      }
+
+      const suquinhoBtn = document.getElementById('suquinhoBtn');
+      if (suquinhoBtn) {
+        suquinhoBtn.addEventListener('click', () => {
+          suquinhoBtn.classList.toggle('enlarged');
+          setTimeout(() => {
+            suquinhoBtn.classList.remove('enlarged');
+          }, 300); 
+        });
+      }
+
+      const iconButtons = document.querySelectorAll('.icon-button');
+      iconButtons.forEach(button => { 
+        button.addEventListener('click', function(event) {
+          event.preventDefault(); 
+          const targetUrl = this.href;
+          // const currentFrameSrc = newsFrame ? newsFrame.src : ''; // Não é mais necessário para a lógica especial de reload aqui
+          const navigationDelay = 50; 
+
+          setTimeout(() => {
+            // Como o botão de notícias foi removido, a lógica especial para recarregar o iframe
+            // se o link for o mesmo do feed de notícias não será mais acionada por um botão dedicado.
+            // Se algum outro botão, por acaso, apontar para a URL do iframe, ele recarregaria o iframe.
+            // Mas, geralmente, os outros botões navegarão para outras páginas.
+            if (newsFrame && targetUrl === newsFrame.src) {
+                if(newsFrame.contentWindow) { 
+                    try {
+                        newsFrame.contentWindow.location.reload(); // Tenta um reload interno
+                        console.log("Iframe recarregado (mesmo link).");
+                    } catch (e) {
+                        console.error("Erro ao tentar recarregar o iframe:", e);
+                        newsFrame.src = targetUrl; // Fallback: reseta o src
+                    }
+                }
+            } else if (targetUrl && targetUrl !== window.location.href + "#" && !targetUrl.toLowerCase().startsWith('javascript:')) {
+              window.location.href = targetUrl; // Navega a página principal para outros links
+            }
+          }, navigationDelay);
+        });
       });
-  }
+
+      if ('serviceWorker' in navigator) { 
+        navigator.serviceWorker.register('service-worker.js')
+          .then(function (registration) {
+            console.log('Service Worker registrado com sucesso:', registration);
+          })
+          .catch(function (error) {
+            console.log('Erro ao registrar o Service Worker:', error);
+          });
+      }
+    });
   </script>
 </body>
 </html>
