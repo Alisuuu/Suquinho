@@ -63,7 +63,7 @@ body {
   align-items: center;
   padding: 10px 5px;
   z-index: 999;
-  gap: 28px;
+  gap: 28px; /* Base gap */
   pointer-events: none;
 }
 
@@ -72,15 +72,15 @@ body {
 }
 
 .icon-button {
-  background-color: rgba(89, 59, 162, 0.25); /* Nova cor #593BA2 com transparência */
+  background-color: rgba(89, 59, 162, 0.25); 
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 50%;
-  width: 85px;
-  height: 85px;
+  width: 85px; /* Base width */
+  height: 85px; /* Base height */
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 40px;
+  font-size: 40px; /* Base font-size */
   color: white;
   cursor: pointer;
   transition: transform 0.25s ease-out, background-color 0.25s ease-out, box-shadow 0.25s ease-out;
@@ -98,15 +98,15 @@ body {
 }
 
 .icon-button img {
-  width: 48px;
-  height: 48px;
+  width: 48px; /* Base img width */
+  height: 48px; /* Base img height */
 }
 
 .icon-button:hover {
   transform: scale(1.12) translateY(-4px) rotate(4deg);
-  background-color: rgba(89, 59, 162, 0.45); /* Nova cor #593BA2 para hover com transparência */
+  background-color: rgba(89, 59, 162, 0.45); 
   border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 9px 28px rgba(89, 59, 162, 0.6); /* Sombra com a nova cor */
+  box-shadow: 0 9px 28px rgba(89, 59, 162, 0.6); 
 }
 
 .icon-button:active {
@@ -118,14 +118,14 @@ body {
   0% {
     transform: translate(-50%, -50%) scale(0.3);
     opacity: 0.6;
-    box-shadow: 0 0 10px 5px rgba(89, 59, 162, 0.3), /* Nova cor #593BA2 */
-                0 0 20px 10px rgba(89, 59, 162, 0.3); /* Nova cor #593BA2 */
+    box-shadow: 0 0 10px 5px rgba(89, 59, 162, 0.3), 
+                0 0 20px 10px rgba(89, 59, 162, 0.3); 
   }
   100% {
     transform: translate(-50%, -50%) scale(2.2);
     opacity: 0;
-    box-shadow: 0 0 30px 15px rgba(89, 59, 162, 0), /* Nova cor #593BA2 */
-                0 0 50px 25px rgba(89, 59, 162, 0); /* Nova cor #593BA2 */
+    box-shadow: 0 0 30px 15px rgba(89, 59, 162, 0), 
+                0 0 50px 25px rgba(89, 59, 162, 0); 
   }
 }
 
@@ -136,7 +136,7 @@ body {
   left: 50%;
   width: 100%;
   height: 100%;
-  background-color: rgba(89, 59, 162, 0.1); /* Nova cor #593BA2 para a base da fumaça */
+  background-color: rgba(89, 59, 162, 0.1); 
   border-radius: 50%;
   transform: translate(-50%, -50%) scale(0);
   opacity: 0;
@@ -179,47 +179,62 @@ body {
 /* RESPONSIVIDADE */
 @media screen and (max-width: 768px) {
   #suquinhoBtn { width: 50px; height: 50px; }
-  .sidebar-buttons { left: 12px; padding: 8px 4px; gap: 22px; }
+  .sidebar-buttons { 
+    left: 10px; /* Consistent with reference */
+    padding: 8px 4px; /* Consistent with reference */
+    gap: 15px; /* MODIFIED: Consistent with reference */
+  }
   .icon-button {
-    width: 70px;
-    height: 70px;
-    font-size: 34px;
+    width: 55px; /* MODIFIED: Consistent with reference */
+    height: 55px; /* MODIFIED: Consistent with reference */
+    font-size: 31px; /* MODIFIED: Proportional to reference (28px from 36px base -> 31px from 40px base) */
   }
   .icon-button img {
-    width: 38px;
-    height: 38px;
+    width: 30px; /* MODIFIED: Consistent with reference */
+    height: 30px; /* MODIFIED: Consistent with reference */
   }
   .loading-spaceship { width: 150px; }
 }
 
-@media screen and (max-width: 480px) {
+@media screen and (max-width: 480px) { /* Portrait on small phones */
   #suquinhoBtn { width: 45px; height: 45px; }
   .top-bar { padding: 10px; }
-  .sidebar-buttons { left: 10px; padding: 6px 3px; gap: 18px; }
+  .sidebar-buttons { 
+    left: 8px; /* Consistent with reference */
+    padding: 6px 3px; /* Consistent with reference */
+    gap: 15px; /* MODIFIED: Consistent with reference's "original values" */
+  }
   .icon-button {
-    width: 60px;
-    height: 60px;
-    font-size: 28px;
+    width: 60px; /* MODIFIED: Consistent with reference's "original values" */
+    height: 60px; /* MODIFIED: Consistent with reference's "original values" */
+    font-size: 27px; /* MODIFIED: Proportional to reference (24px from 36px base -> 27px from 40px base) */
   }
   .icon-button img {
-    width: 32px;
-    height: 32px;
+    width: 28px; /* MODIFIED: Consistent with reference's "original values" */
+    height: 28px; /* MODIFIED: Consistent with reference's "original values" */
   }
   .loading-spaceship { width: 120px; }
 }
 
+/* Landscape orientation on small devices */
 @media screen and (max-height: 450px) and (orientation: landscape) and (max-width: 900px) {
-    #suquinhoBtn { width: 42px; height: 42px; }
-    .sidebar-buttons { gap: 15px; padding: 5px 2px; left: 8px; }
+    #suquinhoBtn { width: 40px; height: 40px; } /* Adjusted for consistency */
+    .sidebar-buttons { 
+        gap: 8px; /* MODIFIED: Consistent with reference landscape */
+        padding: 4px 2px; /* MODIFIED: Consistent with reference landscape */
+        left: 5px; /* MODIFIED: Consistent with reference landscape */
+    }
     .icon-button {
-        width: 55px;
-        height: 55px;
-        font-size: 26px;
+        width: 40px; /* MODIFIED: Consistent with reference landscape */
+        height: 40px; /* MODIFIED: Consistent with reference landscape */
+        font-size: 18px; /* MODIFIED: Proportional to reference (16px from 36px base -> 18px from 40px base) */
     }
     .icon-button img {
-        width: 30px;
-        height: 30px;
+        width: 20px; /* MODIFIED: Consistent with reference landscape */
+        height: 20px; /* MODIFIED: Consistent with reference landscape */
     }
-    .loading-spaceship { width: 110px; }
+    .loading-spaceship { width: 110px; } /* Kept similar to user's landscape */
+    .top-bar {
+      padding: 5px; /* Adjusted for consistency */
+    }
 }
-
