@@ -183,6 +183,8 @@ user-select: none;
 #helpButton:hover {
   color: #c7b1fa; /* Cor lilás clara no hover */
   transform: scale(1.1);
+  webkit-tap-highlight-color: transparent;
+user-select: none;
 }
 
 /* Modal de Ajuda */
@@ -234,6 +236,8 @@ user-select: none;
   color: white;
   text-decoration: none;
   cursor: pointer;
+  webkit-tap-highlight-color: transparent;
+user-select: none;
 }
 
 .loading-spaceship, .top-bar, .sidebar-buttons {
