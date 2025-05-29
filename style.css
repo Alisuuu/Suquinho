@@ -5,40 +5,98 @@
 }
 
 body {
-  background: black;
+  background: black; 
   color: white;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   min-height: 100vh;
   width: 100vw;
   position: relative;
-  overflow-x: hidden;
+  overflow: hidden; 
 }
 
-#newsFrame {
+#posterBackground {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  border: none;
-  z-index: 0;
-  filter: brightness(0.7) contrast(0.95);
-  background-color: #1a1a1a;
+  z-index: -1; 
+  overflow: hidden;
+}
+
+#currentPoster { 
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+  object-position: center;
+  opacity: 0; 
+}
+
+#posterOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Filtro totalmente preto, variando a opacidade */
+  background: linear-gradient(to top, 
+    rgba(0, 0, 0, 0.95) 0%,  /* Preto forte em baixo */
+    rgba(0, 0, 0, 0.75) 40%, /* Preto com boa opacidade no meio */
+    rgba(0, 0, 0, 0.4) 70%,  /* Preto mais translúcido em cima */
+    rgba(0, 0, 0, 0.1) 100%   /* Preto bem sutil no topo */
+  );
+  z-index: 0; 
+  filter: brightness(0.6) contrast(1.0); /* Ajuste para o filtro preto */
+}
+
+#titleContainer {
+  position: absolute;
+  top: 30px;    
+  left: 30px;   
+  transform: none; 
+  max-width: 30%; 
+  max-height: 25%; 
+  z-index: 1; /* Abaixo dos botões de UI e modal */
+  display: flex; 
+  flex-direction: column; 
+  align-items: flex-start; 
+  justify-content: flex-start; 
+  text-align: left;  
+  padding: 0; 
+  opacity: 0; 
+  transition: opacity 0.3s ease-in-out;
+}
+
+#movieLogo {
+  max-width: 100%; 
+  max-height: 100%; 
+  object-fit: contain; 
+  opacity: 0; 
+  transition: opacity 0.2s ease-in-out; 
+  display: none; 
+  filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.7)); 
+}
+
+#movieSynopsis, #movieGenre, #movieTitleText {
+  display: none !important; 
 }
 
 .top-bar {
   display: flex;
-  justify-content: center;
+  justify-content: center; /* Para o suquinhoBtn */
   align-items: center;
   padding: 15px;
-  z-index: 1000;
   position: fixed;
   top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: auto;
-  background-color: rgba(0,0,0,0.3);
-  border-radius: 0 0 10px 10px;
+  left: 0; /* Alinhado à esquerda para acomodar o botão de interrogação */
+  width: 100%;
+  z-index: 1000; /* Acima de outros elementos */
+}
+
+#suquinhoBtnContainer {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 #suquinhoBtn {
@@ -55,16 +113,16 @@ body {
 
 .sidebar-buttons {
   position: fixed;
-  left: 18px;
+  left: 15px; 
   top: 50%;
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 10px 5px;
-  z-index: 999;
-  gap: 28px;
+  gap: 22px; /* Ajustar espaçamento para novo botão */
   pointer-events: none;
+  z-index: 999;
 }
 
 .sidebar-buttons > * {
@@ -72,103 +130,156 @@ body {
 }
 
 .icon-button {
-  background-color: rgba(89, 59, 162, 0.25); /* Nova cor #593BA2 com transparência */
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(89, 59, 162, 0.65); 
+  border: 1px solid rgba(255, 255, 255, 0.15); 
   border-radius: 50%;
-  width: 85px;
-  height: 85px;
+  width: 75px; /* Reduzir um pouco para caber mais botões */
+  height: 75px; 
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 40px;
+  font-size: 36px; 
   color: white;
   cursor: pointer;
   transition: transform 0.25s ease-out, background-color 0.25s ease-out, box-shadow 0.25s ease-out;
   -webkit-tap-highlight-color: transparent;
   text-decoration: none;
-  box-shadow: 0 7px 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5); 
   position: relative;
   overflow: hidden;
 }
 
-.icon-button img,
-.icon-button i {
-  position: relative;
-  z-index: 2;
-}
-
 .icon-button img {
-  width: 48px;
-  height: 48px;
+  width: 42px; 
+  height: 42px; 
 }
 
 .icon-button:hover {
   transform: scale(1.12) translateY(-4px) rotate(4deg);
-  background-color: rgba(89, 59, 162, 0.45); /* Nova cor #593BA2 para hover com transparência */
-  border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 9px 28px rgba(89, 59, 162, 0.6); /* Sombra com a nova cor */
+  background-color: rgba(100, 70, 170, 0.75); 
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 9px 28px rgba(100, 70, 170, 0.7);
 }
 
-.icon-button:active {
-  transform: scale(1.03);
+/* Botão de Interrogação */
+#helpButton {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: transparent;
+  color: white;
+  border: none;
+  font-size: 28px; /* Tamanho do ícone de interrogação */
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 50%;
+  z-index: 1001; /* Acima da top-bar */
+  transition: color 0.2s ease-out, transform 0.2s ease-out;
+}
+#helpButton:hover {
+  color: #c7b1fa; /* Cor lilás clara no hover */
+  transform: scale(1.1);
 }
 
-/* Animação de Fumaça Neon com a nova cor */
-@keyframes neonSmokePuff {
+/* Modal de Ajuda */
+.modal {
+  display: none; /* Escondido por padrão */
+  position: fixed;
+  z-index: 2000; /* Acima de tudo */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.7); /* Fundo escuro translúcido */
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background-color: #2c2c2c; /* Cor de fundo escura para o modal */
+  margin: auto;
+  padding: 25px;
+  border: 1px solid #555;
+  width: 80%;
+  max-width: 500px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+  position: relative;
+  color: #f0f0f0;
+  font-size: 1.1em;
+  line-height: 1.6;
+}
+
+.close-button {
+  color: #aaa;
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.loading-spaceship, .top-bar, .sidebar-buttons {
+  z-index: 10; 
+}
+
+@keyframes neonSmokePuff { 
   0% {
     transform: translate(-50%, -50%) scale(0.3);
     opacity: 0.6;
-    box-shadow: 0 0 10px 5px rgba(89, 59, 162, 0.3), /* Nova cor #593BA2 */
-                0 0 20px 10px rgba(89, 59, 162, 0.3); /* Nova cor #593BA2 */
+    box-shadow: 0 0 10px 5px rgba(120, 80, 120, 0.4), 
+                0 0 20px 10px rgba(120, 80, 120, 0.4);
   }
   100% {
     transform: translate(-50%, -50%) scale(2.2);
     opacity: 0;
-    box-shadow: 0 0 30px 15px rgba(89, 59, 162, 0), /* Nova cor #593BA2 */
-                0 0 50px 25px rgba(89, 59, 162, 0); /* Nova cor #593BA2 */
+    box-shadow: 0 0 30px 15px rgba(120, 80, 120, 0),
+                0 0 50px 25px rgba(120, 80, 120, 0);
   }
 }
-
-.icon-button::after {
+.icon-button::after { 
   content: '';
   position: absolute;
   top: 50%;
   left: 50%;
   width: 100%;
   height: 100%;
-  background-color: rgba(89, 59, 162, 0.1); /* Nova cor #593BA2 para a base da fumaça */
+  background-color: rgba(120, 80, 120, 0.15); 
   border-radius: 50%;
   transform: translate(-50%, -50%) scale(0);
   opacity: 0;
   z-index: 1;
   pointer-events: none;
 }
-
-.icon-button:active::after {
+.icon-button:active::after { 
   animation: neonSmokePuff 0.6s ease-out forwards;
 }
-
-.loading-spaceship {
+.loading-spaceship { 
   position: fixed;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
   width: 180px;
   height: auto;
-  z-index: 2000;
   animation: spinAndBob 2s linear infinite;
   opacity: 1;
   visibility: visible;
   transition: opacity 0.7s ease-out, visibility 0s linear 0s;
 }
-
-.loading-spaceship.hidden {
+.loading-spaceship.hidden { 
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.7s ease-out, visibility 0s linear 0.7s;
 }
-
-@keyframes spinAndBob {
+@keyframes spinAndBob { 
   0% { transform: translate(-50%, -50%) rotate(0deg) translateY(0px) scale(1); }
   25% { transform: translate(-50%, -50%) rotate(90deg) translateY(-15px) scale(1.05); }
   50% { transform: translate(-50%, -50%) rotate(180deg) translateY(0px) scale(1); }
@@ -179,47 +290,26 @@ body {
 /* RESPONSIVIDADE */
 @media screen and (max-width: 768px) {
   #suquinhoBtn { width: 50px; height: 50px; }
-  .sidebar-buttons { left: 12px; padding: 8px 4px; gap: 22px; }
-  .icon-button {
-    width: 70px;
-    height: 70px;
-    font-size: 34px;
-  }
-  .icon-button img {
-    width: 38px;
-    height: 38px;
-  }
+  .sidebar-buttons { left: 10px; padding: 8px 4px; gap: 18px; } 
+  .icon-button { width: 60px; height: 60px; font-size: 30px; } 
+  .icon-button img { width: 32px; height: 32px; } 
   .loading-spaceship { width: 150px; }
+  
+  #titleContainer { top: 20px; left: 20px; max-width: 40%; max-height: 20%;} 
+  #helpButton { font-size: 24px; top: 15px; right: 15px;}
+  .modal-content { width: 90%; font-size: 1em; padding: 20px;}
 }
 
 @media screen and (max-width: 480px) {
   #suquinhoBtn { width: 45px; height: 45px; }
   .top-bar { padding: 10px; }
-  .sidebar-buttons { left: 10px; padding: 6px 3px; gap: 18px; }
-  .icon-button {
-    width: 60px;
-    height: 60px;
-    font-size: 28px;
-  }
-  .icon-button img {
-    width: 32px;
-    height: 32px;
-  }
+  .sidebar-buttons { left: 8px; padding: 6px 3px; gap: 15px; } 
+  .icon-button { width: 50px; height: 50px; font-size: 24px; } 
+  .icon-button img { width: 28px; height: 28px; } 
   .loading-spaceship { width: 120px; }
-}
 
-@media screen and (max-height: 450px) and (orientation: landscape) and (max-width: 900px) {
-    #suquinhoBtn { width: 42px; height: 42px; }
-    .sidebar-buttons { gap: 15px; padding: 5px 2px; left: 8px; }
-    .icon-button {
-        width: 55px;
-        height: 55px;
-        font-size: 26px;
-    }
-    .icon-button img {
-        width: 30px;
-        height: 30px;
-    }
-    .loading-spaceship { width: 110px; }
+  #titleContainer { top: 15px; left: 15px; max-width: 50%; max-height: 18%;} 
+  #helpButton { font-size: 22px; top: 12px; right: 12px;}
+  .modal-content { width: 95%; font-size: 0.9em; padding: 15px;}
 }
 
