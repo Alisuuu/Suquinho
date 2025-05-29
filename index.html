@@ -3,12 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
-  <title>Suquinho News Portal v31 - Ficheiros Separados</title>
+  <title>Suquinho</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
   <div id="posterBackground">
     <div id="posterOverlay"></div>
     <img id="currentPoster" src="" alt="Imagem de fundo do filme" onerror="this.style.opacity=0;" />
@@ -19,11 +18,9 @@
       <p id="movieTitleText"></p> 
     </div>
   </div>
-
   <img src="nave.png" class="loading-spaceship" id="loadingSpaceship" alt="Carregando..." onerror="this.style.display='none'; console.error('Erro ao carregar nave.png. Verifique o caminho do ficheiro.')">
     <button id="helpButton" title="Sobre o Suquinho"><i class="fas fa-question-circle"></i></button>
   </div>
-
   <div class="sidebar-buttons">
     <a href="Hyper/hyper" class="icon-button" title="Hyper">
       <img src="p.png" alt="Gato" onerror="this.style.display='none'; console.error('Erro ao carregar p.png. Verifique o caminho do ficheiro.')">
@@ -31,7 +28,7 @@
     <a href="Yt/yt" class="icon-button" title="YouTube">
       <i class="fa-brands fa-youtube"></i>
     </a>
-     <a href="#news" class="icon-button" title="Notícias" id="">
+    <a href="Not/index.html" class="icon-button" title="noticias">
       <i class="fas fa-newspaper"></i>
     </a>
     <a href="not2/index" class="icon-button" title="Not2">
@@ -44,14 +41,12 @@
       <i class="fa-solid fa-film"></i>
     </a>
   </div>
-
   <div id="helpModal" class="modal">
     <div class="modal-content">
       <span class="close-button" id="closeHelpModal">&times;</span>
       <p>O Suquinho é um webapp q fornece funções pra quem quer assistir, sotear filmes, séries e ate assistir junto com alguem</p>
     </div>
   </div>
-
   <script src="script.js"></script>
 </body>
 </html>
