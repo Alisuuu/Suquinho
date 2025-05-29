@@ -295,7 +295,7 @@ body {
   .icon-button img { width: 32px; height: 32px; } 
   .loading-spaceship { width: 150px; }
   
-  #titleContainer { top: 20px; left: 20px; max-width: 40%; max-height: 20%;} 
+  #titleContainer { top: 210px; left: 100px; max-width: 40%; max-height: 20%;} 
   #helpButton { font-size: 24px; top: 15px; right: 15px;}
   .modal-content { width: 90%; font-size: 1em; padding: 20px;}
 }
@@ -308,7 +308,7 @@ body {
   .icon-button img { width: 28px; height: 28px; } 
   .loading-spaceship { width: 120px; }
 
-  #titleContainer { top: 15px; left: 15px; max-width: 50%; max-height: 18%;} 
+  #titleContainer { top: 210px; left: 100px; max-width: 50%; max-height: 18%;} 
   #helpButton { font-size: 22px; top: 12px; right: 12px;}
   .modal-content { width: 95%; font-size: 0.9em; padding: 15px;}
 }
