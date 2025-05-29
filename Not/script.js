@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
         suquinhoBtn.classList.remove('enlarged');
       }, 300);
       if (clickCount >= CLICKS_NEEDED) {
-        window.location.href = 'game/index.html';
+        window.location.href = '../game/index.html';
       }
     });
   }
