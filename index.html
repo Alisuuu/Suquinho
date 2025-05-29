@@ -3,18 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
-  <title>Suquinho News Portal v7</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Suquinho News Portal v31 - Ficheiros Separados</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <iframe id="newsFrame" src="https://feed-pearl.vercel.app/" title="Feed de Notícias"></iframe>
+  <div id="posterBackground">
+    <div id="posterOverlay"></div>
+    <img id="currentPoster" src="" alt="Imagem de fundo do filme" onerror="this.style.opacity=0;" />
+    <div id="titleContainer">
+      <img id="movieLogo" src="" alt="Logo do Filme"> 
+      <p id="movieSynopsis"></p> 
+      <p id="movieGenre"></p> 
+      <p id="movieTitleText"></p> 
+    </div>
+  </div>
 
   <img src="nave.png" class="loading-spaceship" id="loadingSpaceship" alt="Carregando..." onerror="this.style.display='none'; console.error('Erro ao carregar nave.png. Verifique o caminho do ficheiro.')">
 
   <div class="top-bar">
-    <img src="p2.png" alt="Suquinho" id="suquinhoBtn" onerror="this.style.display='none'; console.error('Erro ao carregar p2.png. Verifique o caminho do ficheiro.')">
+    <div id="suquinhoBtnContainer">
+        <img src="p2.png" alt="Suquinho" id="suquinhoBtn" onerror="this.style.display='none'; console.error('Erro ao carregar p2.png. Verifique o caminho do ficheiro.')">
+    </div>
+    <button id="helpButton" title="Sobre o Suquinho"><i class="fas fa-question-circle"></i></button>
   </div>
 
   <div class="sidebar-buttons">
@@ -23,6 +35,9 @@
     </a>
     <a href="Yt/yt" class="icon-button" title="YouTube">
       <i class="fa-brands fa-youtube"></i>
+    </a>
+     <a href="#news" class="icon-button" title="Notícias" id="newsButton">
+      <i class="fas fa-newspaper"></i>
     </a>
     <a href="not2/index" class="icon-button" title="Not2">
       <i class="fa-solid fa-cube"></i>
@@ -33,6 +48,13 @@
     <a href="Catalogo1/index" class="icon-button" title="Catálogo">
       <i class="fa-solid fa-film"></i>
     </a>
+  </div>
+
+  <div id="helpModal" class="modal">
+    <div class="modal-content">
+      <span class="close-button" id="closeHelpModal">&times;</span>
+      <p>O Suquinho é o seu portal agregador de entretenimento e informações, trazendo os melhores links e novidades diretamente para você, com um visual dinâmico e personalizável!</p>
+    </div>
   </div>
 
   <script src="script.js"></script>
