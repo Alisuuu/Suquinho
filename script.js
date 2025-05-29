@@ -303,7 +303,5 @@ document.addEventListener('DOMContentLoaded', function() {
       .catch(function (error) { /* console.log('SW registration error:', error); */ });
   }
 });
-</script>
-</body>
-</html>
+
 
