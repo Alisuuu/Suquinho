@@ -51,7 +51,7 @@ body {
 
 #titleContainer {
   position: absolute;
-  top: 65%;    
+  top: 60%;    
   left: 60%;   
   transform: none; 
   max-width: 30%; 
@@ -308,7 +308,7 @@ user-select: none;
   .icon-button img { width: 32px; height: 32px; } 
   .loading-spaceship { width: 150px; }
   
-  #titleContainer { top: 65%; left: 45%; max-width: 50%; max-height: 18%;} 
+  #titleContainer { top: 60%; left: 45%; max-width: 50%; max-height: 18%;} 
   #helpButton { font-size: 24px; top: 15px; right: 15px;}
   .modal-content { width: 90%; font-size: 1em; padding: 20px;}
 }
