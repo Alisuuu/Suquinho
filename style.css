@@ -177,7 +177,7 @@ body {
   z-index: 1001; /* Acima da top-bar */
   transition: color 0.2s ease-out, transform 0.2s ease-out;
   filter: drop-shadow(3px 0px 20px rgba(89, 59, 162, 1));
-  webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: transparent;
 user-select: none;
 }
 #helpButton:hover {
