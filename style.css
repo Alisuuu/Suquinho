@@ -121,7 +121,7 @@ body {
   flex-direction: column;
   align-items: center;
   padding: 10px 5px;
-  gap: 22px; /* Ajustar espaçamento para novo botão */
+  gap: 22px; 
   pointer-events: none;
   z-index: 999;
 }
@@ -134,7 +134,7 @@ body {
   background-color: rgba(89, 59, 162, 0.65); 
   border: 1px solid rgba(255, 255, 255, 0.15); 
   border-radius: 50%;
-  width: 75px; /* Reduzir um pouco para caber mais botões */
+  width: 75px; 
   height: 75px; 
   display: flex;
   align-items: center;
@@ -170,41 +170,40 @@ body {
   background-color: transparent;
   color: white;
   border: none;
-  font-size: 28px; /* Tamanho do ícone de interrogação */
+  font-size: 28px; 
   cursor: pointer;
   padding: 10px;
   border-radius: 50%;
-  z-index: 1001; /* Acima da top-bar */
+  z-index: 1001; 
   transition: color 0.2s ease-out, transform 0.2s ease-out;
   filter: drop-shadow(3px 0px 20px rgba(89, 59, 162, 1));
   -webkit-tap-highlight-color: transparent;
-user-select: none;
+  user-select: none;
 }
 #helpButton:hover {
-  color: #c7b1fa; /* Cor lilás clara no hover */
+  color: #c7b1fa; 
   transform: scale(1.1);
-  webkit-tap-highlight-color: transparent;
-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
 /* Modal de Ajuda */
 .modal {
-  display: none; /* Escondido por padrão */
+  display: none; 
   position: fixed;
-  z-index: 2000; /* Acima de tudo */
+  z-index: 2000; 
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
   overflow: auto;
-  background-color: rgba(0, 0, 0, .0); /* Fundo escuro translúcido */
+  background-color: rgba(0, 0, 0, .0); 
   align-items: center;
   justify-content: center;
-  
 }
 
 .modal-content {
-    background-color: rgba(12, 12, 12, .90);
+  background-color: rgba(12, 12, 12, .90);
   margin: auto;
   padding: 25px;
   border: 1px solid #555;
@@ -216,8 +215,8 @@ user-select: none;
   color: #f0f0f0;
   font-size: 1.1em;
   line-height: 1.8;
- -webkit-tap-highlight-color: transparent;
-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
 .close-button {
@@ -228,7 +227,7 @@ user-select: none;
   font-size: 28px;
   font-weight: bold;
   -webkit-tap-highlight-color: transparent;
-user-select: none;
+  user-select: none;
 }
 
 .close-button:hover,
@@ -236,8 +235,8 @@ user-select: none;
   color: white;
   text-decoration: none;
   cursor: pointer;
-  webkit-tap-highlight-color: transparent;
-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
 .loading-spaceship, .top-bar, .sidebar-buttons {
@@ -303,9 +302,9 @@ user-select: none;
 /* RESPONSIVIDADE */
 @media screen and (max-width: 768px) {
   #suquinhoBtn { width: 50px; height: 50px; }
-  .sidebar-buttons { left: 10px; padding: 8px 4px; gap: 18px; } 
-  .icon-button { width: 60px; height: 60px; font-size: 30px; } 
-  .icon-button img { width: 32px; height: 32px; } 
+  .sidebar-buttons { left: 10px; padding: 8px 4px; gap: 15px; } 
+  .icon-button { width: 55px; height: 55px; font-size: 28px; } 
+  .icon-button img { width: 30px; height: 30px; } 
   .loading-spaceship { width: 150px; }
   
   #titleContainer { top: 60%; left: 45%; max-width: 50%; max-height: 18%;} 
@@ -313,16 +312,59 @@ user-select: none;
   .modal-content { width: 90%; font-size: 1em; padding: 20px;}
 }
 
-@media screen and (max-width: 480px) {
+/* MODIFIED: Reverted to original values from the first code for portrait on small phones */
+@media screen and (max-width: 480px) { 
   #suquinhoBtn { width: 45px; height: 45px; }
   .top-bar { padding: 10px; }
-  .sidebar-buttons { left: 8px; padding: 6px 3px; gap: 15px; } 
-  .icon-button { width: 60px; height: 60px; font-size: 24px; } 
-  .icon-button img { width: 28px; height: 28px; } 
+  .sidebar-buttons { 
+    left: 8px; 
+    padding: 6px 3px; 
+    gap: 15px; /* Original gap */
+  } 
+  .icon-button { 
+    width: 60px; /* Original width */
+    height: 60px; /* Original height */
+    font-size: 24px; /* Original font-size */
+  } 
+  .icon-button img { 
+    width: 28px; /* Original image width */
+    height: 28px; /* Original image height */
+  } 
   .loading-spaceship { width: 120px; }
 
   #titleContainer { top: 70%; left: 45%; max-width: 50%; max-height: 18%;} 
   #helpButton { font-size: 22px; top: 12px; right: 12px;}
   .modal-content { width: 95%; font-size: 0.9em; padding: 15px;}
+}
+
+/* Media query for landscape orientation on small devices (height constrained) */
+@media screen and (max-height: 480px) and (orientation: landscape) {
+  .sidebar-buttons {
+    left: 5px; 
+    padding: 4px 2px; 
+    gap: 8px; 
+  }
+  .icon-button {
+    width: 40px; 
+    height: 40px;
+    font-size: 16px; 
+  }
+  .icon-button img {
+    width: 20px; 
+    height: 20px;
+  }
+  #suquinhoBtn { 
+    width: 40px; 
+    height: 40px; 
+  }
+  .top-bar {
+    padding: 5px; 
+  }
+  #helpButton { 
+    font-size: 20px;
+    top: 10px;
+    right: 10px;
+    padding: 5px;
+  }
 }
 
