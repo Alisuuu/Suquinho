@@ -22,7 +22,7 @@ body {
   height: 100%;
   border: none;
   z-index: 0;
-  filter: brightness(0.7) contrast(0.95);
+  /* A propriedade filter foi removida daqui */
   background-color: #1a1a1a;
 }
 
@@ -238,3 +238,4 @@ body {
       padding: 5px; /* Adjusted for consistency */
     }
 }
+
