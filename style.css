@@ -341,11 +341,11 @@ body {
 
   #titleContainer { 
     /* MODIFIED: Adjusted for small screens (portrait mobile) */
-    top: 48%; /* Subiu um pouco mais */
-    left: 50%; /* Centralizado */
+    top: 75%; /* Subiu um pouco mais */
+    left: 60%; /* Centralizado */
     transform: translateX(-50%); /* Necessário para left: 50% */
-    max-width: 55%; /* Aumentado de 40% */
-    max-height: 16%; /* Aumentado de 11% */
+    max-width: 60%; /* Aumentado de 40% */
+    max-height: 25%; /* Aumentado de 11% */
     /* A animação de transform inicial (translateY, scale) da regra base ainda se aplica,
        e no estado final o translateX(-50%) será aplicado */
   } 
@@ -393,4 +393,4 @@ body {
   }
 }
 
-    
+
