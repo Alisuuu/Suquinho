@@ -17,7 +17,6 @@ body {
     background-color: var(--amoled-black);
     color: var(--text-primary);
     transition: background-image 0.5s ease-in-out;
-    overflow-y: hidden !important;
 }
 
 body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
@@ -174,7 +173,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     transition: color 0.2s ease, transform 0.2s ease !important;
     position: absolute !important;
     top: 12px !important;
-    right: 28px !important;
+    right: 15px !important;
     z-index: 100;
     width: 30px;
     height: 30px;
@@ -712,3 +711,4 @@ header h1 .fa-film {
     }
 }
 
+     
