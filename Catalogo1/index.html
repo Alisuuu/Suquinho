@@ -64,16 +64,15 @@
             margin-bottom: 2.5rem;
         }
 
-        /* horizontal-scroll-grid is responsive via CSS media queries directly */
         .horizontal-scroll-grid {
-            display: flex; /* Default for mobile-first: enables horizontal scrolling */
+            display: flex; 
             overflow-x: auto;
-            white-space: nowrap; /* Prevents items from wrapping in flex mode */
+            white-space: nowrap; 
             padding-bottom: 1.25rem;
             gap: 1rem;
         }
         .horizontal-scroll-grid .content-card {
-            flex: 0 0 calc(50% - 0.75rem); /* Two cards visible on smaller screens */
+            flex: 0 0 calc(50% - 0.75rem); 
             max-width: 180px;
         }
         .horizontal-scroll-grid::-webkit-scrollbar {
@@ -324,30 +323,7 @@
             line-height: 1.65;
             color: var(--text-primary);
         }
-        .swal-details-content .details-actions {
-            margin-top: 1rem;
-            display: flex;
-            justify-content: flex-start;
-            gap: 0.75rem;
-        }
-        .swal-details-content .copy-link-button {
-            background-color: var(--purple-accent);
-            color: var(--amoled-black);
-            border: 1px solid var(--purple-accent);
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s ease, border-color 0.2s ease;
-        }
-        .swal-details-content .copy-link-button:hover {
-            background-color: var(--purple-light);
-            border-color: var(--purple-light);
-        }
-        .swal-details-content .copy-link-button .fas {
-            margin-right: 0.5rem;
-        }
+        /* Removido o .details-actions pois o botão interno foi removido */
 
         /* Cast Section Styles */
         .details-cast-section {
@@ -453,18 +429,17 @@
             .details-iframe-container.iframe-series-dimensions {
                  height: 520px;
             }
-            /* CSS handles horizontal-scroll-grid responsiveness on desktop */
             .horizontal-scroll-grid {
                 display: grid;
                 grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-                overflow-x: hidden; /* No horizontal scroll in grid mode */
-                white-space: normal; /* Allow wrapping in grid mode */
-                gap: 1.5rem; /* Consistent gap with main-results-grid */
+                overflow-x: hidden; 
+                white-space: normal; 
+                gap: 1.5rem; 
             }
             .horizontal-scroll-grid .content-card {
-                flex: none; /* Remove flex behavior */
-                width: auto; /* Allow grid to control width */
-                max-width: none; /* Allow grid to control width */
+                flex: none; 
+                width: auto; 
+                max-width: none; 
             }
         }
         /* End SweetAlert2 Item Details Styles */
@@ -585,10 +560,47 @@
             gap: 0.5rem;
         }
 
+        /* Botão de Cópia Externo */
+        #externalCopyButtonContainer {
+            position: fixed;
+            bottom: 1.5rem; 
+            right: 1.5rem;  
+            z-index: 1070; 
+        }
+        #externalCopyLinkButton {
+            background-color: var(--purple-accent);
+            color: var(--amoled-black);
+            padding: 0.8rem; 
+            width: 3.5rem; 
+            height: 3.5rem; 
+            border-radius: 50%; 
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4); 
+            transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center; 
+            cursor: pointer;
+            border: none; 
+        }
+        #externalCopyLinkButton:hover {
+            background-color: var(--purple-light);
+            transform: translateY(-3px) scale(1.05); 
+            box-shadow: 0 8px 20px rgba(89, 59, 162, 0.5);
+        }
+        #externalCopyLinkButton .fas { 
+            font-size: 1.5em; 
+            margin: 0; 
+        }
+        #externalCopyLinkButton span { 
+            display: none;
+        }
+
+
         /* Media Queries para responsividade */
         @media (max-width: 767px) {
             .horizontal-scroll-grid .content-card {
-                flex: 0 0 calc(48% - 0.5rem); /* Adjust for slightly more space or preference */
+                flex: 0 0 calc(48% - 0.5rem); 
                 max-width: 170px;
             }
 
@@ -633,6 +645,18 @@
                 width: 60px;
                 height: 60px;
             }
+            #externalCopyButtonContainer { 
+                bottom: 1rem;
+                right: 1rem;
+            }
+            #externalCopyLinkButton {
+                width: 3rem; 
+                height: 3rem; 
+                padding: 0.6rem;
+            }
+            #externalCopyLinkButton .fas {
+                 font-size: 1.2em;
+            }
         }
 
         @media (min-width: 768px) {
@@ -642,7 +666,6 @@
             .header-controls {
                  width: auto;
             }
-            /* .horizontal-scroll-grid specific desktop styles are now above */
         }
 
         @media (min-width: 768px) and (max-width: 1023px) {
@@ -667,7 +690,6 @@
 
     <header> <div class="container mx-auto flex flex-col lg:flex-row justify-between items-center space-y-4 lg:space-y-0 px-4 relative">
             <div class="header-controls-wrapper">
-                <h1 class="text-3xl md:text-4xl font-bold text-center lg:text-left">Meu Catálogo <i class="fas fa-film"></i></h1>
                 <div class="header-controls">
                     <div class="input-search-wrapper">
                         <input type="text" id="searchInput" placeholder="Buscar filmes ou séries..." class="input-search">
@@ -703,17 +725,27 @@
         </div>
     </main>
 
+    <div id="externalCopyButtonContainer" style="display: none;">
+        <button id="externalCopyLinkButton" aria-label="Copiar Link do Item">
+            <i class="fas fa-link"></i>
+            <span>Copiar Link do Item</span> </button>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         // --- Constants and Configuration ---
-        const TMDB_API_KEY = '5e5da432e96174227b25086fe8637985'; // IMPORTANT: Replace with your actual TMDB API Key
+        const TMDB_API_KEY = '5e5da432e96174227b25086fe8637985'; 
         const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
         const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/';
         const TMDB_BACKDROP_BASE_URL = 'https://image.tmdb.org/t/p/original';
         const LANGUAGE = 'pt-BR';
         const PLACEHOLDER_PERSON_IMAGE = 'https://placehold.co/185x278/0F071A/F3F4F6?text=Sem+Foto&font=inter';
-        const PLAYER_BASE_URL_MOVIE = 'https://superflixapi.ist/filme/'; // External player URL for movies
-        const PLAYER_BASE_URL_SERIES = 'https://superflixapi.ist/serie/'; // External player URL for series
+        const PLAYER_BASE_URL_MOVIE = 'https://superflixapi.ist/filme/'; 
+        const PLAYER_BASE_URL_SERIES = 'https://superflixapi.ist/serie/'; 
+
+        const ASIAN_LANGUAGES_TO_BLOCK = ['ja', 'ko', 'zh', 'hi', 'th', 'vi', 'ms', 'id', 'fa', 'ar', 'tr', 'mn', 'tl', 'ur', 'bn', 'pa', 'te', 'ta', 'ml', 'kn', 'gu', 'mr', 'ne', 'km', 'lo', 'my', 'dz', 'ug', 'ps', 'sd'];
+        const ASIAN_ORIGIN_COUNTRIES_TO_BLOCK = ['JP', 'KR', 'CN', 'HK', 'TW', 'IN', 'TH', 'VN', 'MY', 'ID', 'IR', 'SA', 'TR', 'MN', 'PH', 'SG', 'PK', 'BD', 'LK', 'NP', 'AF', 'IQ', 'SY', 'YE', 'AE', 'OM', 'QA', 'KW', 'BH', 'JO', 'LB', 'CY', 'GE', 'AM', 'AZ', 'KZ', 'UZ', 'TM', 'KG', 'TJ', 'BT', 'BN', 'KH', 'LA', 'MM'];
+
 
         // --- DOM Element References ---
         const pageBackdrop = document.getElementById('pageBackdrop');
@@ -727,13 +759,19 @@
         const singleSectionTitleEl = document.getElementById('singleSectionTitle');
         const singleResultsGrid = document.getElementById('singleResultsGrid');
         const loader = document.getElementById('loader');
+        const externalCopyButtonContainer = document.getElementById('externalCopyButtonContainer');
+        const externalCopyLinkButton = document.getElementById('externalCopyLinkButton');
+
 
         // --- State Variables ---
-        let currentFilterTypeSA = 'movie'; // Type ('movie'/'tv') selected in SweetAlert filter modal
-        let selectedGenreSA = { id: null, name: null, type: null }; // Genre selected in SweetAlert filter modal
-        let activeAppliedGenre = { id: null, name: null, type: null }; // Currently active genre filter
-        let searchTimeout = null; // For debouncing search input
-        let currentOpenSwalRef = null; // Reference to the currently open SweetAlert instance
+        let currentFilterTypeSA = 'movie'; 
+        let selectedGenreSA = { id: null, name: null, type: null }; 
+        let activeAppliedGenre = { id: null, name: null, type: null }; 
+        let searchTimeout = null; 
+        let currentOpenSwalRef = null; 
+        let currentExternalCopyUrl = ''; 
+        let externalCopyButtonHandler; 
+
 
         // --- API Functions ---
         async function fetchTMDB(endpoint, params = {}) {
@@ -744,7 +782,6 @@
                 if (!response.ok) {
                     const errorData = await response.json().catch(() => ({ status_message: response.statusText, success: false }));
                     console.error(`TMDB API Error: ${response.status} ${response.statusText}`, errorData);
-                    // Return a more structured error or null to indicate failure
                     return { error: true, status: response.status, message: errorData.status_message || "Unknown API error" };
                 }
                 return await response.json();
@@ -833,7 +870,7 @@
                 denyButtonText: 'Limpar Filtro',
                 confirmButtonText: 'Aplicar Filtro',
                 customClass: {
-                    popup: 'swal2-popup',
+                    popup: 'swal2-popup', 
                     title: 'swal2-title',
                     htmlContainer: 'swal2-html-container',
                     closeButton: 'swal2-close',
@@ -970,7 +1007,6 @@
 
         function showLoader() {
             loader.style.display = 'block';
-            // Do not hide main sections here, let the calling function decide
         }
 
         function hideLoader() {
@@ -993,6 +1029,7 @@
 
         function displayResults(items, defaultMediaType = null, targetGridElement) {
             targetGridElement.innerHTML = ''; 
+            let displayedCount = 0;
             if (!items || items.length === 0) {
                 targetGridElement.innerHTML = `<p class="text-center col-span-full text-[var(--text-secondary)] py-10 text-lg">Nenhum item para exibir.</p>`;
                 return;
@@ -1001,6 +1038,16 @@
             items.forEach(item => {
                 const mediaType = item.media_type || defaultMediaType;
                 if (!mediaType || (mediaType !== 'movie' && mediaType !== 'tv') || !item.poster_path) return;
+
+                const originalLanguage = item.original_language ? item.original_language.toLowerCase() : '';
+                const originCountries = (item.origin_country || []).map(c => c.toUpperCase()); 
+
+                if (ASIAN_LANGUAGES_TO_BLOCK.includes(originalLanguage) || 
+                    originCountries.some(countryCode => ASIAN_ORIGIN_COUNTRIES_TO_BLOCK.includes(countryCode))) {
+                    console.log(`Item bloqueado (asiático): ${item.title || item.name}, Idioma: ${originalLanguage}, Países: ${originCountries.join(', ')}`);
+                    return; 
+                }
+
 
                 const card = document.createElement('div');
                 card.className = 'content-card shadow-lg group';
@@ -1029,31 +1076,42 @@
                 card.appendChild(img);
                 card.appendChild(titleOverlay);
                 targetGridElement.appendChild(card);
+                displayedCount++;
             });
+
+            if (displayedCount === 0 && items.length > 0) { 
+                 targetGridElement.innerHTML = `<p class="text-center col-span-full text-[var(--text-secondary)] py-10 text-lg">Todos os itens foram filtrados (conteúdo asiático).</p>`;
+            } else if (displayedCount === 0) { 
+                 targetGridElement.innerHTML = `<p class="text-center col-span-full text-[var(--text-secondary)] py-10 text-lg">Nenhum item para exibir.</p>`;
+            }
         }
 
-        function copyToClipboard(textToCopy, isContentLink = false) {
-            const linkType = isContentLink ? "da página" : "do player";
-            const warningTitle = isContentLink ? `Nenhum link ${linkType} disponível para copiar.` : `Nenhum link ${linkType} disponível para copiar.`;
+        function copyToClipboard(textToCopy, isPlayerLink = false) { 
+            console.log("[copyToClipboard] Iniciada. Tentando copiar:", textToCopy, "É link do player?", isPlayerLink);
+
+            const linkType = isPlayerLink ? "do player" : "da página";
+            const warningTitle = `Nenhum link ${linkType} disponível para copiar.`;
             const successTitle = `Link ${linkType} copiado!`;
             const errorTitle = `Falha ao copiar link ${linkType}!`;
 
-            if (!textToCopy) { 
+            if (!textToCopy) {
+                 console.warn("[copyToClipboard] Texto para copiar está vazio ou nulo.");
                  Swal.fire({ toast: true, position: 'top-end', icon: 'warning', title: warningTitle, showConfirmButton: false, timer: 2500, background: 'var(--card-bg)', color: 'var(--text-primary)', iconColor: 'var(--text-secondary)'});
                 return;
             }
             const tempTextArea = document.createElement("textarea");
             tempTextArea.value = textToCopy;
-            tempTextArea.style.position = "absolute"; tempTextArea.style.left = "-9999px"; 
+            tempTextArea.style.position = "absolute"; tempTextArea.style.left = "-9999px";
             document.body.appendChild(tempTextArea);
             tempTextArea.select();
-            tempTextArea.setSelectionRange(0, 99999); 
+            tempTextArea.setSelectionRange(0, 99999);
 
             let success = false;
             try {
                 success = document.execCommand('copy');
+                console.log("[copyToClipboard] document.execCommand('copy') sucesso:", success);
             } catch (err) {
-                console.warn('Fallback: document.execCommand copy failed', err);
+                console.error("[copyToClipboard] Erro ao usar document.execCommand('copy'):", err);
             }
             document.body.removeChild(tempTextArea);
 
@@ -1061,15 +1119,18 @@
 
             if (success) {
                 Swal.fire({ ...swalProps, icon: 'success', title: successTitle, iconColor: 'var(--success-green)' });
-            } else { 
+            } else {
+                console.log("[copyToClipboard] document.execCommand falhou. Tentando navigator.clipboard.");
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     navigator.clipboard.writeText(textToCopy).then(() => {
+                        console.log("[copyToClipboard] navigator.clipboard.writeText sucesso.");
                         Swal.fire({ ...swalProps, icon: 'success', title: successTitle, iconColor: 'var(--success-green)' });
                     }).catch(errN => {
-                        console.error('Error using navigator.clipboard: ', errN);
+                        console.error('[copyToClipboard] Erro ao usar navigator.clipboard.writeText:', errN);
                         Swal.fire({ ...swalProps, icon: 'error', title: errorTitle, timer:2000, iconColor: 'var(--danger-red)' });
                     });
-                } else { 
+                } else {
+                     console.warn("[copyToClipboard] navigator.clipboard.writeText não está disponível.");
                      Swal.fire({ ...swalProps, icon: 'error', title: errorTitle, timer:2000, iconColor: 'var(--danger-red)' });
                 }
             }
@@ -1087,44 +1148,49 @@
                 showCloseButton: true,
                 allowOutsideClick: false, 
                 customClass: {
-                    popup: 'swal2-popup swal-details-popup',
+                    popup: 'swal2-popup swal-details-popup', 
                     title: 'swal2-title',
                     htmlContainer: 'swal2-html-container',
                     closeButton: 'swal2-close'
                 },
                 willClose: () => {
-                    console.log("SweetAlert willClose event for item modal.");
+                    console.log("[willClose] Modal de detalhes do item a ser fechado.");
                     updatePageBackground(null); 
                     const iframe = document.getElementById('swal-details-iframe');
                     if (iframe) iframe.src = 'about:blank'; 
                     currentOpenSwalRef = null;
-
-                    // Se o modal foi fechado e não há parâmetros na URL, volte para a visualização principal do catálogo
-                    const urlParams = new URLSearchParams(window.location.search);
-                    if (!urlParams.has('type') || !urlParams.has('id')) {
-                        console.log("Modal fechado, carregando conteúdo principal da página.");
-                        // Apenas recarregue o conteúdo principal se não estivermos mais em um "deep link"
-                        // Isso evita que, ao fechar um modal de um deep link, a página tente recarregar o catálogo por cima.
-                        // A melhor abordagem para deep links é que fechar o modal "limpe" a URL ou redirecione.
-                        // Por simplicidade aqui, vamos apenas garantir que o catálogo não apareça se foi um deep link.
-                        if (defaultContentSections.style.display === 'none' && singleResultsSection.style.display === 'none') {
-                           // Se estávamos em modo "página dedicada" (deep link), não faz nada aqui,
-                           // a página permanecerá "vazia" com o fundo. O usuário pode navegar de volta ou pesquisar.
-                           // Ou, poderíamos redirecionar para a página principal:
-                           // window.history.pushState({}, '', window.location.pathname); // Limpa query params
-                           // loadMainPageContent();
-                        }
+                    
+                    if (externalCopyButtonContainer) {
+                        externalCopyButtonContainer.style.display = 'none';
+                        console.log("[willClose] Container do botão de cópia externo escondido.");
                     } else {
-                        // Se fechou um modal de um deep link, a página deve ficar "vazia"
-                        // ou redirecionar para a home.
-                        // Para manter simples, vamos deixar a página "vazia".
-                        // Poderíamos limpar a URL aqui para que um refresh carregue o catálogo:
-                        // window.history.replaceState({}, document.title, window.location.pathname);
+                         console.error("[willClose] Container do botão de cópia externo NÃO encontrado para esconder!");
+                    }
+
+                    if (externalCopyButtonHandler) {
+                        const btn = document.getElementById('externalCopyLinkButton');
+                        if(btn) {
+                            btn.removeEventListener('click', externalCopyButtonHandler);
+                            console.log("[willClose] Handler de clique do botão externo removido.");
+                        }
+                    }
+                    currentExternalCopyUrl = '';
+                    externalCopyButtonHandler = null;
+
+
+                    const urlParams = new URLSearchParams(window.location.search);
+                    if (urlParams.has('type') && urlParams.has('id')) {
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                        console.log("Deep link modal closed, loading main page content.");
+                        loadMainPageContent();
+                    } else {
+                        console.log("Regular item modal closed.");
                     }
                 }
             });
 
             const details = await getItemDetails(itemId, mediaType);
+            console.log("Detalhes recebidos do TMDB:", details); 
 
             if (!Swal.isVisible() || !currentOpenSwalRef) { 
                 updatePageBackground(null); 
@@ -1145,13 +1211,46 @@
                 updatePageBackground(details.backdrop_path);
             }
 
-            const imdbId = details.external_ids?.imdb_id;
-            let playerUrl = ''; 
-            const linkForContentPage = `${window.location.origin}${window.location.pathname}?type=${mediaType}&id=${itemId}`;
+            const imdbId = details.external_ids?.imdb_id; 
+            console.log("IMDb ID extraído:", imdbId); 
 
+            let superflixPlayerUrl = ''; 
             if (imdbId) {
-                playerUrl = mediaType === 'movie' ? `${PLAYER_BASE_URL_MOVIE}${imdbId}` : `${PLAYER_BASE_URL_SERIES}${imdbId}`;
+                superflixPlayerUrl = mediaType === 'movie' ? `${PLAYER_BASE_URL_MOVIE}${imdbId}` : `${PLAYER_BASE_URL_SERIES}${imdbId}`;
             }
+
+            const linkForContentPage = `${window.location.origin}${window.location.pathname}?type=${mediaType}&id=${itemId}`;
+            console.log("Link para a página do conteúdo (modal) a ser copiado:", linkForContentPage);
+
+            // Configurar botão de cópia externo
+            currentExternalCopyUrl = linkForContentPage; 
+            if(externalCopyButtonContainer) {
+                externalCopyButtonContainer.style.display = 'flex'; // Alterado para flex para alinhar com o CSS do botão
+                 console.log("[openItemModal] Estilo do container do botão externo definido para 'flex'. Visível?", window.getComputedStyle(externalCopyButtonContainer).display);
+            } else {
+                console.error("[openItemModal] Container do botão de cópia externo (#externalCopyButtonContainer) NÃO encontrado no DOM ao tentar mostrar!");
+            }
+            
+            const currentExternalBtn = document.getElementById('externalCopyLinkButton');
+            if(currentExternalBtn) {
+                if (externalCopyButtonHandler) { 
+                    currentExternalBtn.removeEventListener('click', externalCopyButtonHandler);
+                    console.log("[openItemModal] Handler de clique antigo do botão externo removido.");
+                }
+                externalCopyButtonHandler = () => {
+                    console.log("Botão externo de cópia clicado. Tentando copiar:", currentExternalCopyUrl);
+                    if(currentExternalCopyUrl) {
+                        copyToClipboard(currentExternalCopyUrl, false); 
+                    } else {
+                        console.warn("Tentativa de cópia externa sem URL válida.");
+                    }
+                };
+                currentExternalBtn.addEventListener('click', externalCopyButtonHandler);
+                console.log("[openItemModal] Novo handler de clique adicionado ao botão externo.");
+            } else {
+                console.error("[openItemModal] Botão de cópia externo (#externalCopyLinkButton) NÃO encontrado no DOM!");
+            }
+
 
             const title = details.title || details.name;
             const overview = details.overview || 'Sinopse não disponível.';
@@ -1183,13 +1282,13 @@
                     </div>`;
             }
 
-            let playerSectionHTML = '';
-            if (playerUrl) {
+            let playerSectionHTML = ''; 
+            if (superflixPlayerUrl) { 
                 playerSectionHTML = `
                     <div class="details-player-section">
                         <h3 class="details-section-subtitle">Assistir Agora</h3>
                         <div class="details-iframe-container ${iframeContainerClass}">
-                           <iframe id="swal-details-iframe" src="${playerUrl}" allowfullscreen title="Player de ${title}"></iframe>
+                           <iframe id="swal-details-iframe" src="${superflixPlayerUrl}" allowfullscreen title="Player de ${title}"></iframe>
                         </div>
                     </div>`;
             } else {
@@ -1210,12 +1309,7 @@
                             ${genres ? `<p class="details-genres"><strong>Gêneros:</strong> ${genres}</p>` : ''}
                             <h3 class="details-section-subtitle">Sinopse</h3>
                             <p class="details-overview">${overview}</p>
-                            <div class="details-actions">
-                                <button id="copyLinkButtonModal" class="copy-link-button">
-                                    <i class="fas fa-link"></i> Copiar Link da Página
-                                </button>
                             </div>
-                        </div>
                     </div>
                     ${castSectionHTML}
                     ${playerSectionHTML}
@@ -1227,13 +1321,8 @@
                 html: detailsHTML,
                 showConfirmButton: false,
                 showCloseButton: true,
-                allowOutsideClick: true, 
-                didOpen: () => {
-                    const copyButton = document.getElementById('copyLinkButtonModal');
-                    if (copyButton) {
-                        copyButton.addEventListener('click', () => copyToClipboard(linkForContentPage, true)); 
-                    }
-                }
+                allowOutsideClick: true
+                // Não há mais botão de cópia interno para configurar no didOpen
             });
         }
 
@@ -1286,12 +1375,10 @@
             }
 
             if (typeParam && idParam) {
-                // Cenário de Link Direto para um item específico
                 console.log(`Link direto detectado: type=${typeParam}, id=${idParam}. Escondendo seções principais e abrindo modal.`);
                 if(defaultContentSections) defaultContentSections.style.display = 'none';
                 if(singleResultsSection) singleResultsSection.style.display = 'none';
                 
-                // Limpar grids para evitar flash de conteúdo antigo
                 if(moviesResultsGrid) moviesResultsGrid.innerHTML = ''; 
                 if(tvShowsResultsGrid) tvShowsResultsGrid.innerHTML = '';
                 if(singleResultsGrid) singleResultsGrid.innerHTML = '';
@@ -1300,7 +1387,6 @@
                 
                 openItemModal(idParam, typeParam, null);
             } else {
-                // Cenário de carregamento da página principal (catálogo)
                 console.log("Nenhum link direto detectado. Carregando conteúdo principal da página.");
                 loadMainPageContent(); 
             }
