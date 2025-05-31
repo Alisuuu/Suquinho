@@ -48,7 +48,7 @@
     <script>
         const API_KEY = '5e5da432e96174227b25086fe8637985';
         const API_BASE = 'https://api.themoviedb.org/3';
-        const EXCLUIDOS = [10764, 10766, 16]; // IDs dos gêneros a serem excluídos
+        const EXCLUIDOS = [10764, 10766, 16]; // IDs dos gêneros a serem excluídos (mantido)
         let ultimoSorteio = null; // Armazena o último item sorteado
         let ultimoTipoSorteado = null; // Armazena o último tipo sorteado ('movie' ou 'tv')
         const modal = document.getElementById('infoModal'); // Elemento do modal
@@ -106,7 +106,8 @@
                 opcoesSorteioDiv.classList.add('opcoes-sorteio-escondidas');
 
                 // Exibe o modal (overlay) imediatamente
-                 modal.classList.add('is-visible'); // Adiciona a classe para exibir a overlay do modal
+                 modal.classList.add('is-visible');
+                 modalTexto.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; height:100%;"><div class="loader-sorteio"></div></div>'; // Mostra um loader simples
 
 
                 let item = null;
@@ -120,23 +121,38 @@
                     const res = await fetch(url);
                     const data = await res.json();
                     const filtrados = data.results.filter(i =>
-                        i && i.genre_ids &&
-                        !EXCLUIDOS.some(id => i.genre_ids.includes(id)) &&
-                        !['ko', 'zh', 'ja', 'hi', 'cn'].includes(i.original_language)
+                        i && i.genre_ids && // Verifica se o item e genre_ids existem
+                        !EXCLUIDOS.some(id => i.genre_ids.includes(id)) // Mantém o filtro de exclusão por gênero
+                        // A linha de filtro por original_language foi REMOVIDA daqui
                     );
-                    item = filtrados[Math.floor(Math.random() * filtrados.length)];
+                    if (filtrados.length > 0) { // Apenas tenta selecionar se houver itens filtrados
+                        item = filtrados[Math.floor(Math.random() * filtrados.length)];
+                    }
                     tentativas++;
                 }
 
-                if (!item) throw new Error("Nenhum item válido encontrado.");
+                if (!item || !item.overview) { // Ajustada a condição de erro para ser mais abrangente
+                    // Se mesmo após tentativas não encontrar um item válido (ou com sinopse), exibe mensagem
+                    // e permite sortear novamente ou fechar.
+                    modalTexto.innerHTML = `
+                        <p style="text-align:center; margin-top: 20px;">Não foi possível encontrar um título válido após várias tentativas.<br>Por favor, tente sortear novamente.</p>
+                    `;
+                    // Não esconde o botão de sortear novamente neste caso específico
+                    // O botão já está visível no HTML do modal.
+                    // A função `fecharModal` e `sortearNovamente` já estão disponíveis globalmente.
+                    console.error("Nenhum item válido encontrado após tentativas.");
+                    // Não chama `opcoesSorteioDiv.classList.remove('opcoes-sorteio-escondidas');` aqui
+                    // pois o modal ainda está aberto. O usuário usará os botões do modal.
+                    return; // Interrompe a execução aqui se nenhum item válido foi encontrado.
+                }
                 ultimoSorteio = item;
 
                 const detalhes = await fetch(`${API_BASE}/${tipo}/${item.id}?api_key=${API_KEY}&language=pt-BR&append_to_response=videos,credits,watch/providers`);
                 const info = await detalhes.json();
 
                 const trailer = info.videos?.results.find(v => v.type === 'Trailer' && v.site === 'YouTube');
-                 // Verifica se há trailer e usa o formato de embed correto
-                 const trailerSrc = trailer ? `https://www.youtube.com/embed/${trailer.key}` : null;
+                // CORREÇÃO: URL do trailer e interpolação da chave
+                const trailerSrc = trailer ? `https://www.youtube.com/embed/${trailer.key}` : null;
 
 
                 const generos = info.genres?.map(g => g.name).join(', ') || 'Não informado';
@@ -148,7 +164,7 @@
                             info.credits?.cast?.slice(0, 10).map(ator => {
                                 const imagem = ator.profile_path
                                     ? `https://image.tmdb.org/t/p/w185${ator.profile_path}`
-                                    : '../p2.png'; // Caminho para imagem padrão se necessário
+                                    : '../p2.png'; // Caminho para imagem padrão (verifique se é válido)
                                 return `
                                     <div class="elenco-item-modal">
                                         <img src="${imagem}" class="elenco-img-modal" alt="${ator.name}" />
@@ -162,7 +178,7 @@
 
                 const titulo = tipo === 'movie' ? info.title : info.name;
                 const dataLancamento = tipo === 'movie' ? info.release_date : info.first_air_date;
-                const sinopse = info.overview || 'Sinopse não disponível.';
+                const sinopse = info.overview || 'Sinopse não disponível.'; // Já verificado no while, mas bom ter fallback
                 const banner = info.backdrop_path ? `https://image.tmdb.org/t/p/original${info.backdrop_path}` : null;
                 const poster = info.poster_path ? `https://image.tmdb.org/t/p/w500${info.poster_path}` : '';
 
@@ -173,13 +189,13 @@
                     <strong class="titulo-modal">${titulo}</strong><br>
                     <em class="tagline-modal">${info.tagline || ''}</em><br><br>
                     <strong>Sinopse:</strong><br> <p class="sinopse-modal">${sinopse}</p><br>
-                    <p class="info-modal"><strong>Data de lançamento:</strong> ${dataLancamento}</p>
+                    <p class="info-modal"><strong>Data de lançamento:</strong> ${new Date(dataLancamento + 'T00:00:00').toLocaleDateString('pt-BR') || 'Não informada'}</p>
                     <p class="info-modal"><strong>Gêneros:</strong> ${generos}</p>
-                    <p class="info-modal"><strong>Onde assistir:</strong> ${ondeAssistir}</p><br>
+                    <p class="info-modal"><strong>Onde assistir (Brasil - Flatrate):</strong> ${ondeAssistir}</p><br>
                     <strong>Elenco:</strong><br>${elencoHtml}
                 `;
 
-                if (trailerSrc) { // Usa trailerSrc corrigido
+                if (trailerSrc) {
                     htmlContent += `
                         <div class="trailer-container-modal">
                             <iframe class="trailer-iframe-modal" src="${trailerSrc}" frameborder="0" allowfullscreen style="border-radius:10px;"></iframe>
@@ -188,25 +204,22 @@
                 }
 
                 modalTexto.innerHTML = htmlContent;
-                modalTexto.scrollTop = 0; // Garantir que o conteúdo comece no topo ao abrir
-                body.classList.add('modal-open'); // Adicionar classe ao body quando o modal abre
+                modalTexto.scrollTop = 0;
+                body.classList.add('modal-open');
 
             } catch (error) {
                 console.error(error);
-                alert('Não foi possível carregar os dados.');
-                opcoesSorteioDiv.classList.remove('opcoes-sorteio-escondidas');
-                body.classList.remove('modal-open'); // Garantir que a classe seja removida em caso de erro
-                modal.classList.remove('is-visible'); // Oculta o modal em caso de erro
+                modalTexto.innerHTML = `<p style="text-align:center; margin-top: 20px;">Não foi possível carregar os dados do item sorteado. Tente novamente.</p>`;
+                // Não remove 'opcoes-sorteio-escondidas' aqui, pois o modal está visível
+                // O usuário pode usar "Sortear Novamente" ou fechar o modal.
             }
         }
 
         window.onload = () => {
-            // Verifica se há histórico de navegação. Se não houver, oculta o botão de voltar.
             if (window.history.length <= 1) {
-                backButtonContainer.style.display = 'none';
+                if (backButtonContainer) backButtonContainer.style.display = 'none';
             }
-
-            opcoesSorteioDiv.style.display = 'flex';
+            if (opcoesSorteioDiv) opcoesSorteioDiv.style.display = 'flex';
         };
     </script>
 </body>
