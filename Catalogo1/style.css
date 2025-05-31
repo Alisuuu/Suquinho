@@ -412,7 +412,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 }
 .details-iframe-container.iframe-series-dimensions {
     aspect-ratio: auto;
-    height: 500px;
+    height: 600px;
 }
 
 .details-iframe-container iframe {
@@ -549,8 +549,9 @@ header h1 .fa-film {
 /* Botão de Cópia Externo */
 #externalCopyButtonContainer {
     position: fixed;
-    bottom: 1.5rem;
-    right: 1.5rem;
+    bottom: 5.5rem;
+    right: 3.5rem;
+    top: 90%;
     z-index: 1070;
 }
 #externalCopyLinkButton {
