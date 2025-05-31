@@ -17,10 +17,14 @@ body {
     background-color: var(--amoled-black);
     color: var(--text-primary);
     transition: background-image 0.5s ease-in-out;
+    /* MODIFICATION: Default overflow for larger screens */
+    overflow-y: auto; /* Allow vertical scroll */
+    overflow-x: hidden; /* Prevent horizontal scroll on the body itself */
 }
 
+/* This rule correctly handles overflow when SweetAlert2 modals are shown */
 body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
-     overflow-y: hidden !important;
+     overflow: hidden !important;
 }
 
 #pageBackdrop {
@@ -35,7 +39,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     background-repeat: no-repeat;
     transition: background-image 0.7s ease-in-out, opacity 0.7s ease-in-out;
     background-color: var(--amoled-black);
-    opacity: 1; /* MODIFICADO: Tornar backdrop visível por padrão */
+    opacity: 1;
 }
 
 #pageBackdrop::before {
@@ -46,22 +50,21 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.8); /* Overlay escuro */
-    z-index: -1; /* Fica acima do #pageBackdrop, abaixo do conteúdo */
+    z-index: -1;
 }
 
 .content-section {
     margin-bottom: 2.5rem;
-    overflow-y: hidden !important;
 }
 
 .horizontal-scroll-grid {
     display: flex;
-    overflow-x: auto;
+    overflow-x: auto; /* This allows horizontal scrolling on small screens */
     white-space: nowrap;
     padding-bottom: 1.25rem;
     gap: 1rem;
 }
-.horizontal-scroll-grid .content-card { /* Fallback/base, geralmente sobrescrita por media queries */
+.horizontal-scroll-grid .content-card {
     flex: 0 0 calc(50% - 0.75rem);
     max-width: 180px;
 }
@@ -77,16 +80,14 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     border-radius: 10px;
 }
 
-/* MODIFICADO: .main-results-grid agora é flex por padrão (mobile-first) */
 .main-results-grid {
     display: flex;
-    overflow-x: auto;
+    overflow-x: auto; /* This allows horizontal scrolling on small screens */
     white-space: nowrap;
-    padding-bottom: 1.25rem; /* Para espaço da scrollbar */
-    gap: 1rem; /* Gap para modo de rolagem */
+    padding-bottom: 1.25rem;
+    gap: 1rem;
 }
 
-/* Estilos da scrollbar para .main-results-grid */
 .main-results-grid::-webkit-scrollbar {
     height: 7px;
 }
@@ -99,9 +100,8 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     border-radius: 10px;
 }
 
-/* MODIFICADO: Definir tamanho dos cards dentro de .main-results-grid quando em modo flex */
 .main-results-grid .content-card {
-    flex: 0 0 240px; /* Largura base dos cards em modo de rolagem (481px-767px) */
+    flex: 0 0 240px;
 }
 
 
@@ -116,7 +116,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     position: relative;
 }
 .content-card:hover {
-    transform: translateY(-8px) scale(1.05); /* Escala no hover mantida (original era 2.05, ajustei para 1.05) */
+    transform: translateY(-8px) scale(1.05);
     box-shadow: 0 12px 24px -6px rgba(89, 59, 162, 0.4);
     border-color: var(--border-highlight);
 }
@@ -430,45 +430,6 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     font-size: 0.875rem;
 }
 
-@media (min-width: 768px) {
-    .swal-details-content .details-flex-container {
-        flex-direction: row;
-    }
-    .swal-details-content .details-poster {
-        align-self: flex-start;
-    }
-    .details-iframe-container.iframe-series-dimensions {
-         height: 520px;
-    }
-    .horizontal-scroll-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-        overflow-x: hidden;
-        white-space: normal;
-        gap: 1.5rem; /* Gap para modo grid */
-    }
-    .horizontal-scroll-grid .content-card { /* Reset para cards em modo grid */
-        flex: none;
-        width: auto;
-        max-width: none;
-    }
-
-    /* MODIFICADO: .main-results-grid volta a ser grid em telas maiores */
-    .main-results-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        overflow-x: hidden; /* Desativa rolagem horizontal */
-        white-space: normal; /* Permite quebra de linha normal */
-        padding-bottom: 0; /* Remove padding da scrollbar */
-        gap: 1.5rem; /* Gap para modo grid */
-    }
-    .main-results-grid .content-card { /* Reset para cards em modo grid */
-        flex: none;
-        width: auto;
-    }
-}
-/* End SweetAlert2 Item Details Styles */
-
 /* Filter Toggle Button in Header */
  #filterToggleButton {
     padding: 0.6rem 1.2rem;
@@ -624,10 +585,19 @@ header h1 .fa-film {
 
 /* Media Queries para responsividade */
 @media (max-width: 767px) { /* Telas até 767px */
-    .horizontal-scroll-grid .content-card {
-        flex: 0 0 220px; /* Cards em .horizontal-scroll-grid */
+    /* MODIFICATION: Prevent vertical scroll on body for small screens */
+    body {
+        overflow-y: hidden;
+        /* Horizontal scroll on the body is still prevented by the base `body { overflow-x: hidden; }` style.
+           Specific elements like .horizontal-scroll-grid and .main-results-grid
+           will handle their own horizontal scrolling due to `overflow-x: auto;`
+           which is the desired behavior. */
     }
-    /* .main-results-grid .content-card já tem flex: 0 0 240px; por padrão (<768px) */
+
+    .horizontal-scroll-grid .content-card {
+        flex: 0 0 220px;
+    }
+    /* .main-results-grid .content-card already has flex: 0 0 240px; by default for <768px */
 
     header .container {
         flex-direction: column;
@@ -685,6 +655,42 @@ header h1 .fa-film {
 }
 
 @media (min-width: 768px) { /* Telas a partir de 768px */
+    /* Body will use its default overflow-y: auto and overflow-x: hidden here */
+
+    .swal-details-content .details-flex-container {
+        flex-direction: row;
+    }
+    .swal-details-content .details-poster {
+        align-self: flex-start;
+    }
+    .details-iframe-container.iframe-series-dimensions {
+         height: 520px;
+    }
+    .horizontal-scroll-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        overflow-x: hidden; /* Disable horizontal scroll as it's a grid now */
+        white-space: normal;
+        gap: 1.5rem;
+    }
+    .horizontal-scroll-grid .content-card {
+        flex: none;
+        width: auto;
+        max-width: none;
+    }
+
+    .main-results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        overflow-x: hidden; /* Disable horizontal scroll as it's a grid now */
+        white-space: normal;
+        padding-bottom: 0;
+        gap: 1.5rem;
+    }
+    .main-results-grid .content-card {
+        flex: none;
+        width: auto;
+    }
     .header-controls-wrapper {
          width: auto;
     }
@@ -692,19 +698,20 @@ header h1 .fa-film {
          width: auto;
     }
 }
+/* End SweetAlert2 Item Details Styles */
+
 
 @media (min-width: 768px) and (max-width: 1023px) { /* Tablets */
-     .main-results-grid { /* Já é display: grid aqui */
+     .main-results-grid {
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
      }
-     /* .horizontal-scroll-grid também é grid aqui, com minmax(240px, 1fr) da regra @media (min-width: 768px) */
 }
 
 @media (max-width: 480px) { /* Telas muito pequenas */
     .horizontal-scroll-grid .content-card {
         flex: 0 0 190px;
     }
-    .main-results-grid .content-card { /* Ajuste para .main-results-grid em modo de rolagem */
+    .main-results-grid .content-card {
         flex: 0 0 200px;
     }
     header h1 {
@@ -712,4 +719,3 @@ header h1 .fa-film {
     }
 }
 
-     
