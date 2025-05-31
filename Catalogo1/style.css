@@ -17,7 +17,6 @@ body {
     background-color: var(--amoled-black);
     color: var(--text-primary);
     transition: background-image 0.5s ease-in-out;
-    overflow-y: hidden !important;
 }
 
 body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
@@ -52,6 +51,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 
 .content-section {
     margin-bottom: 2.5rem;
+    overflow-y: hidden !important;
 }
 
 .horizontal-scroll-grid {
