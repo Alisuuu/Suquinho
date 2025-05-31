@@ -17,6 +17,7 @@ body {
     background-color: var(--amoled-black);
     color: var(--text-primary);
     transition: background-image 0.5s ease-in-out;
+    overflow-y: hidden !important;
 }
 
 body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
@@ -60,13 +61,9 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     padding-bottom: 1.25rem;
     gap: 1rem;
 }
-/* A regra abaixo para .horizontal-scroll-grid .content-card é um fallback,
-   geralmente sobrescrita por media queries específicas ou quando o grid é ativado.
-   Seu max-width original era 180px.
-*/
-.horizontal-scroll-grid .content-card {
-    flex: 0 0 calc(50% - 0.75rem); /* Mantido como estava, mas as media queries abaixo são mais impactantes */
-    max-width: 180px; /* Mantido como estava, mas as media queries abaixo são mais impactantes */
+.horizontal-scroll-grid .content-card { /* Fallback/base, geralmente sobrescrita por media queries */
+    flex: 0 0 calc(50% - 0.75rem);
+    max-width: 180px;
 }
 .horizontal-scroll-grid::-webkit-scrollbar {
     height: 7px;
@@ -80,11 +77,33 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     border-radius: 10px;
 }
 
+/* MODIFICADO: .main-results-grid agora é flex por padrão (mobile-first) */
 .main-results-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* MODIFICADO: Aumentado de 190px */
-    gap: 1.5rem;
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 1.25rem; /* Para espaço da scrollbar */
+    gap: 1rem; /* Gap para modo de rolagem */
 }
+
+/* Estilos da scrollbar para .main-results-grid */
+.main-results-grid::-webkit-scrollbar {
+    height: 7px;
+}
+.main-results-grid::-webkit-scrollbar-track {
+    background: var(--border-color);
+    border-radius: 10px;
+}
+.main-results-grid::-webkit-scrollbar-thumb {
+    background-color: var(--purple-accent);
+    border-radius: 10px;
+}
+
+/* MODIFICADO: Definir tamanho dos cards dentro de .main-results-grid quando em modo flex */
+.main-results-grid .content-card {
+    flex: 0 0 240px; /* Largura base dos cards em modo de rolagem (481px-767px) */
+}
+
 
 .content-card {
     background-color: var(--card-bg);
@@ -95,11 +114,9 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     border: 1px solid var(--border-color);
     box-shadow: 0 6px 12px -3px rgba(0,0,0,0.35);
     position: relative;
-    /* display: flex; */ /* Adicionado para garantir que o card se expanda corretamente se necessário */
-    /* flex-direction: column; */ /* Adicionado para garantir que o card se expanda corretamente se necessário */
 }
 .content-card:hover {
-    transform: translateY(-8px) scale(1.05); /* Escala no hover mantida (original era 2.05, ajustei para 1.05, pois os cards já estão maiores. Se preferir o scale maior, volte para 2.05) */
+    transform: translateY(-8px) scale(1.05); /* Escala no hover mantida (original era 2.05, ajustei para 1.05) */
     box-shadow: 0 12px 24px -6px rgba(89, 59, 162, 0.4);
     border-color: var(--border-highlight);
 }
@@ -263,7 +280,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 }
 .swal-details-content .details-poster {
     width: 100%;
-    max-width: 250px; /* Mantido, pode ser ajustado se necessário para o novo layout */
+    max-width: 250px;
     height: auto;
     object-fit: contain;
     border-radius: 0.5rem;
@@ -342,7 +359,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     border-radius: 10px;
 }
 .cast-member-card {
-    flex: 0 0 100px; /* Mantido, pode ser ajustado se necessário */
+    flex: 0 0 100px;
     text-align: center;
     background-color: rgba(255,255,255,0.03);
     padding: 0.75rem 0.5rem;
@@ -425,15 +442,29 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     }
     .horizontal-scroll-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); /* MODIFICADO: Aumentado de 190px */
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
         overflow-x: hidden;
         white-space: normal;
-        gap: 1.5rem;
+        gap: 1.5rem; /* Gap para modo grid */
     }
-    .horizontal-scroll-grid .content-card {
+    .horizontal-scroll-grid .content-card { /* Reset para cards em modo grid */
         flex: none;
         width: auto;
         max-width: none;
+    }
+
+    /* MODIFICADO: .main-results-grid volta a ser grid em telas maiores */
+    .main-results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        overflow-x: hidden; /* Desativa rolagem horizontal */
+        white-space: normal; /* Permite quebra de linha normal */
+        padding-bottom: 0; /* Remove padding da scrollbar */
+        gap: 1.5rem; /* Gap para modo grid */
+    }
+    .main-results-grid .content-card { /* Reset para cards em modo grid */
+        flex: none;
+        width: auto;
     }
 }
 /* End SweetAlert2 Item Details Styles */
@@ -592,12 +623,11 @@ header h1 .fa-film {
 
 
 /* Media Queries para responsividade */
-@media (max-width: 767px) {
-    /* MODIFICADO: Ajuste para cards maiores em scroll horizontal */
+@media (max-width: 767px) { /* Telas até 767px */
     .horizontal-scroll-grid .content-card {
-        flex: 0 0 220px; /* Aumentado de max-width: 170px e flex calc */
-        /* max-width: 220px; */ /* Opcional, flex-basis já define a largura */
+        flex: 0 0 220px; /* Cards em .horizontal-scroll-grid */
     }
+    /* .main-results-grid .content-card já tem flex: 0 0 240px; por padrão (<768px) */
 
     header .container {
         flex-direction: column;
@@ -654,7 +684,7 @@ header h1 .fa-film {
     }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 768px) { /* Telas a partir de 768px */
     .header-controls-wrapper {
          width: auto;
     }
@@ -663,20 +693,22 @@ header h1 .fa-film {
     }
 }
 
-@media (min-width: 768px) and (max-width: 1023px) {
-     .main-results-grid {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* MODIFICADO: Aumentado de 180px */
+@media (min-width: 768px) and (max-width: 1023px) { /* Tablets */
+     .main-results-grid { /* Já é display: grid aqui */
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
      }
-     /* A regra para .horizontal-scroll-grid já está coberta pelo @media (min-width: 768px) geral */
+     /* .horizontal-scroll-grid também é grid aqui, com minmax(240px, 1fr) da regra @media (min-width: 768px) */
 }
 
-@media (max-width: 480px) {
-    /* MODIFICADO: Ajuste para cards maiores em scroll horizontal em telas pequenas */
+@media (max-width: 480px) { /* Telas muito pequenas */
     .horizontal-scroll-grid .content-card {
-        flex: 0 0 190px; /* Aumentado de max-width: 150px e flex calc */
-        /* max-width: 190px; */ /* Opcional */
+        flex: 0 0 190px;
+    }
+    .main-results-grid .content-card { /* Ajuste para .main-results-grid em modo de rolagem */
+        flex: 0 0 200px;
     }
     header h1 {
         font-size: 1.5rem;
     }
 }
+
