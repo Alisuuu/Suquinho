@@ -5,8 +5,8 @@ const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/';
 const TMDB_BACKDROP_BASE_URL = 'https://image.tmdb.org/t/p/original';
 const LANGUAGE = 'pt-BR';
 const PLACEHOLDER_PERSON_IMAGE = 'https://placehold.co/185x278/0F071A/F3F4F6?text=Sem+Foto&font=inter';
-const PLAYER_BASE_URL_MOVIE = 'https://superflixapi.ist/filme/'; 
-const PLAYER_BASE_URL_SERIES = 'https://superflixapi.ist/serie/'; 
+const PLAYER_BASE_URL_MOVIE = 'https://superflixapi.wales//filme/'; 
+const PLAYER_BASE_URL_SERIES = 'https://superflixapi.wales//serie/'; 
 
 // Lista de códigos de idiomas e países asiáticos para bloqueio
 const ASIAN_LANGUAGES_TO_BLOCK = ['ja', 'ko', 'zh', 'hi', 'th', 'vi', 'ms', 'id', 'fa', 'ar', 'tr', 'mn', 'tl', 'ur', 'bn', 'pa', 'te', 'ta', 'ml', 'kn', 'gu', 'mr', 'ne', 'km', 'lo', 'my', 'dz', 'ug', 'ps', 'sd'];
