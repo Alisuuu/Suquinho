@@ -174,7 +174,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     transition: color 0.2s ease, transform 0.2s ease !important;
     position: absolute !important;
     top: 12px !important;
-    right: 15px !important;
+    right: 29px !important;
     z-index: 100;
     width: 30px;
     height: 30px;
