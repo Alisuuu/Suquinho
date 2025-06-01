@@ -79,19 +79,19 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 
 .horizontal-scroll-grid::-webkit-scrollbar,
 .main-results-grid::-webkit-scrollbar {
-    height: 7px;
+    height: 4px;
 }
 
 .horizontal-scroll-grid::-webkit-scrollbar-track,
 .main-results-grid::-webkit-scrollbar-track {
     background: var(--border-color);
-    border-radius: 10px;
+    border-radius: 5px;
 }
 
 .horizontal-scroll-grid::-webkit-scrollbar-thumb,
 .main-results-grid::-webkit-scrollbar-thumb {
     background-color: var(--purple-accent);
-    border-radius: 10px;
+    border-radius: 15px;
 }
 
 .horizontal-scroll-grid .content-card {
@@ -586,8 +586,10 @@ header h1 .fa-film {
 /* Botão de Cópia Externo (FAB - Floating Action Button) */
 #externalCopyButtonContainer {
     position: fixed;
-    bottom: 1.5rem;
-    right: 1.5rem;
+    bottom: 0.0rem;
+    right: 8.5rem;
+    left: 5%;
+    top: 90%;
     z-index: 1070;
 }
 #externalCopyLinkButton {
@@ -793,4 +795,3 @@ header h1 .fa-film {
     }
 }
 
-    
