@@ -19,7 +19,6 @@ body {
     transition: background-image 0.5s ease-in-out;
     /* MODIFICATION: Default overflow for larger screens */
     overflow-y: auto; /* Allow vertical scroll */
-    overflow-x: hidden; /* Prevent horizontal scroll on the body itself */
 }
 
 /* This rule correctly handles overflow when SweetAlert2 modals are shown */
