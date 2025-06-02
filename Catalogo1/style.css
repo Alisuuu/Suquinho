@@ -184,8 +184,8 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 .details-cast-section { margin-top: 1.5rem; }
 .details-cast-scroller { display: flex; overflow-x: auto; gap: 1rem; padding: 0.75rem 0.25rem; margin-bottom: 1rem; }
 .details-cast-scroller::-webkit-scrollbar { height: 6px; }
-.details-cast-scroller::-webkit-scrollbar-track { background: var(--border-color); border-radius: 10px; }
-.details-cast-scroller::-webkit-scrollbar-thumb { background-color: var(--purple-accent); border-radius: 10px; }
+.details-cast-scroller::-webkit-scrollbar-track { background: var(--border-color); border-radius: 5px; }
+.details-cast-scroller::-webkit-scrollbar-thumb { background-color: var(--purple-accent); border-radius: 5px; }
 .cast-member-card { flex: 0 0 100px; text-align: center; background-color: rgba(255,255,255,0.03); padding: 0.75rem 0.5rem; border-radius: 0.5rem; border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: flex-start; }
 .cast-member-photo { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; margin: 0 auto 0.5rem auto; border: 2px solid var(--border-highlight); background-color: var(--border-color); }
 .cast-member-name { font-size: 0.8rem; font-weight: 600; color: var(--text-primary); line-height: 1.2; height: 2.4em; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.25rem; }
