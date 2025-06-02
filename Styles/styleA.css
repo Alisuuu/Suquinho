@@ -216,7 +216,7 @@ body {
   .sidebar-buttons { 
     left: 8px; 
     padding: 6px 3px; 
-    gap: 15px; 
+    gap: 15px; /* Retained from 768px, can be adjusted if needed */
   }
   .sidebar-container-condensed {
     bottom: 8px; /* Adjust for smaller screens */
@@ -236,6 +236,29 @@ body {
     height: 28px; 
   }
 }
+
+/* NEW MEDIA QUERY FOR SHORTER SCREEN HEIGHTS */
+@media screen and (max-height: 550px) {
+  .sidebar-buttons { 
+    gap: 10px; /* Reduce gap for shorter screens */
+    /* You might also adjust top/bottom padding of .sidebar-buttons if needed */
+  }
+  .icon-button {
+    width: 45px; 
+    height: 45px; 
+    font-size: 22px; 
+  }
+  #toggleSidebarBtn.toggle-btn-shrunk {
+    width: 38px; /* Adjust shrunk toggle button for consistency */
+    height: 38px; 
+    font-size: 18px; 
+  }
+  .icon-button img {
+    width: 25px; 
+    height: 25px; 
+  }
+}
+/* END OF NEW MEDIA QUERY */
 
 @media screen and (max-height: 450px) and (orientation: landscape) and (max-width: 900px) {
     .sidebar-buttons { 
@@ -261,3 +284,4 @@ body {
         height: 20px; 
     }
 }
+
