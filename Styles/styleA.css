@@ -59,8 +59,8 @@ body {
 
 /* Individual Icon Buttons */
 .icon-button {
-  background-color: rgba(89, 59, 162, 0.25); 
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(89, 59, 162, 0.0); 
+  border: 1px solid rgba(255, 255, 255, 0.0);
   border-radius: 50%; 
   width: 85px; 
   height: 85px; 
@@ -71,20 +71,20 @@ body {
   color: white;
   cursor: pointer;
   text-decoration: none; 
-  box-shadow: 0 7px 20px rgba(0, 0, 0, 0.5); 
+  box-shadow: 0 7px 20px rgba(0, 0, 0, 0.0); 
   position: relative; 
   overflow: hidden; 
   -webkit-tap-highlight-color: transparent;
   opacity: 1;
   visibility: visible;
   transform: translateX(0) scale(1) rotate(0deg);
-  transition: transform 0.35s cubic-bezier(0.68, -0.55, 0.27, 1.55),
+  transition: transform 0.35s cubic-bezier(0.68, -0.55, 0.27, 0.0),
               background-color 0.25s ease-out, 
               box-shadow 0.25s ease-out, 
               opacity 0.3s ease-out, 
-              height 0.35s cubic-bezier(0.68, -0.55, 0.27, 1.55),
-              width 0.35s cubic-bezier(0.68, -0.55, 0.27, 1.55),
-              font-size 0.35s cubic-bezier(0.68, -0.55, 0.27, 1.55),
+              height 0.35s cubic-bezier(0.68, -0.55, 0.27, 0.0),
+              width 0.35s cubic-bezier(0.68, -0.55, 0.27, 0.0),
+              font-size 0.35s cubic-bezier(0.68, -0.55, 0.27, 0.0),
               margin-top 0.35s ease-out,
               margin-bottom 0.35s ease-out,
               padding-top 0.35s ease-out,
@@ -113,9 +113,9 @@ body {
 
 .icon-button:hover {
   transform: scale(1.12) translateY(-4px) rotate(4deg) translateX(0);
-  background-color: rgba(89, 59, 162, 0.45); 
-  border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 9px 28px rgba(89, 59, 162, 0.6); 
+  background-color: rgba(89, 59, 162, 0.0); 
+  border-color: rgba(255, 255, 255, 0.0);
+  box-shadow: 0 9px 28px rgba(89, 59, 162, 0.0); 
 }
  /* Specific hover for shrunk toggle button to avoid translateY fighting with positioning */
 #toggleSidebarBtn.toggle-btn-shrunk:hover {
@@ -131,11 +131,11 @@ body {
   0% {
     transform: translate(-50%, -50%) scale(0.3);
     opacity: 0.6;
-    box-shadow: 0 0 10px 5px rgba(89, 59, 162, 0.3), 
-                0 0 20px 10px rgba(89, 59, 162, 0.3); 
+    box-shadow: 0 0 10px 5px rgba(89, 59, 162, 0.0), 
+                0 0 20px 10px rgba(89, 59, 162, 0.0); 
   }
   100% {
-    transform: translate(-50%, -50%) scale(2.2);
+    transform: translate(-50%, -50%) scale(0.0);
     opacity: 0;
     box-shadow: 0 0 30px 15px rgba(89, 59, 162, 0), 
                 0 0 50px 25px rgba(89, 59, 162, 0); 
@@ -149,7 +149,7 @@ body {
   left: 50%;
   width: 100%;
   height: 100%;
-  background-color: rgba(89, 59, 162, 0.1); 
+  background-color: rgba(89, 59, 162, 0.0); 
   border-radius: 50%;
   transform: translate(-50%, -50%) scale(0);
   opacity: 0;
