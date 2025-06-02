@@ -1,17 +1,13 @@
 // --- Script 1: Constants, Configuration, DOM Refs, State ---
 // --- Constants and Configuration ---
-const TMDB_API_KEY = '5e5da432e96174227b25086fe8637985'; // IMPORTANTE: Substitua pela sua chave de API real do TMDB. Não exponha chaves de API diretamente no código do lado do cliente em aplicações de produção. Considere usar um backend para fazer as chamadas à API.
+const TMDB_API_KEY = '5e5da432e96174227b25086fe8637985'; // IMPORTANTE: Substitua pela sua chave de API real do TMDB.
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/';
 const TMDB_BACKDROP_BASE_URL = 'https://image.tmdb.org/t/p/original';
-const LANGUAGE = 'pt-BR'; // Usado nas chamadas da API TMDB
+const LANGUAGE = 'pt-BR';
 const PLACEHOLDER_PERSON_IMAGE = 'https://placehold.co/185x278/0F071A/F3F4F6?text=Sem+Foto&font=inter';
 const PLAYER_BASE_URL_MOVIE = 'https://superflixapi.wales/filme/';
 const PLAYER_BASE_URL_SERIES = 'https://superflixapi.wales/serie/';
-
-// const ASIAN_LANGUAGES_TO_BLOCK = [...] // REMOVIDO COMPLETAMENTE
-// const ASIAN_ORIGIN_COUNTRIES_TO_BLOCK = [...] // JÁ REMOVIDO ANTERIORMENTE
-
 
 // --- DOM Element References ---
 const pageBackdrop = document.getElementById('pageBackdrop');
@@ -36,3 +32,13 @@ let searchTimeout = null;
 let currentOpenSwalRef = null;
 let currentExternalCopyUrl = '';
 let externalCopyButtonHandler;
+
+let searchCurrentPage = 1;
+let filterCurrentPage = 1;
+let isLoadingMore = false;
+let currentContentContext = 'main';
+let totalPages = { search: 1, filter: 1 };
+
+let mainPageBackdropSlideshowInterval = null;
+let currentMainPageBackdropIndex = 0;
+let mainPageBackdropPaths = [];
