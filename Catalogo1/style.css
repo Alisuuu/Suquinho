@@ -10,10 +10,7 @@
     --danger-red: #E53E3E;
     --danger-red-hover: #C53030;
     --success-green: #48BB78;
-
-    /* NEW: Definindo uma altura estimada para o header em mobile */
-    /* Este valor pode precisar de ajuste fino ou ser definido via JS para precisão total */
-    --header-height-mobile: 5rem; /* Estimativa inicial, ajuste conforme necessário */
+    --header-height-mobile: 5rem; /* Altura do header no mobile */
 }
 
 body {
@@ -21,11 +18,10 @@ body {
     background-color: var(--amoled-black);
     color: var(--text-primary);
     transition: background-image 0.5s ease-in-out;
-    overflow-x: hidden; /* Prevent horizontal scroll on the body itself */
-    /* MODIFICATION: overflow-y é gerenciado por media query */
+    overflow-x: hidden; /* Previne scroll horizontal no body */
+    /* overflow-y é gerenciado por media query abaixo */
 }
 
-/* This rule correctly handles overflow when SweetAlert2 modals are shown */
 body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
      overflow: hidden !important;
 }
@@ -52,57 +48,43 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8); /* Overlay escuro */
+    background-color: rgba(0,0,0,0.2);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 10px -3px rgba(0,0,0,0.1);
     z-index: -1;
 }
 
-/* NEW: Classe para o container principal do conteúdo da aplicação */
-/* Use esta classe em um elemento <main> que envolva suas .content-section */
-.app-main-content {
-    /* Estilos padrão para desktop - permite rolagem normal */
-    padding: 1rem; /* Adiciona um pouco de respiro */
-}
+/* main#contentArea é estilizado por media query para mobile */
 
 .content-section {
     margin-bottom: 2.5rem;
 }
 
-/* Horizontal Scrolling Grids (for smaller screens) */
-.horizontal-scroll-grid,
-.main-results-grid {
-    display: flex;
-    overflow-x: auto;
-    white-space: nowrap;
-    padding-bottom: 1.25rem;
+/* --- ESTILOS PARA TODOS OS GRIDS DE CONTEÚDO PRINCIPAL --- */
+/* Aplicado a #moviesResultsGrid, #tvShowsResultsGrid (tela inicial) 
+   e #singleResultsGrid (busca/filtro).
+   As classes .horizontal-scroll-grid e .main-results-grid agora são sempre display:grid */
+.horizontal-scroll-grid,  /* Usada por #moviesResultsGrid, #tvShowsResultsGrid no seu HTML */
+.main-results-grid,       /* Usada por #singleResultsGrid no seu HTML */
+#singleResultsGrid {       /* Redundante se #singleResultsGrid já tem .main-results-grid, mas garante */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Base para mobile */
     gap: 1rem;
+    padding-bottom: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden; /* Garante SEM scroll horizontal */
 }
 
+/* Remove estilos de scrollbar horizontal, pois não são mais usados para estes grids */
 .horizontal-scroll-grid::-webkit-scrollbar,
 .main-results-grid::-webkit-scrollbar {
-    height: 4px;
-}
-
-.horizontal-scroll-grid::-webkit-scrollbar-track,
-.main-results-grid::-webkit-scrollbar-track {
-    background: var(--border-color);
-    border-radius: 5px;
-}
-
-.horizontal-scroll-grid::-webkit-scrollbar-thumb,
-.main-results-grid::-webkit-scrollbar-thumb {
-    background-color: var(--purple-accent);
-    border-radius: 15px;
-}
-
-.horizontal-scroll-grid .content-card {
-    flex: 0 0 clamp(160px, 45vw, 220px);
-}
-
-.main-results-grid .content-card {
-    flex: 0 0 clamp(180px, 50vw, 240px);
+    display: none;
 }
 
 
+/* Estilos gerais para os cards */
 .content-card {
     background-color: var(--card-bg);
     border-radius: 0.75rem;
@@ -112,7 +94,6 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     border: 1px solid var(--border-color);
     box-shadow: 0 6px 12px -3px rgba(0,0,0,0.35);
     position: relative;
-    flex-shrink: 0;
 }
 .content-card:hover {
     transform: translateY(-8px) scale(1.05);
@@ -140,7 +121,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     text-align: center;
     color: var(--text-primary);
     line-height: 1.3;
-    max-height: 3.9em; /* 3 linhas (1.3em * 3) */
+    max-height: 3.9em;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
@@ -149,653 +130,200 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     white-space: normal;
 }
 
-/* SweetAlert2 General Customizations */
-.swal2-popup {
-    color: var(--text-primary) !important;
-    border-radius: 1rem !important;
-    border: 1px solid var(--border-color) !important;
-    max-width: 90vw !important;
-    width: auto !important;
-    background-color: rgba(0,0,0,0.8);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 4px 10px -3px rgba(0,0,0,0.6);
-    
-}
-.swal2-title {
-    color: var(--purple-light) !important;
-    font-size: 1.5rem !important;
-    padding-top: 1.5rem !important;
-    margin-bottom: 0 !important;
-}
-.swal2-html-container {
-    color: var(--text-primary) !important;
-    margin: 0.5em 1em 0.3em !important;
-    text-align: left !important;
-}
-.swal2-close {
-    color: #FFFFFF !important;
-    font-size: 2em !important;
-    transition: color 0.2s ease, transform 0.2s ease !important;
-    position: absolute !important;
-    top: 12px !important;
-    right: 30px !important;
-    z-index: 100;
-    width: 30px;
-    height: 30px;
-    line-height: 30px;
+/* Estilos para os loaders locais de scroll infinito */
+.infinite-scroll-loader {
+    width: 100%;
     text-align: center;
+    padding: 1rem 0; 
+    box-sizing: border-box;
 }
-.swal2-close:hover {
-    color: var(--purple-light) !important;
-    transform: scale(1.1) !important;
+.infinite-scroll-loader .loader-spinner {
+    border: 3px solid var(--border-color); 
+    border-top: 3px solid var(--purple-accent);
+    border-radius: 50%;
+    width: 30px;  
+    height: 30px; 
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto; 
+    display: inline-block; 
 }
 
-/* SweetAlert2 Filter-Specific Styles */
-.swal-genre-filter-type-selector button,
-.swal-genre-buttons-panel button,
-.swal-filter-actions button {
-    padding: 0.6rem 1.2rem;
-    border-radius: 0.6rem;
-    font-weight: 600;
-    font-size: 0.9rem;
-    border: 1px solid var(--border-highlight);
-    background-color: var(--card-bg);
-    color: var(--text-secondary);
-    transition: all 0.2s ease;
-    margin: 0.25rem;
-}
-.swal-genre-filter-type-selector button.active,
-.swal-genre-buttons-panel button.active {
-    background-color: var(--purple-accent);
-    color: var(--amoled-black);
-    border-color: var(--purple-accent);
-    box-shadow: 0 0 10px rgba(89, 59, 162, 0.4);
-}
-.swal-filter-actions .swal2-confirm {
-    background-color: var(--purple-accent) !important;
-    color: var(--amoled-black) !important;
-    border: 1px solid var(--purple-accent) !important;
-}
-.swal-filter-actions .swal2-confirm:hover {
-    background-color: var(--purple-light) !important;
-    border-color: var(--purple-light) !important;
-}
-.swal-filter-actions .swal2-deny {
-    background-color: var(--danger-red) !important;
-    color: var(--text-primary) !important;
-    border: 1px solid var(--danger-red) !important;
-}
-.swal-filter-actions .swal2-deny:hover {
-    background-color: var(--danger-red-hover) !important;
-    border-color: var(--danger-red-hover) !important;
-}
-.swal-genre-buttons-panel {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.6rem;
-    justify-content: center;
-    max-height: 180px;
-    overflow-y: auto;
-    padding: 0.5rem;
-    border: 1px solid var(--border-color);
-    border-radius: 0.6rem;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-}
+/* SweetAlert2 General Customizations */
+.swal2-popup { color: var(--text-primary) !important; border-radius: 1rem !important; border: 1px solid var(--border-color) !important; max-width: 90vw !important; width: auto !important; background-color: rgba(0,0,0,0.8); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 4px 10px -3px rgba(0,0,0,0.6); }
+.swal2-title { color: var(--purple-light) !important; font-size: 1.5rem !important; padding-top: 1.5rem !important; margin-bottom: 0 !important; }
+.swal2-html-container { color: var(--text-primary) !important; margin: 0.5em 1em 0.3em !important; text-align: left !important; }
+.swal2-close { color: #FFFFFF !important; font-size: 2em !important; transition: color 0.2s ease, transform 0.2s ease !important; position: absolute !important; top: 12px !important; right: 30px !important; z-index: 100; width: 30px; height: 30px; line-height: 30px; text-align: center; }
+.swal2-close:hover { color: var(--purple-light) !important; transform: scale(1.1) !important; }
+.swal-genre-filter-type-selector button, .swal-genre-buttons-panel button, .swal-filter-actions button { padding: 0.6rem 1.2rem; border-radius: 0.6rem; font-weight: 600; font-size: 0.9rem; border: 1px solid var(--border-highlight); background-color: var(--card-bg); color: var(--text-secondary); transition: all 0.2s ease; margin: 0.25rem; }
+.swal-genre-filter-type-selector button.active, .swal-genre-buttons-panel button.active { background-color: var(--purple-accent); color: var(--amoled-black); border-color: var(--purple-accent); box-shadow: 0 0 10px rgba(89, 59, 162, 0.4); }
+.swal-filter-actions .swal2-confirm { background-color: var(--purple-accent) !important; color: var(--amoled-black) !important; border: 1px solid var(--purple-accent) !important; }
+.swal-filter-actions .swal2-confirm:hover { background-color: var(--purple-light) !important; border-color: var(--purple-light) !important; }
+.swal-filter-actions .swal2-deny { background-color: var(--danger-red) !important; color: var(--text-primary) !important; border: 1px solid var(--danger-red) !important; }
+.swal-filter-actions .swal2-deny:hover { background-color: var(--danger-red-hover) !important; border-color: var(--danger-red-hover) !important; }
+.swal-genre-buttons-panel { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; max-height: 180px; overflow-y: auto; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 0.6rem; margin-top: 1rem; margin-bottom: 1rem; }
 .swal-genre-buttons-panel::-webkit-scrollbar { width: 5px; }
 .swal-genre-buttons-panel::-webkit-scrollbar-track { background: var(--card-bg); border-radius: 0.6rem; }
 .swal-genre-buttons-panel::-webkit-scrollbar-thumb { background-color: var(--purple-accent); border-radius: 8px; }
+.swal-details-popup.swal2-popup { width: 850px !important; max-width: 95vw !important; max-height: 90vh !important; display: flex !important; flex-direction: column !important; }
+.swal-details-popup .swal2-html-container { overflow-y: auto !important; flex-grow: 1 !important; padding: 0.5em 1em; scrollbar-width: thin; scrollbar-color: var(--purple-accent) var(--border-color); }
+.swal-details-popup .swal2-html-container::-webkit-scrollbar { width: 8px; }
+.swal-details-popup .swal2-html-container::-webkit-scrollbar-track { background: var(--border-color); border-radius: 10px; }
+.swal-details-popup .swal2-html-container::-webkit-scrollbar-thumb { background-color: var(--purple-accent); border-radius: 10px; }
+.swal-details-content { padding-bottom: 1rem; }
+.swal-details-content .details-flex-container { display: flex; flex-direction: column; gap: 1.5rem; }
+.swal-details-content .details-poster { width: 100%; max-width: 220px; height: auto; object-fit: contain; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); align-self: center; }
+.swal-details-content .details-info-area { flex: 1; display: flex; flex-direction: column; gap: 0.75rem; }
+.swal-details-content .details-content-title { font-size: 1.75rem; font-weight: 700; color: var(--purple-light); line-height: 1.2; margin-bottom: 0.5rem; }
+.swal-details-content .details-meta-info { font-size: 0.875rem; color: var(--text-secondary); display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; }
+.swal-details-content .details-meta-info span { display: inline-flex; align-items: center; }
+.swal-details-content .details-meta-info .fas { margin-right: 0.375rem; }
+.swal-details-content .details-genres { font-size: 0.875rem; color: var(--text-secondary); }
+.swal-details-content .details-genres strong { color: var(--purple-light); font-size: 0.95rem; }
+.swal-details-content .details-section-subtitle { font-size: 1.125rem; font-weight: 600; color: var(--purple-light); margin-top: 0.75rem; margin-bottom: 0.5rem; }
+.swal-details-content .details-overview { font-size: 0.95rem; line-height: 1.65; color: var(--text-primary); }
+.details-cast-section { margin-top: 1.5rem; }
+.details-cast-scroller { display: flex; overflow-x: auto; gap: 1rem; padding: 0.75rem 0.25rem; margin-bottom: 1rem; }
+.details-cast-scroller::-webkit-scrollbar { height: 6px; }
+.details-cast-scroller::-webkit-scrollbar-track { background: var(--border-color); border-radius: 10px; }
+.details-cast-scroller::-webkit-scrollbar-thumb { background-color: var(--purple-accent); border-radius: 10px; }
+.cast-member-card { flex: 0 0 100px; text-align: center; background-color: rgba(255,255,255,0.03); padding: 0.75rem 0.5rem; border-radius: 0.5rem; border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: flex-start; }
+.cast-member-photo { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; margin: 0 auto 0.5rem auto; border: 2px solid var(--border-highlight); background-color: var(--border-color); }
+.cast-member-name { font-size: 0.8rem; font-weight: 600; color: var(--text-primary); line-height: 1.2; height: 2.4em; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.25rem; }
+.cast-member-character { font-size: 0.7rem; color: var(--text-secondary); line-height: 1.2; height: 2.4em; overflow: hidden; text-overflow: ellipsis; }
+.details-player-section { margin-top: 1rem; }
+.details-iframe-container { margin-top: 0.5rem; background-color: #000; border-radius: 0.75rem; overflow: hidden; box-shadow: 0 6px 15px rgba(0,0,0,0.3); aspect-ratio: 16 / 9; }
+.details-iframe-container.iframe-series-dimensions { aspect-ratio: auto; height: 400px; }
+.details-iframe-container iframe { width: 100%; height: 100%; border: none; display: block; }
+.swal-details-content .details-player-unavailable { margin-top: 1.25rem; text-align: center; color: #FFD700; background-color: rgba(255, 215, 0, 0.15); padding: 0.75rem; border-radius: 0.5rem; font-size: 0.875rem; }
 
-/* SweetAlert2 Item Details Modal Specific Styles */
-.swal-details-popup.swal2-popup {
-    width: 850px !important;
-    max-width: 95vw !important;
-    max-height: 90vh !important;
-    display: flex !important;
-    flex-direction: column !important;
-}
-.swal-details-popup .swal2-html-container {
-    overflow-y: auto !important;
-    flex-grow: 1 !important;
-    padding: 0.5em 1em;
-    scrollbar-width: thin;
-    scrollbar-color: var(--purple-accent) var(--border-color);
-}
-.swal-details-popup .swal2-html-container::-webkit-scrollbar {
-    width: 8px;
-}
-.swal-details-popup .swal2-html-container::-webkit-scrollbar-track {
-    background: var(--border-color);
-    border-radius: 10px;
-}
-.swal-details-popup .swal2-html-container::-webkit-scrollbar-thumb {
-    background-color: var(--purple-accent);
-    border-radius: 10px;
-}
+/* Filter Toggle Button & Search Input & Header */
+#filterToggleButton { padding: 0.6rem 1.2rem; border-radius: 0.6rem; font-weight: 600; font-size: 0.9rem; border: 1px solid var(--border-highlight); background-color: var(--purple-accent); transition: all 0.2s ease; margin-left: 0.5rem; flex-shrink: 0; }
+#filterToggleButton:hover { background-color: var(--purple-light); }
+#filterToggleButton.active { box-shadow: 0 0 10px rgba(139, 0, 0, 0.7); border-color: var(--purple-light); background-color: rgba(12,12,12,0.8); }
+#filterToggleButton:disabled { background-color: var(--border-color); color: var(--text-secondary); cursor: not-allowed; border-color: var(--border-color); }
+.loader { border: 5px solid var(--border-color); border-top: 5px solid var(--purple-accent); border-radius: 50%; width: 50px; height: 50px; animation: spin 0.8s linear infinite; margin: 40px auto; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+.input-search-wrapper { position: relative; width: 100%; max-width: 400px; flex-grow: 1; }
+.input-search { background-color: var(--card-bg); color: var(--text-primary); border: 1px solid var(--border-color); width: 100%; padding: 0.75rem 1.1rem; padding-right: 3.2rem; border-radius: 0.6rem; font-size: 0.95rem; transition: border-color 0.2s, box-shadow 0.2s; }
+.input-search:focus { outline: none; border-color: var(--purple-accent); box-shadow: 0 0 0 3px rgba(89, 59, 162, 0.3); }
+.input-search::placeholder { color: var(--text-secondary); }
+.input-search:disabled { background-color: var(--border-color); cursor: not-allowed; }
+#searchButton { position: absolute; right: 0; top: 0; height: 100%; padding: 0 1.1rem; color: var(--text-secondary); background-color: transparent; border: none; cursor: pointer; transition: color 0.2s; }
+#searchButton:hover:not(:disabled) { color: var(--purple-accent); }
+#searchButton:disabled { color: var(--text-secondary); cursor: not-allowed; }
+header { background-color: rgba(0,0,0,0.8); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 4px 10px -3px rgba(0,0,0,0.6); padding: 1rem; position: sticky; top: 0; z-index: 900; width: 100%; box-sizing: border-box; height: var(--header-height-mobile); }
+header .container { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 1200px; margin: 0 auto; gap: 1rem; height: 100%; }
+header h1 { color: var(--purple-light); font-weight: 700; font-size: 1.75rem; margin: 0; }
+header h1 .fa-film { color: var(--purple-accent); margin-right: 0.5rem; }
+.header-controls-wrapper { display: flex; align-items: center; gap: 0.75rem; }
+.header-controls { display: flex; align-items: center; gap: 0.75rem; }
 
-.swal-details-content {
-     padding-bottom: 1rem;
-}
-
-.swal-details-content .details-flex-container {
-    display: flex;
-    flex-direction: column; /* Default for mobile-first */
-    gap: 1.5rem;
-}
-.swal-details-content .details-poster {
-    width: 100%;
-    max-width: 220px;
-    height: auto;
-    object-fit: contain;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-    align-self: center;
-}
-.swal-details-content .details-info-area {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-.swal-details-content .details-content-title {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--purple-light);
-    line-height: 1.2;
-    margin-bottom: 0.5rem;
-}
-.swal-details-content .details-meta-info {
-    font-size: 0.875rem;
-    color: var(--text-secondary);
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem 0.75rem;
-}
-.swal-details-content .details-meta-info span {
-    display: inline-flex;
-    align-items: center;
-}
-.swal-details-content .details-meta-info .fas {
-    margin-right: 0.375rem;
-}
-.swal-details-content .details-genres {
-    font-size: 0.875rem;
-    color: var(--text-secondary);
-}
-.swal-details-content .details-genres strong {
-    color: var(--purple-light);
-    font-size: 0.95rem;
-}
-.swal-details-content .details-section-subtitle {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: var(--purple-light);
-    margin-top: 0.75rem;
-    margin-bottom: 0.5rem;
-}
-.swal-details-content .details-overview {
-    font-size: 0.95rem;
-    line-height: 1.65;
-    color: var(--text-primary);
-}
-
-/* Cast Section Styles */
-.details-cast-section {
-    margin-top: 1.5rem;
-}
-.details-cast-scroller {
-    display: flex;
-    overflow-x: auto;
-    gap: 1rem;
-    padding: 0.75rem 0.25rem;
-    margin-bottom: 1rem;
-}
-.details-cast-scroller::-webkit-scrollbar {
-    height: 6px;
-}
-.details-cast-scroller::-webkit-scrollbar-track {
-    background: var(--border-color);
-    border-radius: 10px;
-}
-.details-cast-scroller::-webkit-scrollbar-thumb {
-    background-color: var(--purple-accent);
-    border-radius: 10px;
-}
-.cast-member-card {
-    flex: 0 0 100px;
-    text-align: center;
-    background-color: rgba(255,255,255,0.03);
-    padding: 0.75rem 0.5rem;
-    border-radius: 0.5rem;
-    border: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-}
-.cast-member-photo {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin: 0 auto 0.5rem auto;
-    border: 2px solid var(--border-highlight);
-    background-color: var(--border-color);
-}
-.cast-member-name {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    line-height: 1.2;
-    height: 2.4em;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-bottom: 0.25rem;
-}
-.cast-member-character {
-    font-size: 0.7rem;
-    color: var(--text-secondary);
-    line-height: 1.2;
-    height: 2.4em;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-/* End Cast Section Styles */
-
-/* Player Section Styles */
-.details-player-section {
-    margin-top: 1rem;
-}
-.details-iframe-container {
-    margin-top: 0.5rem;
-    background-color: #000;
-    border-radius: 0.75rem;
-    overflow: hidden;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.3);
-    aspect-ratio: 16 / 9;
-}
-.details-iframe-container.iframe-series-dimensions {
-    aspect-ratio: auto;
-    height: 400px;
-}
-
-.details-iframe-container iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-    display: block;
-}
-.swal-details-content .details-player-unavailable {
-    margin-top: 1.25rem;
-    text-align: center;
-    color: #FFD700;
-    background-color: rgba(255, 215, 0, 0.15);
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    font-size: 0.875rem;
-}
-
-/* Filter Toggle Button in Header */
- #filterToggleButton {
-    padding: 0.6rem 1.2rem;
-    border-radius: 0.6rem;
-    font-weight: 600;
-    font-size: 0.9rem;
-    border: 1px solid var(--border-highlight);
-    background-color: var(--purple-accent);
-    transition: all 0.2s ease;
-    margin-left: 0.5rem;
-    flex-shrink: 0;
- }
- #filterToggleButton:hover {
-     padding: 0.6rem 1.2rem;
-    border-radius: 0.6rem;
-    font-weight: 600;
-    font-size: 0.9rem;
-    border: 1px solid var(--border-highlight);
-    background-color: var(--purple-accent);
-    transition: all 0.2s ease;
-    margin-left: 0.5rem;
-    flex-shrink: 0;}
-     
- #filterToggleButton.active {
-    box-shadow: 0 0 10px rgba(139, 0, 0, 0.7);
-    border-color: var(--purple-light);
-    background-color: rgba(12,12,12,0.8);
-    
- }
- #filterToggleButton:disabled {
-    background-color: var(--border-color);
-    color: var(--text-secondary);
-    cursor: not-allowed;
-    border-color: var(--border-color);
- }
-
-
-.loader {
-    border: 5px solid var(--border-color);
-    border-top: 5px solid var(--purple-accent);
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 0.8s linear infinite;
-    margin: 40px auto;
-}
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.input-search-wrapper {
-    position: relative;
-    width: 100%;
-    max-width: 400px;
-    flex-grow: 1;
-}
-.input-search {
-    background-color: var(--card-bg);
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
-    width: 100%;
-    padding: 0.75rem 1.1rem;
-    padding-right: 3.2rem;
-    border-radius: 0.6rem;
-    font-size: 0.95rem;
-    transition: border-color 0.2s, box-shadow 0.2s;
-}
-.input-search:focus {
-    outline: none;
-    border-color: var(--purple-accent);
-    box-shadow: 0 0 0 3px rgba(89, 59, 162, 0.3);
-}
-.input-search::placeholder {
-    color: var(--text-secondary);
-}
-.input-search:disabled {
-    background-color: var(--border-color);
-    cursor: not-allowed;
-}
-#searchButton {
-    position: absolute;
-    right: 0;
-    top: 0;
-    height: 100%;
-    padding: 0 1.1rem;
-    color: var(--text-secondary);
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    transition: color 0.2s;
-}
-#searchButton:hover:not(:disabled) {
-    color: var(--purple-accent);
-}
-#searchButton:disabled {
-    color: var(--text-secondary);
-    cursor: not-allowed;
-}
-
-/* Header Styles */
-header {
-    background-color: rgba(0,0,0,0.8);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 4px 10px -3px rgba(0,0,0,0.6);
-    padding: 1rem; /* Padding base */
-    position: sticky;
-    top: 0;
-    z-index: 900;
-    width: 100%;
-    box-sizing: border-box;
-    /* NEW: Definindo a altura do header para cálculo em .app-main-content */
-    /* Este é um fallback, idealmente a altura real é calculada ou mais precisa */
-    height: var(--header-height-mobile);
-}
-header .container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    gap: 1rem;
-    /* NEW: Garantir que o container do header preencha a altura definida para o header */
-    height: 100%;
-}
-
-header h1 {
-    color: var(--purple-light);
-    font-weight: 700;
-    font-size: 1.75rem; /* Tamanho base, ajustado em MQs */
-    margin: 0;
-}
-header h1 .fa-film {
-    color: var(--purple-accent);
-    margin-right: 0.5rem;
-}
-.header-controls-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-.header-controls {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-
-/* Botão de Cópia Externo (FAB - Floating Action Button) */
-#externalCopyButtonContainer {
-    position: fixed;
-    bottom: 0.0rem;
-    right: 8.5rem;
-    left: 5%;
-    top: 90%;
-    z-index: 1070;
-}
-#externalCopyLinkButton {
-    background-color: var(--purple-accent);
-    color: var(--amoled-black);
-    padding: 0.8rem;
-    width: 3.5rem;
-    height: 3.5rem;
-    border-radius: 50%;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.4);
-    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    border: none;
-}
-#externalCopyLinkButton:hover {
-    background-color: var(--purple-light);
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 8px 20px rgba(89, 59, 162, 0.5);
-}
-#externalCopyLinkButton .fas {
-    font-size: 1.5em;
-    margin: 0;
-}
-#externalCopyLinkButton span {
-    display: none;
-}
+/* Botão de Cópia Externo */
+#externalCopyButtonContainer { position: fixed; bottom: 1rem; right: 1rem; z-index: 1070; }
+#externalCopyLinkButton { background-color: var(--purple-accent); color: var(--amoled-black); padding: 0.8rem; width: 3.5rem; height: 3.5rem; border-radius: 50%; box-shadow: 0 6px 15px rgba(0,0,0,0.4); transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease; font-weight: 600; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; }
+#externalCopyLinkButton:hover { background-color: var(--purple-light); transform: translateY(-3px) scale(1.05); box-shadow: 0 8px 20px rgba(89, 59, 162, 0.5); }
+#externalCopyLinkButton .fas { font-size: 1.5em; margin: 0; }
+#externalCopyLinkButton span { display: none; }
 
 
 /* Media Queries para responsividade */
-
-/* Small devices (landscape phones, up to 767px) */
-@media (max-width: 767px) {
-    body {
-        overflow-y: hidden; /* Impede a rolagem do body */
-        height: 100vh; /* Garante que o body ocupe toda a altura da viewport */
-        /* display: flex; flex-direction: column; /* Opcional, se header e main forem filhos diretos */
+@media (max-width: 767px) { /* Mobile */
+    body { 
+        overflow-y: hidden; 
+        height: 100vh; 
+    }
+    header { 
+        padding: 0.5rem 1rem; 
+        /* height já é var(--header-height-mobile) */
+    }
+    header .container { flex-direction: column; align-items: center; gap: 0.5rem; padding: 0; }
+    .header-controls-wrapper { flex-direction: column; width: 100%; align-items: stretch; gap: 0.5rem; }
+    .header-controls { flex-direction: row; justify-content: center; width: 100%; }
+    .input-search-wrapper { max-width: none; }
+    header h1 { font-size: 1.3rem; }
+    
+    /* Container principal de conteúdo rolável no mobile */
+    main#contentArea { /* Aplicado ao seu <main id="contentArea"> */
+        height: calc(100vh - var(--header-height-mobile)); 
+        overflow-y: auto; 
+        padding: 1rem; 
+        -webkit-overflow-scrolling: touch; 
     }
 
-    header {
-        /* A altura já está definida por var(--header-height-mobile) */
-        padding: 0.5rem 1rem; /* Ajuste de padding para mobile se necessário */
-    }
+    .section-title { font-size: 1.3rem; margin-bottom: 1rem; }
+    .swal-details-content .details-content-title { font-size: 1.5rem; }
+    .swal-details-content .details-poster { max-width: 180px; }
+    .details-iframe-container.iframe-series-dimensions { height: 300px; }
+    /* .cast-member-card { flex: 0 0 85px; } /* O cast scroller dentro do modal pode continuar horizontal */
+    .cast-member-photo { width: 60px; height: 60px; }
+    #externalCopyLinkButton { width: 3rem; height: 3rem; padding: 0.6rem; }
+    #externalCopyLinkButton .fas { font-size: 1.2em; }
 
-    header .container {
-        flex-direction: column;
-        align-items: center;
-        gap: 0.5rem; /* Reduzido para mobile */
-        padding: 0; /* Padding do header já cuida disso */
-    }
-    .header-controls-wrapper {
-        flex-direction: column;
-        width: 100%;
-        align-items: stretch;
-        gap: 0.5rem;
-    }
-     .header-controls {
-        flex-direction: row;
-        justify-content: center;
-        width: 100%;
-     }
-     .input-search-wrapper {
-        max-width: none;
-     }
-     header h1 {
-        font-size: 1.3rem; /* Reduzido para mobile */
-     }
-     /* Recalcular --header-height-mobile se o conteúdo do header mudar drasticamente */
-     /* Exemplo: Se o header ficar mais compacto, ajuste --header-height-mobile em :root ou aqui */
-
-
-    /* NEW: Estilos para a área de conteúdo principal em mobile */
-    .app-main-content {
-        height: calc(100vh - var(--header-height-mobile)); /* Ocupa o restante da tela */
-        overflow-y: auto; /* Permite rolagem interna */
-        padding: 1rem; /* Espaçamento interno */
-        -webkit-overflow-scrolling: touch; /* Melhora a rolagem em iOS */
-    }
-
-    .section-title {
-        font-size: 1.3rem;
-        margin-bottom: 1rem;
-    }
-
-    .swal-details-content .details-content-title {
-        font-size: 1.5rem;
-    }
-    .swal-details-content .details-poster {
-        max-width: 180px;
-    }
-    .details-iframe-container.iframe-series-dimensions {
-         height: 300px;
-    }
-    .cast-member-card {
-        flex: 0 0 85px;
-    }
-    .cast-member-photo {
-        width: 60px;
-        height: 60px;
-    }
-
-    #externalCopyButtonContainer {
-        bottom: 1rem; /* Mais próximo da borda em mobile */
-        right: 1rem;
-    }
-    #externalCopyLinkButton {
-        width: 3rem;
-        height: 3rem;
-        padding: 0.6rem;
-    }
-    #externalCopyLinkButton .fas {
-         font-size: 1.2em;
+    /* Ajuste no minmax dos grids para mobile, se a regra base não for suficiente */
+    /* A regra base para .horizontal-scroll-grid, .main-results-grid, #singleResultsGrid já é minmax(150px, 1fr) */
+    /* Se quiser um minmax diferente especificamente no mobile para eles: */
+    .horizontal-scroll-grid, 
+    .main-results-grid,    
+    #singleResultsGrid {    
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); 
+        gap: 0.75rem;
     }
 }
 
-/* Medium devices (tablets, 768px and up) */
-@media (min-width: 768px) {
-    body {
-        overflow-y: auto; /* Permite rolagem normal do body em telas maiores */
-        height: auto; /* Altura automática */
+@media (min-width: 768px) { /* Desktop e telas maiores */
+    body { 
+        overflow-y: auto; 
+        height: auto; 
     }
-    header {
-      height: auto; /* Altura automática para o header em telas maiores */
-      padding: 1rem; /* Restaura padding original */
+    header { 
+        height: auto; 
+        padding: 1rem; 
     }
-    header h1 {
-        font-size: 1.75rem; /* Restaura tamanho original */
-    }
-
-
-    .app-main-content {
-        height: auto; /* Altura automática */
-        overflow-y: visible; /* Sem rolagem interna específica, body rola */
-        padding: 1.5rem; /* Pode ajustar o padding para telas maiores */
+    header h1 { font-size: 1.75rem; }
+    
+    main#contentArea { 
+        height: auto; 
+        overflow-y: visible; 
+        padding: 1.5rem; 
     }
 
+    /* Grids de conteúdo no desktop */
+    /* Ajusta o minmax para cards um pouco maiores no desktop */
     .horizontal-scroll-grid,
-    .main-results-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        overflow-x: hidden;
-        white-space: normal;
-        padding-bottom: 0;
+    .main-results-grid,
+    #singleResultsGrid { 
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
         gap: 1.5rem;
     }
-    .main-results-grid {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    }
+    /* Se precisar de mais especificidade para cada tipo de grid no desktop */
+    /* .main-results-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); } */
+    /* .horizontal-scroll-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); } */
 
-    .horizontal-scroll-grid .content-card,
-    .main-results-grid .content-card {
-        flex: none;
-        width: auto;
-        max-width: none;
-    }
 
-    .swal-details-content .details-flex-container {
-        flex-direction: row;
-        align-items: flex-start;
-    }
-    .swal-details-content .details-poster {
-        max-width: 250px;
-        align-self: flex-start;
-    }
-    .details-iframe-container.iframe-series-dimensions {
-         height: 520px;
-    }
+    .swal-details-content .details-flex-container { flex-direction: row; align-items: flex-start; }
+    .swal-details-content .details-poster { max-width: 250px; align-self: flex-start; }
+    .details-iframe-container.iframe-series-dimensions { height: 520px; }
 }
 
-@media (min-width: 768px) and (max-width: 1023px) {
-     .main-results-grid {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-     }
-     .horizontal-scroll-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-     }
-     .details-iframe-container.iframe-series-dimensions {
-         height: 450px;
+/* Ajustes finos adicionais para breakpoints específicos */
+@media (min-width: 768px) and (max-width: 1023px) { /* Tablets */
+     .horizontal-scroll-grid, .main-results-grid, #singleResultsGrid { 
+         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
     }
+     .details-iframe-container.iframe-series-dimensions { height: 450px; }
 }
 
-@media (min-width: 1024px) {
-    .main-results-grid {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+@media (min-width: 1024px) { /* Telas Maiores */
+    .horizontal-scroll-grid, .main-results-grid, #singleResultsGrid { 
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
     }
-    .horizontal-scroll-grid {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    }
-     .details-iframe-container.iframe-series-dimensions {
-         height: 550px;
-    }
+     .details-iframe-container.iframe-series-dimensions { height: 550px; }
 }
 
-@media (min-width: 1200px) {
-    header .container {
-        max-width: 1400px;
+@media (min-width: 1200px) { /* Telas Muito Grandes */
+    header .container { max-width: 1400px; }
+    .horizontal-scroll-grid, .main-results-grid, #singleResultsGrid { 
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); 
     }
-    .details-iframe-container.iframe-series-dimensions {
-         height: 600px;
-    }
+    .details-iframe-container.iframe-series-dimensions { height: 600px; }
 }
-
-    
