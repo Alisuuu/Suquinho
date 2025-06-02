@@ -83,14 +83,14 @@ function legacyCopyToClipboard(textToCopy, successTitle, errorTitle) {
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("DOMContentLoaded event fired. Iniciando aplicação.");
+    console.log("LOG DOMContentLoaded: Iniciando aplicação.");
     const apiKeyIsValid = TMDB_API_KEY && TMDB_API_KEY !== 'SUA_CHAVE_API_DO_TMDB_AQUI' && TMDB_API_KEY.length > 10;
     if (!apiKeyIsValid) {
          console.error("Chave da API TMDB inválida ou não configurada.");
-         const errorMsgHtml = `<p class="text-center text-red-400 p-4 col-span-full">Chave da API TMDB inválida. Verifique a constante TMDB_API_KEY.</p>`;
+         const errorMsgHtml = `<p class="text-center text-red-400 p-4 col-span-full">Chave da API TMDB inválida.</p>`;
          if(moviesResultsGrid) moviesResultsGrid.innerHTML = errorMsgHtml; if(tvShowsResultsGrid) tvShowsResultsGrid.innerHTML = errorMsgHtml; if(singleResultsGrid) singleResultsGrid.innerHTML = errorMsgHtml;
          if(searchInput) searchInput.disabled = true; if(searchButton) searchButton.disabled = true; if(filterToggleButton) filterToggleButton.disabled = true; if(loader) loader.style.display = 'none';
-         const header = document.querySelector('header'); const errorDiv = document.createElement('div'); errorDiv.innerHTML = `<div style="background-color: #B91C1C; color: white; text-align: center; padding: 0.75rem; font-weight: bold;">ERRO DE CONFIGURAÇÃO: Chave da API TMDB necessária.</div>`;
+         const header = document.querySelector('header'); const errorDiv = document.createElement('div'); errorDiv.innerHTML = `<div style="background-color: #B91C1C; color: white; text-align: center; padding: 0.75rem; font-weight: bold;">ERRO: Chave da API TMDB necessária.</div>`;
          if(header && header.parentNode) header.parentNode.insertBefore(errorDiv, header.nextSibling); else document.body.insertBefore(errorDiv, document.body.firstChild);
          return;
     }
@@ -101,69 +101,102 @@ document.addEventListener('DOMContentLoaded', () => {
     else console.warn("Elemento searchButton não encontrado.");
     if (filterToggleButton) filterToggleButton.addEventListener('click', openFilterSweetAlert);
     else console.warn("Elemento filterToggleButton não encontrado.");
-    
     document.addEventListener('keydown', (event) => { if (event.key === 'Escape') { if (typeof Swal !== 'undefined' && Swal.isVisible()) Swal.close(); } });
 
     // --- Listeners de Scroll para Infinite Scroll ---
 
-    // HORIZONTAL Scroll para seções da PÁGINA PRINCIPAL (Filmes Populares, Séries Populares)
+    // HORIZONTAL Scroll para seções da PÁGINA PRINCIPAL (agora grids verticais, este listener não será efetivo como antes)
+    // Mantido caso o layout CSS mude no futuro para permitir scroll horizontal nelas de novo,
+    // mas com o CSS atual (tudo grid), não deve disparar loadMore...
     if (moviesResultsGrid) {
         moviesResultsGrid.addEventListener('scroll', () => {
             if (defaultContentSections && defaultContentSections.style.display === 'block' &&
                 !isLoadingMorePopularMovies && popularMoviesCurrentPage < popularMoviesTotalPages &&
+                moviesResultsGrid.scrollWidth > moviesResultsGrid.clientWidth && // Só se houver de fato scroll horizontal
                 (moviesResultsGrid.scrollLeft + moviesResultsGrid.clientWidth >= moviesResultsGrid.scrollWidth - 200)) {
-                loadMorePopularMovies();
+                // loadMorePopularMovies(); // Desativado pois o layout agora é grid vertical
+                // console.log("Scroll horizontal em moviesResultsGrid detectado, mas loadMorePopularMovies está desativado.");
             }
         });
-    } else console.warn("Elemento moviesResultsGrid não encontrado para event listener de scroll horizontal.");
+    } else console.warn("Elemento moviesResultsGrid não encontrado.");
 
     if (tvShowsResultsGrid) {
         tvShowsResultsGrid.addEventListener('scroll', () => {
             if (defaultContentSections && defaultContentSections.style.display === 'block' &&
                 !isLoadingMoreTopRatedTvShows && topRatedTvShowsCurrentPage < topRatedTvShowsTotalPages &&
+                tvShowsResultsGrid.scrollWidth > tvShowsResultsGrid.clientWidth && // Só se houver de fato scroll horizontal
                 (tvShowsResultsGrid.scrollLeft + tvShowsResultsGrid.clientWidth >= tvShowsResultsGrid.scrollWidth - 200)) {
-                loadMoreTopRatedTvShows();
+                // loadMoreTopRatedTvShows(); // Desativado
+                // console.log("Scroll horizontal em tvShowsResultsGrid detectado, mas loadMoreTopRatedTvShows está desativado.");
             }
         });
-    } else console.warn("Elemento tvShowsResultsGrid não encontrado para event listener de scroll horizontal.");
+    } else console.warn("Elemento tvShowsResultsGrid não encontrado.");
+    
+    // VERTICAL Scroll para resultados de BUSCA e FILTRO
+    const mainContentAreaEl = document.getElementById('contentArea'); 
+    let scrollTargetForResults = window; 
+    let useElementScrollProperties = false; 
 
-    // MODIFICADO: HORIZONTAL Scroll para resultados de BUSCA e FILTRO (singleResultsGrid)
-    if (singleResultsGrid) {
-        singleResultsGrid.addEventListener('scroll', () => {
-            const isSingleSectionVisible = singleResultsSection && singleResultsSection.style.display === 'block';
-            
-            // Usa a flag geral 'isLoadingMore' para busca/filtro
-            if (!isSingleSectionVisible || isLoadingMore) {
-                return;
-            }
-
-            let canLoadMore = false;
-            if (currentContentContext === 'search' && searchCurrentPage < totalPages.search) {
-                canLoadMore = true;
-            } else if (currentContentContext === 'filter' && filterCurrentPage < totalPages.filter) {
-                canLoadMore = true;
-            }
-
-            if (canLoadMore && (singleResultsGrid.scrollLeft + singleResultsGrid.clientWidth >= singleResultsGrid.scrollWidth - 300)) {
-                console.log(`Scroll HORIZONTAL em singleResultsGrid ativou loadMoreItems para contexto: ${currentContentContext}`);
-                loadMoreItems(); // Chama a função existente que busca mais itens de busca/filtro
-            }
-        });
+    console.log("LOG DOMContentLoaded: Verificando alvo de scroll vertical. window.innerWidth:", window.innerWidth);
+    if (mainContentAreaEl) { 
+        console.log("LOG DOMContentLoaded: #contentArea ENCONTRADO.");
+        const bodyComputedOverflowY = getComputedStyle(document.body).overflowY;
+        const mainContentComputedOverflowY = getComputedStyle(mainContentAreaEl).overflowY;
+        console.log("LOG DOMContentLoaded: Estilo Computado - Body overflow-y:", bodyComputedOverflowY, "| #contentArea overflow-y:", mainContentComputedOverflowY);
+        
+        if (window.innerWidth < 768 && bodyComputedOverflowY === 'hidden' && (mainContentComputedOverflowY === 'auto' || mainContentComputedOverflowY === 'scroll')) {
+            scrollTargetForResults = mainContentAreaEl;
+            useElementScrollProperties = true;
+            console.log("LOG: Scroll vertical para busca/filtro ATRELADO ao #contentArea (mobile).");
+        } else {
+             console.log("LOG: Scroll vertical para busca/filtro ATRELADO à window (Desktop ou fallback mobile - bodyOFY:"+bodyComputedOverflowY+", mainContentOFY:"+mainContentComputedOverflowY+").");
+        }
     } else {
-        console.warn("Elemento singleResultsGrid não encontrado para event listener de scroll horizontal.");
+        console.warn("LOG DOMContentLoaded: #contentArea NÃO encontrado. Usando window como alvo de scroll para resultados.");
+        scrollTargetForResults = window; 
+        useElementScrollProperties = false;
     }
-
-    // REMOVIDO ou COMENTADO: O listener de scroll vertical da JANELA para busca/filtro,
-    // pois agora o scroll é horizontal no PRÓPRIO GRID.
-    /*
-    window.addEventListener('scroll', () => {
+    
+    scrollTargetForResults.addEventListener('scroll', () => {
+        // console.log(`LOG: Evento de SCROLL disparado em ${useElementScrollProperties && scrollTargetForResults !== window ? '#contentArea' : 'window'}`);
         const isSingleSectionVisible = singleResultsSection && singleResultsSection.style.display === 'block';
-        if (!isSingleSectionVisible || isLoadingMore) return;
-        if ((window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 300)) { 
-            if (currentContentContext === 'search' || currentContentContext === 'filter') loadMoreItems(); 
+        // console.log(`LOG Scroll Check 1: isSingleSectionVisible=${isSingleSectionVisible}, isLoadingMore=${isLoadingMore}`);
+        if (!isSingleSectionVisible || isLoadingMore) { 
+            return;
+        }
+
+        let canLoadMoreContext = false;
+        if (currentContentContext === 'search' && searchCurrentPage < totalPages.search) {
+            canLoadMoreContext = true;
+        } else if (currentContentContext === 'filter' && filterCurrentPage < totalPages.filter) {
+            canLoadMoreContext = true;
+        }
+        // console.log(`LOG Scroll Check 2: canLoadMoreContext=${canLoadMoreContext} (Contexto: ${currentContentContext}, PágAtualBusca: ${searchCurrentPage}, TotalBusca: ${totalPages.search}, PágAtualFiltro: ${filterCurrentPage}, TotalFiltro: ${totalPages.filter})`);
+        if (!canLoadMoreContext) return;
+
+        let scrolledToEnd;
+        const offset = 100; 
+
+        if (useElementScrollProperties && scrollTargetForResults !== window) { 
+            const st = scrollTargetForResults.scrollTop;
+            const ch = scrollTargetForResults.clientHeight;
+            const sh = scrollTargetForResults.scrollHeight;
+            // console.log(`LOG Scroll Check 3 (Elemento #contentArea): scrollTop=${st}, clientHeight=${ch}, scrollHeight=${sh}, TargetReach=${sh - offset}`);
+            scrolledToEnd = (st + ch >= sh - offset);
+        } else { 
+            const wh = window.innerHeight;
+            const sy = window.scrollY;
+            const dh = document.documentElement.scrollHeight;
+            // console.log(`LOG Scroll Check 3 (Window): innerHeight=${wh}, scrollY=${sy}, docScrollHeight=${dh}, TargetReach=${dh - (offset + 150)}`);
+            scrolledToEnd = (wh + sy >= dh - (offset + 150)); 
+        }
+        // console.log(`LOG Scroll Check 4: scrolledToEnd=${scrolledToEnd}`);
+
+        if (scrolledToEnd) {
+            console.log(`LOG: !!! Scroll VERTICAL em ${useElementScrollProperties && scrollTargetForResults !== window ? '#contentArea' : 'window'} ATIVOU loadMoreItems para contexto: ${currentContentContext} !!!`);
+            loadMoreItems();
         }
     });
-    */
 
     // --- Inicialização do Conteúdo da Página ---
     const urlParams = new URLSearchParams(window.location.search);
