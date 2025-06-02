@@ -136,13 +136,7 @@ body {
 }
 
 .icon-button {
-    border: 1px solid rgba(59, 3B, A2, 0.15); 
-    background-color: rgba(59,3B,A2,0.8);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 4px 10px -3px rgba(0,0,0,0.6);
-    
-  border-radius: 50%;
+    border-radius: 50%;
   width: 75px; 
   height: 75px; 
   display: flex;
@@ -154,7 +148,7 @@ body {
   transition: transform 0.25s ease-out, background-color 0.25s ease-out, box-shadow 0.25s ease-out;
   -webkit-tap-highlight-color: transparent;
   text-decoration: none;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5); 
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.0); 
   position: relative;
   overflow: hidden;
 }
@@ -167,12 +161,6 @@ body {
 
 .icon-button:hover {
   transform: scale(1.12) translateY(-4px) rotate(4deg);
-  background-color: rgba(0,0,0,0.8);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 4px 10px -3px rgba(0,0,0,0.6);
-    
-  box-shadow: 0 9px 28px rgba(100, 70, 170, 0.7);
 }
 
 #helpButton {
