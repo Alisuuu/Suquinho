@@ -450,9 +450,17 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     flex-shrink: 0;
  }
  #filterToggleButton:hover {
-     background-color: var(--purple-light);
-     border-color: var(--purple-light);
- }
+     padding: 0.6rem 1.2rem;
+    border-radius: 0.6rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: 1px solid var(--border-highlight);
+    background-color: var(--purple-accent);
+    color: var(--amoled-black);
+    transition: all 0.2s ease;
+    margin-left: 0.5rem;
+    flex-shrink: 0;}
+     
  #filterToggleButton.active {
     box-shadow: 0 0 10px rgba(89, 59, 162, 0.7);
     border-color: var(--purple-light);
