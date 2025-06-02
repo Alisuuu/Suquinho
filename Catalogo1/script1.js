@@ -20,9 +20,14 @@ const tvShowsResultsGrid = document.getElementById('tvShowsResultsGrid');
 const singleResultsSection = document.getElementById('singleResultsSection');
 const singleSectionTitleEl = document.getElementById('singleSectionTitle');
 const singleResultsGrid = document.getElementById('singleResultsGrid');
-const loader = document.getElementById('loader');
+const loader = document.getElementById('loader'); // Loader global
 const externalCopyButtonContainer = document.getElementById('externalCopyButtonContainer');
 const externalCopyLinkButton = document.getElementById('externalCopyLinkButton');
+
+// Referências para os loaders locais de scroll infinito
+const popularMoviesLoader = document.getElementById('popularMoviesLoader');
+const topRatedTvShowsLoader = document.getElementById('topRatedTvShowsLoader');
+const searchResultsLoader = document.getElementById('searchResultsLoader');
 
 // --- State Variables ---
 let currentFilterTypeSA = 'movie';
@@ -33,14 +38,13 @@ let currentOpenSwalRef = null;
 let currentExternalCopyUrl = '';
 let externalCopyButtonHandler;
 
-// Para scroll infinito (agora também horizontal para busca/filtro)
 let searchCurrentPage = 1;
 let filterCurrentPage = 1;
-let isLoadingMore = false; // Flag GERAL para carregamento em singleResultsGrid (busca/filtro)
+let isLoadingMore = false; 
 let totalPages = { search: 1, filter: 1 };
 let currentContentContext = 'main';
 
-// Para scroll infinito HORIZONTAL nas seções da página principal
+// Para scroll infinito HORIZONTAL (agora desativado por JS, mas vars podem ser úteis se reativado)
 let popularMoviesCurrentPage = 1;
 let popularMoviesTotalPages = 1;
 let isLoadingMorePopularMovies = false;
