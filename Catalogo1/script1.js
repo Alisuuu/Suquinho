@@ -1,6 +1,6 @@
 // --- Script 1: Constants, Configuration, DOM Refs, State ---
 // --- Constants and Configuration ---
-const TMDB_API_KEY = '5e5da432e96174227b25086fe8637985'; // IMPORTANTE: Substitua pela sua chave de API real do TMDB.
+const TMDB_API_KEY = '5e5da432e96174227b25086fe8637985';
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/';
 const TMDB_BACKDROP_BASE_URL = 'https://image.tmdb.org/t/p/original';
@@ -33,12 +33,23 @@ let currentOpenSwalRef = null;
 let currentExternalCopyUrl = '';
 let externalCopyButtonHandler;
 
+// Para scroll infinito (agora também horizontal para busca/filtro)
 let searchCurrentPage = 1;
 let filterCurrentPage = 1;
-let isLoadingMore = false;
-let currentContentContext = 'main';
+let isLoadingMore = false; // Flag GERAL para carregamento em singleResultsGrid (busca/filtro)
 let totalPages = { search: 1, filter: 1 };
+let currentContentContext = 'main';
 
+// Para scroll infinito HORIZONTAL nas seções da página principal
+let popularMoviesCurrentPage = 1;
+let popularMoviesTotalPages = 1;
+let isLoadingMorePopularMovies = false;
+
+let topRatedTvShowsCurrentPage = 1;
+let topRatedTvShowsTotalPages = 1;
+let isLoadingMoreTopRatedTvShows = false;
+
+// Para slideshow de backdrop da página principal
 let mainPageBackdropSlideshowInterval = null;
 let currentMainPageBackdropIndex = 0;
 let mainPageBackdropPaths = [];
