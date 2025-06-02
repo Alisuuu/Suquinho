@@ -166,7 +166,7 @@ body {
   visibility: hidden; 
   transform: translateX(-120%) scale(0.7) rotate(-15deg); 
   height: 0px !important; 
-  margin-top: 0px !important;
+  margin-top: -30% !important;
   margin-bottom: 0px !important; 
   padding-top: 0px !important;
   padding-bottom: 0px !important;
