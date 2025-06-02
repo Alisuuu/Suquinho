@@ -42,7 +42,7 @@ function displayResults(items, defaultMediaType = null, targetGridElement, repla
     }
     items.forEach(item => {
         const mediaType = item.media_type || defaultMediaType;
-        if (!mediaType || (mediaType !== 'movie' && mediaType !== 'tv') || !item.poster_path) { /*console.warn("Item inválido ou sem poster_path, pulando:", item);*/ return; }
+        if (!mediaType || (mediaType !== 'movie' && mediaType !== 'tv') || !item.poster_path) { return; }
         const card = document.createElement('div'); card.className = 'content-card shadow-lg group';
         card.onclick = () => openItemModal(item.id, mediaType, item.backdrop_path);
         card.setAttribute('role', 'button'); card.setAttribute('tabindex', '0'); card.setAttribute('aria-label', `Ver detalhes de ${item.title || item.name || 'Conteúdo sem título'}`);
@@ -82,20 +82,6 @@ function legacyCopyToClipboard(textToCopy, successTitle, errorTitle) {
 }
 
 // Event Listeners
-if (searchInput) searchInput.addEventListener('input', () => { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => { if (searchInput.value !== undefined) performSearch(searchInput.value); }, 500); });
-else console.warn("Elemento searchInput não encontrado.");
-if (searchButton) searchButton.addEventListener('click', () => { clearTimeout(searchTimeout); if (searchInput && searchInput.value !== undefined) performSearch(searchInput.value); else if (searchInput) performSearch(''); else console.warn("Elemento searchInput não encontrado para busca por botão."); });
-else console.warn("Elemento searchButton não encontrado.");
-if (filterToggleButton) filterToggleButton.addEventListener('click', openFilterSweetAlert);
-else console.warn("Elemento filterToggleButton não encontrado.");
-document.addEventListener('keydown', (event) => { if (event.key === 'Escape') { if (typeof Swal !== 'undefined' && Swal.isVisible()) Swal.close(); } });
-window.addEventListener('scroll', () => {
-    const isSingleSectionVisible = singleResultsSection && singleResultsSection.style.display === 'block';
-    if (!isSingleSectionVisible || isLoadingMore) return;
-    if ((window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 300)) { if (currentContentContext === 'search' || currentContentContext === 'filter') loadMoreItems(); }
-});
-
-// Initialization
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOMContentLoaded event fired. Iniciando aplicação.");
     const apiKeyIsValid = TMDB_API_KEY && TMDB_API_KEY !== 'SUA_CHAVE_API_DO_TMDB_AQUI' && TMDB_API_KEY.length > 10;
@@ -108,6 +94,78 @@ document.addEventListener('DOMContentLoaded', () => {
          if(header && header.parentNode) header.parentNode.insertBefore(errorDiv, header.nextSibling); else document.body.insertBefore(errorDiv, document.body.firstChild);
          return;
     }
+
+    if (searchInput) searchInput.addEventListener('input', () => { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => { if (searchInput.value !== undefined) performSearch(searchInput.value); }, 500); });
+    else console.warn("Elemento searchInput não encontrado.");
+    if (searchButton) searchButton.addEventListener('click', () => { clearTimeout(searchTimeout); if (searchInput && searchInput.value !== undefined) performSearch(searchInput.value); else if (searchInput) performSearch(''); else console.warn("Elemento searchInput não encontrado para busca por botão."); });
+    else console.warn("Elemento searchButton não encontrado.");
+    if (filterToggleButton) filterToggleButton.addEventListener('click', openFilterSweetAlert);
+    else console.warn("Elemento filterToggleButton não encontrado.");
+    
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape') { if (typeof Swal !== 'undefined' && Swal.isVisible()) Swal.close(); } });
+
+    // --- Listeners de Scroll para Infinite Scroll ---
+
+    // HORIZONTAL Scroll para seções da PÁGINA PRINCIPAL (Filmes Populares, Séries Populares)
+    if (moviesResultsGrid) {
+        moviesResultsGrid.addEventListener('scroll', () => {
+            if (defaultContentSections && defaultContentSections.style.display === 'block' &&
+                !isLoadingMorePopularMovies && popularMoviesCurrentPage < popularMoviesTotalPages &&
+                (moviesResultsGrid.scrollLeft + moviesResultsGrid.clientWidth >= moviesResultsGrid.scrollWidth - 200)) {
+                loadMorePopularMovies();
+            }
+        });
+    } else console.warn("Elemento moviesResultsGrid não encontrado para event listener de scroll horizontal.");
+
+    if (tvShowsResultsGrid) {
+        tvShowsResultsGrid.addEventListener('scroll', () => {
+            if (defaultContentSections && defaultContentSections.style.display === 'block' &&
+                !isLoadingMoreTopRatedTvShows && topRatedTvShowsCurrentPage < topRatedTvShowsTotalPages &&
+                (tvShowsResultsGrid.scrollLeft + tvShowsResultsGrid.clientWidth >= tvShowsResultsGrid.scrollWidth - 200)) {
+                loadMoreTopRatedTvShows();
+            }
+        });
+    } else console.warn("Elemento tvShowsResultsGrid não encontrado para event listener de scroll horizontal.");
+
+    // MODIFICADO: HORIZONTAL Scroll para resultados de BUSCA e FILTRO (singleResultsGrid)
+    if (singleResultsGrid) {
+        singleResultsGrid.addEventListener('scroll', () => {
+            const isSingleSectionVisible = singleResultsSection && singleResultsSection.style.display === 'block';
+            
+            // Usa a flag geral 'isLoadingMore' para busca/filtro
+            if (!isSingleSectionVisible || isLoadingMore) {
+                return;
+            }
+
+            let canLoadMore = false;
+            if (currentContentContext === 'search' && searchCurrentPage < totalPages.search) {
+                canLoadMore = true;
+            } else if (currentContentContext === 'filter' && filterCurrentPage < totalPages.filter) {
+                canLoadMore = true;
+            }
+
+            if (canLoadMore && (singleResultsGrid.scrollLeft + singleResultsGrid.clientWidth >= singleResultsGrid.scrollWidth - 300)) {
+                console.log(`Scroll HORIZONTAL em singleResultsGrid ativou loadMoreItems para contexto: ${currentContentContext}`);
+                loadMoreItems(); // Chama a função existente que busca mais itens de busca/filtro
+            }
+        });
+    } else {
+        console.warn("Elemento singleResultsGrid não encontrado para event listener de scroll horizontal.");
+    }
+
+    // REMOVIDO ou COMENTADO: O listener de scroll vertical da JANELA para busca/filtro,
+    // pois agora o scroll é horizontal no PRÓPRIO GRID.
+    /*
+    window.addEventListener('scroll', () => {
+        const isSingleSectionVisible = singleResultsSection && singleResultsSection.style.display === 'block';
+        if (!isSingleSectionVisible || isLoadingMore) return;
+        if ((window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 300)) { 
+            if (currentContentContext === 'search' || currentContentContext === 'filter') loadMoreItems(); 
+        }
+    });
+    */
+
+    // --- Inicialização do Conteúdo da Página ---
     const urlParams = new URLSearchParams(window.location.search);
     const typeParam = urlParams.get('type'); const idParam = urlParams.get('id');
     if (typeParam && idParam && (typeParam === 'movie' || typeParam === 'tv')) {
