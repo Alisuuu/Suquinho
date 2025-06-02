@@ -444,7 +444,6 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     font-size: 0.9rem;
     border: 1px solid var(--border-highlight);
     background-color: var(--purple-accent);
-    color: var(--amoled-black);
     transition: all 0.2s ease;
     margin-left: 0.5rem;
     flex-shrink: 0;
@@ -456,13 +455,12 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     font-size: 0.9rem;
     border: 1px solid var(--border-highlight);
     background-color: var(--purple-accent);
-    color: var(--amoled-black);
     transition: all 0.2s ease;
     margin-left: 0.5rem;
     flex-shrink: 0;}
      
  #filterToggleButton.active {
-    box-shadow: 0 0 10px rgba(89, 59, 162, 0.7);
+    box-shadow: 0 0 10px rgba(139, 0, 0, 0.7);
     border-color: var(--purple-light);
     background-color: rgba(12,12,12,0.8);
     
@@ -800,3 +798,4 @@ header h1 .fa-film {
     }
 }
 
+    
