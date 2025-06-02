@@ -2,16 +2,16 @@
 
 const companyKeywordMap = {
     'marvel': { name: "Marvel Studios", ids: [420] },
-    'disney': { name: "Disney", ids: [2, 6125, 3475, 7505] }, // Walt Disney Pictures, Walt Disney Animation, Disney Television Animation, Disney+
+    'disney': { name: "Disney", ids: [2, 6125, 3475, 7505] },
     'pixar': { name: "Pixar", ids: [3] },
-    'dc': { name: "DC Entertainment", ids: [9993, 128064, 429] }, // DC Entertainment, DC Films, Warner Bros. Discovery related
+    'dc': { name: "DC Entertainment", ids: [9993, 128064, 429] },
     'warner bros': { name: "Warner Bros.", ids: [174, 9996] },
-    'universal': { name: "Universal", ids: [33, 102801] }, // Universal Pictures, Universal Television
-    'sony': { name: "Sony Pictures", ids: [5, 34] }, // Columbia Pictures, Sony Pictures Entertainment
-    'paramount': { name: "Paramount", ids: [4, 25195] }, // Paramount Pictures, Paramount Television Studios
+    'universal': { name: "Universal", ids: [33, 102801] },
+    'sony': { name: "Sony Pictures", ids: [5, 34] },
+    'paramount': { name: "Paramount", ids: [4, 25195] },
     'netflix': { name: "Netflix", ids: [213] },
-    'amazon': { name: "Amazon MGM Studios", ids: [20580] }, // Anteriormente Amazon Studios
-    'hbo': { name: "HBO", ids: [3268, 49] } // HBO, HBO Films
+    'amazon': { name: "Amazon MGM Studios", ids: [20580] },
+    'hbo': { name: "HBO", ids: [3268, 49] }
 };
 
 function getCompanyConfigForQuery(query) {
@@ -25,32 +25,22 @@ function getCompanyConfigForQuery(query) {
 async function fetchTMDB(endpoint, params = {}) {
     const urlParams = new URLSearchParams({ api_key: TMDB_API_KEY, language: LANGUAGE, include_adult: 'false', ...params });
     const url = `${TMDB_BASE_URL}${endpoint}?${urlParams}`;
-    
-    // Log para depurar a URL exata que está sendo chamada
-    console.log("LOG (fetchTMDB): Tentando buscar URL:", url); 
-    
+    console.log("LOG (fetchTMDB): Tentando buscar URL:", url);
     try {
         const response = await fetch(url);
         if (!response.ok) {
             let errorData;
-            try { 
-                errorData = await response.json(); 
-            } catch (e) { 
+            try { errorData = await response.json(); } catch (e) {
                 console.warn("Falha ao parsear JSON da resposta de erro da API TMDB:", e);
-                errorData = { status_message: response.statusText || "Falha ao obter detalhes do erro da API.", success: false }; 
+                errorData = { status_message: response.statusText || "Falha ao obter detalhes do erro da API.", success: false };
             }
             console.error(`TMDB API Error: ${response.status} ${response.statusText}`, errorData);
             return { error: true, status: response.status, message: errorData.status_message || "Erro desconhecido da API." };
         }
         return await response.json();
-    } catch (error) { 
-        // Este bloco catch lida com erros de rede ou erros na própria função fetch()
-        console.error('Erro de rede ou configuração de fetch ao buscar dados do TMDB:', error); 
-        // Retorna um objeto de erro que será pego pelo catch em openItemModal
-        // causando a mensagem "Falha ao buscar detalhes do item."
-        throw error; // Relança o erro para ser pego pelo catch em openItemModal e exibir a mensagem genérica.
-                     // Ou, para ser mais específico, poderia retornar:
-                     // return { error: true, message: "Erro de rede, por favor verifique sua conexão.", internalError: error };
+    } catch (error) {
+        console.error('Erro de rede ou configuração de fetch ao buscar dados do TMDB:', error);
+        throw error;
     }
 }
 
@@ -58,7 +48,6 @@ function stopMainPageBackdropSlideshow() {
     if (mainPageBackdropSlideshowInterval) {
         clearInterval(mainPageBackdropSlideshowInterval);
         mainPageBackdropSlideshowInterval = null;
-        // console.log("Slideshow de backdrop da página principal parado."); 
     }
 }
 
@@ -67,30 +56,21 @@ function startMainPageBackdropSlideshow() {
     if (mainPageBackdropPaths.length === 0 || !defaultContentSections || defaultContentSections.style.display === 'none') {
         return;
     }
-    // console.log("Iniciando slideshow de backdrop com", mainPageBackdropPaths.length, "imagens.");
-
     function nextSlide() {
         if (!mainPageBackdropSlideshowInterval || !defaultContentSections || defaultContentSections.style.display === 'none' || mainPageBackdropPaths.length === 0) {
-            stopMainPageBackdropSlideshow();
-            return;
+            stopMainPageBackdropSlideshow(); return;
         }
         currentMainPageBackdropIndex = (currentMainPageBackdropIndex + 1) % mainPageBackdropPaths.length;
         const path = mainPageBackdropPaths[currentMainPageBackdropIndex];
-
         if (pageBackdrop.style.opacity === '1' && pageBackdrop.style.backgroundImage !== '') {
             pageBackdrop.style.opacity = '0';
             setTimeout(() => {
                 const popup = Swal.getPopup();
                 const isDetailsModalVisible = Swal.isVisible() && popup && popup.classList.contains('swal-details-popup');
-                if (!isDetailsModalVisible) {
-                    updatePageBackground(path);
-                }
+                if (!isDetailsModalVisible) updatePageBackground(path);
             }, 700);
-        } else {
-            updatePageBackground(path);
-        }
+        } else updatePageBackground(path);
     }
-
     if (mainPageBackdropPaths.length > 0 && (pageBackdrop.style.opacity !== '1' || pageBackdrop.style.backgroundImage === '')) {
         const initialPath = mainPageBackdropPaths[currentMainPageBackdropIndex];
         updatePageBackground(initialPath);
@@ -106,23 +86,26 @@ async function loadMainPageContent() {
     if (filterToggleButton) filterToggleButton.classList.remove('active');
     activeAppliedGenre = { id: null, name: null, type: null };
     currentContentContext = 'main';
+    popularMoviesCurrentPage = 1; popularMoviesTotalPages = 1; isLoadingMorePopularMovies = false;
+    topRatedTvShowsCurrentPage = 1; topRatedTvShowsTotalPages = 1; isLoadingMoreTopRatedTvShows = false;
     if (moviesResultsGrid) moviesResultsGrid.innerHTML = '';
     if (tvShowsResultsGrid) tvShowsResultsGrid.innerHTML = '';
-    mainPageBackdropPaths = [];
-    currentMainPageBackdropIndex = 0;
+    mainPageBackdropPaths = []; currentMainPageBackdropIndex = 0;
 
-    const moviesPromise = fetchTMDB(`/movie/popular`, { page: 1 });
-    const tvShowsPromise = fetchTMDB(`/tv/top_rated`, { page: 1 });
+    const moviesPromise = fetchTMDB(`/movie/popular`, { page: popularMoviesCurrentPage });
+    const tvShowsPromise = fetchTMDB(`/tv/top_rated`, { page: topRatedTvShowsCurrentPage });
     const [moviesData, tvShowsData] = await Promise.all([moviesPromise, tvShowsPromise]);
 
     if (moviesResultsGrid) {
         if (moviesData && !moviesData.error && moviesData.results) {
+            popularMoviesTotalPages = moviesData.total_pages || 1;
             displayResults(moviesData.results, 'movie', moviesResultsGrid, true);
             moviesData.results.forEach(movie => { if (movie.backdrop_path) mainPageBackdropPaths.push(movie.backdrop_path); });
         } else { moviesResultsGrid.innerHTML = `<p class="text-center col-span-full text-[var(--text-secondary)] py-5">Não foi possível carregar filmes populares. ${moviesData?.message || ''}</p>`; }
     }
     if (tvShowsResultsGrid) {
         if (tvShowsData && !tvShowsData.error && tvShowsData.results) {
+            topRatedTvShowsTotalPages = tvShowsData.total_pages || 1;
             displayResults(tvShowsData.results, 'tv', tvShowsResultsGrid, true);
             tvShowsData.results.forEach(show => { if (show.backdrop_path) mainPageBackdropPaths.push(show.backdrop_path); });
         } else { tvShowsResultsGrid.innerHTML = `<p class="text-center col-span-full text-[var(--text-secondary)] py-5">Não foi possível carregar séries populares. ${tvShowsData?.message || ''}</p>`; }
@@ -132,18 +115,46 @@ async function loadMainPageContent() {
     hideLoader();
 }
 
+async function loadMorePopularMovies() {
+    if (isLoadingMorePopularMovies || popularMoviesCurrentPage >= popularMoviesTotalPages) return;
+    isLoadingMorePopularMovies = true;
+    console.log(`Carregando mais filmes populares, página ${popularMoviesCurrentPage + 1}`);
+    popularMoviesCurrentPage++;
+    const data = await fetchTMDB('/movie/popular', { page: popularMoviesCurrentPage });
+    if (data && !data.error && data.results && data.results.length > 0) {
+        displayResults(data.results, 'movie', moviesResultsGrid, false);
+        data.results.forEach(movie => { if (movie.backdrop_path && !mainPageBackdropPaths.includes(movie.backdrop_path)) mainPageBackdropPaths.push(movie.backdrop_path); });
+        popularMoviesTotalPages = data.total_pages || popularMoviesTotalPages;
+    } else if (data && data.error) { console.error("Erro ao carregar mais filmes populares:", data.message); popularMoviesCurrentPage--; }
+    isLoadingMorePopularMovies = false;
+}
+
+async function loadMoreTopRatedTvShows() {
+    if (isLoadingMoreTopRatedTvShows || topRatedTvShowsCurrentPage >= topRatedTvShowsTotalPages) return;
+    isLoadingMoreTopRatedTvShows = true;
+    console.log(`Carregando mais séries populares, página ${topRatedTvShowsCurrentPage + 1}`);
+    topRatedTvShowsCurrentPage++;
+    const data = await fetchTMDB('/tv/top_rated', { page: topRatedTvShowsCurrentPage });
+    if (data && !data.error && data.results && data.results.length > 0) {
+        displayResults(data.results, 'tv', tvShowsResultsGrid, false);
+        data.results.forEach(show => { if (show.backdrop_path && !mainPageBackdropPaths.includes(show.backdrop_path)) mainPageBackdropPaths.push(show.backdrop_path); });
+        topRatedTvShowsTotalPages = data.total_pages || topRatedTvShowsTotalPages;
+    } else if (data && data.error) { console.error("Erro ao carregar mais séries populares:", data.message); topRatedTvShowsCurrentPage--; }
+    isLoadingMoreTopRatedTvShows = false;
+}
+
 async function performSearch(query) {
-    // console.log("performSearch chamado com query:", query);
     stopMainPageBackdropSlideshow();
     if (pageBackdrop.style.opacity !== '0') updatePageBackground(null);
     showLoader();
     activeAppliedGenre = { id: null, name: null, type: null };
     selectedGenreSA = { id: null, name: null, type: null };
     if (filterToggleButton) filterToggleButton.classList.remove('active');
-    searchCurrentPage = 1; totalPages.search = 1; currentContentContext = 'search';
+    searchCurrentPage = 1; totalPages.search = 1; currentContentContext = 'search'; // isLoadingMore é resetado em loadMoreItems
     if (!query || !query.trim()) { loadMainPageContent(); return; }
     if (defaultContentSections) defaultContentSections.style.display = 'none';
     if (singleResultsSection) singleResultsSection.style.display = 'block';
+    if (singleResultsGrid) singleResultsGrid.innerHTML = ''; // Limpa para novos resultados
 
     let finalDisplayResults = [];
     let searchTitle = `Resultados para: "${query}"`;
@@ -194,7 +205,6 @@ async function performSearch(query) {
 }
 
 async function applyGenreFilterFromSA() {
-    // console.log("applyGenreFilterFromSA called with:", selectedGenreSA);
     stopMainPageBackdropSlideshow();
     if (pageBackdrop.style.opacity !== '0') updatePageBackground(null);
     if (!selectedGenreSA.id) {
@@ -204,9 +214,10 @@ async function applyGenreFilterFromSA() {
     }
     showLoader();
     activeAppliedGenre = { ...selectedGenreSA };
-    filterCurrentPage = 1; totalPages.filter = 1; currentContentContext = 'filter';
+    filterCurrentPage = 1; totalPages.filter = 1; currentContentContext = 'filter'; // isLoadingMore é resetado em loadMoreItems
     if (defaultContentSections) defaultContentSections.style.display = 'none';
     if (singleResultsSection) singleResultsSection.style.display = 'block';
+    if (singleResultsGrid) singleResultsGrid.innerHTML = ''; // Limpa para novos resultados
     if (singleSectionTitleEl) singleSectionTitleEl.textContent = `${activeAppliedGenre.type === 'movie' ? 'Filmes' : 'Séries'} do Gênero: ${activeAppliedGenre.name}`;
 
     const data = await fetchTMDB(`/discover/${activeAppliedGenre.type}`, { with_genres: activeAppliedGenre.id, sort_by: 'popularity.desc', page: filterCurrentPage });
@@ -221,7 +232,7 @@ async function applyGenreFilterFromSA() {
     if (filterToggleButton) filterToggleButton.classList.add('active');
 }
 
-async function getItemDetails(itemId, mediaType) { // Esta função chama fetchTMDB
+async function getItemDetails(itemId, mediaType) {
     const data = await fetchTMDB(`/${mediaType}/${itemId}`, { append_to_response: 'external_ids,credits,videos' });
     return data;
 }
@@ -237,7 +248,6 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
         showConfirmButton: false, showCloseButton: true, allowOutsideClick: true,
         customClass: { popup: 'swal2-popup swal-details-popup', title: 'swal2-title', htmlContainer: 'swal2-html-container', closeButton: 'swal2-close' },
         willClose: () => {
-            // console.log("LOG: [willClose] Modal de detalhes.");
             updatePageBackground(null);
             const iframe = document.getElementById('swal-details-iframe');
             if (iframe) iframe.src = 'about:blank';
@@ -264,14 +274,13 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
     });
 
     console.log("LOG: Modal 'Carregando Detalhes...' disparado.");
-
     let details;
     try {
-        details = await getItemDetails(itemId, mediaType); // getItemDetails chama fetchTMDB
+        details = await getItemDetails(itemId, mediaType);
         console.log("LOG: Detalhes da API recebidos. Error: ", details ? details.error : 'N/A', " Message: ", details ? (details.message || (details.status_message || 'Sem mensagem específica')) : 'N/A');
-    } catch (errorCaught) { // Este catch será ativado se fetchTMDB relançar o erro
+    } catch (errorCaught) {
         console.error("LOG: Erro CRÍTICO capturado ao chamar getItemDetails:", errorCaught);
-        details = { error: true, message: "Falha ao buscar detalhes do item." }; 
+        details = { error: true, message: "Falha ao buscar detalhes do item." };
     }
 
     console.log("LOG: Verificando validade do modal para atualização.");
@@ -280,7 +289,6 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
     const hasSwalRef = !!currentOpenSwalRef;
     const hasPopup = !!currentPopup;
     const popupHasDetailsClass = hasPopup && currentPopup.classList.contains('swal-details-popup');
-
     console.log(`LOG: Status da Verificação: isVisible=${isSwalVisible}, hasRef=${hasSwalRef}, hasPopup=${hasPopup}, popupHasDetailsClass=${popupHasDetailsClass}`);
 
     if (!isSwalVisible || !hasSwalRef || !hasPopup || !popupHasDetailsClass) {
@@ -289,7 +297,7 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
     }
     console.log("LOG: Verificação inicial do modal passou.");
 
-    if (!details || details.error) { // Se details veio com error:true ou o catch acima setou
+    if (!details || details.error) {
         console.warn("LOG: Conteúdo dos detalhes com erro ou nulo. Exibindo erro no modal. Mensagem:", details?.message);
         Swal.update({
             title: 'Erro',
@@ -300,12 +308,9 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
     }
     console.log("LOG: Detalhes válidos, prosseguindo para construir HTML.");
 
-    if (!backdropPath && details.backdrop_path) {
-        updatePageBackground(details.backdrop_path);
-    } else if (backdropPath) {
-        updatePageBackground(backdropPath);
-    }
-    
+    if (!backdropPath && details.backdrop_path) updatePageBackground(details.backdrop_path);
+    else if (backdropPath) updatePageBackground(backdropPath);
+
     const imdbId = details.external_ids?.imdb_id;
     let superflixPlayerUrl = '';
     if (imdbId) superflixPlayerUrl = mediaType === 'movie' ? `${PLAYER_BASE_URL_MOVIE}${imdbId}` : `${PLAYER_BASE_URL_SERIES}${imdbId}`;
@@ -335,14 +340,13 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
     if (superflixPlayerUrl) playerSectionHTML = `<div class="details-player-section"><h3 class="details-section-subtitle">Assistir Agora</h3><div class="details-iframe-container ${iframeContainerClass}"><iframe id="swal-details-iframe" src="${superflixPlayerUrl}" allowfullscreen title="Player de ${title.replace(/"/g, '&quot;')}"></iframe></div></div>`;
     else playerSectionHTML = `<div class="details-player-section"><p class="details-player-unavailable">Player não disponível para este título.</p></div>`;
     const detailsHTML = `<div class="swal-details-content"><div class="details-flex-container"><img src="${posterModalPath}" alt="Pôster de ${title.replace(/"/g, '&quot;')}" class="details-poster" onerror="this.onerror=null; this.src='https://placehold.co/780x1170/0A0514/F0F0F0?text=Erro+Imagem&font=inter';"><div class="details-info-area"><h2 class="details-content-title">${title}</h2><div class="details-meta-info">${releaseDate ? `<span><i class="fas fa-calendar-alt"></i> ${new Date(releaseDate).toLocaleDateString('pt-BR', { year: 'numeric', month: '2-digit', day: '2-digit' })}</span>` : ''}${rating !== 'N/A' ? `<span><i class="fas fa-star"></i> ${rating} / 10</span>` : ''}${runtime ? `<span><i class="fas fa-clock"></i> ${runtime} min</span>` : ''}</div>${genres ? `<p class="details-genres"><strong>Gêneros:</strong> ${genres}</p>` : ''}<h3 class="details-section-subtitle">Sinopse</h3><p class="details-overview">${overview}</p></div></div>${castSectionHTML}${playerSectionHTML}</div>`;
-    
+
     console.log("LOG: HTML dos detalhes construído. Tentando atualizar o modal...");
     Swal.update({ title: '', html: detailsHTML, showConfirmButton: false, showCloseButton: true, allowOutsideClick: true });
     console.log("LOG: Modal ATUALIZADO com conteúdo final.");
 }
 
 async function openFilterSweetAlert() {
-    // console.log("openFilterSweetAlert called");
     const swalHTML = `
         <div class="swal-genre-filter-type-selector mb-4">
             <button id="swalMovieGenreTypeButton" data-type="movie" class="${currentFilterTypeSA === 'movie' ? 'active' : ''}">Filmes</button>
@@ -412,27 +416,35 @@ function updateClearButtonVisibilitySA() {
     if (denyButton) denyButton.style.display = (selectedGenreSA.id || activeAppliedGenre.id) ? 'inline-flex' : 'none';
 }
 
+// Esta função loadMoreItems é para o scroll infinito de Busca e Filtro.
+// Agora será acionada pelo scroll horizontal do singleResultsGrid.
 async function loadMoreItems() {
-    if (isLoadingMore) return; isLoadingMore = true; showLoader(); /*console.log(`loadMoreItems called for context: ${currentContentContext}`);*/ let nextPageData = null;
+    if (isLoadingMore) return; // Usa a flag geral isLoadingMore
+    isLoadingMore = true;
+    showLoader(); // Loader global ainda é usado, pode ser intrusivo para scroll horizontal rápido
+    
+    let nextPageData = null;
     try {
         switch (currentContentContext) {
             case 'search':
-                if (searchCurrentPage >= totalPages.search) { /*console.log("Busca: Não há mais páginas para carregar.");*/ hideLoader(); isLoadingMore = false; return; }
+                if (searchCurrentPage >= totalPages.search) { hideLoader(); isLoadingMore = false; return; }
                 searchCurrentPage++;
+                console.log(`Carregando mais para BUSCA (horizontal), página ${searchCurrentPage}`);
                 nextPageData = await fetchTMDB('/search/multi', { query: searchInput.value, page: searchCurrentPage });
                 if (nextPageData && !nextPageData.error && nextPageData.results) {
                     totalPages.search = nextPageData.total_pages || totalPages.search;
                     const filteredResults = nextPageData.results.filter(item => (item.media_type === 'movie' || item.media_type === 'tv') && item.poster_path);
-                    displayResults(filteredResults, null, singleResultsGrid, false);
+                    displayResults(filteredResults, null, singleResultsGrid, false); // Anexa
                 } else if (nextPageData && nextPageData.error) { console.error("Erro ao carregar mais resultados da busca:", nextPageData.message); searchCurrentPage--; }
                 break;
             case 'filter':
-                if (filterCurrentPage >= totalPages.filter) { /*console.log("Filtro: Não há mais páginas para carregar.");*/ hideLoader(); isLoadingMore = false; return; }
+                if (filterCurrentPage >= totalPages.filter) { hideLoader(); isLoadingMore = false; return; }
                 filterCurrentPage++;
+                 console.log(`Carregando mais para FILTRO (horizontal), página ${filterCurrentPage}`);
                 nextPageData = await fetchTMDB(`/discover/${activeAppliedGenre.type}`, { with_genres: activeAppliedGenre.id, sort_by: 'popularity.desc', page: filterCurrentPage });
                 if (nextPageData && !nextPageData.error && nextPageData.results) {
                     totalPages.filter = nextPageData.total_pages || totalPages.filter;
-                    displayResults(nextPageData.results, activeAppliedGenre.type, singleResultsGrid, false);
+                    displayResults(nextPageData.results, activeAppliedGenre.type, singleResultsGrid, false); // Anexa
                 } else if (nextPageData && nextPageData.error) { console.error("Erro ao carregar mais resultados do filtro:", nextPageData.message); filterCurrentPage--; }
                 break;
             default: console.warn(`Contexto desconhecido para loadMoreItems: ${currentContentContext}`);
@@ -441,6 +453,8 @@ async function loadMoreItems() {
         console.error("Erro em loadMoreItems:", error);
         if (currentContentContext === 'search' && searchCurrentPage > 1) searchCurrentPage--;
         if (currentContentContext === 'filter' && filterCurrentPage > 1) filterCurrentPage--;
-    } finally { hideLoader(); isLoadingMore = false; }
+    } finally {
+        hideLoader();
+        isLoadingMore = false;
+    }
 }
-    
