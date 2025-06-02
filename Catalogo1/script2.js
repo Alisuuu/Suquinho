@@ -1,91 +1,42 @@
 // --- Script 2: API Functions, Core Logic, Filter Logic, Item Details Modal ---
 
-const companyKeywordMap = {
-    'marvel': { name: "Marvel Studios", ids: [420] },
-    'disney': { name: "Disney", ids: [2, 6125, 3475, 7505] },
-    'pixar': { name: "Pixar", ids: [3] },
-    'dc': { name: "DC Entertainment", ids: [9993, 128064, 429] },
-    'warner bros': { name: "Warner Bros.", ids: [174, 9996] },
-    'universal': { name: "Universal", ids: [33, 102801] },
-    'sony': { name: "Sony Pictures", ids: [5, 34] },
-    'paramount': { name: "Paramount", ids: [4, 25195] },
-    'netflix': { name: "Netflix", ids: [213] },
-    'amazon': { name: "Amazon MGM Studios", ids: [20580] },
-    'hbo': { name: "HBO", ids: [3268, 49] }
-};
-
-function getCompanyConfigForQuery(query) {
-    const lowerQuery = query.toLowerCase().trim();
-    if (companyKeywordMap[lowerQuery]) {
-        return companyKeywordMap[lowerQuery];
-    }
-    return null;
-}
+const companyKeywordMap = { /* ... (mapa de empresas como antes) ... */ };
+function getCompanyConfigForQuery(query) { /* ... (função como antes) ... */ }
 
 async function fetchTMDB(endpoint, params = {}) {
     const urlParams = new URLSearchParams({ api_key: TMDB_API_KEY, language: LANGUAGE, include_adult: 'false', ...params });
     const url = `${TMDB_BASE_URL}${endpoint}?${urlParams}`;
-    console.log("LOG (fetchTMDB): Tentando buscar URL:", url);
+    console.log("LOG (fetchTMDB): Tentando buscar URL:", url); 
     try {
         const response = await fetch(url);
         if (!response.ok) {
             let errorData;
             try { errorData = await response.json(); } catch (e) {
                 console.warn("Falha ao parsear JSON da resposta de erro da API TMDB:", e);
-                errorData = { status_message: response.statusText || "Falha ao obter detalhes do erro da API.", success: false };
+                errorData = { status_message: response.statusText || "Falha ao obter detalhes do erro da API.", success: false }; 
             }
             console.error(`TMDB API Error: ${response.status} ${response.statusText}`, errorData);
             return { error: true, status: response.status, message: errorData.status_message || "Erro desconhecido da API." };
         }
         return await response.json();
-    } catch (error) {
-        console.error('Erro de rede ou configuração de fetch ao buscar dados do TMDB:', error);
-        throw error;
+    } catch (error) { 
+        console.error('Erro de rede ou configuração de fetch ao buscar dados do TMDB:', error); 
+        throw error; 
     }
 }
 
-function stopMainPageBackdropSlideshow() {
-    if (mainPageBackdropSlideshowInterval) {
-        clearInterval(mainPageBackdropSlideshowInterval);
-        mainPageBackdropSlideshowInterval = null;
-    }
-}
-
-function startMainPageBackdropSlideshow() {
-    stopMainPageBackdropSlideshow();
-    if (mainPageBackdropPaths.length === 0 || !defaultContentSections || defaultContentSections.style.display === 'none') {
-        return;
-    }
-    function nextSlide() {
-        if (!mainPageBackdropSlideshowInterval || !defaultContentSections || defaultContentSections.style.display === 'none' || mainPageBackdropPaths.length === 0) {
-            stopMainPageBackdropSlideshow(); return;
-        }
-        currentMainPageBackdropIndex = (currentMainPageBackdropIndex + 1) % mainPageBackdropPaths.length;
-        const path = mainPageBackdropPaths[currentMainPageBackdropIndex];
-        if (pageBackdrop.style.opacity === '1' && pageBackdrop.style.backgroundImage !== '') {
-            pageBackdrop.style.opacity = '0';
-            setTimeout(() => {
-                const popup = Swal.getPopup();
-                const isDetailsModalVisible = Swal.isVisible() && popup && popup.classList.contains('swal-details-popup');
-                if (!isDetailsModalVisible) updatePageBackground(path);
-            }, 700);
-        } else updatePageBackground(path);
-    }
-    if (mainPageBackdropPaths.length > 0 && (pageBackdrop.style.opacity !== '1' || pageBackdrop.style.backgroundImage === '')) {
-        const initialPath = mainPageBackdropPaths[currentMainPageBackdropIndex];
-        updatePageBackground(initialPath);
-    }
-    mainPageBackdropSlideshowInterval = setInterval(nextSlide, 2000 + 700);
-}
+function stopMainPageBackdropSlideshow() { /* ... (como antes) ... */ }
+function startMainPageBackdropSlideshow() { /* ... (como antes) ... */ }
 
 async function loadMainPageContent() {
     console.log("loadMainPageContent called");
-    showLoader();
+    showLoader(); // Usa loader global para carga inicial da página
     if (defaultContentSections) defaultContentSections.style.display = 'block';
     if (singleResultsSection) singleResultsSection.style.display = 'none';
     if (filterToggleButton) filterToggleButton.classList.remove('active');
     activeAppliedGenre = { id: null, name: null, type: null };
     currentContentContext = 'main';
+
     popularMoviesCurrentPage = 1; popularMoviesTotalPages = 1; isLoadingMorePopularMovies = false;
     topRatedTvShowsCurrentPage = 1; topRatedTvShowsTotalPages = 1; isLoadingMoreTopRatedTvShows = false;
     if (moviesResultsGrid) moviesResultsGrid.innerHTML = '';
@@ -112,12 +63,14 @@ async function loadMainPageContent() {
     }
     if (typeof shuffleArray === "function") shuffleArray(mainPageBackdropPaths);
     startMainPageBackdropSlideshow();
-    hideLoader();
+    hideLoader(); // Esconde loader global
 }
 
+// Estas funções não serão mais chamadas por scroll horizontal, mas a lógica de fetch existe.
 async function loadMorePopularMovies() {
     if (isLoadingMorePopularMovies || popularMoviesCurrentPage >= popularMoviesTotalPages) return;
     isLoadingMorePopularMovies = true;
+    if (popularMoviesLoader) popularMoviesLoader.style.display = 'block';
     console.log(`Carregando mais filmes populares, página ${popularMoviesCurrentPage + 1}`);
     popularMoviesCurrentPage++;
     const data = await fetchTMDB('/movie/popular', { page: popularMoviesCurrentPage });
@@ -126,12 +79,14 @@ async function loadMorePopularMovies() {
         data.results.forEach(movie => { if (movie.backdrop_path && !mainPageBackdropPaths.includes(movie.backdrop_path)) mainPageBackdropPaths.push(movie.backdrop_path); });
         popularMoviesTotalPages = data.total_pages || popularMoviesTotalPages;
     } else if (data && data.error) { console.error("Erro ao carregar mais filmes populares:", data.message); popularMoviesCurrentPage--; }
+    if (popularMoviesLoader) popularMoviesLoader.style.display = 'none';
     isLoadingMorePopularMovies = false;
 }
 
 async function loadMoreTopRatedTvShows() {
     if (isLoadingMoreTopRatedTvShows || topRatedTvShowsCurrentPage >= topRatedTvShowsTotalPages) return;
     isLoadingMoreTopRatedTvShows = true;
+    if (topRatedTvShowsLoader) topRatedTvShowsLoader.style.display = 'block';
     console.log(`Carregando mais séries populares, página ${topRatedTvShowsCurrentPage + 1}`);
     topRatedTvShowsCurrentPage++;
     const data = await fetchTMDB('/tv/top_rated', { page: topRatedTvShowsCurrentPage });
@@ -140,21 +95,23 @@ async function loadMoreTopRatedTvShows() {
         data.results.forEach(show => { if (show.backdrop_path && !mainPageBackdropPaths.includes(show.backdrop_path)) mainPageBackdropPaths.push(show.backdrop_path); });
         topRatedTvShowsTotalPages = data.total_pages || topRatedTvShowsTotalPages;
     } else if (data && data.error) { console.error("Erro ao carregar mais séries populares:", data.message); topRatedTvShowsCurrentPage--; }
+    if (topRatedTvShowsLoader) topRatedTvShowsLoader.style.display = 'none';
     isLoadingMoreTopRatedTvShows = false;
 }
 
 async function performSearch(query) {
     stopMainPageBackdropSlideshow();
     if (pageBackdrop.style.opacity !== '0') updatePageBackground(null);
-    showLoader();
+    showLoader(); // Usa loader global para busca inicial
     activeAppliedGenre = { id: null, name: null, type: null };
     selectedGenreSA = { id: null, name: null, type: null };
     if (filterToggleButton) filterToggleButton.classList.remove('active');
-    searchCurrentPage = 1; totalPages.search = 1; currentContentContext = 'search'; // isLoadingMore é resetado em loadMoreItems
-    if (!query || !query.trim()) { loadMainPageContent(); return; }
+    searchCurrentPage = 1; totalPages.search = 1; currentContentContext = 'search'; 
+    isLoadingMore = false; 
+    if (!query || !query.trim()) { loadMainPageContent(); hideLoader(); return; }
     if (defaultContentSections) defaultContentSections.style.display = 'none';
     if (singleResultsSection) singleResultsSection.style.display = 'block';
-    if (singleResultsGrid) singleResultsGrid.innerHTML = ''; // Limpa para novos resultados
+    if (singleResultsGrid) singleResultsGrid.innerHTML = ''; 
 
     let finalDisplayResults = [];
     let searchTitle = `Resultados para: "${query}"`;
@@ -168,29 +125,23 @@ async function performSearch(query) {
         fetchPromises.push(fetchTMDB(`/discover/tv`, { with_companies: companyIdsString, page: 1, sort_by: 'popularity.desc' }));
     }
     if (singleSectionTitleEl) singleSectionTitleEl.textContent = searchTitle;
-
     try {
         const allFetchedResults = await Promise.all(fetchPromises);
         const multiSearchData = allFetchedResults[0];
         let companyMovieData = null; let companyTvData = null;
         if (companyConfig && allFetchedResults.length > 1) { companyMovieData = allFetchedResults[1]; companyTvData = allFetchedResults[2]; }
-
         if (multiSearchData && !multiSearchData.error && multiSearchData.results) {
             finalDisplayResults.push(...multiSearchData.results.filter(item => (item.media_type === 'movie' || item.media_type === 'tv') && item.poster_path));
             totalPages.search = multiSearchData.total_pages || 1;
         } else if (multiSearchData && multiSearchData.error) console.error("Erro na busca múltipla:", multiSearchData.message);
-
         if (companyMovieData && !companyMovieData.error && companyMovieData.results) {
             finalDisplayResults.push(...companyMovieData.results.filter(item => item.poster_path).map(item => ({ ...item, media_type: 'movie' })));
         } else if (companyMovieData && companyMovieData.error) console.error(`Erro ao buscar filmes para ${companyConfig?.name}:`, companyMovieData.message);
-
         if (companyTvData && !companyTvData.error && companyTvData.results) {
             finalDisplayResults.push(...companyTvData.results.filter(item => item.poster_path).map(item => ({ ...item, media_type: 'tv' })));
         } else if (companyTvData && companyTvData.error) console.error(`Erro ao buscar séries para ${companyConfig?.name}:`, companyTvData.message);
-
         const uniqueResults = Array.from(new Map(finalDisplayResults.map(item => [item.id + item.media_type, item])).values());
         uniqueResults.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
-
         if (singleResultsGrid) {
             if (uniqueResults.length > 0) displayResults(uniqueResults, null, singleResultsGrid, true);
             else {
@@ -212,14 +163,14 @@ async function applyGenreFilterFromSA() {
         if (filterToggleButton) filterToggleButton.classList.remove('active');
         loadMainPageContent(); return;
     }
-    showLoader();
+    showLoader(); // Usa loader global para filtro inicial
     activeAppliedGenre = { ...selectedGenreSA };
-    filterCurrentPage = 1; totalPages.filter = 1; currentContentContext = 'filter'; // isLoadingMore é resetado em loadMoreItems
+    filterCurrentPage = 1; totalPages.filter = 1; currentContentContext = 'filter';
+    isLoadingMore = false; 
     if (defaultContentSections) defaultContentSections.style.display = 'none';
     if (singleResultsSection) singleResultsSection.style.display = 'block';
-    if (singleResultsGrid) singleResultsGrid.innerHTML = ''; // Limpa para novos resultados
+    if (singleResultsGrid) singleResultsGrid.innerHTML = ''; 
     if (singleSectionTitleEl) singleSectionTitleEl.textContent = `${activeAppliedGenre.type === 'movie' ? 'Filmes' : 'Séries'} do Gênero: ${activeAppliedGenre.name}`;
-
     const data = await fetchTMDB(`/discover/${activeAppliedGenre.type}`, { with_genres: activeAppliedGenre.id, sort_by: 'popularity.desc', page: filterCurrentPage });
     if (singleResultsGrid) {
         if (data && !data.error && data.results) {
@@ -228,10 +179,77 @@ async function applyGenreFilterFromSA() {
             else singleResultsGrid.innerHTML = `<p class="text-center col-span-full">Nenhum item encontrado para o gênero ${activeAppliedGenre.name}.</p>`;
         } else singleResultsGrid.innerHTML = `<p class="text-center col-span-full">Não foi possível aplicar o filtro. ${data?.message || 'Tente novamente.'}</p>`;
     }
-    hideLoader();
+    hideLoader(); // Esconde loader global
     if (filterToggleButton) filterToggleButton.classList.add('active');
 }
 
+async function getItemDetails(itemId, mediaType) { /* ... (como antes) ... */ }
+async function openItemModal(itemId, mediaType, backdropPath = null) { /* ... (com logs LOG:, como antes) ... */ }
+async function openFilterSweetAlert() { /* ... (como antes) ... */ }
+async function fetchAndDisplayGenresInSA(mediaType, genrePanelElement) { /* ... (como antes) ... */ }
+function updateGenreButtonsInSAUI(genrePanelElement) { /* ... (como antes) ... */ }
+function updateClearButtonVisibilitySA() { /* ... (como antes) ... */ }
+
+// MODIFICADO: loadMoreItems usa searchResultsLoader
+async function loadMoreItems() {
+    if (isLoadingMore) return;
+    isLoadingMore = true;
+    // showLoader(); // Removido loader global
+    if (searchResultsLoader) searchResultsLoader.style.display = 'block';
+    
+    console.log(`LOG: loadMoreItems ACIONADO para contexto: ${currentContentContext}, próxima página de busca: ${searchCurrentPage + 1}, próxima de filtro: ${filterCurrentPage + 1}`);
+    
+    let nextPageData = null;
+    try {
+        switch (currentContentContext) {
+            case 'search':
+                if (searchCurrentPage >= totalPages.search) { 
+                    if (searchResultsLoader) searchResultsLoader.style.display = 'none';
+                    isLoadingMore = false; return; 
+                }
+                searchCurrentPage++;
+                nextPageData = await fetchTMDB('/search/multi', { query: searchInput.value, page: searchCurrentPage });
+                if (nextPageData && !nextPageData.error && nextPageData.results) {
+                    totalPages.search = nextPageData.total_pages || totalPages.search;
+                    const filteredResults = nextPageData.results.filter(item => (item.media_type === 'movie' || item.media_type === 'tv') && item.poster_path);
+                    displayResults(filteredResults, null, singleResultsGrid, false);
+                } else if (nextPageData && nextPageData.error) { 
+                    console.error("LOG (loadMoreItems): Erro ao carregar mais resultados da busca:", nextPageData.message); 
+                    searchCurrentPage--; 
+                }
+                break;
+            case 'filter':
+                if (filterCurrentPage >= totalPages.filter) { 
+                    if (searchResultsLoader) searchResultsLoader.style.display = 'none';
+                    isLoadingMore = false; return; 
+                }
+                filterCurrentPage++;
+                nextPageData = await fetchTMDB(`/discover/${activeAppliedGenre.type}`, { with_genres: activeAppliedGenre.id, sort_by: 'popularity.desc', page: filterCurrentPage });
+                if (nextPageData && !nextPageData.error && nextPageData.results) {
+                    totalPages.filter = nextPageData.total_pages || totalPages.filter;
+                    displayResults(nextPageData.results, activeAppliedGenre.type, singleResultsGrid, false);
+                } else if (nextPageData && nextPageData.error) { 
+                    console.error("LOG (loadMoreItems): Erro ao carregar mais resultados do filtro:", nextPageData.message); 
+                    filterCurrentPage--; 
+                }
+                break;
+            default: 
+                console.warn(`LOG (loadMoreItems): Contexto desconhecido: ${currentContentContext}`);
+        }
+    } catch (error) {
+        console.error("LOG (loadMoreItems): Erro geral:", error);
+        if (currentContentContext === 'search' && searchCurrentPage > 1) searchCurrentPage--;
+        if (currentContentContext === 'filter' && filterCurrentPage > 1) filterCurrentPage--;
+    } finally {
+        if (searchResultsLoader) searchResultsLoader.style.display = 'none';
+        isLoadingMore = false;
+    }
+}
+// --- Coloque as implementações completas de getItemDetails, openItemModal, openFilterSweetAlert, fetchAndDisplayGenresInSA, updateGenreButtonsInSAUI, updateClearButtonVisibilitySA aqui, como nas respostas anteriores ---
+// Para manter a resposta concisa, estou omitindo o corpo dessas funções que não foram diretamente alteradas nesta etapa, mas elas devem estar no seu arquivo.
+// Certifique-se de que a função openItemModal está com os logs "LOG:" como na penúltima resposta.
+// Se precisar delas novamente, me avise.
+// **REINSERINDO FUNÇÕES COMPLETAS PARA CLAREZA**
 async function getItemDetails(itemId, mediaType) {
     const data = await fetchTMDB(`/${mediaType}/${itemId}`, { append_to_response: 'external_ids,credits,videos' });
     return data;
@@ -323,7 +341,7 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
         externalCopyButtonHandler = () => { if(currentExternalCopyUrl) copyToClipboard(currentExternalCopyUrl, false); };
         currentExternalBtn.addEventListener('click', externalCopyButtonHandler);
     }
-    const title = details.title || details.name || "Título Indisponível";
+    const titleText = details.title || details.name || "Título Indisponível"; // Renomeado para evitar conflito com window.title
     const overview = details.overview || 'Sinopse não disponível.';
     const posterModalPath = details.poster_path ? `${TMDB_IMAGE_BASE_URL}w780${details.poster_path}` : `https://placehold.co/780x1170/0A0514/F0F0F0?text=Indispon%C3%ADvel&font=inter`;
     const releaseDate = details.release_date || details.first_air_date;
@@ -337,10 +355,10 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
         castSectionHTML = `<div class="details-cast-section"><h3 class="details-section-subtitle">Elenco Principal</h3><div class="details-cast-scroller">${castMembers.map(person => `<div class="cast-member-card"><img src="${person.profile_path ? TMDB_IMAGE_BASE_URL + 'w185' + person.profile_path : PLACEHOLDER_PERSON_IMAGE}" alt="${person.name || 'Ator/Atriz sem nome listado'}" class="cast-member-photo" onerror="this.onerror=null; this.src='${PLACEHOLDER_PERSON_IMAGE}';"><p class="cast-member-name">${person.name || 'Nome não disponível'}</p><p class="cast-member-character">${person.character || ''}</p></div>`).join('')}</div></div>`;
     }
     let playerSectionHTML = '';
-    if (superflixPlayerUrl) playerSectionHTML = `<div class="details-player-section"><h3 class="details-section-subtitle">Assistir Agora</h3><div class="details-iframe-container ${iframeContainerClass}"><iframe id="swal-details-iframe" src="${superflixPlayerUrl}" allowfullscreen title="Player de ${title.replace(/"/g, '&quot;')}"></iframe></div></div>`;
+    if (superflixPlayerUrl) playerSectionHTML = `<div class="details-player-section"><h3 class="details-section-subtitle">Assistir Agora</h3><div class="details-iframe-container ${iframeContainerClass}"><iframe id="swal-details-iframe" src="${superflixPlayerUrl}" allowfullscreen title="Player de ${titleText.replace(/"/g, '&quot;')}"></iframe></div></div>`;
     else playerSectionHTML = `<div class="details-player-section"><p class="details-player-unavailable">Player não disponível para este título.</p></div>`;
-    const detailsHTML = `<div class="swal-details-content"><div class="details-flex-container"><img src="${posterModalPath}" alt="Pôster de ${title.replace(/"/g, '&quot;')}" class="details-poster" onerror="this.onerror=null; this.src='https://placehold.co/780x1170/0A0514/F0F0F0?text=Erro+Imagem&font=inter';"><div class="details-info-area"><h2 class="details-content-title">${title}</h2><div class="details-meta-info">${releaseDate ? `<span><i class="fas fa-calendar-alt"></i> ${new Date(releaseDate).toLocaleDateString('pt-BR', { year: 'numeric', month: '2-digit', day: '2-digit' })}</span>` : ''}${rating !== 'N/A' ? `<span><i class="fas fa-star"></i> ${rating} / 10</span>` : ''}${runtime ? `<span><i class="fas fa-clock"></i> ${runtime} min</span>` : ''}</div>${genres ? `<p class="details-genres"><strong>Gêneros:</strong> ${genres}</p>` : ''}<h3 class="details-section-subtitle">Sinopse</h3><p class="details-overview">${overview}</p></div></div>${castSectionHTML}${playerSectionHTML}</div>`;
-
+    const detailsHTML = `<div class="swal-details-content"><div class="details-flex-container"><img src="${posterModalPath}" alt="Pôster de ${titleText.replace(/"/g, '&quot;')}" class="details-poster" onerror="this.onerror=null; this.src='https://placehold.co/780x1170/0A0514/F0F0F0?text=Erro+Imagem&font=inter';"><div class="details-info-area"><h2 class="details-content-title">${titleText}</h2><div class="details-meta-info">${releaseDate ? `<span><i class="fas fa-calendar-alt"></i> ${new Date(releaseDate).toLocaleDateString('pt-BR', { year: 'numeric', month: '2-digit', day: '2-digit' })}</span>` : ''}${rating !== 'N/A' ? `<span><i class="fas fa-star"></i> ${rating} / 10</span>` : ''}${runtime ? `<span><i class="fas fa-clock"></i> ${runtime} min</span>` : ''}</div>${genres ? `<p class="details-genres"><strong>Gêneros:</strong> ${genres}</p>` : ''}<h3 class="details-section-subtitle">Sinopse</h3><p class="details-overview">${overview}</p></div></div>${castSectionHTML}${playerSectionHTML}</div>`;
+    
     console.log("LOG: HTML dos detalhes construído. Tentando atualizar o modal...");
     Swal.update({ title: '', html: detailsHTML, showConfirmButton: false, showCloseButton: true, allowOutsideClick: true });
     console.log("LOG: Modal ATUALIZADO com conteúdo final.");
@@ -416,45 +434,4 @@ function updateClearButtonVisibilitySA() {
     if (denyButton) denyButton.style.display = (selectedGenreSA.id || activeAppliedGenre.id) ? 'inline-flex' : 'none';
 }
 
-// Esta função loadMoreItems é para o scroll infinito de Busca e Filtro.
-// Agora será acionada pelo scroll horizontal do singleResultsGrid.
-async function loadMoreItems() {
-    if (isLoadingMore) return; // Usa a flag geral isLoadingMore
-    isLoadingMore = true;
-    showLoader(); // Loader global ainda é usado, pode ser intrusivo para scroll horizontal rápido
-    
-    let nextPageData = null;
-    try {
-        switch (currentContentContext) {
-            case 'search':
-                if (searchCurrentPage >= totalPages.search) { hideLoader(); isLoadingMore = false; return; }
-                searchCurrentPage++;
-                console.log(`Carregando mais para BUSCA (horizontal), página ${searchCurrentPage}`);
-                nextPageData = await fetchTMDB('/search/multi', { query: searchInput.value, page: searchCurrentPage });
-                if (nextPageData && !nextPageData.error && nextPageData.results) {
-                    totalPages.search = nextPageData.total_pages || totalPages.search;
-                    const filteredResults = nextPageData.results.filter(item => (item.media_type === 'movie' || item.media_type === 'tv') && item.poster_path);
-                    displayResults(filteredResults, null, singleResultsGrid, false); // Anexa
-                } else if (nextPageData && nextPageData.error) { console.error("Erro ao carregar mais resultados da busca:", nextPageData.message); searchCurrentPage--; }
-                break;
-            case 'filter':
-                if (filterCurrentPage >= totalPages.filter) { hideLoader(); isLoadingMore = false; return; }
-                filterCurrentPage++;
-                 console.log(`Carregando mais para FILTRO (horizontal), página ${filterCurrentPage}`);
-                nextPageData = await fetchTMDB(`/discover/${activeAppliedGenre.type}`, { with_genres: activeAppliedGenre.id, sort_by: 'popularity.desc', page: filterCurrentPage });
-                if (nextPageData && !nextPageData.error && nextPageData.results) {
-                    totalPages.filter = nextPageData.total_pages || totalPages.filter;
-                    displayResults(nextPageData.results, activeAppliedGenre.type, singleResultsGrid, false); // Anexa
-                } else if (nextPageData && nextPageData.error) { console.error("Erro ao carregar mais resultados do filtro:", nextPageData.message); filterCurrentPage--; }
-                break;
-            default: console.warn(`Contexto desconhecido para loadMoreItems: ${currentContentContext}`);
-        }
-    } catch (error) {
-        console.error("Erro em loadMoreItems:", error);
-        if (currentContentContext === 'search' && searchCurrentPage > 1) searchCurrentPage--;
-        if (currentContentContext === 'filter' && filterCurrentPage > 1) filterCurrentPage--;
-    } finally {
-        hideLoader();
-        isLoadingMore = false;
-    }
-}
+        
