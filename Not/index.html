@@ -3,23 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
-  <title>Suquinho News Portal v7</title>
-  <link rel="stylesheet" href="../Styles/styleA.css">
+  <title>Suquinho</title>
+  <link rel="stylesheet" href="../Styles/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 
-  <iframe id="newsFrame" src="https://feed-pearl.vercel.app/" title="Feed de Notícias"></iframe>
+  <iframe id="newsFrame" src="index.html" title="Feed de Notícias"></iframe>
 
-  <img src="nave.png" class="loading-spaceship" id="loadingSpaceship" alt="Carregando..." onerror="this.style.display='none'; console.error('Erro ao carregar nave.png. Verifique o caminho do ficheiro.')">
-
-  <div class="top-bar">
-    <img src="../p2.png" alt="Suquinho" id="suquinhoBtn" onerror="this.style.display='none'; console.error('Erro ao carregar p2.png. Verifique o caminho do ficheiro.')">
-  </div>
-
-  <div class="sidebar-buttons">
+  <div class="sidebar-buttons"> 
+    <a href="#" class="icon-button" id="toggleSidebarBtn" title="Esconder ícones"> 
+      <i class="fas fa-times"></i> 
+    </a>
     <a href="../Hyper/hyper" class="icon-button" title="Hyper">
-      <img src="p.png" alt="Gato" onerror="this.style.display='none'; console.error('Erro ao carregar p.png. Verifique o caminho do ficheiro.')">
+      <img src="https://placehold.co/48x48/FFFFFF/000000?text=P" alt="Gato" onerror="this.onerror=null; this.src='https://placehold.co/48x48/FFFFFF/000000?text=Error'; console.error('Erro ao carregar p.png. Verifique o caminho do ficheiro.')">
     </a>
     <a href="../Yt/yt" class="icon-button" title="YouTube">
       <i class="fa-brands fa-youtube"></i>
@@ -30,12 +27,11 @@
     <a href="../links/links" class="icon-button" title="Links">
       <i class="fa-solid fa-link"></i>
     </a>
-    <a href="../Catalogo1/index1" class="icon-button" title="Catálogo">
-      <i class="fa-solid fa-film"></i>
+    <a href="../Not/index.html" class="icon-button" title="notícias">
+      <i class="fas fa-newspaper"></i>
     </a>
   </div>
 
-  <script src="script.js"></script>
+  <script src="../js/script.js"></script>
 </body>
 </html>
-
