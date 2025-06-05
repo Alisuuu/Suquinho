@@ -4,7 +4,7 @@ window.addEventListener('load', () => {
   const newsFrame = document.getElementById('newsFrame'); // Get iframe element
 
   let inactivityTimerId;
-  const INACTIVITY_TIMEOUT_MS = 2000; // 5 segundos para inatividade
+  const INACTIVITY_TIMEOUT_MS = 4000; // 5 segundos para inatividade
 
   if (toggleSidebarBtn && sidebarButtonsContainer) {
     const buttonsToToggle = Array.from(sidebarButtonsContainer.children)
