@@ -2,17 +2,16 @@ window.addEventListener('load', () => {
   const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
   const sidebarButtonsContainer = document.querySelector('.sidebar-buttons');
   const newsFrame = document.getElementById('newsFrame');
-  const iframeBackButton = document.getElementById('iframeBackButton'); // Novo botão
+  const iframeBackButton = document.getElementById('iframeBackButton');
 
   let inactivityTimerId;
   const INACTIVITY_TIMEOUT_MS = 4000;
 
-  // Histórico para o iframe e identificadores das páginas que ativam o botão "Voltar"
-  let iframeSrcHistory = ['inicio.html']; // A página inicial é o primeiro item
-  const backButtonTriggerHrefs = ['not2/index', 'links/links', 'Catalogo1/index1'];
+  const newsFeedHref = 'https://feed-pearl.vercel.app/';
+  let iframeSrcHistory = ['inicio.html'];
+  const backButtonTriggerHrefs = ['not2/index', 'links/links', 'Catalogo1/index1', newsFeedHref];
 
   if (sidebarToggleBtn && sidebarButtonsContainer && newsFrame && iframeBackButton) {
-    // Filtra botões para esconder/mostrar, excluindo o toggle principal E o botão voltar
     const buttonsToToggleVisibility = Array.from(sidebarButtonsContainer.children)
       .filter(child => child.classList.contains('icon-button') && 
                        child.id !== 'sidebarToggleBtn' &&
@@ -36,12 +35,7 @@ window.addEventListener('load', () => {
         const currentIdentifierInHistory = iframeSrcHistory[iframeSrcHistory.length - 1];
         currentPageIsTargetForBackButton = backButtonTriggerHrefs.includes(currentIdentifierInHistory);
       }
-
-      if (canGoBack && currentPageIsTargetForBackButton) {
-        iframeBackButton.style.display = 'flex';
-      } else {
-        iframeBackButton.style.display = 'none';
-      }
+      iframeBackButton.style.display = (canGoBack && currentPageIsTargetForBackButton) ? 'flex' : 'none';
     };
 
     const updateSidebarState = (expand) => {
@@ -50,26 +44,53 @@ window.addEventListener('load', () => {
       });
 
       sidebarButtonsContainer.classList.toggle('sidebar-container-condensed', !expand);
-      sidebarToggleBtn.classList.toggle('toggle-btn-shrunk', !expand);
+      // Não aplicamos 'toggle-btn-shrunk' ao sidebarToggleBtn se ele vai ficar invisível
+      // Mas a lógica de display abaixo o controla.
       
       if (toggleIconElement) {
         toggleIconElement.classList.remove('fa-times');
         toggleIconElement.classList.add('fa-bars');
       }
-      sidebarToggleBtn.setAttribute('title', expand ? 'Recolher Menu' : 'Mostrar Menu');
       
-      if (expand) {
+      if (expand) { // Sidebar está expandida
+        sidebarToggleBtn.style.display = 'none'; // Esconde o botão de toggle
+        sidebarToggleBtn.setAttribute('title', 'Recolher Menu'); // Título se estivesse visível
         resetInactivityTimer();
-      } else {
+      } else { // Sidebar está recolhida
+        sidebarToggleBtn.style.display = 'flex'; // Mostra o botão de toggle
+        sidebarToggleBtn.classList.add('toggle-btn-shrunk'); // Aplica estilo 'shrunk' quando visível e fechado
+        sidebarToggleBtn.setAttribute('title', 'Mostrar Menu');
         clearTimeout(inactivityTimerId);
       }
+    };
+    
+    const setupIframeContentListeners = () => {
+        if (newsFrame.contentWindow) {
+            const handleFrameInteraction = () => {
+                const isSidebarExpandedCurrent = !sidebarButtonsContainer.classList.contains('sidebar-container-condensed');
+                if (isSidebarExpandedCurrent) {
+                    updateSidebarState(false);
+                }
+            };
+            // Remove listeners antigos para evitar duplicação se chamados múltiplas vezes
+            newsFrame.contentWindow.removeEventListener('scroll', handleFrameInteraction);
+            newsFrame.contentWindow.removeEventListener('click', handleFrameInteraction);
+            newsFrame.contentWindow.removeEventListener('touchstart', handleFrameInteraction);
+            
+            // Adiciona novos listeners
+            newsFrame.contentWindow.addEventListener('scroll', handleFrameInteraction);
+            newsFrame.contentWindow.addEventListener('click', handleFrameInteraction);
+            newsFrame.contentWindow.addEventListener('touchstart', handleFrameInteraction, { passive: true });
+        } else {
+             console.warn("newsFrame.contentWindow não está acessível para adicionar listeners de interação.");
+        }
     };
 
     sidebarToggleBtn.addEventListener('click', (event) => {
       event.preventDefault();
       event.stopPropagation();
-      const isCurrentlyShrunk = sidebarButtonsContainer.classList.contains('sidebar-container-condensed');
-      updateSidebarState(isCurrentlyShrunk);
+      // Se o botão está visível, significa que a sidebar está fechada. Clicar deve abrir.
+      updateSidebarState(true); // Força a expansão e esconde o botão de toggle
     });
     
     iframeBackButton.addEventListener('click', (event) => {
@@ -79,7 +100,7 @@ window.addEventListener('load', () => {
         iframeSrcHistory.pop(); 
         const previousUrlOrIdentifier = iframeSrcHistory[iframeSrcHistory.length - 1];
         newsFrame.src = previousUrlOrIdentifier; 
-        updateIframeBackButtonVisibility(); 
+        // A visibilidade do botão Voltar será atualizada pelo listener 'load' do newsFrame
       }
     });
 
@@ -88,6 +109,7 @@ window.addEventListener('load', () => {
 
     document.addEventListener('click', (event) => {
       const isSidebarExpanded = !sidebarButtonsContainer.classList.contains('sidebar-container-condensed');
+      // Se a sidebar está expandida e o clique foi fora dela (e não no toggle button, que já estaria escondido)
       if (isSidebarExpanded && !sidebarButtonsContainer.contains(event.target)) {
          updateSidebarState(false);
       }
@@ -95,57 +117,32 @@ window.addEventListener('load', () => {
 
     if (newsFrame) {
       newsFrame.addEventListener('load', () => {
-        // updateIframeBackButtonVisibility(); // Descomente se necessário
+        updateIframeBackButtonVisibility();
+        try {
+          setupIframeContentListeners(); 
+        } catch (e) {
+          console.warn("Erro ao tentar re-anexar listeners ao iframe após novo carregamento de conteúdo.", e);
+        }
       });
       
-      try {
-        const setupIframeContentListeners = () => {
-            if (newsFrame.contentWindow) {
-                const handleFrameInteraction = () => {
-                    const isSidebarExpandedCurrent = !sidebarButtonsContainer.classList.contains('sidebar-container-condensed');
-                    if (isSidebarExpandedCurrent) {
-                        updateSidebarState(false);
-                    }
-                };
-                newsFrame.contentWindow.addEventListener('scroll', handleFrameInteraction);
-                newsFrame.contentWindow.addEventListener('click', handleFrameInteraction);
-                newsFrame.contentWindow.addEventListener('touchstart', handleFrameInteraction, { passive: true });
-            } else {
-                 console.warn("newsFrame.contentWindow não está acessível para adicionar listeners de interação.");
-            }
-        };
-
-        if (newsFrame.contentWindow) {
-            setupIframeContentListeners();
-        }
-        newsFrame.addEventListener('load', setupIframeContentListeners, { once: true });
-
+      try { // Tentativa inicial de configurar listeners
+        setupIframeContentListeners();
       } catch (e) {
-        console.warn("Erro ao adicionar ouvintes de evento ao contentWindow do iframe.", e);
+        // Silencioso, pois o listener 'load' acima tentará novamente.
       }
     }
 
-    // Configurar listeners para os botões que carregam conteúdo no iframe
     const iframeButtonLinks = sidebarButtonsContainer.querySelectorAll('a.icon-button:not(#sidebarToggleBtn):not(#iframeBackButton)');
     iframeButtonLinks.forEach(button => {
       button.addEventListener('click', event => {
         const targetHref = button.getAttribute('href');
 
-        // ****** ALTERAÇÃO AQUI ******
-        // Verifica se o botão é o Yt ou Hyper. Se for, não faz nada e deixa o link seguir.
         if (targetHref === 'Hyper/hyper' || targetHref === 'Yt/yt') {
-          // Opcional: pode querer fechar a sidebar se estiver aberta
-          // const isSidebarExpanded = !sidebarButtonsContainer.classList.contains('sidebar-container-condensed');
-          // if (isSidebarExpanded) {
-          //   updateSidebarState(false);
-          // }
-          return; // Permite o comportamento padrão do link
+          return; 
         }
-        // ****** FIM DA ALTERAÇÃO ******
-
         if (targetHref === '#') return;
 
-        event.preventDefault(); // Previne navegação apenas para os botões que carregam no iframe
+        event.preventDefault();
         let urlToLoad = targetHref;
         let identifierForHistory = targetHref;
 
@@ -159,16 +156,15 @@ window.addEventListener('load', () => {
             iframeSrcHistory.push(identifierForHistory);
           }
           newsFrame.src = urlToLoad;
-          updateIframeBackButtonVisibility();
+          // A visibilidade do botão Voltar será atualizada pelo listener 'load' do newsFrame
         }
       });
     });
 
-    updateSidebarState(true); // Começa expandida
-    updateIframeBackButtonVisibility(); // Define o estado inicial do botão voltar
+    updateSidebarState(true); // Começa expandida, o que esconderá o sidebarToggleBtn
+    updateIframeBackButtonVisibility();
 
   } else {
     console.warn('Elementos essenciais da sidebar (toggle, container, iframe ou botão voltar) não encontrados.');
   }
 });
-
