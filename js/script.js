@@ -168,3 +168,4 @@ window.addEventListener('load', () => {
     console.warn('Elementos essenciais da sidebar (toggle, container, iframe ou botão voltar) não encontrados.');
   }
 });
+
