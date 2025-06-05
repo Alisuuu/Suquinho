@@ -17,20 +17,19 @@
     --danger-red: #E53E3E;
     --danger-red-hover: #C53030;
     --success-green: #48BB78;
-    --header-height-mobile: 5rem; /* Altura do header no mobile */
-    /* Variáveis para gradientes e sombras expressivas - CORES MAIS SUTIS E ESCURAS */
-    --expressive-gradient-light: linear-gradient(135deg, rgba(40, 20, 80, 0.3), rgba(80, 0, 120, 0.2)); /* Mais escuro e menos saturado */
-    --expressive-gradient-dark: linear-gradient(160deg, rgba(15, 0, 30, 0.92), rgba(25, 0, 40, 0.2)); /* Mais opaco e escuro */
-    --expressive-shadow: 0 8px 30px rgba(0, 0, 0, 0.2), 0 2px 10px rgba(0, 0, 0, 0.2); /* Sombras mais escuras */
-    --subtle-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 10px rgba(0, 0, 0, 0.2); /* Sombras sutis e escuras */
+    --header-height-mobile: 5rem;
+    --expressive-gradient-light: linear-gradient(135deg, rgba(40, 20, 80, 0.3), rgba(80, 0, 120, 0.2));
+    --expressive-gradient-dark: linear-gradient(160deg, rgba(15, 0, 30, 0.92), rgba(25, 0, 40, 0.2));
+    --expressive-shadow: 0 8px 30px rgba(0, 0, 0, 0.2), 0 2px 10px rgba(0, 0, 0, 0.2);
+    --subtle-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 body {
     margin: 0;
-    padding-bottom: 80px; /* Aumentado para dar espaço ao rodapé e um pouco mais */
-    font-family: 'Inter', sans-serif; /* Changed to Inter for modern look */
-    background-color: var(--amoled-black); /* Using variable */
-    color: var(--text-primary); /* Using variable */
+    padding-bottom: 80px;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--amoled-black);
+    color: var(--text-primary);
 }
 
 html, body {
@@ -49,7 +48,7 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: var(--expressive-gradient-dark); /* Mantendo a imagem de fundo que adicionamos */
+    background-image: var(--expressive-gradient-dark);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -110,7 +109,6 @@ body::before {
 .modal-open .back-button-icon-wrapper {
     background-color: transparent; 
 }
-
 
 /* Estilos para o título no topo */
 .titulo-container-top {
@@ -199,30 +197,29 @@ body::before {
     width: 100%;
     height: 110vh;
     overflow: auto;
-    background-color: rgba(0,0,0,0.0); /* Overlay do modal totalmente transparente */
+    background-color: rgba(0,0,0,0.0);
 }
 
-/* Torna a overlay visível e centraliza o conteúdo quando a classe 'is-visible' é adicionada */
 .modal.is-visible {
     display: flex; 
     justify-content: center; 
-    align-items: center; 
+    align-items: center;
 }
-
 
 /* Estilo para o conteúdo interno do modal */
 .modal-conteudo {
     background: linear-gradient(160deg, rgba(10, 0, 20, 0.2), rgba(20, 0, 30, 0.95)); 
-    /* MODIFICAÇÃO ABAIXO: Reduzido o valor do blur */
     backdrop-filter: blur(15px) saturate(0.8); 
     -webkit-backdrop-filter: blur(15px) saturate(0.8);
     padding: 25px; 
     border: 1px solid rgba(255, 255, 255, 0.08); 
-    width: 390px; 
+    width: 90%;
+    max-width: 390px;
     border-radius: 1.5rem; 
     color: var(--text-primary); 
     max-height: calc(100vh - 80px); 
     overflow: hidden; 
+    overflow-x: hidden; /* Adicionado para prevenir rolagem horizontal */
     padding-bottom: 90px; 
     position: relative; 
     z-index: 101; 
@@ -230,7 +227,6 @@ body::before {
                 0 0 50px rgba(0, 0, 0, 0.7); 
     transform: translateY(-50px);
 }
-
 
 .modal-texto {
     overflow-y: auto; 
@@ -283,7 +279,8 @@ body::before {
     bottom: 10px; 
     left: 50%;
     transform: translateX(-50%); 
-    width: calc(100% - 50px); 
+    width: 90%;
+    max-width: calc(100% - 50px);
     height: 50px; 
     background: linear-gradient(45deg, rgba(40, 20, 80, 0.2), rgba(80, 0, 120, 0.2)); 
     color: var(--text-primary); 
@@ -301,6 +298,9 @@ body::before {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4),
                 0 0 15px rgba(0, 0, 0, 0.3); 
     transition: all 0.3s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .modal-open .sortear-novamente-btn {
@@ -309,10 +309,9 @@ body::before {
      justify-content: center; 
 }
 
-
 .sortear-novamente-btn:hover {
     background: linear-gradient(45deg, rgba(40, 20, 80, 0.4), rgba(80, 0, 120, 0.4)); 
-    transform: translateY(-3px) scale(1.02); 
+    transform: translateY(-3px) scale(1.02) translateX(-50%); 
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5),
                 0 0 25px rgba(0, 0, 0, 0.4); 
 }
@@ -421,4 +420,3 @@ body::before {
 .modal-open .assinatura {
     display: none; 
 }
-
