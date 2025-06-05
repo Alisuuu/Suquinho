@@ -184,7 +184,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     transition: color 0.2s ease, transform 0.2s ease !important; 
     position: absolute !important; 
     top: 15px !important; /* Posição ajustada */
-    right: 20px !important; /* Posição ajustada */
+    right: 30px !important; /* Posição ajustada */
     z-index: 100; 
     width: 35px; 
     height: 35px; 
@@ -192,6 +192,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     text-align: center;
     border-radius: 50%; /* Botão circular */
     background-color: rgba(255,255,255,0.05); /* Fundo sutil */
+    
 }
 .swal2-close:hover { 
     color: var(--purple-light) !important; 
@@ -367,7 +368,7 @@ header h1 .fa-film { color: var(--purple-accent); margin-right: 0.5rem; }
 .header-controls { display: flex; align-items: center; gap: 0.75rem; }
 
 /* Botão de Cópia Externo */
-#externalCopyButtonContainer { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 1070; }
+#externalCopyButtonContainer { position: fixed; bottom: 1.5rem; right: 10rem; z-index: 1070; top: 90%; }
 #externalCopyLinkButton { 
     /* Fundo com gradiente sutil */
     background: linear-gradient(45deg, rgba(89, 59, 162, 0.6), rgba(162, 0, 255, 0.6)); 
