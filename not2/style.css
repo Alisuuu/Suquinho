@@ -19,9 +19,9 @@
     --success-green: #48BB78;
     --header-height-mobile: 5rem; /* Altura do header no mobile */
     /* Variáveis para gradientes e sombras expressivas - CORES MAIS SUTIS E ESCURAS */
-    --expressive-gradient-light: linear-gradient(135deg, rgba(40, 20, 80, 0.3), rgba(80, 0, 120, 0.3)); /* Mais escuro e menos saturado */
-    --expressive-gradient-dark: linear-gradient(160deg, rgba(15, 0, 30, 0.92), rgba(25, 0, 40, 0.92)); /* Mais opaco e escuro */
-    --expressive-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 2px 10px rgba(0, 0, 0, 0.6); /* Sombras mais escuras */
+    --expressive-gradient-light: linear-gradient(135deg, rgba(40, 20, 80, 0.3), rgba(80, 0, 120, 0.2)); /* Mais escuro e menos saturado */
+    --expressive-gradient-dark: linear-gradient(160deg, rgba(15, 0, 30, 0.92), rgba(25, 0, 40, 0.2)); /* Mais opaco e escuro */
+    --expressive-shadow: 0 8px 30px rgba(0, 0, 0, 0.2), 0 2px 10px rgba(0, 0, 0, 0.2); /* Sombras mais escuras */
     --subtle-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 10px rgba(0, 0, 0, 0.2); /* Sombras sutis e escuras */
 }
 
@@ -49,14 +49,14 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
+    background-image: var(--expressive-gradient-dark); /* Mantendo a imagem de fundo que adicionamos */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
-    /* Intensificado o desfoque e ajustado a cor */
-    filter: brightness(0.1) blur(12px); /* Blur mais forte e fundo mais escuro */
+    filter: brightness(0.2); 
     z-index: -1;
-    transition: background-image 0.5s ease-in-out, transform 0.5s ease-in-out, filter 0.5s ease-in-out; /* Added filter transition */
+    transition: background-image 0.5s ease-in-out, transform 0.5s ease-in-out, filter 0.5s ease-in-out; 
     transform: scale(1.2);
 }
 
@@ -66,41 +66,39 @@ body::before {
     top: 20px;
     left: 20px;
     z-index: 9999;
-    display: block; /* Visível por padrão, mas será oculto por JS se não houver histórico E por CSS se o modal abrir */
+    display: block; 
 }
 
 .modal-open .back-button-container {
-    display: none; /* Oculto quando o modal está aberto (body tem a classe modal-open) */
+    display: none; 
 }
 
 .back-button-icon-wrapper {
     width: 50px;
     height: 50px;
-    /* Fundo com gradiente sutil e desfoque mais escuro */
-    background: linear-gradient(45deg, rgba(10, 0, 20, 0.8), rgba(20, 0, 30, 0.8)); /* Fundo mais opaco e escuro */
-    backdrop-filter: blur(25px) saturate(1.0); /* Blur mais intenso e menos saturação */
+    background: linear-gradient(45deg, rgba(10, 0, 20, 0.8), rgba(20, 0, 30, 0.8)); 
+    backdrop-filter: blur(25px) saturate(1.0); 
     -webkit-backdrop-filter: blur(25px) saturate(1.0);
-    border-radius: 50%; /* Deixa redondo */
+    border-radius: 50%; 
     display: flex;
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    /* Sombra expressiva, mais escura */
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6),
-                0 0 25px rgba(0, 0, 0, 0.5); /* Sombra sem brilho colorido */
-    border: 1px solid rgba(255, 255, 255, 0.1); /* Borda mais sutil */
+                0 0 25px rgba(0, 0, 0, 0.5); 
+    border: 1px solid rgba(255, 255, 255, 0.1); 
     transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .back-button-icon-wrapper i {
-    font-size: 24px; /* Icon size */
+    font-size: 24px; 
     color: var(--text-primary);
 }
 
 .back-button-icon-wrapper:hover {
-    background: linear-gradient(45deg, rgba(10, 0, 20, 0.9), rgba(20, 0, 30, 0.9)); /* Fundo mais opaco no hover */
+    background: linear-gradient(45deg, rgba(10, 0, 20, 0.9), rgba(20, 0, 30, 0.9)); 
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7),
-                0 0 35px rgba(0, 0, 0, 0.6); /* Sombra mais intensa no hover */
+                0 0 35px rgba(0, 0, 0, 0.6); 
     transform: scale(1.05);
 }
 
@@ -110,20 +108,20 @@ body::before {
 }
 
 .modal-open .back-button-icon-wrapper {
-    background-color: transparent; /* Fundo transparente quando o modal está aberto */
+    background-color: transparent; 
 }
 
 
 /* Estilos para o título no topo */
 .titulo-container-top {
-    position: fixed; /* Fixa o elemento no viewport */
+    position: fixed; 
     top: 10px;
-    left: 50%; /* Centraliza horizontalmente */
-    transform: translateX(-50%); /* Ajusta para o centro exato */
-    z-index: 10; /* Um z-index alto para ficar acima da maioria dos elementos */
+    left: 50%; 
+    transform: translateX(-50%); 
+    z-index: 10; 
     animation: pulsar 1.5s infinite ease-in-out;
     text-align: center;
-    z-index: 999; /* Pode ser ajustado se houver conflito com outros z-index */
+    z-index: 999; 
 }
 
 @keyframes pulsar {
@@ -143,7 +141,6 @@ body::before {
     height: auto;
     border-radius: 8px;
     z-index: 999;
-    /* Removido brilho colorido, substituído por sombra mais escura e sutil */
     filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.5));
 }
 
@@ -153,15 +150,13 @@ body::before {
     padding: 35px 35px;
     font-size: 18px;
     cursor: pointer;
-    border-radius: 100px; /* Mantém o formato redondo */
+    border-radius: 100px; 
     border: none;
-    /* Fundo com gradiente mais sutil e escuro */
-    background: linear-gradient(135deg, rgba(40, 20, 80, 0.2), rgba(80, 0, 120, 0.2)); /* Menos opaco e mais escuro */
-    color: var(--text-primary); /* Texto primário */
+    background: linear-gradient(135deg, rgba(40, 20, 80, 0.2), rgba(80, 0, 120, 0.2)); 
+    color: var(--text-primary); 
     display: flex;
     align-items: center;
     gap: 10px;
-    /* Sombra mais sutil e escura */
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4),
                 0 0 15px rgba(0, 0, 0, 0.2);
     transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s cubic-bezier(0.23, 1, 0.32, 1);
@@ -170,9 +165,7 @@ body::before {
 }
 
 .opcao-btn:hover {
-    /* Gradiente ligeiramente mais opaco no hover */
-    background: linear-gradient(135deg, rgba(40, 20, 80, 0.4), rgba(80, 0, 120, 0.4)); /* Mais opaco no hover */
-    /* Sombra mais pronunciada no hover, mas ainda sutil e escura */
+    background: linear-gradient(135deg, rgba(40, 20, 80, 0.4), rgba(80, 0, 120, 0.4)); 
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5),
                 0 0 25px rgba(0, 0, 0, 0.4);
     transform: scale(1.05);
@@ -185,10 +178,10 @@ body::before {
 .sorteio-container {
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centraliza os botões horizontalmente */
-    justify-content: center; /* Centraliza os botões verticalmente */
-    height: calc(100vh - 70px); /* Ajusta a altura para não sobrepor o título */
-    padding-top: 60px; /* Espaço para o título fixo */
+    align-items: center; 
+    justify-content: center; 
+    height: calc(100vh - 70px); 
+    padding-top: 60px; 
 }
 
 #opcoesSorteio {
@@ -198,88 +191,80 @@ body::before {
 
 /* Estilos básicos para o modal overlay */
 .modal {
-    display: none; /* Oculto por padrão */
+    display: none; 
     position: fixed;
-    z-index: 100; /* Garante que o modal fique acima de outros elementos */
+    z-index: 100; 
     left: 0;
     top: 0;
     width: 100%;
     height: 110vh;
     overflow: auto;
-    /* Fundo da overlay com blur intenso e mais escuro */
-    background-color: rgba(0,0,0,0.85); /* Fundo mais escuro */
-    backdrop-filter: blur(40px) saturate(0.8); /* Blur mais forte e desaturado */
-    -webkit-backdrop-filter: blur(40px) saturate(0.8);
+    background-color: rgba(0,0,0,0.0); /* Overlay do modal totalmente transparente */
 }
 
 /* Torna a overlay visível e centraliza o conteúdo quando a classe 'is-visible' é adicionada */
 .modal.is-visible {
-    display: flex; /* Exibe a overlay como flexbox */
-    justify-content: center; /* Centraliza o conteúdo interno horizontalmente */
-    /* Modificado: Mover o modal mais para cima usando transform */
-    align-items: center; /* Mantém o alinhamento no centro */
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
 }
 
 
-/* Estilo para o conteúdo interno do modal (agora centralizado pelo flexbox do .modal) */
+/* Estilo para o conteúdo interno do modal */
 .modal-conteudo {
-    /* Fundo com gradiente sutil e desfoque mais escuro */
-    background: linear-gradient(160deg, rgba(10, 0, 20, 0.95), rgba(20, 0, 30, 0.95)); /* Fundo mais opaco e escuro */
-    backdrop-filter: blur(30px) saturate(0.8); /* Blur do conteúdo do modal mais intenso e desaturado */
-    -webkit-backdrop-filter: blur(30px) saturate(0.8);
-    padding: 25px; /* Aumentado o padding */
-    border: 1px solid rgba(255, 255, 255, 0.08); /* Borda mais sutil */
-    width: 390px; /* Ajusta a largura do conteúdo do modal */
-    border-radius: 1.5rem; /* Mais arredondado */
-    color: var(--text-primary); /* Cor do texto primária */
-    max-height: calc(100vh - 80px); /* Altura máxima, descontando margem do topo/baixo e espaço extra */
-    overflow: hidden; /* Controla overflow do conteúdo */
-    padding-bottom: 90px; /* Mais espaço no final para o botão "Sortear Novamente" */
-    position: relative; /* Volta para o fluxo normal dentro do flex container pai (.modal) */
-    z-index: 101; /* Garante que o conteúdo fique acima da overlay */
-    /* Sombra expressiva, mais escura */
+    background: linear-gradient(160deg, rgba(10, 0, 20, 0.2), rgba(20, 0, 30, 0.95)); 
+    /* MODIFICAÇÃO ABAIXO: Reduzido o valor do blur */
+    backdrop-filter: blur(15px) saturate(0.8); 
+    -webkit-backdrop-filter: blur(15px) saturate(0.8);
+    padding: 25px; 
+    border: 1px solid rgba(255, 255, 255, 0.08); 
+    width: 390px; 
+    border-radius: 1.5rem; 
+    color: var(--text-primary); 
+    max-height: calc(100vh - 80px); 
+    overflow: hidden; 
+    padding-bottom: 90px; 
+    position: relative; 
+    z-index: 101; 
     box-shadow: 0 8px 30px -5px rgba(0,0,0,0.9),
-                0 0 50px rgba(0, 0, 0, 0.7); /* Sombra sem brilho colorido */
-    /* Adicionado: Mover o modal para cima */
+                0 0 50px rgba(0, 0, 0, 0.7); 
     transform: translateY(-50px);
 }
 
 
 .modal-texto {
-    overflow-y: auto; /* Adiciona scroll apenas ao texto se necessário */
-    max-height: calc(100vh - 180px); /* Altura máxima ajustada para o conteúdo scrollável (considerando botão e padding) */
-    padding-right: 10px; /* Espaço para scrollbar */
-    margin-bottom: 15px; /* Espaço antes do conteúdo abaixo do texto */
-    color: var(--text-primary); /* Usando variável */
+    overflow-y: auto; 
+    max-height: calc(100vh - 180px); 
+    padding-right: 10px; 
+    margin-bottom: 15px; 
+    color: var(--text-primary); 
     -webkit-tap-highlight-color: transparent;
     user-select: none;
-    line-height: 1.6; /* Melhorar legibilidade */
-    font-size: 0.95em; /* Aumentar um pouco a fonte */
+    line-height: 1.6; 
+    font-size: 0.95em; 
 }
 
-/* Esconde a barra de rolagem em navegadores WebKit (Chrome, Safari, Edge) */
 .modal-texto::-webkit-scrollbar {
     display: none;
 }
 
-/* Esconde a barra de rolagem no Firefox */
 .modal-texto {
-    scrollbar-width: none; /* "auto" ou "thin" para mostrar, "none" para esconder */
+    scrollbar-width: none; 
 }
 
 .fechar-modal {
-    color: var(--text-secondary); /* Cor secundária para o botão fechar */
+    color: var(--text-secondary); 
     position: absolute;
-    top: 15px; /* Ajustado */
-    right: 20px; /* Ajustado */
-    font-size: 32px; /* Maior */
+    top: 15px; 
+    right: 20px; 
+    font-size: 32px; 
     font-weight: bold;
     cursor: pointer;
-    z-index: 102; /* Garante que o botão fechar esteja acima do conteúdo do modal */
+    z-index: 102; 
     -webkit-tap-highlight-color: transparent;
     user-select: none;
-    background-color: rgba(255,255,255,0.03); /* Fundo ainda mais sutil */
-    border-radius: 50%; /* Circular */
+    background-color: rgba(255,255,255,0.03); 
+    border-radius: 50%; 
     width: 40px; height: 40px;
     display: flex; justify-content: center; align-items: center;
     transition: all 0.2s ease;
@@ -287,55 +272,49 @@ body::before {
 
 .fechar-modal:hover,
 .fechar-modal:focus {
-    color: rgba(255,255,255,0.6); /* Cor mais sutil no hover */
+    color: rgba(255,255,255,0.6); 
     text-decoration: none;
     transform: scale(1.1);
-    background-color: rgba(255,255,255,0.06); /* Fundo mais visível no hover */
+    background-color: rgba(255,255,255,0.06); 
 }
 
 .sortear-novamente-btn {
-    /* Restaurada a posição para ser relativa ao modal-conteudo */
     position: absolute;
-    bottom: 10px; /* Posição ajustada dentro do modal-conteudo para subir */
+    bottom: 10px; 
     left: 50%;
-    transform: translateX(-50%); /* Centraliza horizontalmente */
-    width: calc(100% - 50px); /* Largura ajustada para caber no padding (25px de cada lado) */
-    height: 50px; /* Um pouco mais alto */
-
-    /* Fundo com gradiente mais sutil e escuro */
-    background: linear-gradient(45deg, rgba(40, 20, 80, 0.2), rgba(80, 0, 120, 0.2)); /* Cores diminuídas e mais escuras */
-    color: var(--text-primary); /* Texto primário */
+    transform: translateX(-50%); 
+    width: calc(100% - 50px); 
+    height: 50px; 
+    background: linear-gradient(45deg, rgba(40, 20, 80, 0.2), rgba(80, 0, 120, 0.2)); 
+    color: var(--text-primary); 
     padding: 10px 20px;
     border: none;
-    border-radius: 0.8rem; /* Mais arredondado */
+    border-radius: 0.8rem; 
     cursor: pointer;
     font-size: 16px;
-    z-index: 101; /* Garante que o botão esteja acima do conteúdo do modal */
+    z-index: 101; 
     -webkit-tap-highlight-color: transparent;
     user-select: none;
-    text-align: center; /* Centraliza o texto dentro do botão */
-    line-height: normal; /* Restaura a linha normal para centralizar o texto */
-    display: none; /* Oculta o botão por padrão */
-    /* Sombra mais sutil e escura */
+    text-align: center; 
+    line-height: normal; 
+    display: none; 
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4),
-                0 0 15px rgba(0, 0, 0, 0.3); /* Sombra mais discreta */
+                0 0 15px rgba(0, 0, 0, 0.3); 
     transition: all 0.3s ease;
 }
 
 .modal-open .sortear-novamente-btn {
-     display: flex; /* Exibe o botão quando o modal está aberto (body tem a classe modal-open) */
-     align-items: center; /* Centraliza verticalmente o texto */
-     justify-content: center; /* Centraliza horizontalmente o texto */
+     display: flex; 
+     align-items: center; 
+     justify-content: center; 
 }
 
 
 .sortear-novamente-btn:hover {
-    /* Gradiente ligeiramente mais opaco no hover, mas ainda sutil e escuro */
-    background: linear-gradient(45deg, rgba(40, 20, 80, 0.4), rgba(80, 0, 120, 0.4)); /* Cores diminuídas no hover */
-    transform: translateY(-3px) scale(1.02); /* Efeito de elevação sutil */
-    /* Sombra mais pronunciada no hover, mas ainda sutil e escura */
+    background: linear-gradient(45deg, rgba(40, 20, 80, 0.4), rgba(80, 0, 120, 0.4)); 
+    transform: translateY(-3px) scale(1.02); 
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5),
-                0 0 25px rgba(0, 0, 0, 0.4); /* Sombra mais discreta no hover */
+                0 0 25px rgba(0, 0, 0, 0.4); 
 }
 
 .elenco-container-modal {
@@ -343,7 +322,7 @@ body::before {
     overflow-x: auto;
     gap: 10px;
     padding: 10px 0;
-    margin-bottom: 15px; /* Espaço para o trailer */
+    margin-bottom: 15px; 
 }
 
 .elenco-img-modal {
@@ -352,54 +331,53 @@ body::before {
     border-radius: 50%;
     object-fit: cover;
     margin: 5px auto;
-    border: 2px solid rgba(80, 0, 120, 0.6); /* Borda roxa de destaque mais escura */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Sombra sutil e escura */
+    border: 2px solid rgba(80, 0, 120, 0.6); 
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); 
 }
 
 .elenco-item-modal {
     text-align: center;
     min-width: 70px;
-    font-size: 0.85em; /* Aumentado um pouco */
+    font-size: 0.85em; 
     color: var(--text-secondary);
 }
 
 .poster-modal {
     width: 150px;
-    border-radius: 1.2rem; /* Mais arredondado */
+    border-radius: 1.2rem; 
     margin-bottom: 10px;
     display: block;
     margin-left: auto;
     margin-right: auto;
-    /* Sombra mais pronunciada e escura, sem brilho colorido */
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6),
                 0 0 30px rgba(0, 0, 0, 0.5);
 }
 
 .titulo-modal {
-    font-size: 1.5em; /* Um pouco maior */
+    font-size: 1.5em; 
     font-weight: bold;
     text-align: center;
-    margin-bottom: 8px; /* Ajuste na margem */
-    color: #b0a0d0; /* Cor roxa clara desaturada para sutileza */
+    margin-bottom: 8px; 
+    color: #b0a0d0; 
 }
 
 .tagline-modal {
     font-style: italic;
     text-align: center;
-    margin-bottom: 12px; /* Ajuste na margem */
+    margin-bottom: 12px; 
     color: var(--text-secondary);
     font-size: 0.95em;
 }
 
 .sinopse-modal {
-    margin-bottom: 18px; /* Mais espaço */
-    text-align: justify; /* Justificado para melhor leitura */
+    margin-bottom: 18px; 
+    text-align: justify; 
     color: var(--text-primary);
     font-size: 0.98em;
 }
 
 .info-modal {
-    margin-bottom: 10px; /* Ajuste na margem */
+    margin-bottom: 10px; 
     text-align: center;
     color: var(--text-secondary);
     font-size: 0.9em;
@@ -408,18 +386,17 @@ body::before {
 .trailer-container-modal {
     width: 100%;
     margin-top: 15px;
-    border-radius: 1rem; /* Mais arredondado */
-    overflow: hidden; /* Para garantir que as bordas arredondadas do iframe funcionem */
-    /* Sombra mais pronunciada e escura, sem brilho colorido */
+    border-radius: 1rem; 
+    overflow: hidden; 
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6),
                 0 0 30px rgba(0, 0, 0, 0.5);
 }
 
 .trailer-iframe-modal {
     width: 100%;
-    height: 300px; /* Altura padrão do trailer */
+    height: 300px; 
     border: none;
-    display: block; /* Garante que o iframe ocupe sua própria linha */
+    display: block; 
 }
 
 /* Estilos para a assinatura */
@@ -430,18 +407,18 @@ body::before {
     width: 100%;
     text-align: center;
     padding: 10px 0;
-    background-color: rgba(0, 0, 0, 0.8); /* Fundo mais escuro */
-    backdrop-filter: blur(12px) saturate(1.0); /* Adicionado desfoque mais intenso e desaturado */
+    background-color: rgba(0, 0, 0, 0.2); 
+    backdrop-filter: blur(12px) saturate(1.0); 
     -webkit-backdrop-filter: blur(12px) saturate(1.0);
-    color: #ccc; /* Cor suave para o texto */
+    color: #ccc; 
     font-size: 0.9em;
-    z-index: 999; /* Garante que fique acima de outros elementos, exceto o modal e seus componentes fixos */
+    z-index: 999; 
     -webkit-tap-highlight-color: transparent;
     user-select: none;
-    box-shadow: 0 -4px 10px rgba(0,0,0,0.6); /* Sombra para cima e mais escura */
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.6); 
 }
 
 .modal-open .assinatura {
-    display: none; /* Oculta a assinatura quando o modal está aberto (body tem a classe modal-open) */
+    display: none; 
 }
 
