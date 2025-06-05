@@ -2,20 +2,61 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Vídeo 30 vezes e Atualizar Links</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <style>
+    /* General Reset and Body Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* CSS Variables for consistent theming */
+    :root {
+        --amoled-black: #000000;
+        --dark-purple-base: rgba(10, 0, 20, 1);
+        --darker-purple-end: rgba(20, 0, 30, 1);
+        --text-primary: #F3F4F6;
+        --text-secondary: #9CA3AF;
+        --card-bg-opacity: 0.7; /* Opacity for card-like backgrounds */
+        --border-subtle: rgba(255, 255, 255, 0.08); /* Very subtle white border */
+        --shadow-dark: rgba(0, 0, 0, 0.6); /* General dark shadow */
+        --shadow-deeper: rgba(0, 0, 0, 0.8); /* Deeper dark shadow */
+        --blur-strong: 30px; /* Strong blur value */
+        --blur-medium: 20px; /* Medium blur value */
+        --blur-light: 10px; /* Light blur value */
+    }
+
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Inter', sans-serif; /* Modern font */
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
       margin: 0;
-      background-color: #000000;
-      color: white;
-      overflow: hidden;
+      background-color: var(--amoled-black);
+      color: var(--text-primary);
+      overflow: hidden; /* Prevent scrolling */
+      position: relative; /* Needed for the pseudo-element background */
+    }
+
+    /* Pseudo-element for a dark, blurred background */
+    body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('https://placehold.co/1920x1080/0A0014/F0F0F0?text=Dark+Background'); /* Placeholder - Replace with actual dark, abstract image if desired */
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        filter: brightness(0.1) blur(15px); /* Stronger blur and very dark */
+        z-index: -2; /* Behind everything */
+        transition: filter 0.5s ease-in-out;
     }
 
     .container {
@@ -24,17 +65,25 @@
       align-items: center;
       width: 90%;
       max-width: 800px;
-      background-color: #000000;
-      border-radius: 50px;
-      padding: 20px;
+      /* Background with subtle dark gradient and strong blur */
+      background: linear-gradient(160deg, var(--dark-purple-base), var(--darker-purple-end));
+      backdrop-filter: blur(var(--blur-medium)) saturate(1.2); /* Medium blur, slight saturation */
+      -webkit-backdrop-filter: blur(var(--blur-medium)) saturate(1.2);
+      border-radius: 1.5rem; /* More rounded corners */
+      padding: 25px; /* Increased padding */
       overflow: hidden;
+      /* Deeper shadow */
+      box-shadow: 0 10px 40px var(--shadow-deeper);
+      border: 1px solid var(--border-subtle); /* Subtle border */
+      position: relative;
+      z-index: 1; /* Above the body pseudo-element */
     }
 
     .top-section {
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 25px; /* Adjusted margin */
       width: 100%;
     }
 
@@ -42,27 +91,35 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 20px;
-      margin-bottom: 20px;
-        -webkit-tap-highlight-color: transparent;
+      gap: 25px; /* Adjusted gap */
+      margin-bottom: 25px; /* Adjusted margin */
+      -webkit-tap-highlight-color: transparent;
     }
 
     .icons a.main-icon {
       text-decoration: none;
-      color: inherit;
+      color: var(--text-primary);
       display: flex;
       justify-content: center;
       align-items: center;
       width: 120px;
       height: 120px;
       border-radius: 50%;
-      background-color: #593BA2;
-      transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-      border: none;
+      /* Subtle gradient background with transparency */
+      background: linear-gradient(135deg, rgba(40, 20, 80, 0.4), rgba(80, 0, 120, 0.4));
+      /* Smoother transitions */
+      transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1),
+                  background 0.3s ease,
+                  box-shadow 0.3s ease,
+                  border-color 0.3s ease;
+      /* Subtle dark shadow */
+      box-shadow: 0 4px 15px var(--shadow-dark), 0 0 10px rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border-subtle); /* Subtle border */
       opacity: 0;
       transform: translateY(20px);
-      animation: fadeInUp 2s ease forwards;
+      animation: fadeInUp 0.8s ease forwards; /* Adjusted animation duration */
+      position: relative; /* For the ::before pseudo-element */
+      overflow: hidden; /* To contain ::before */
     }
 
     @keyframes fadeInUp {
@@ -76,61 +133,112 @@
       }
     }
 
+    .icons a.main-icon::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 300%;
+        height: 300%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.05), transparent); /* Very subtle glow */
+        transform: translate(-50%, -50%) scale(0);
+        transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        opacity: 0;
+        z-index: 0; /* Behind the icon */
+    }
+
+    .icons a.main-icon:hover::before {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+
     .icons a.main-icon:hover {
       transform: scale(1.1);
-      background-color: #3d3d3d;
-      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+      /* Slightly brighter gradient on hover */
+      background: linear-gradient(135deg, rgba(40, 20, 80, 0.6), rgba(80, 0, 120, 0.6));
+      /* More pronounced but still dark shadow */
+      box-shadow: 0 8px 25px var(--shadow-dark), 0 3px 10px rgba(0, 0, 0, 0.4);
+      border-color: rgba(255, 255, 255, 0.15); /* Slightly more visible border */
     }
 
     .icons a.main-icon:active {
       transform: scale(0.95);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      /* Subtle active shadow */
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
     }
 
     .icons i {
       font-size: 50px;
+      position: relative; /* Above ::before */
+      z-index: 1;
+      filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.3)); /* Subtle dark shadow for icon */
     }
 
     .refresh-button {
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: #593BA2;
-      color: white;
+      /* Subtle gradient background with transparency */
+      background: linear-gradient(135deg, rgba(40, 20, 80, 0.4), rgba(80, 0, 120, 0.4));
+      color: var(--text-primary);
       border: none;
       padding: 15px 25px;
-      border-radius: 100px;
+      border-radius: 2rem; /* More rounded */
       cursor: pointer;
-      font-size: 1em;
-      transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-        -webkit-tap-highlight-color: transparent;
-user-select: none;
+      font-size: 1.05em; /* Slightly larger font */
+      transition: background 0.3s ease, transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s ease;
+      /* Subtle dark shadow */
+      box-shadow: 0 4px 15px var(--shadow-dark), 0 0 10px rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border-subtle); /* Subtle border */
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
 
     .refresh-button i {
       margin-right: 10px;
       font-size: 1.2em;
+      filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.3)); /* Subtle dark shadow for icon */
     }
 
     .refresh-button:hover {
-      background-color: #080015;
+      /* Slightly brighter gradient on hover */
+      background: linear-gradient(135deg, rgba(40, 20, 80, 0.6), rgba(80, 0, 120, 0.6));
       transform: scale(1.05);
-      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+      /* More pronounced but still dark shadow */
+      box-shadow: 0 6px 20px var(--shadow-dark), 0 0 15px rgba(0, 0, 0, 0.4);
     }
 
     .refresh-button:active {
       transform: scale(0.95);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
     }
 
     .link-list-container {
       width: 100%;
       max-height: 300px;
       overflow-y: auto;
-      border-radius: 20px;
-      background-color: rgba(0, 0, 0, 0.3);
-      padding: 10px;
+      /* Background with subtle dark gradient and blur */
+      background: linear-gradient(160deg, rgba(10, 0, 20, 0.6), rgba(20, 0, 30, 0.6));
+      backdrop-filter: blur(var(--blur-light)) saturate(1.2); /* Light blur */
+      -webkit-backdrop-filter: blur(var(--blur-light)) saturate(1.2);
+      border-radius: 1.2rem; /* More rounded */
+      padding: 15px; /* Increased padding */
+      box-shadow: 0 4px 15px var(--shadow-dark); /* Subtle shadow */
+      border: 1px solid var(--border-subtle); /* Subtle border */
+    }
+
+    /* Custom scrollbar for Webkit browsers */
+    .link-list-container::-webkit-scrollbar {
+        width: 8px;
+    }
+    .link-list-container::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.2); /* Darker track */
+        border-radius: 10px;
+    }
+    .link-list-container::-webkit-scrollbar-thumb {
+        background-color: rgba(89, 59, 162, 0.6); /* Subtle purple thumb */
+        border-radius: 10px;
+        border: 2px solid rgba(0, 0, 0, 0.1); /* Border to make it stand out subtly */
     }
 
     ul#link-list {
@@ -140,46 +248,112 @@ user-select: none;
     }
 
     ul#link-list li {
-      margin-bottom: 10px;
+      margin-bottom: 12px; /* Adjusted margin */
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background-color: rgba(12,12,12, 0.6);
-      padding: 10px;
-      border-radius: 50px;
+      /* Background with subtle dark gradient and blur */
+      background: linear-gradient(90deg, rgba(12, 12, 12, 0.5), rgba(18, 18, 18, 0.5));
+      backdrop-filter: blur(5px) saturate(1.1); /* Very light blur */
+      -webkit-backdrop-filter: blur(5px) saturate(1.1);
+      padding: 12px; /* Increased padding */
+      border-radius: 1.5rem; /* More rounded */
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4); /* Subtle shadow */
+      border: 1px solid rgba(255, 255, 255, 0.05); /* Very subtle border */
     }
 
     ul#link-list li a {
-      color: white;
+      color: var(--text-primary);
       text-decoration: none;
       flex-grow: 1;
-      margin-right: 10px;
+      margin-right: 15px; /* Adjusted margin */
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
+      font-size: 0.95em; /* Slightly larger font */
     }
 
     ul#link-list li .copy-button {
-      background-color: #593BA2;
-      color: white;
+      /* Subtle gradient background with transparency */
+      background: linear-gradient(135deg, rgba(40, 20, 80, 0.4), rgba(80, 0, 120, 0.4));
+      color: var(--text-primary);
       border: none;
-      padding: 18px 20px;
-      border-radius: 100px;
+      padding: 12px 20px; /* Adjusted padding */
+      border-radius: 2rem; /* More rounded */
       cursor: pointer;
-        -webkit-tap-highlight-color: transparent;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.3s ease, transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s ease;
+      /* Subtle dark shadow */
+      box-shadow: 0 2px 10px var(--shadow-dark);
+      border: 1px solid var(--border-subtle); /* Subtle border */
     }
 
     ul#link-list li .copy-button:hover {
-      background-color: #080015;
+      /* Slightly brighter gradient on hover */
+      background: linear-gradient(135deg, rgba(40, 20, 80, 0.6), rgba(80, 0, 120, 0.6));
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px var(--shadow-dark); /* More pronounced shadow */
     }
 
+    /* Back Button Styling (extracted from inline) */
+    .back-button-link {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 9999;
+        text-decoration: none;
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+    }
+
+    .back-button-icon-wrapper {
+        width: 50px;
+        height: 50px;
+        /* Background with subtle dark gradient and strong blur */
+        background: linear-gradient(45deg, rgba(10, 0, 20, 0.8), rgba(20, 0, 30, 0.8));
+        backdrop-filter: blur(25px) saturate(1.0);
+        -webkit-backdrop-filter: blur(25px) saturate(1.0);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        /* Deeper dark shadow */
+        box-shadow: 0 4px 15px var(--shadow-deeper), 0 0 25px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .back-button-icon-wrapper i {
+        color: var(--text-primary);
+        font-size: 22px;
+        line-height: 1;
+        filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.3)); /* Subtle dark shadow for icon */
+    }
+
+    .back-button-icon-wrapper:hover {
+        background: linear-gradient(45deg, rgba(10, 0, 20, 0.9), rgba(20, 0, 30, 0.9));
+        box-shadow: 0 6px 20px var(--shadow-deeper), 0 0 35px rgba(0, 0, 0, 0.6);
+        transform: scale(1.05);
+    }
+
+    .back-button-icon-wrapper:active {
+        transform: scale(0.95);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+    }
+
+
+    /* Media Queries for Responsiveness */
     @media (max-width: 600px) {
+      .container {
+        padding: 15px; /* Reduced padding */
+      }
       .top-section {
-        margin-bottom: 15px;
+        margin-bottom: 20px; /* Adjusted margin */
       }
       .icons {
-        gap: 15px;
-        margin-bottom: 15px;
+        gap: 20px; /* Adjusted gap */
+        margin-bottom: 20px; /* Adjusted margin */
       }
       .icons a.main-icon {
         width: 100px;
@@ -190,44 +364,44 @@ user-select: none;
       }
       .refresh-button {
         padding: 12px 20px;
-        font-size: 0.9em;
+        font-size: 0.95em; /* Slightly smaller font */
       }
       .refresh-button i {
         font-size: 1em;
-        margin-right: 5px;
+        margin-right: 8px; /* Adjusted margin */
       }
       .link-list-container {
         max-height: 250px;
-        border-radius: 15px;
-        padding: 5px;
+        border-radius: 1rem; /* Adjusted radius */
+        padding: 10px; /* Adjusted padding */
       }
       ul#link-list li {
-        padding: 8px;
-        border-radius: 30px;
+        padding: 10px; /* Adjusted padding */
+        border-radius: 1.2rem; /* Adjusted radius */
+        margin-bottom: 10px; /* Adjusted margin */
       }
       ul#link-list li .copy-button {
-        padding: 12px 15px;
-        border-radius: 60px;
+        padding: 10px 15px; /* Adjusted padding */
+        border-radius: 1.5rem; /* Adjusted radius */
+      }
+      .back-button-icon-wrapper {
+        width: 45px;
+        height: 45px;
+      }
+      .back-button-icon-wrapper i {
+        font-size: 20px;
       }
     }
   </style>
 </head>
 <body>
-  <a href="javascript:history.back()" style="position: fixed; top: 20px; left: 20px; z-index: 9999; text-decoration: none; -webkit-tap-highlight-color: transparent;
-user-select: none;">
-  <div style="
-    width: 50px;
-    height: 50px;
-    background-color: #111;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-  ">
-    <i class="fas fa-arrow-left" style="color: white; font-size: 22px; line-height: 1;"></i>
-  </div>
+  <!-- Back Button (now using classes) -->
+  <a href="javascript:history.back()" class="back-button-link">
+    <div class="back-button-icon-wrapper">
+      <i class="fas fa-arrow-left"></i>
+    </div>
   </a>
+
   <div class="container">
     <div class="top-section">
       <div class="icons">
@@ -274,10 +448,12 @@ user-select: none;">
 
           // Adiciona cada link à lista
           links.forEach(link => {
+            if (link.trim() === '') return; // Skip empty lines
+
             const li = document.createElement('li');
             const a = document.createElement('a');
-            a.href = link;
-            a.textContent = link;
+            a.href = link.trim(); // Trim whitespace
+            a.textContent = link.trim();
             const button = document.createElement('button');
             button.className = 'copy-button';
             button.textContent = 'Copiar';
@@ -287,14 +463,51 @@ user-select: none;">
 
             // Função para copiar o link
             button.addEventListener('click', () => {
-              navigator.clipboard.writeText(link).then(() => {
-                alert('Link copiado para a área de transferência');
-              });
+              // Using document.execCommand('copy') for better iframe compatibility
+              const tempInput = document.createElement('textarea');
+              tempInput.value = link.trim();
+              document.body.appendChild(tempInput);
+              tempInput.select();
+              document.execCommand('copy');
+              document.body.removeChild(tempInput);
+              
+              // Simple message box instead of alert
+              const messageBox = document.createElement('div');
+              messageBox.textContent = 'Link copiado!';
+              messageBox.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 10px 20px;
+                border-radius: 8px;
+                z-index: 10000;
+                opacity: 0;
+                transition: opacity 0.5s ease-in-out;
+              `;
+              document.body.appendChild(messageBox);
+              setTimeout(() => {
+                messageBox.style.opacity = 1;
+              }, 10);
+              setTimeout(() => {
+                messageBox.style.opacity = 0;
+                messageBox.addEventListener('transitionend', () => messageBox.remove());
+              }, 2000); // Hide after 2 seconds
             });
           });
         })
-        .catch(error => console.error('Erro ao carregar os links:', error));
+        .catch(error => {
+            console.error('Erro ao carregar os links:', error);
+            const ul = document.getElementById('link-list');
+            ul.innerHTML = '<li style="justify-content: center; color: var(--text-secondary);">Erro ao carregar links. Verifique o arquivo links.txt</li>';
+        });
     }
+
+    // Load links on page load
+    window.onload = atualizarLinks;
   </script>
 </body>
 </html>
+
