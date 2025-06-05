@@ -4,70 +4,37 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
   <title>Suquinho</title>
+  <link rel="stylesheet" href="Styles/styleA.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="posterBackground">
-    <div id="posterOverlay"></div>
-    <img id="currentPoster" src="" alt="Imagem de fundo do filme" onerror="this.style.opacity=0;" />
-    <div id="titleContainer">
-      <img id="movieLogo" src="" alt="Logo do Filme"> 
-      <p id="movieSynopsis"></p> 
-      <p id="movieGenre"></p> 
-      <p id="movieTitleText"></p> 
-    </div>
-  </div>
-  <img src="nave.png" class="loading-spaceship" id="loadingSpaceship" alt="Carregando..." onerror="this.style.display='none'; console.error('Erro ao carregar nave.png. Verifique o caminho do ficheiro.')">
-    <button id="helpButton" title="Sobre o Suquinho"><i class="fas fa-question-circle"></i></button>
-  </div>
-  <div class="sidebar-buttons">
-    <a href="Hyper/hyper" class="icon-button" title="Hyper">
-      <img src="p.png" alt="Gato" onerror="this.style.display='none'; console.error('Erro ao carregar p.png. Verifique o caminho do ficheiro.')">
+
+  <iframe id="newsFrame" src="inicio.html" title="inicio"></iframe>
+
+  <div class="sidebar-buttons"> 
+    <a href="#" class="icon-button" id="toggleSidebarBtn" title="Esconder ícones"> 
+      <i class="fas fa-times"></i> 
     </a>
-    <a href="Yt/yt" class="icon-button" title="YouTube">
+      <a href="../index" class="icon-button" title="home">
+      <i class="fa-solid fa-house"></i>
+      </a>
+    <a href="../Hyper/hyper" class="icon-button" title="Hyper">
+      <img src="../p.png" alt="Gato" onerror="this.style.display='none'; console.error('Erro ao carregar p.png. Verifique o caminho do ficheiro.')">
+    </a>
+    <a href="../Yt/yt" class="icon-button" title="YouTube">
       <i class="fa-brands fa-youtube"></i>
     </a>
-    <a href="Not/index.html" class="icon-button" title="noticias">
-      <i class="fas fa-newspaper"></i>
-    </a>
-    <a href="not2/index" class="icon-button" title="Not2">
+    <a href="../not2/index" class="icon-button" title="Not2">
       <i class="fa-solid fa-cube"></i>
     </a>
-    <a href="links/links" class="icon-button" title="Links">
+    <a href="../links/links" class="icon-button" title="Links">
       <i class="fa-solid fa-link"></i>
     </a>
-    <a href="Catalogo1/index1" class="icon-button" title="Catálogo">
+   <a href="../Catalogo1/index1" class="icon-button" title="Catálogo">
       <i class="fa-solid fa-film"></i>
     </a>
   </div>
-  <div id="helpModal" class="modal">
-    <div class="modal-content">
-      <span class="close-button" id="closeHelpModal">&times;</span>
-      <h2>Funcionalidades</h2>
 
-      <h3>Catálogo Completo e Streaming Direto</h3>
-      <ul>
-        <li>Navegue por uma extensa biblioteca de filmes e séries.</li>
-        <li>Assista aos seus títulos favoritos diretamente no webapp.</li>
-      </ul>
-
-      <h3>Notícias do Mundo do Entretenimento</h3>
-      <ul>
-        <li>Mantenha-se atualizado com as últimas notícias sobre filmes, séries, premiações e bastidores.</li>
-      </ul>
-
-      <h3>Sorteio de Filmes e Séries</h3>
-      <ul>
-        <li>Receba sugestões de títulos de forma aleatória ou com base em suas preferências para ajudar na escolha do que assistir.</li>
-      </ul>
-
-      <h3>Assistir Juntos (Watch Party)</h3>
-      <ul>
-        <li>Compartilhe a experiência de assistir a filmes e séries com amigos à distância, com reprodução sincronizada e chat em tempo real.</li>
-      </ul>
-    </div>
-  </div>
-  <script src="script.js"></script>
+  <script src="js/script.js"></script>
 </body>
 </html>
