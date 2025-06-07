@@ -19,14 +19,14 @@
     --success-green: #48BB78;
     --header-height-mobile: 5rem; /* Altura do header no mobile */
     /* Variáveis para gradientes e sombras expressivas - CORES MAIS SUTIS E ESCURAS */
-    --expressive-gradient-light: linear-gradient(135deg, rgba(40, 20, 80, 0.3), rgba(80, 0, 120, 0.3)); /* Mais escuro e menos saturado */
-    --expressive-gradient-dark: linear-gradient(160deg, rgba(15, 0, 30, 0.92), rgba(25, 0, 40, 0.92)); /* Mais opaco e escuro */
+    --expressive-gradient-light: linear-gradient(135deg, rgba(40, 20, 80, 0.2), rgba(80, 0, 120, 0.2)); /* Mais transparente */
+    --expressive-gradient-dark: linear-gradient(160deg, rgba(15, 0, 30, 0.85), rgba(25, 0, 40, 0.85)); /* Mais transparente */
     --expressive-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 2px 10px rgba(0, 0, 0, 0.6); /* Sombras mais escuras */
     --subtle-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 10px rgba(0, 0, 0, 0.2); /* Sombras sutis e escuras */
 
     /* NOVAS VARIÁVEIS PARA TONS NEUTROS E ESCUROS NO MODAL */
-    --modal-background-neutral-gradient: linear-gradient(160deg, rgba(10, 10, 10, 0.95), rgba(20, 20, 20, 0.95));
-    --modal-border-neutral: rgba(255, 255, 255, 0.05); /* Borda muito sutil, quase invisível */
+    --modal-background-neutral-gradient: linear-gradient(160deg, rgba(10, 10, 10, 0.8), rgba(20, 20, 20, 0.8)); /* Mais transparente */
+    --modal-border-neutral: rgba(255, 255, 255, 0.08); /* Borda um pouco mais visível */
     --modal-shadow-neutral-glow: 0 0 40px rgba(0, 0, 0, 0.7); /* Brilho escuro e neutro */
 }
 
@@ -65,10 +65,10 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     left: 0;
     width: 100%;
     height: 100%;
-    /* Intensificado o desfoque e ajustado a cor */
-    background-color: rgba(0,0,0,0.4); /* Fundo um pouco mais escuro */
-    backdrop-filter: blur(20px) saturate(1.5); /* Blur mais forte */
-    -webkit-backdrop-filter: blur(20px) saturate(1.5);
+    /* Intensificado o desfoque e ajustado a cor para iOS-like com mais transparência */
+    background-color: rgba(0,0,0,0.3); /* Mais transparente */
+    backdrop-filter: blur(45px) saturate(2.2) brightness(1.2); /* Blur muito mais forte, mais saturação e mais claro */
+    -webkit-backdrop-filter: blur(45px) saturate(2.2) brightness(1.2);
     box-shadow: 0 4px 15px -3px rgba(0,0,0,0.8), /* Sombra mais profunda */
                 0 0 30px rgba(130, 0, 255, 0.5); /* Leve brilho roxo */
     z-index: -1;
@@ -171,14 +171,15 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 .swal2-popup { 
     color: var(--text-primary) !important; 
     border-radius: 1.2rem !important; /* Mais arredondado */
-    /* REMOVIDO LILÁS/ROXO DA BORDA: Agora uma borda muito sutil e escura */
+    /* Agora uma borda mais visível para complementar a transparência */
     border: 1px solid var(--modal-border-neutral) !important; 
     max-width: 90vw !important; 
     width: auto !important; 
-    /* REMOVIDO LILÁS/ROXO DO FUNDO: Agora um gradiente neutro escuro */
+    /* Agora um gradiente neutro escuro com mais transparência */
     background: var(--modal-background-neutral-gradient); 
-    backdrop-filter: blur(25px) saturate(1.8) !important; /* Blur mais forte */
-    -webkit-backdrop-filter: blur(25px) saturate(1.8) !important;
+    /* Blur mais forte e saturação para iOS-like */
+    backdrop-filter: blur(50px) saturate(2.5) !important; /* Blur muito mais forte */
+    -webkit-backdrop-filter: blur(50px) saturate(2.5) !important;
     /* Sombras escuras e neutras */
     box-shadow: 0 6px 20px -3px rgba(0,0,0,0.8), 
                 var(--modal-shadow-neutral-glow) !important; /* Brilho escuro e neutro */
@@ -198,13 +199,13 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     line-height: 35px; 
     text-align: center;
     border-radius: 50%; /* Botão circular */
-    background-color: rgba(255,255,255,0.05); /* Fundo sutil */
+    background-color: rgba(255,255,255,0.1); /* Fundo um pouco mais visível e transparente */
     
 }
 .swal2-close:hover { 
     color: var(--purple-light) !important; 
     transform: scale(1.15) !important; /* Ação de hover mais pronunciada */
-    background-color: rgba(255,255,255,0.1); /* Fundo sutil no hover */
+    background-color: rgba(255,255,255,0.2); /* Fundo sutil no hover */
 }
 .swal-genre-filter-type-selector button, 
 .swal-genre-buttons-panel button, 
@@ -214,8 +215,8 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     font-weight: 600; 
     font-size: 0.95rem; /* Fonte um pouco maior */
     border: 1px solid rgba(255, 255, 255, 0.1); /* Borda mais sutil */
-    /* Fundo sutil com gradiente */
-    background: var(--expressive-gradient-light); 
+    /* Fundo sutil com gradiente, mais transparente */
+    background: linear-gradient(135deg, rgba(40, 20, 80, 0.3), rgba(80, 0, 120, 0.3)); 
     color: var(--text-primary); /* Texto principal */
     transition: all 0.2s ease; 
     margin: 0.3rem; /* Margem ajustada */
@@ -224,7 +225,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 .swal-genre-filter-type-selector button:hover, 
 .swal-genre-buttons-panel button:hover, 
 .swal-filter-actions button:hover {
-    background: linear-gradient(135deg, rgba(89, 59, 162, 0.6), rgba(162, 0, 255, 0.6)); /* Gradiente ligeiramente mais opaco no hover */
+    background: linear-gradient(135deg, rgba(89, 59, 162, 0.7), rgba(162, 0, 255, 0.7)); /* Gradiente ligeiramente mais opaco no hover */
     color: var(--text-primary); /* Mantém a cor do texto */
     border-color: rgba(255, 255, 255, 0.2); /* Borda um pouco mais visível no hover */
     box-shadow: 0 6px 20px rgba(130, 0, 255, 0.3), 0 2px 8px rgba(0,0,0,0.3); /* Sombra um pouco mais forte */
@@ -259,7 +260,10 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     border-color: var(--danger-red-hover) !important; 
     box-shadow: 0 6px 20px rgba(229, 62, 62, 0.5) !important; /* Sombra mais forte no hover */
 }
-.swal-genre-buttons-panel { display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center; max-height: 180px; overflow-y: auto; padding: 0.8rem; border: 1px solid rgba(255,255,255,0.1); border-radius: 0.8rem; margin-top: 1rem; margin-bottom: 1rem; background-color: rgba(0,0,0,0.2); }
+.swal-genre-buttons-panel { 
+    display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center; max-height: 180px; overflow-y: auto; padding: 0.8rem; border: 1px solid rgba(255,255,255,0.1); border-radius: 0.8rem; margin-top: 1rem; margin-bottom: 1rem; 
+    background-color: rgba(0,0,0,0.4); /* Fundo mais transparente */
+}
 .swal-genre-buttons-panel::-webkit-scrollbar { width: 6px; }
 .swal-genre-buttons-panel::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 0.6rem; }
 .swal-genre-buttons-panel::-webkit-scrollbar-thumb { background-color: var(--purple-accent); border-radius: 8px; }
@@ -309,7 +313,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     font-weight: 600; 
     font-size: 0.95rem; /* Fonte um pouco maior */
     border: 1px solid rgba(255, 255, 255, 0.1); /* Borda sutil */
-    background: var(--expressive-gradient-light); /* Gradiente sutil */
+    background: linear-gradient(135deg, rgba(40, 20, 80, 0.3), rgba(80, 0, 120, 0.3)); /* Gradiente sutil, mais transparente */
     color: var(--text-primary); /* Texto principal */
     transition: all 0.2s ease; 
     margin-left: 0.5rem; 
@@ -317,7 +321,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     box-shadow: var(--subtle-shadow); /* Sombra sutil */
 }
 #filterToggleButton:hover { 
-    background: linear-gradient(135deg, rgba(89, 59, 162, 0.6), rgba(162, 0, 255, 0.6)); /* Gradiente ligeiramente mais opaco no hover */
+    background: linear-gradient(135deg, rgba(89, 59, 162, 0.7), rgba(162, 0, 255, 0.7)); /* Gradiente ligeiramente mais opaco no hover */
     border-color: rgba(255, 255, 255, 0.2); /* Borda um pouco mais visível no hover */
     box-shadow: 0 6px 20px rgba(130, 0, 255, 0.3), 0 2px 8px rgba(0,0,0,0.3); /* Sombra um pouco mais forte */
 }
@@ -337,7 +341,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 .input-search-wrapper { position: relative; width: 100%; max-width: 400px; flex-grow: 1; }
 .input-search { 
-    background-color: rgba(18, 18, 18, 0.7); /* Fundo sutil */
+    background-color: rgba(18, 18, 18, 0.4); /* Fundo mais transparente */
     color: var(--text-primary); 
     border: 1px solid rgba(255, 255, 255, 0.1); /* Borda sutil */
     width: 100%; 
@@ -354,10 +358,10 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 #searchButton:hover:not(:disabled) { color: var(--purple-accent); }
 #searchButton:disabled { color: var(--text-secondary); cursor: not-allowed; }
 header { 
-    /* Fundo com gradiente sutil e desfoque mais intenso */
-    background: linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0.5));
-    backdrop-filter: blur(20px) saturate(1.8); /* Blur mais forte */
-    -webkit-backdrop-filter: blur(20px) saturate(1.8);
+    /* Fundo com gradiente sutil e desfoque mais intenso, mais transparente */
+    background: linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.4)); /* Gradiente mais transparente */
+    backdrop-filter: blur(35px) saturate(2.0) brightness(1.2); /* Blur muito mais forte */
+    -webkit-backdrop-filter: blur(35px) saturate(2.0) brightness(1.2);
     box-shadow: 0 4px 15px -3px rgba(0,0,0,0.8), /* Sombra mais profunda */
                 0 0 30px rgba(130, 0, 255, 0.3); /* Leve brilho roxo */
     padding: 1rem; 
@@ -377,8 +381,8 @@ header h1 .fa-film { color: var(--purple-accent); margin-right: 0.5rem; }
 /* Botão de Cópia Externo */
 #externalCopyButtonContainer { position: fixed; bottom: 1.5rem; right: 10rem; z-index: 1070; top: 90%; }
 #externalCopyLinkButton { 
-    /* Fundo com gradiente sutil */
-    background: linear-gradient(45deg, rgba(89, 59, 162, 0.6), rgba(162, 0, 255, 0.6)); 
+    /* Fundo com gradiente sutil, mais transparente */
+    background: linear-gradient(45deg, rgba(89, 59, 162, 0.4), rgba(162, 0, 255, 0.4)); /* Mais transparente */
     color: var(--text-primary); /* Cor do texto primária */
     padding: 0.8rem; 
     width: 3.8rem; /* Tamanho um pouco maior */
@@ -395,7 +399,7 @@ header h1 .fa-film { color: var(--purple-accent); margin-right: 0.5rem; }
     border: none; 
 }
 #externalCopyLinkButton:hover { 
-    background: linear-gradient(45deg, rgba(89, 59, 162, 0.8), rgba(162, 0, 255, 0.8)); /* Gradiente mais opaco no hover */
+    background: linear-gradient(45deg, rgba(89, 59, 162, 0.6), rgba(162, 0, 255, 0.6)); /* Gradiente mais opaco no hover */
     transform: translateY(-4px) scale(1.08); /* Efeito de elevação maior */
     box-shadow: 0 10px 25px rgba(89, 59, 162, 0.6), /* Sombra mais pronunciada no hover */
                 0 0 30px rgba(130, 0, 255, 0.5); /* Brilho mais forte */
@@ -487,7 +491,7 @@ header h1 .fa-film { color: var(--purple-accent); margin-right: 0.5rem; }
     .horizontal-scroll-grid, .main-results-grid, #singleResultsGrid { 
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
     }
-     .details-iframe-container.iframe-series-dimensions { height: 550px; }
+    .details-iframe-container.iframe-series-dimensions { height: 550px; }
 }
 
 @media (min-width: 1200px) { /* Telas Muito Grandes */
@@ -497,3 +501,4 @@ header h1 .fa-film { color: var(--purple-accent); margin-right: 0.5rem; }
     }
     .details-iframe-container.iframe-series-dimensions { height: 600px; }
 }
+
