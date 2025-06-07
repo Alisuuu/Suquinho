@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMDB Search: Filmes e Séries</title>
+    <!-- Inclui o Tailwind CSS para estilização rápida e responsiva -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Importa a fonte 'Inter' do Google Fonts para uma tipografia moderna -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos base para o corpo da página */
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            -webkit-tap-highlight-color: transparent;
+user-select: none;
+            overflow: hidden; /* Previne barras de rolagem em todo o corpo da página */
+            position: relative;
+            height: 100vh; /* Ocupa a altura total da viewport */
+            display: flex;
+            flex-direction: column; /* Permite que o conteúdo se empilhe verticalmente */
+            justify-content: center;
+            align-items: center;
+            background-color: #1a202c; /* Cor de fundo de fallback escura */
+            color: #ffffff; /* Cor do texto padrão */
+        }
+        /* Contêiner para a imagem de fundo */
+        #background-container {
+            position: fixed; /* Fixa a imagem de fundo na viewport */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover; /* Cobre todo o contêiner, cortando se necessário */
+            background-position: center; /* Centraliza a imagem */
+            transition: background-image 1s ease-in-out; /* Transição suave ao mudar a imagem */
+            z-index: -2; /* Garante que fique abaixo do overlay e do conteúdo */
+        }
+        /* Overlay escuro sobre a imagem de fundo para melhorar a legibilidade do texto */
+        #overlay {
+            position: fixed; /* Fixa o overlay na viewport */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); /* Cor de overlay preta com 60% de opacidade */
+            z-index: -1; /* Garante que fique acima da imagem de fundo e abaixo do conteúdo */
+        }
+
+        /* Estilo para o contêiner de resultados de busca, permitindo rolagem APENAS DO SEU CONTEÚDO */
+        #search-results {
+            max-height: 50vh; /* Altura máxima para os resultados */
+            overflow-y: auto; /* Adiciona rolagem vertical se o conteúdo exceder */
+            -webkit-overflow-scrolling: touch; /* Rolagem suave em dispositivos iOS */
+            padding-right: 8px; /* Espaço para a barra de rolagem */
+        }
+
+        /* Estilo da barra de rolagem (WebKit) */
+        #search-results::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #search-results::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        #search-results::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+
+        #search-results::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+    </style>
+</head>
+<body class="text-white">
+    <!-- Contêiner que exibe a imagem de fundo (pôster ou backdrop) -->
+    <div id="background-container"></div>
+    <!-- Overlay escuro para melhorar a legibilidade do texto na frente do fundo -->
+    <div id="overlay"></div>
+
+    <!-- Contêiner principal para o conteúdo, centralizado e com margens -->
+    <div class="flex flex-col items-center justify-center p-4 w-full max-w-2xl mx-auto z-10">
+        <!-- Título principal da página -->
+        <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold mb-8 text-center drop-shadow-lg">
+            Encontre Filmes e Séries
+        </h1>
+        <!-- Barra de busca -->
+        <div class="relative w-full flex items-center mb-4">
+            <input
+                type="text"
+                id="search-input"
+                placeholder="Buscar filmes, séries..."
+                class="flex-grow p-4 pl-12 pr-4 rounded-full bg-white bg-opacity-20 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 backdrop-blur-sm"
+                aria-label="Campo de busca para filmes e séries"
+            />
+            <!-- Ícone de busca (SVG) dentro do campo de input -->
+            <svg class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-300" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <!-- O botão de busca foi removido, a busca agora é ativada ao digitar. -->
+        </div>
+
+        <!-- Contêiner para exibir os resultados da busca -->
+        <div id="search-results" class="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 p-4 rounded-lg bg-black bg-opacity-30 backdrop-blur-sm transition duration-300 hidden">
+            <!-- Os resultados serão injetados aqui via JavaScript -->
+        </div>
+
+        <!-- Mensagem de status ou erro -->
+        <div id="status-message" class="mt-4 text-center text-lg hidden"></div>
+    </div>
+
+    <script type="module">
+        const backgroundContainer = document.getElementById('background-container');
+        const searchInput = document.getElementById('search-input');
+        // O botão de busca foi removido, então não há necessidade de referenciá-lo
+        const searchResultsContainer = document.getElementById('search-results');
+        const statusMessage = document.getElementById('status-message');
+
+        const API_KEY = "5e5da432e96174227b25086fe8637985";
+        let mediaData = [];
+        let currentIndex = 0;
+        let intervalId;
+
+        const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+        const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/';
+        const SUQUINHO_BASE_URL = 'https://alisuuu.github.io/Suquinho/Catalogo1/index';
+
+        /**
+         * @brief Busca filmes populares da API do TMDB.
+         * @returns {Promise<Array<Object>>} Uma promessa que resolve para um array de objetos de filmes.
+         */
+        async function fetchPopularMovies() {
+            try {
+                const response = await fetch(`${TMDB_BASE_URL}/movie/popular?api_key=${API_KEY}&language=pt-BR`);
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP ao buscar filmes populares: ${response.status}`);
+                }
+                const data = await response.json();
+                return data.results.map(movie => ({
+                    type: 'movie',
+                    title: movie.title,
+                    poster_path: movie.poster_path,
+                    backdrop_path: movie.backdrop_path
+                }));
+            } catch (error) {
+                console.error("Erro ao buscar filmes populares:", error);
+                return [];
+            }
+        }
+
+        /**
+         * @brief Busca séries mais votadas da API do TMDB.
+         * @returns {Promise<Array<Object>>} Uma promessa que resolve para um array de objetos de séries.
+         */
+        async function fetchTopRatedTvSeries() {
+            try {
+                const response = await fetch(`${TMDB_BASE_URL}/tv/top_rated?api_key=${API_KEY}&language=pt-BR`);
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP ao buscar séries mais votadas: ${response.status}`);
+                }
+                const data = await response.json();
+                return data.results.map(series => ({
+                    type: 'series',
+                    title: series.name,
+                    poster_path: series.poster_path,
+                    backdrop_path: series.backdrop_path
+                }));
+            } catch (error) {
+                console.error("Erro ao buscar séries mais votadas:", error);
+                return [];
+            }
+        }
+
+        /**
+         * @brief Carrega e combina os dados de filmes e séries do TMDB para o fundo dinâmico.
+         * Inicia o ciclo de atualização do background se os dados forem carregados com sucesso.
+         */
+        async function loadMediaData() {
+            if (!API_KEY) {
+                console.error("Chave de API do TMDB não fornecida. Por favor, insira sua chave na variável 'API_KEY' no código.");
+                backgroundContainer.style.backgroundImage = `url('https://placehold.co/1280x720/663399/FFFFFF?text=INSIRA+SUA+CHAVE+API+TMDB')`;
+                return;
+            }
+
+            const [movies, series] = await Promise.all([
+                fetchPopularMovies(),
+                fetchTopRatedTvSeries()
+            ]);
+
+            mediaData = [...movies, ...series].filter(item => item.poster_path && item.backdrop_path);
+
+            if (mediaData.length === 0) {
+                console.warn("Nenhum dado de mídia com imagens disponíveis foi carregado. Verifique sua chave de API ou conexão com a internet.");
+                backgroundContainer.style.backgroundImage = `url('https://placehold.co/1280x720/000000/FFFFFF?text=Sem+Conteúdo+Disponível')`;
+            } else {
+                updateBackground();
+                // O tempo de transição das imagens de fundo é de 4 segundos (4000 ms)
+                intervalId = setInterval(updateBackground, 4000);
+            }
+        }
+
+        /**
+         * @brief Atualiza a imagem de fundo do contêiner.
+         * Agora usa backdrops para todas as versões (mobile e PC) com a melhor qualidade possível ('original').
+         */
+        function updateBackground() {
+            if (mediaData.length === 0) return;
+
+            const item = mediaData[currentIndex];
+            let imageUrl;
+            // Para todas as larguras de tela (mobile e PC), usaremos a resolução 'original' para a melhor qualidade.
+            const imageSize = 'original'; 
+            imageUrl = `${IMAGE_BASE_URL}${imageSize}${item.backdrop_path}`;
+
+
+            const img = new Image();
+            img.onload = () => {
+                backgroundContainer.style.backgroundImage = `url('${imageUrl}')`;
+            };
+            img.onerror = () => {
+                console.error(`Falha ao carregar imagem: ${imageUrl}. Usando imagem de fallback.`);
+                backgroundContainer.style.backgroundImage = `url('https://placehold.co/1280x720/FF0000/FFFFFF?text=Erro+ao+Carregar+Imagem')`;
+            };
+            img.src = imageUrl;
+
+            currentIndex = (currentIndex + 1) % mediaData.length;
+        }
+
+        /**
+         * @brief Busca filmes ou séries com base em uma consulta do usuário.
+         * @param {string} query A string de busca.
+         * @returns {Promise<Array<Object>>} Uma promessa que resolve para um array de resultados de busca.
+         */
+        async function searchMedia(query) {
+            statusMessage.textContent = 'Buscando...';
+            statusMessage.classList.remove('hidden');
+            searchResultsContainer.classList.add('hidden'); // Esconde resultados antigos
+            searchResultsContainer.innerHTML = ''; // Limpa resultados antigos
+
+            if (!query) {
+                statusMessage.textContent = 'Por favor, digite algo para buscar.';
+                return [];
+            }
+            if (!API_KEY) {
+                statusMessage.textContent = 'Erro: Chave de API do TMDB não configurada.';
+                console.error("Chave de API do TMDB não fornecida para a busca.");
+                return [];
+            }
+
+            try {
+                // Usa o endpoint multi-search para buscar filmes e séries simultaneamente
+                const response = await fetch(`${TMDB_BASE_URL}/search/multi?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(query)}`);
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP ao buscar mídia: ${response.status}`);
+                }
+                const data = await response.json();
+                // Filtra apenas filmes e séries com poster_path e limita o número de resultados para exibição
+                const results = data.results.filter(item =>
+                    (item.media_type === 'movie' || item.media_type === 'tv') && item.poster_path
+                ).slice(0, 20); // Limita a 20 resultados para melhor visualização
+
+                if (results.length === 0) {
+                    statusMessage.textContent = `Nenhum resultado encontrado para "${query}".`;
+                } else {
+                    statusMessage.classList.add('hidden'); // Esconde a mensagem de status se houver resultados
+                }
+
+                return results;
+            } catch (error) {
+                console.error("Erro ao realizar busca:", error);
+                statusMessage.textContent = `Erro ao buscar: ${error.message}`;
+                return [];
+            }
+        }
+
+        /**
+         * @brief Exibe os resultados da busca na interface do usuário.
+         * @param {Array<Object>} results Array de objetos de mídia a serem exibidos.
+         */
+        function displaySearchResults(results) {
+            searchResultsContainer.innerHTML = ''; // Limpa resultados anteriores
+
+            if (results.length === 0) {
+                searchResultsContainer.classList.add('hidden'); // Esconde o contêiner se não houver resultados
+                return;
+            }
+
+            // Mostra o contêiner de resultados e adiciona os itens
+            searchResultsContainer.classList.remove('hidden');
+
+            results.forEach(item => {
+                const title = item.media_type === 'movie' ? item.title : item.name;
+                // Mantém o pôster para os resultados da busca para facilitar a identificação do conteúdo
+                const posterUrl = `${IMAGE_BASE_URL}w342${item.poster_path}`; 
+
+                const resultDiv = document.createElement('div');
+                resultDiv.className = 'flex flex-col items-center p-2 rounded-lg bg-white bg-opacity-10 hover:bg-opacity-20 cursor-pointer transition duration-200 ease-in-out transform hover:scale-105 shadow-md';
+                resultDiv.dataset.id = item.id;
+                resultDiv.dataset.type = item.media_type;
+
+                resultDiv.innerHTML = `
+                    <img src="${posterUrl}" alt="${title} Poster" class="w-full h-auto rounded-md mb-2 object-cover">
+                    <p class="text-center text-sm font-semibold truncate w-full px-1">${title}</p>
+                `;
+
+                resultDiv.addEventListener('click', () => {
+                    const mediaId = resultDiv.dataset.id;
+                    const mediaType = resultDiv.dataset.type; // 'movie' ou 'tv'
+
+                    // Constrói o URL dinamicamente
+                    const targetUrl = `${SUQUINHO_BASE_URL}?type=${mediaType}&id=${mediaId}`;
+                    window.open(targetUrl, '_blank'); // Abre em uma nova aba
+                });
+                searchResultsContainer.appendChild(resultDiv);
+            });
+        }
+
+        // Modificação: A busca é ativada ao digitar.
+        searchInput.addEventListener('input', async () => {
+            const query = searchInput.value.trim();
+            if (query === '') {
+                searchResultsContainer.classList.add('hidden');
+                statusMessage.classList.add('hidden');
+                searchResultsContainer.innerHTML = '';
+            } else {
+                const results = await searchMedia(query);
+                displaySearchResults(results);
+            }
+        });
+
+        // O evento 'keyup' para Enter ainda é mantido para consistência, embora 'input' já cubra a digitação
+        searchInput.addEventListener('keyup', async (event) => {
+            if (event.key === 'Enter') {
+                const query = searchInput.value.trim();
+                const results = await searchMedia(query);
+                displaySearchResults(results);
+            }
+        });
+
+
+        // Inicia o carregamento dos dados e o ciclo do background quando a página é totalmente carregada
+        window.onload = loadMediaData;
+
+        // Adiciona um listener para o evento de redimensionamento da janela
+        window.addEventListener('resize', () => {
+            clearInterval(intervalId);
+            updateBackground();
+            // O tempo de transição das imagens de fundo é de 4 segundos (4000 ms)
+            intervalId = setInterval(updateBackground, 4000);
+        });
+    </script>
+</body>
+</html>
+
