@@ -355,7 +355,7 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
         castSectionHTML = `<div class="details-cast-section"><h3 class="details-section-subtitle">Elenco Principal</h3><div class="details-cast-scroller">${castMembers.map(person => `<div class="cast-member-card"><img src="${person.profile_path ? TMDB_IMAGE_BASE_URL + 'w185' + person.profile_path : PLACEHOLDER_PERSON_IMAGE}" alt="${person.name || 'Ator/Atriz sem nome listado'}" class="cast-member-photo" onerror="this.onerror=null; this.src='${PLACEHOLDER_PERSON_IMAGE}';"><p class="cast-member-name">${person.name || 'Nome não disponível'}</p><p class="cast-member-character">${person.character || ''}</p></div>`).join('')}</div></div>`;
     }
     let playerSectionHTML = '';
-    if (superflixPlayerUrl) playerSectionHTML = `<div class="details-player-section"><h3 class="details-section-subtitle">Assistir Agora</h3><div class="details-iframe-container ${iframeContainerClass}"><iframe id="swal-details-iframe" src="${superflixPlayerUrl}" allowfullscreen title="Player de ${titleText.replace(/"/g, '&quot;')}"></iframe></div></div>`;
+    if (superflixPlayerUrl) playerSectionHTML = `<div class="details-player-section"><h3 class="details-section-subtitle">Assistir Agora</h3><div class="details-iframe-container ${iframeContainerClass}"><iframe id="swal-details-iframe" src="${superflixPlayerUrl}" allowfullscreen title="Player de ${titleText.replace(/"/g, '&quot;')}" sandbox="allow-scripts allow-same-origin"></iframe></div></div>`;
     else playerSectionHTML = `<div class="details-player-section"><p class="details-player-unavailable">Player não disponível para este título.</p></div>`;
     const detailsHTML = `<div class="swal-details-content"><div class="details-flex-container"><img src="${posterModalPath}" alt="Pôster de ${titleText.replace(/"/g, '&quot;')}" class="details-poster" onerror="this.onerror=null; this.src='https://placehold.co/780x1170/0A0514/F0F0F0?text=Erro+Imagem&font=inter';"><div class="details-info-area"><h2 class="details-content-title">${titleText}</h2><div class="details-meta-info">${releaseDate ? `<span><i class="fas fa-calendar-alt"></i> ${new Date(releaseDate).toLocaleDateString('pt-BR', { year: 'numeric', month: '2-digit', day: '2-digit' })}</span>` : ''}${rating !== 'N/A' ? `<span><i class="fas fa-star"></i> ${rating} / 10</span>` : ''}${runtime ? `<span><i class="fas fa-clock"></i> ${runtime} min</span>` : ''}</div>${genres ? `<p class="details-genres"><strong>Gêneros:</strong> ${genres}</p>` : ''}<h3 class="details-section-subtitle">Sinopse</h3><p class="details-overview">${overview}</p></div></div>${castSectionHTML}${playerSectionHTML}</div>`;
     
@@ -433,5 +433,6 @@ function updateClearButtonVisibilitySA() {
     const denyButton = Swal.getDenyButton();
     if (denyButton) denyButton.style.display = (selectedGenreSA.id || activeAppliedGenre.id) ? 'inline-flex' : 'none';
 }
+
 
         
