@@ -6,7 +6,7 @@ window.addEventListener('load', () => {
 
   let inactivityTimerId;
   const INACTIVITY_TIMEOUT_MS = 4000;
-  let iframeSrcHistory = ['inicio.html'];
+  let iframeSrcHistory = ['Catalogo1/index.html'];
 
   if (sidebarToggleBtn && sidebarButtonsContainer && newsFrame && iframeBackButton) {
     const buttonsToToggleVisibility = Array.from(sidebarButtonsContainer.children)
@@ -130,7 +130,7 @@ window.addEventListener('load', () => {
         if (targetHref === '#') return;
 
         event.preventDefault();
-        let urlToLoad = targetHref === 'index' ? 'inicio.html' : targetHref;
+        let urlToLoad = targetHref === 'index' ? 'Catalogo1/index.html' : targetHref;
         
         iframeSrcHistory.push(urlToLoad);
         newsFrame.src = urlToLoad;
