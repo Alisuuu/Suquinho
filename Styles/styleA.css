@@ -91,6 +91,10 @@ body {
               padding-top 0.35s ease-out,
               padding-bottom 0.35s ease-out,
               border-width 0.35s ease-out;
+              background-color: rgba(0,0,0,0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 10px -3px rgba(0,0,0,0.2);
 }
 
 /* Modifier for toggle button when sidebar is condensed */
