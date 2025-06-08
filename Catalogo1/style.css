@@ -67,10 +67,10 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     height: 100%;
     /* Intensificado o desfoque e ajustado a cor para iOS-like com mais transparência */
     background-color: rgba(0,0,0,0.3); /* Mais transparente */
-    backdrop-filter: blur(45px) saturate(2.2) brightness(1.2); /* Blur muito mais forte, mais saturação e mais claro */
-    -webkit-backdrop-filter: blur(45px) saturate(2.2) brightness(1.2);
-    box-shadow: 0 4px 15px -3px rgba(0,0,0,0.8), /* Sombra mais profunda */
-                0 0 30px rgba(130, 0, 255, 0.5); /* Leve brilho roxo */
+    backdrop-filter: blur(0px) saturate(2.2) brightness(1.2); /* Blur muito mais forte, mais saturação e mais claro */
+    -webkit-backdrop-filter: blur(0px) saturate(2.2) brightness(1.2);
+    box-shadow: 0 4px 15px -3px rgba(0,0,0,0.0), /* Sombra mais profunda */
+                0 0 30px rgba(130, 0, 255, 0.0); /* Leve brilho roxo */
     z-index: -1;
 }
 
