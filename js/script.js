@@ -26,7 +26,25 @@ window.addEventListener('load', () => {
     };
 
     const updateIframeBackButtonVisibility = () => {
-      iframeBackButton.style.display = iframeSrcHistory.length > 1 ? 'flex' : 'none';
+      if (iframeSrcHistory.length > 1) {
+        // Mostra APENAS o botão de voltar (fixo no topo)
+        iframeBackButton.style.display = 'flex';
+        iframeBackButton.style.position = 'fixed';
+        iframeBackButton.style.top = '10px';
+        iframeBackButton.style.left = '10px';
+        iframeBackButton.style.zIndex = '1000';
+
+        // Oculta TODOS os outros botões (exceto o toggle)
+        buttonsToToggleVisibility.forEach(button => {
+          button.style.display = 'none';
+        });
+      } else {
+        // Volta ao normal (mostra outros botões, esconde o de voltar)
+        iframeBackButton.style.display = 'none';
+        buttonsToToggleVisibility.forEach(button => {
+          button.style.display = 'flex'; // Ou o valor original (block/inline-flex)
+        });
+      }
     };
 
     const updateSidebarState = (expand) => {
@@ -102,6 +120,7 @@ window.addEventListener('load', () => {
       if (iframeSrcHistory.length > 1) {
         iframeSrcHistory.pop();
         newsFrame.src = iframeSrcHistory[iframeSrcHistory.length - 1];
+        updateIframeBackButtonVisibility();
       }
     });
 
@@ -134,6 +153,7 @@ window.addEventListener('load', () => {
         
         iframeSrcHistory.push(urlToLoad);
         newsFrame.src = urlToLoad;
+        updateIframeBackButtonVisibility();
       });
     });
 
