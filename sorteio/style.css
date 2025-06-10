@@ -1,0 +1,388 @@
+/* General Reset and Body Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+    --amoled-black: #000000;
+    --purple-accent: #593BA2;
+    --purple-light: #8c70c8;
+    --text-primary: #F3F4F6;
+    --text-secondary: #9CA3AF;
+    --card-bg: #121212;
+    --border-color: #251A3D;
+    --border-highlight: #3A2B5C;
+    --danger-red: #E53E3E;
+    --danger-red-hover: #C53030;
+    --success-green: #48BB78;
+    --header-height-mobile: 5rem; /* Altura do header no mobile */
+    /* Variáveis para gradientes e sombras expressivas - CORES MAIS SUTIS E ESCURAS */
+    --expressive-gradient-light: linear-gradient(135deg, rgba(40, 20, 80, 0.2), rgba(80, 0, 120, 0.2));
+    --expressive-gradient-dark: linear-gradient(160deg, rgba(15, 0, 30, 0.85), rgba(25, 0, 40, 0.85));
+    --expressive-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 2px 10px rgba(0, 0, 0, 0.6);
+    --subtle-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 10px rgba(0, 0, 0, 0.2);
+
+    /* NOVAS VARIÁVEIS PARA TONS NEUTROS E ESCUROS NO MODAL */
+    --modal-background-neutral-gradient: linear-gradient(160deg, rgba(10, 10, 10, 0.8), rgba(20, 20, 20, 0.8));
+    --modal-border-neutral: rgba(255, 255, 255, 0.08);
+    --modal-shadow-neutral-glow: 0 0 40px rgba(0, 0, 0, 0.7);
+
+    /* Variáveis para botões com blur transparente */
+    --button-blur-bg: rgba(89, 59, 162, 0.2); /* Roxo com transparência */
+    --button-blur-bg-hover: rgba(140, 112, 200, 0.3); /* Roxo claro com mais transparência no hover */
+    --button-backdrop-filter: blur(8px) saturate(1.8); /* Efeito de blur para o fundo */
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--amoled-black);
+    color: var(--text-primary);
+    transition: background-image 0.5s ease-in-out;
+    overflow: hidden !important; /* Desabilita rolagem totalmente */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Centraliza tudo na tela */
+    min-height: 100vh;
+}
+
+body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
+     overflow: hidden !important;
+}
+
+#pageBackdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -2;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    transition: background-image 0.7s ease-in-out, opacity 0.7s ease-in-out;
+    background-color: transparent; /* Alterado para transparente */
+    opacity: 1;
+}
+
+#pageBackdrop::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: transparent; /* Alterado para transparente */
+    backdrop-filter: none; /* Removido o blur */
+    -webkit-backdrop-filter: none; /* Removido o blur */
+    box-shadow: none; /* Removido box-shadow */
+    z-index: -1;
+}
+
+/* Container principal para o conteúdo dos botões */
+.main-container {
+    display: flex;
+    flex-direction: column; /* Coluna para o título e depois linha para os botões */
+    gap: 1rem; /* Espaçamento ajustado */
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    z-index: 10; /* Garante que esteja acima do backdrop */
+}
+
+.button-group { /* Novo contêiner para agrupar os botões de filme/série lado a lado */
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap; /* Permite que os botões quebrem linha em telas pequenas */
+    justify-content: center; /* Centraliza os botões */
+    width: 100%;
+}
+
+h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--purple-light);
+    text-shadow: 0 0 15px rgba(130, 0, 255, 0.5);
+    margin-bottom: 1.5rem; /* Margem ajustada */
+    text-align: center;
+}
+
+.random-button {
+    background-color: var(--button-blur-bg); /* Fundo semi-transparente com blur */
+    backdrop-filter: var(--button-backdrop-filter);
+    -webkit-backdrop-filter: var(--button-backdrop-filter);
+    color: var(--text-primary); /* Texto principal */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Borda sutil */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Sombra mais sutil */
+
+    padding: 0.8rem 1.5rem; /* Padding reduzido */
+    border-radius: 1rem; /* Arredondamento ajustado */
+    font-size: 1.2rem; /* Fonte reduzida */
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* Espaçamento entre ícone e texto */
+    text-transform: uppercase;
+}
+
+.random-button:hover {
+    background-color: var(--button-blur-bg-hover); /* Fundo de hover mais transparente */
+    transform: translateY(-3px) scale(1.03); /* Efeito de hover ajustado */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4); /* Sombra de hover ajustada */
+}
+
+.random-button .fas {
+    font-size: 1.5rem; /* Ícone ajustado */
+}
+
+/* Loader */
+.loader {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border: 8px solid var(--border-color);
+    border-top: 8px solid var(--purple-accent);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 0.8s linear infinite;
+    z-index: 1000;
+    display: none;
+}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* SweetAlert2 General Customizations */
+.swal2-popup {
+    color: var(--text-primary) !important;
+    border-radius: 1.2rem !important;
+    border: 1px solid var(--modal-border-neutral) !important;
+    max-width: 90vw !important;
+    width: auto !important;
+    background: var(--modal-background-neutral-gradient);
+    backdrop-filter: blur(50px) saturate(2.5) !important;
+    -webkit-backdrop-filter: blur(50px) saturate(2.5) !important;
+    box-shadow: 0 6px 20px -3px rgba(0,0,0,0.8),
+                var(--modal-shadow-neutral-glow) !important;
+}
+.swal2-title { color: var(--purple-light) !important; font-size: 1.6rem !important; padding-top: 1.5rem !important; margin-bottom: 0 !important; }
+.swal2-html-container { color: var(--text-primary) !important; margin: 0.5em 1em 0.3em !important; text-align: left !important; }
+.swal2-close {
+    color: #FFFFFF !important;
+    font-size: 2.2em !important;
+    transition: color 0.2s ease, transform 0.2s ease !important;
+    position: absolute !important;
+    top: 15px !important;
+    right: 30px !important;
+    z-index: 100;
+    width: 35px;
+    height: 35px;
+    line-height: 35px;
+    text-align: center;
+    border-radius: 50%;
+    background-color: rgba(255,255,255,0.1);
+}
+.swal2-close:hover {
+    color: var(--purple-light) !important;
+    transform: scale(1.15) !important;
+    background-color: rgba(255,255,255,0.2);
+}
+.swal-details-popup.swal2-popup {
+    width: 850px !important;
+    max-width: 95vw !important;
+    max-height: 90vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+.swal-details-popup .swal2-html-container { overflow-y: auto !important; flex-grow: 1 !important; padding: 0.5em 1em; scrollbar-width: thin; scrollbar-color: var(--purple-accent) var(--border-color); }
+.swal-details-popup .swal2-html-container::-webkit-scrollbar { width: 8px; }
+.swal-details-popup .swal2-html-container::-webkit-scrollbar-track { background: var(--border-color); border-radius: 10px; }
+.swal-details-popup .swal2-html-container::-webkit-scrollbar-thumb { background-color: var(--purple-accent); border-radius: 10px; }
+.swal-details-content { padding-bottom: 1rem; }
+.swal-details-content .details-flex-container { display: flex; flex-direction: column; gap: 1.5rem; }
+.swal-details-content .details-poster { width: 100%; max-width: 220px; height: auto; object-fit: contain; border-radius: 0.8rem; box-shadow: 0 4px 10px -1px rgba(0,0,0,0.3), 0 0 20px rgba(130,0,255,0.3); align-self: center; }
+.swal-details-content .details-info-area { flex: 1; display: flex; flex-direction: column; gap: 0.75rem; }
+.swal-details-content .details-content-title { font-size: 1.85rem; font-weight: 700; color: var(--purple-light); line-height: 1.2; margin-bottom: 0.5rem; }
+.swal-details-content .details-meta-info { font-size: 0.9rem; color: var(--text-secondary); display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; }
+.swal-details-content .details-meta-info span { display: inline-flex; align-items: center; }
+.swal-details-content .details-meta-info .fas { margin-right: 0.375rem; }
+.swal-details-content .details-genres { font-size: 0.875rem; color: var(--text-secondary); }
+.swal-details-content .details-genres strong { color: var(--purple-light); font-size: 0.95rem; }
+.swal-details-content .details-section-subtitle { font-size: 1.2rem; font-weight: 600; color: var(--purple-light); margin-top: 0.8rem; margin-bottom: 0.6rem; }
+.swal-details-content .details-overview { font-size: 1rem; line-height: 1.65; color: var(--text-primary); }
+.details-cast-section { margin-top: 1.5rem; }
+.details-cast-scroller { display: flex; overflow-x: auto; gap: 1rem; padding: 0.75rem 0.25rem; margin-bottom: 1rem; }
+.details-cast-scroller::-webkit-scrollbar { height: 6px; }
+.details-cast-scroller::-webkit-scrollbar-track { background: var(--border-color); border-radius: 5px; }
+.details-cast-scroller::-webkit-scrollbar-thumb { background-color: var(--purple-accent); border-radius: 5px; }
+.cast-member-card { 
+    flex: 0 0 100px; 
+    text-align: center; 
+    background-color: rgba(255,255,255,0.05); 
+    padding: 0.75rem 0.5rem; 
+    border-radius: 0.6rem; 
+    border: 1px solid rgba(255,255,255,0.1); 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: flex-start; 
+}
+.cast-member-photo { 
+    width: 70px; 
+    height: 70px; 
+    border-radius: 50%; 
+    object-fit: cover; 
+    margin: 0 auto 0.5rem auto; 
+    border: 2px solid var(--purple-accent); 
+    background-color: var(--border-color); 
+    /* Adicionado para usar p2.png como imagem de fundo */
+    background-image: url('p2.png'); 
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat;
+}
+.cast-member-photo img { /* Garante que a imagem carregada dinamicamente seja exibida */
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.cast-member-name { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); line-height: 1.2; height: 2.4em; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.25rem; }
+.cast-member-character { font-size: 0.75rem; color: var(--text-secondary); line-height: 1.2; height: 2.4em; overflow: hidden; text-overflow: ellipsis; }
+.details-player-section { margin-top: 1rem; }
+.details-iframe-container { margin-top: 0.5rem; background-color: #000; border-radius: 0.8rem; overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,0.5); aspect-ratio: 16 / 9; }
+.details-iframe-container.iframe-series-dimensions { aspect-ratio: auto; height: 400px; }
+.details-iframe-container iframe { width: 100%; height: 100%; border: none; display: block; }
+.swal-details-content .details-player-unavailable { margin-top: 1.25rem; text-align: center; color: #FFD700; background-color: rgba(255, 215, 0, 0.15); padding: 0.75rem; border-radius: 0.5rem; font-size: 0.875rem; }
+
+/* Media Queries para responsividade */
+@media (max-width: 767px) { /* Mobile */
+    h1 { font-size: 2rem; }
+    .random-button {
+        padding: 0.7rem 1.2rem; /* Mais compacto em mobile */
+        font-size: 1rem;
+    }
+    .random-button .fas { font-size: 1.2rem; }
+
+    .button-group { /* Agrupa os botões de filme/série em coluna no mobile */
+        flex-direction: column;
+    }
+
+    #externalCopyButtonContainer {
+        gap: 0.5rem; /* Espaçamento menor em mobile */
+        max-width: 300px; /* Limite de largura para mobile */
+    }
+    #pickAgainButton,
+    #trailerButton { /* Removido favoriteButton */
+        padding: 0.4rem 0.6rem; /* Botões menores */
+        font-size: 0.85rem; /* Fonte menor */
+    }
+    #externalCopyLinkButton {
+        width: 40px; /* Menor */
+        height: 40px; /* Menor */
+    }
+    #externalCopyLinkButton .fas {
+        font-size: 1.1rem; /* Ícone menor */
+    }
+}
+/* Estilos do botão "Sortear Novamente", "Trailer" e "Copiar Link" no rodapé */
+#externalCopyButtonContainer { /* Reutilizado para agrupar todos os botões de ação do modal */
+    position: fixed;
+    bottom: 1rem; /* Distância do rodapé */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1080; /* Acima do modal */
+    display: flex; /* Inicia oculto, mas será 'flex' quando exibido */
+    justify-content: center; /* Centraliza botões horizontalmente */
+    align-items: center;
+    gap: 0.75rem; /* Espaço entre os botões */
+    width: 100%; /* Ocupa a largura total para centralizar */
+    max-width: 500px; /* Limita a largura do grupo de botões */
+    padding: 0 1rem; /* Padding nas laterais */
+    box-sizing: border-box;
+}
+
+#pickAgainButton,
+#trailerButton { /* Estilo base para os botões "Sortear Novamente" e "Trailer" */
+    background-color: rgba(89, 59, 162, 0.2); /* Fundo semi-transparente com blur */
+    backdrop-filter: blur(8px) saturate(1.8);
+    -webkit-backdrop-filter: blur(8px) saturate(1.8);
+    color: var(--text-primary); /* Texto principal */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Borda sutil */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Sombra mais sutil */
+
+    padding: 0.5rem 0.8rem; /* Padding reduzido para um tamanho mais sutil */
+    border-radius: 0.8rem; /* Arredondamento padrão */
+    font-size: 0.9rem; /* Tamanho da fonte reduzido */
+    font-weight: 600; /* Peso da fonte ajustado */
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    flex: 1; /* Permite que os botões cresçam e ocupem o espaço disponível */
+    max-width: 180px; /* Limita a largura máxima de cada botão */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    text-transform: uppercase;
+    text-decoration: none;
+}
+
+#pickAgainButton:hover,
+#trailerButton:hover {
+    background-color: rgba(140, 112, 200, 0.3); /* Fundo de hover mais transparente */
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4); /* Sombra de hover ajustada */
+}
+
+/* Ícone para o botão Sortear Novamente - REMOVIDO NO HTML */
+#pickAgainButton .fas { 
+    display: none; 
+}
+/* Texto para o botão Sortear Novamente */
+#pickAgainButton span { 
+    display: inline; 
+}
+
+
+#externalCopyLinkButton { /* Estilo específico para o botão de copiar (redondo, só ícone) */
+    background-color: rgba(89, 59, 162, 0.2); /* Fundo semi-transparente com blur */
+    backdrop-filter: blur(8px) saturate(1.8);
+    -webkit-backdrop-filter: blur(8px) saturate(1.8);
+    color: var(--text-primary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+
+    padding: 0.8rem; /* Aumenta padding para ícone ficar no centro */
+    border-radius: 50%; /* Torna o botão redondo */
+    width: 45px; /* Tamanho fixo para o círculo */
+    height: 45px; /* Tamanho fixo para o círculo */
+    flex-shrink: 0; /* Impede que ele encolha */
+    flex-grow: 0; /* Impede que ele cresça */
+    display: flex; /* Para centralizar o ícone */
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+#externalCopyLinkButton:hover {
+    background-color: rgba(140, 112, 200, 0.3);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+#externalCopyLinkButton .fas { /* Ícone do botão de copiar */
+    font-size: 1.2rem; /* Tamanho do ícone */
+    display: inline; /* Garante que o ícone apareça */
+}
+#externalCopyLinkButton span { /* Texto do Copiar Link */
+    display: none; /* Garante que o texto esteja oculto */
+}
+
+/* Estilo específico para o botão Trailer */
+#trailerButton .fas {
+    font-size: 1.1rem;
+}
+
