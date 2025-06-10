@@ -312,8 +312,8 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     border-radius: 0.8rem; /* Mais arredondado */
     font-weight: 600; 
     font-size: 0.95rem; /* Fonte um pouco maior */
-    border: 1px solid rgba(255, 255, 255, 0.1); /* Borda sutil */
-    background: linear-gradient(135deg, rgba(40, 20, 80, 0.3), rgba(80, 0, 120, 0.3)); /* Gradiente sutil, mais transparente */
+    border: 1px solid rgba(255, 255, 255, 0.5); /* Borda sutil */
+    background: linear-gradient(135deg, rgba(40, 20, 80, 0.2), rgba(80, 0, 120, 0.3)); /* Gradiente sutil, mais transparente */
     color: var(--text-primary); /* Texto principal */
     transition: all 0.2s ease; 
     margin-left: 0.5rem; 
@@ -506,4 +506,5 @@ header h1 .fa-film { color: var(--purple-accent); margin-right: 0.5rem; }
     .details-iframe-container.iframe-series-dimensions { height: 600px; }
 }
 
-                                                                  
+
+  
