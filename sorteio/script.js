@@ -9,12 +9,46 @@ const trailerButton = document.getElementById('trailerButton');
 
 // Variáveis de controle de estado para o histórico local
 let pickedMediaHistory = []; // Histórico local: armazena objetos { id, type, title, backdrop_path, timestamp }
-const MAX_HISTORY_SIZE = 25; // Limite de itens no histórico, ajustado para 25
+const MAX_HISTORY_SIZE = 25; // Limite de itens no histórico
 
 let lastPickedMediaType = null; 
 let currentModalItemId = null;
 let currentModalItemType = null;
 let currentExternalCopyUrl = null; 
+
+/**
+ * Salva o histórico de mídia sorteada no localStorage.
+ */
+function saveHistoryToLocalStorage() {
+    try {
+        localStorage.setItem('pickedMediaHistory', JSON.stringify(pickedMediaHistory));
+        console.log('Histórico salvo no localStorage.');
+    } catch (e) {
+        console.error('Erro ao salvar histórico no localStorage:', e);
+    }
+}
+
+/**
+ * Carrega o histórico de mídia sorteada do localStorage.
+ */
+function loadHistoryFromLocalStorage() {
+    try {
+        const storedHistory = localStorage.getItem('pickedMediaHistory');
+        if (storedHistory) {
+            pickedMediaHistory = JSON.parse(storedHistory);
+            // Opcional: Limitar o histórico ao MAX_HISTORY_SIZE se for maior (caso a regra tenha mudado)
+            if (pickedMediaHistory.length > MAX_HISTORY_SIZE) {
+                pickedMediaHistory = pickedMediaHistory.slice(pickedMediaHistory.length - MAX_HISTORY_SIZE);
+            }
+            console.log('Histórico carregado do localStorage:', pickedMediaHistory);
+        }
+    } catch (e) {
+        console.error('Erro ao carregar histórico do localStorage:', e);
+        // Limpa o histórico corrompido para evitar futuros erros
+        localStorage.removeItem('pickedMediaHistory'); 
+        pickedMediaHistory = [];
+    }
+}
 
 /**
  * Verifica se um item já está no histórico de sorteios recentes.
@@ -28,7 +62,7 @@ function isItemInHistory(item) {
 }
 
 /**
- * Adiciona um item ao histórico de sorteios local.
+ * Adiciona um item ao histórico de sorteios local e o salva no localStorage.
  * Mantém apenas os últimos MAX_HISTORY_SIZE itens.
  * @param {Object} item - O item a ser adicionado ao histórico. Deve conter `id`, `media_type`, `title` (ou `name`) e `backdrop_path`.
  */
@@ -46,6 +80,7 @@ function addToHistory(item) {
         pickedMediaHistory.shift(); // Remove o item mais antigo se exceder o limite
     }
     console.log("Item adicionado ao histórico local:", historyItem.title);
+    saveHistoryToLocalStorage(); // Salva no localStorage a cada adição
 }
 
 /**
@@ -102,7 +137,7 @@ async function pickRandomMedia(type) {
         }
 
         if (randomItem) {
-            addToHistory(randomItem); // Adiciona o item sorteado ao histórico local
+            addToHistory(randomItem); // Adiciona o item sorteado ao histórico local (e salva no localStorage)
             lastPickedMediaType = type; 
             currentModalItemId = randomItem.id;
             currentModalItemType = type;
@@ -161,7 +196,6 @@ async function displayHistoryModal() {
                             <br>
                             <span class="text-xs text-gray-500">${new Date(item.timestamp).toLocaleString('pt-BR')}</span>
                         </li>`;
-        // O botão "Ver Detalhes" foi removido daqui, conforme solicitado.
     });
     historyHtml += '</ul></div>';
 
@@ -173,7 +207,6 @@ async function displayHistoryModal() {
         customClass: {
             popup: 'swal-details-popup' // Reusa a classe para conteúdo com scroll
         }
-        // didOpen não precisa de listeners para "Ver Detalhes" pois o botão foi removido
     });
 }
 
@@ -264,6 +297,9 @@ trailerButton.addEventListener('click', async () => {
 
 // --- Inicialização do Backdrop ---
 document.addEventListener('DOMContentLoaded', () => {
+    // Carrega o histórico do localStorage ao iniciar a página
+    loadHistoryFromLocalStorage();
+
     // Verifica se as funções globais de background do catálogo existem
     if (typeof startMainPageBackdropSlideshow === 'function' && typeof fetchPopularMovies === 'function' &&
         typeof fetchTopRatedTvSeries === 'function' && typeof shuffleArray === 'function' &&
@@ -277,7 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Concatena e filtra apenas os backdrops válidos
             mainPageBackdropPaths = [...moviesBackdrops.filter(b => b), ...seriesBackdrops.filter(b => b)];
             
-            if (mainPageBackdropPaths.length > 0) {
+            if (mainPageBackdrops.length > 0) { // Alterado para verificar moviesBackdrops para garantir que tenha algo
                 shuffleArray(mainPageBackdropPaths);
                 startMainPageBackdropSlideshow();
                 console.log("LOG: Backdrop dinâmico iniciado com sucesso.");
