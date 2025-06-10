@@ -145,4 +145,75 @@ window.addEventListener('load', () => {
   history.replaceState({ iframe: HOME_PAGE }, '', '');
   updateSidebarState(false);
   updateIframeBackButtonVisibility();
+
+  // --- INÍCIO: Código Fullscreen com botão no topo direito (desktop only) ---
+  // Cria o botão fullscreen e insere no body
+  const fullscreenBtn = document.createElement('button');
+  fullscreenBtn.id = 'fullscreenBtn';
+  fullscreenBtn.title = 'Tela cheia';
+  fullscreenBtn.style.cssText = `
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.4);
+    border: none;
+    padding: 10px;
+    border-radius: 50%;
+    z-index: 9999;
+    cursor: pointer;
+    color: #fff;
+    backdrop-filter: blur(6px);
+    transition: background 0.2s;
+    display: none; /* Oculto por padrão */
+  `;
+
+  const icon = document.createElement('i');
+  icon.classList.add('fas', 'fa-expand');
+  fullscreenBtn.appendChild(icon);
+
+  document.body.appendChild(fullscreenBtn);
+
+  // Exibe botão só em tela maior que 768px
+  const checkScreen = () => {
+    if (window.innerWidth > 768) {
+      fullscreenBtn.style.display = 'flex';
+    } else {
+      fullscreenBtn.style.display = 'none';
+    }
+  };
+
+  window.addEventListener('resize', checkScreen);
+  checkScreen();
+
+  fullscreenBtn.addEventListener('mouseenter', () => {
+    fullscreenBtn.style.background = 'rgba(255,255,255,0.1)';
+  });
+  fullscreenBtn.addEventListener('mouseleave', () => {
+    fullscreenBtn.style.background = 'rgba(0,0,0,0.4)';
+  });
+
+  fullscreenBtn.addEventListener('click', () => {
+    const docEl = document.documentElement;
+
+    if (!document.fullscreenElement) {
+      if (docEl.requestFullscreen) docEl.requestFullscreen();
+      else if (docEl.webkitRequestFullscreen) docEl.webkitRequestFullscreen();
+      else if (docEl.msRequestFullscreen) docEl.msRequestFullscreen();
+    } else {
+      if (document.exitFullscreen) document.exitFullscreen();
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      else if (document.msExitFullscreen) document.msExitFullscreen();
+    }
+  });
+
+  document.addEventListener('fullscreenchange', () => {
+    if (document.fullscreenElement) {
+      icon.classList.remove('fa-expand');
+      icon.classList.add('fa-compress');
+    } else {
+      icon.classList.remove('fa-compress');
+      icon.classList.add('fa-expand');
+    }
+  });
+  // --- FIM: Fullscreen ---
 });
