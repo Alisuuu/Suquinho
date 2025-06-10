@@ -6,6 +6,7 @@ const modalActionButtonsContainer = document.getElementById('externalCopyButtonC
 const pickAgainButton = document.getElementById('pickAgainButton');
 const externalCopyLinkButton = document.getElementById('externalCopyLinkButton');
 const trailerButton = document.getElementById('trailerButton');
+const pageBackdrop = document.getElementById('pageBackdrop'); // Elemento do backdrop
 
 // Variáveis de controle de estado para o histórico local
 let pickedMediaHistory = []; // Histórico local: armazena objetos { id, type, title, backdrop_path, timestamp }
@@ -15,6 +16,8 @@ let lastPickedMediaType = null;
 let currentModalItemId = null;
 let currentModalItemType = null;
 let currentExternalCopyUrl = null; 
+let currentBackdropPath = null; // Para armazenar o backdrop do item atual
+
 
 /**
  * Salva o histórico de mídia sorteada no localStorage.
@@ -71,7 +74,7 @@ function addToHistory(item) {
         id: item.id,
         type: item.media_type,
         title: item.title || item.name || 'Título Desconhecido', // Usa 'name' para séries
-        backdrop_path: item.backdrop_path, // Salva o backdrop_path (mesmo que não seja usado diretamente no histórico)
+        backdrop_path: item.backdrop_path, // Salva o backdrop_path para reabrir o modal
         timestamp: new Date().toISOString() // Adiciona timestamp para ordenação
     };
 
@@ -109,6 +112,7 @@ async function pickRandomMedia(type) {
     currentModalItemId = null;
     currentModalItemType = null;
     currentExternalCopyUrl = null;
+    currentBackdropPath = null; // Limpa o backdroppath anterior
 
     showLoader();
     try {
@@ -141,10 +145,13 @@ async function pickRandomMedia(type) {
             lastPickedMediaType = type; 
             currentModalItemId = randomItem.id;
             currentModalItemType = type;
+            currentBackdropPath = randomItem.backdrop_path; // Armazena o backdrop do item sorteado
             
             // Define a URL para o botão de copiar link (TMDB URL de detalhes)
             currentExternalCopyUrl = `https://www.themoviedb.org/${type}/${randomItem.id}`;
 
+            // Abre o modal do conteúdo. Note que openItemModal deve ser responsável por exibir o backdrop
+            // do item sorteado e, ao fechar, redefinir para o backdrop padrão da página.
             openItemModal(randomItem.id, type, randomItem.backdrop_path);
             
         } else {
@@ -217,7 +224,7 @@ historyButton.addEventListener('click', displayHistoryModal); // Listener para o
 
 // Listener para o botão "Sortear Novamente" no rodapé do modal
 pickAgainButton.addEventListener('click', () => {
-    if (typeof Swal !== 'undefined') Swal.close();
+    if (typeof Swal !== 'undefined') Swal.close(); // Fecha o modal atual antes de sortear
     if (lastPickedMediaType) {
         pickRandomMedia(lastPickedMediaType);
     } else {
@@ -260,8 +267,40 @@ trailerButton.addEventListener('click', async () => {
                             details.videos.results.find(video => video.site === 'YouTube');
 
             if (trailer) {
-                const trailerUrl = `https://www.youtube.com/watch?v=${trailer.key}`;
-                window.open(trailerUrl, '_blank'); 
+                const trailerUrl = `https://www.youtube.com/embed/${trailer.key}?autoplay=1`; // URL de embed para iframe
+
+                // Fecha o modal de conteúdo atual antes de abrir o modal do trailer
+                Swal.close();
+
+                await Swal.fire({
+                    title: `Trailer de "${details.title || details.name}"`,
+                    html: `<div class="iframe-container" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #000;">
+                               <iframe src="${trailerUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen 
+                               style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
+                           </div>`,
+                    width: '90vw', // Ajusta a largura para ser responsiva
+                    maxHeight: '90vh', // Ajusta a altura máxima
+                    showCloseButton: true,
+                    showConfirmButton: false,
+                    customClass: {
+                        popup: 'swal-details-popup', // Pode reutilizar a classe de estilo do modal principal
+                        htmlContainer: 'p-0' // Remove padding padrão do container HTML para o iframe
+                    },
+                    didOpen: () => {
+                        // Opcional: ajustar tamanho do iframe se necessário
+                        const iframe = Swal.getHtmlContainer().querySelector('iframe');
+                        if (iframe) {
+                            iframe.focus(); // Tenta focar no iframe para autoplay (pode ser bloqueado pelo navegador)
+                        }
+                    },
+                    willClose: () => {
+                        // Ao fechar o modal do trailer, reabre o modal de detalhes do conteúdo
+                        if (currentModalItemId && currentModalItemType) {
+                            openItemModal(currentModalItemId, currentModalItemType, currentBackdropPath);
+                        }
+                    }
+                });
+
             } else {
                 Swal.fire({
                     icon: 'info',
@@ -295,17 +334,28 @@ trailerButton.addEventListener('click', async () => {
 });
 
 
-// --- Inicialização do Backdrop ---
+// --- Inicialização do Backdrop (apenas fallback padrão) ---
 document.addEventListener('DOMContentLoaded', () => {
     // Carrega o histórico do localStorage ao iniciar a página
     loadHistoryFromLocalStorage();
 
-    // Verifica se as funções globais de background do catálogo existem
-    if (typeof startMainPageBackdropSlideshow === 'function' && typeof fetchPopularMovies === 'function' &&
-        typeof fetchTopRatedTvSeries === 'function' && typeof shuffleArray === 'function' &&
-        typeof mainPageBackdropPaths !== 'undefined') {
-
-        async function initializeRandomBackdrop() {
+    // Define o backdrop padrão se as funções do catálogo não estiverem presentes
+    // ou se o slideshow dinâmico não for iniciado por elas.
+    if (typeof startMainPageBackdropSlideshow !== 'function' || 
+        typeof fetchPopularMovies !== 'function' ||
+        typeof fetchTopRatedTvSeries !== 'function' || 
+        typeof shuffleArray !== 'function' ||
+        typeof mainPageBackdropPaths === 'undefined') {
+        
+        console.warn("Funções globais para o backdrop dinâmico não carregadas do catálogo. O backdrop permanecerá estático.");
+        if(pageBackdrop) {
+            pageBackdrop.style.backgroundImage = `url('https://placehold.co/1920x1080/000000/000000')`; 
+            pageBackdrop.style.opacity = '1';
+        }
+    } else {
+        // Se as funções existem, chama a inicialização do backdrop dinâmico
+        // (A função openItemModal será responsável por sobrescrever temporariamente o backdrop)
+        async function initializeRandomBackdropOnLoad() {
             console.log("LOG: Tentando inicializar o backdrop dinâmico...");
             const moviesBackdrops = await fetchPopularMovies();
             const seriesBackdrops = await fetchTopRatedTvSeries();
@@ -313,30 +363,19 @@ document.addEventListener('DOMContentLoaded', () => {
             // Concatena e filtra apenas os backdrops válidos
             mainPageBackdropPaths = [...moviesBackdrops.filter(b => b), ...seriesBackdrops.filter(b => b)];
             
-            if (mainPageBackdrops.length > 0) { // Alterado para verificar moviesBackdrops para garantir que tenha algo
+            if (mainPageBackdropPaths.length > 0) {
                 shuffleArray(mainPageBackdropPaths);
-                startMainPageBackdropSlideshow();
+                startMainPageBackdropSlideshow(); // Esta função deve alternar os backdrops.
                 console.log("LOG: Backdrop dinâmico iniciado com sucesso.");
             } else {
                 console.warn("Nenhum backdrop válido encontrado para o slideshow. Verifique a chave da API do TMDB ou a conexão.");
-                const pageBackdrop = document.getElementById('pageBackdrop');
                 if(pageBackdrop) {
-                    // Fallback para uma imagem de fundo sólida preta
                     pageBackdrop.style.backgroundImage = `url('https://placehold.co/1920x1080/000000/000000')`; 
                     pageBackdrop.style.opacity = '1';
                 }
             }
         }
-        initializeRandomBackdrop();
-
-    } else {
-        console.error("Erro: Funções globais para o backdrop não carregadas do catálogo. O backdrop dinâmico NÃO funcionará.");
-        const pageBackdrop = document.getElementById('pageBackdrop');
-        if(pageBackdrop) {
-            // Fallback para uma imagem de fundo sólida preta se as funções do catálogo não estiverem disponíveis
-            pageBackdrop.style.backgroundImage = `url('https://placehold.co/1920x1080/000000/000000')`; 
-            pageBackdrop.style.opacity = '1';
-        }
+        initializeRandomBackdropOnLoad();
     }
 });
 
