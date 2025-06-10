@@ -430,6 +430,10 @@ header h1 .fa-film { color: var(--purple-accent); margin-right: 0.5rem; }
         overflow-y: auto; 
         padding: 1rem; 
         -webkit-overflow-scrolling: touch; 
+        background-color: rgba(0,0,0,0.3);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 10px -3px rgba(0,0,0,0.3);
     }
 
     .section-title { font-size: 1.3rem; margin-bottom: 1rem; }
@@ -502,3 +506,4 @@ header h1 .fa-film { color: var(--purple-accent); margin-right: 0.5rem; }
     .details-iframe-container.iframe-series-dimensions { height: 600px; }
 }
 
+                                                                  
