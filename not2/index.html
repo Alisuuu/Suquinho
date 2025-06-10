@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>Sorteio de Filmes e Séries</title>
+    <!-- Tailwind CSS para estilização rápida e responsiva -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Fonte Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 para modais -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- Link para o arquivo CSS externo -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="pageBackdrop"></div>
+    <div id="loader" class="loader" style="display: none;"></div>
+
+    <div class="main-container">
+        <h1></h1>
+        <div class="button-group">
+            <button id="randomMovieButton" class="random-button">
+                <i class="fas fa-film"></i>
+                Filme
+            </button>
+            <button id="randomTvButton" class="random-button">
+                <i class="fas fa-tv"></i>
+                Série
+            </button>
+        </div>
+    </div>
+
+    <!-- Elementos necessários para o modal de detalhes, mas ocultos -->
+    <div id="defaultContentSections" style="display: none;">
+        <div id="moviesSection"></div>
+        <div id="tvShowsSection"></div>
+    </div>
+    <div id="singleResultsSection" style="display: none;">
+        <h2 id="singleSectionTitle"></h2>
+        <div id="singleResultsGrid"></div>
+    </div>
+    
+    <!-- Container para os botões de ação do modal (Sortear Novamente, Trailer, Copiar Link) -->
+    <div id="externalCopyButtonContainer" style="display: none;">
+        <button id="pickAgainButton">
+            Sortear Novamente
+        </button>
+        <button id="trailerButton" aria-label="Ver Trailer">
+            <i class="fas fa-play"></i>
+            Trailer
+        </button>
+        <button id="externalCopyLinkButton" aria-label="Copiar Link do Item">
+            <i class="fas fa-link"></i>
+        </button>
+    </div>
+    
+    <!-- Scripts SweetAlert2 (necessário para o modal) -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Seus scripts do catálogo. CRÍTICO: Caminhos corretos para a pasta 'Catalogo1/'. -->
+    <script src="../Catalogo1/script1.js"></script>
+    <script src="../Catalogo1/script2.js"></script>
+    <script src="../Catalogo1/script3.js"></script>
+
+    <!-- Link para o arquivo JavaScript externo -->
+    <script type="module" src="script.js"></script>
+</body>
+</html>
+
