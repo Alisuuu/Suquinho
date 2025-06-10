@@ -4,160 +4,145 @@ window.addEventListener('load', () => {
   const newsFrame = document.getElementById('newsFrame');
   const iframeBackButton = document.getElementById('iframeBackButton');
 
-  let inactivityTimerId;
-  const INACTIVITY_TIMEOUT_MS = 4000;
-  let iframeSrcHistory = ['Catalogo1/index.html'];
+  const HOME_PAGE = 'Catalogo1/index.html';
+  let iframeSrcHistory = [HOME_PAGE];
 
-  if (sidebarToggleBtn && sidebarButtonsContainer && newsFrame && iframeBackButton) {
-    const buttonsToToggleVisibility = Array.from(sidebarButtonsContainer.children)
-      .filter(child => child.classList.contains('icon-button') && 
-                       child.id !== 'sidebarToggleBtn' &&
-                       child.id !== 'iframeBackButton');
-    const toggleIconElement = sidebarToggleBtn.querySelector('i');
+  if (!sidebarToggleBtn || !sidebarButtonsContainer || !newsFrame || !iframeBackButton) return;
 
-    const resetInactivityTimer = () => {
-      clearTimeout(inactivityTimerId);
-      const isExpanded = !sidebarButtonsContainer.classList.contains('sidebar-container-condensed');
-      if (isExpanded) {
-        inactivityTimerId = setTimeout(() => {
-          updateSidebarState(false);
-        }, INACTIVITY_TIMEOUT_MS);
-      }
-    };
+  const toggleIconElement = sidebarToggleBtn.querySelector('i');
+  const buttonsToToggleVisibility = Array.from(sidebarButtonsContainer.children)
+    .filter(child =>
+      child.classList.contains('icon-button') &&
+      child.id !== 'sidebarToggleBtn' &&
+      child.id !== 'iframeBackButton' &&
+      !['index', HOME_PAGE].includes(child.getAttribute('href'))
+    );
 
-    const updateIframeBackButtonVisibility = () => {
-      if (iframeSrcHistory.length > 1) {
-        // Mostra APENAS o botão de voltar (fixo no topo)
-        iframeBackButton.style.display = 'flex';
-        iframeBackButton.style.position = 'fixed';
-        iframeBackButton.style.top = '10px';
-        iframeBackButton.style.left = '10px';
-        iframeBackButton.style.zIndex = '1000';
+  const isIframeHome = () => newsFrame.src.endsWith(HOME_PAGE);
 
-        // Oculta TODOS os outros botões (exceto o toggle)
-        buttonsToToggleVisibility.forEach(button => {
-          button.style.display = 'none';
-        });
-      } else {
-        // Volta ao normal (mostra outros botões, esconde o de voltar)
-        iframeBackButton.style.display = 'none';
-        buttonsToToggleVisibility.forEach(button => {
-          button.style.display = 'flex'; // Ou o valor original (block/inline-flex)
-        });
-      }
-    };
+  const updateIframeBackButtonVisibility = () => {
+    const isHome = isIframeHome();
+    iframeBackButton.style.display = isHome ? 'none' : 'flex';
+    sidebarToggleBtn.style.display = isHome ? 'flex' : 'none';
+    buttonsToToggleVisibility.forEach(btn => {
+      btn.style.display = isHome ? 'flex' : 'none';
+    });
+  };
 
-    const updateSidebarState = (expand) => {
-      buttonsToToggleVisibility.forEach(button => {
-        button.classList.toggle('sidebar-item-hidden', !expand);
+  const updateSidebarState = (expand) => {
+    buttonsToToggleVisibility.forEach(button => {
+      button.classList.toggle('sidebar-item-hidden', !expand);
+    });
+
+    sidebarButtonsContainer.classList.toggle('sidebar-container-condensed', !expand);
+
+    if (toggleIconElement) {
+      toggleIconElement.classList.remove('fa-times');
+      toggleIconElement.classList.add('fa-bars');
+    }
+
+    if (expand) {
+      sidebarToggleBtn.style.display = 'none';
+    } else if (isIframeHome()) {
+      sidebarToggleBtn.style.display = 'flex';
+    }
+  };
+
+  const setupIframeLinks = () => {
+    try {
+      const iframeDoc = newsFrame.contentDocument || newsFrame.contentWindow.document;
+      iframeDoc.addEventListener('click', (event) => {
+        const link = event.target.closest('a');
+        if (link && link.href && !link.target && !link.href.startsWith('javascript:')) {
+          event.preventDefault();
+          const href = link.href;
+          iframeSrcHistory.push(href);
+          history.pushState({ iframe: href }, '', '');
+          newsFrame.src = href;
+          updateIframeBackButtonVisibility();
+        }
       });
+    } catch (e) {
+      console.warn("Erro ao configurar links da iframe:", e);
+    }
+  };
 
-      sidebarButtonsContainer.classList.toggle('sidebar-container-condensed', !expand);
-      
-      if (toggleIconElement) {
-        toggleIconElement.classList.remove('fa-times');
-        toggleIconElement.classList.add('fa-bars');
-      }
-      
-      if (expand) {
-        sidebarToggleBtn.style.display = 'none';
-        resetInactivityTimer();
-      } else {
-        sidebarToggleBtn.style.display = 'flex';
-        sidebarToggleBtn.classList.add('toggle-btn-shrunk');
-        clearTimeout(inactivityTimerId);
-      }
-    };
-    
-    const setupIframeContentListeners = () => {
-      if (newsFrame.contentWindow) {
-        const handleFrameInteraction = () => {
-          if (!sidebarButtonsContainer.classList.contains('sidebar-container-condensed')) {
-            updateSidebarState(false);
-          }
-        };
-        
-        newsFrame.contentWindow.addEventListener('scroll', handleFrameInteraction);
-        newsFrame.contentWindow.addEventListener('click', handleFrameInteraction);
-        newsFrame.contentWindow.addEventListener('touchstart', handleFrameInteraction, { passive: true });
-      }
-    };
+  const setupIframeContentListeners = () => {
+    if (newsFrame.contentWindow) {
+      const handleFrameInteraction = () => {
+        if (!sidebarButtonsContainer.classList.contains('sidebar-container-condensed')) {
+          if (isIframeHome()) updateSidebarState(false);
+        }
+      };
 
-    const setupIframeLinks = () => {
-      try {
-        const iframeDoc = newsFrame.contentDocument || newsFrame.contentWindow.document;
-        
-        iframeDoc.addEventListener('click', (event) => {
-          const link = event.target.closest('a');
-          
-          if (link && link.href && !link.target && !link.href.startsWith('javascript:')) {
-            event.preventDefault();
-            
-            if (link.href.startsWith('http') && !link.href.startsWith(window.location.origin)) {
-              newsFrame.src = link.href;
-            } else {
-              iframeSrcHistory.push(link.href);
-              newsFrame.src = link.href;
-            }
-            
-            updateIframeBackButtonVisibility();
-          }
-        });
-      } catch (e) {
-        console.warn("Não foi possível configurar links da iframe:", e);
-      }
-    };
+      newsFrame.contentWindow.addEventListener('scroll', handleFrameInteraction);
+      newsFrame.contentWindow.addEventListener('click', handleFrameInteraction);
+      newsFrame.contentWindow.addEventListener('touchstart', handleFrameInteraction, { passive: true });
+    }
+  };
 
-    sidebarToggleBtn.addEventListener('click', (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      updateSidebarState(true);
-    });
-    
-    iframeBackButton.addEventListener('click', (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      if (iframeSrcHistory.length > 1) {
-        iframeSrcHistory.pop();
-        newsFrame.src = iframeSrcHistory[iframeSrcHistory.length - 1];
-        updateIframeBackButtonVisibility();
-      }
-    });
+  sidebarToggleBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    updateSidebarState(true);
+  });
 
-    sidebarButtonsContainer.addEventListener('mousemove', resetInactivityTimer);
-    sidebarButtonsContainer.addEventListener('touchstart', resetInactivityTimer, { passive: true });
+  iframeBackButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-    document.addEventListener('click', (event) => {
-      if (!sidebarButtonsContainer.classList.contains('sidebar-container-condensed') && 
-          !sidebarButtonsContainer.contains(event.target)) {
-        updateSidebarState(false);
-      }
-    });
-
-    newsFrame.addEventListener('load', () => {
-      updateIframeBackButtonVisibility();
-      setupIframeContentListeners();
-      setupIframeLinks();
-    });
-
-    const iframeButtonLinks = sidebarButtonsContainer.querySelectorAll('a.icon-button:not(#sidebarToggleBtn):not(#iframeBackButton)');
-    iframeButtonLinks.forEach(button => {
-      button.addEventListener('click', event => {
-        const targetHref = button.getAttribute('href');
-
-        if (targetHref === 'Hyper/hyper' || targetHref === 'Yt/yt') return;
-        if (targetHref === '#') return;
-
-        event.preventDefault();
-        let urlToLoad = targetHref === 'index' ? 'Catalogo1/index.html' : targetHref;
-        
-        iframeSrcHistory.push(urlToLoad);
-        newsFrame.src = urlToLoad;
-        updateIframeBackButtonVisibility();
-      });
-    });
-
-    updateSidebarState(false);
+    if (iframeSrcHistory.length > 1) {
+      iframeSrcHistory.pop();
+      const previous = iframeSrcHistory[iframeSrcHistory.length - 1];
+      newsFrame.src = previous;
+      history.back();
+    } else {
+      newsFrame.src = HOME_PAGE;
+      iframeSrcHistory = [HOME_PAGE];
+      history.pushState({ iframe: HOME_PAGE }, '', '');
+    }
     updateIframeBackButtonVisibility();
-  }
+  });
+
+  const iframeButtonLinks = sidebarButtonsContainer.querySelectorAll('a.icon-button:not(#sidebarToggleBtn):not(#iframeBackButton)');
+  iframeButtonLinks.forEach(button => {
+    const href = button.getAttribute('href');
+    if (href === 'index' || href === HOME_PAGE) {
+      button.style.display = 'none'; // Esconde esses botões diretamente no DOM também
+      return;
+    }
+
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
+      iframeSrcHistory.push(href);
+      history.pushState({ iframe: href }, '', '');
+      newsFrame.src = href;
+      updateIframeBackButtonVisibility();
+    });
+  });
+
+  window.addEventListener('popstate', () => {
+    if (iframeSrcHistory.length > 1) iframeSrcHistory.pop();
+    const prev = iframeSrcHistory[iframeSrcHistory.length - 1] || HOME_PAGE;
+    newsFrame.src = prev;
+    updateIframeBackButtonVisibility();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!sidebarButtonsContainer.classList.contains('sidebar-container-condensed') &&
+        !sidebarButtonsContainer.contains(e.target)) {
+      updateSidebarState(false);
+    }
+  });
+
+  newsFrame.addEventListener('load', () => {
+    updateIframeBackButtonVisibility();
+    setupIframeContentListeners();
+    setupIframeLinks();
+  });
+
+  newsFrame.src = HOME_PAGE;
+  history.replaceState({ iframe: HOME_PAGE }, '', '');
+  updateSidebarState(false);
+  updateIframeBackButtonVisibility();
 });
