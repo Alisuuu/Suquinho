@@ -6,8 +6,8 @@ const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/'; // Base para posters 
 const TMDB_BACKDROP_BASE_URL = 'https://image.tmdb.org/t/p/original'; // Base específica para backdrops grandes
 const LANGUAGE = 'pt-BR';
 const PLACEHOLDER_PERSON_IMAGE = 'https://placehold.co/185x278/0F071A/F3F4F6?text=Sem+Foto&font=inter';
-const PLAYER_BASE_URL_MOVIE = 'https://superflixapi.pw/filme/';
-const PLAYER_BASE_URL_SERIES = 'https://superflixapi.pw/serie/';
+const PLAYER_BASE_URL_MOVIE = 'https://ultraembed.com/filme/';
+const PLAYER_BASE_URL_SERIES = 'https://ultraembed.com/serie/';
 
 // Mapeamento de empresas para busca combinada (configuração global)
 const companyKeywordMap = {
