@@ -36,8 +36,8 @@
 }
 
 body {
-    font-family: 'Inter', sans-serif;
-    background-color: var(--amoled-black);
+    font-family: 'Inter', sans-serif;   background: linear-gradient(135deg, rgba(89, 59, 162, 0.6) 80%, rgba(162, 0, 255, 0.6) 100%); /* Softer purple to violet with transparency */
+
     color: var(--text-primary);
     transition: background-image 0.5s ease-in-out;
     overflow: hidden !important; /* Desabilita rolagem totalmente */
@@ -61,7 +61,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     z-index: -2;
     background-size: cover;
     background-position: center center;
-    background-repeat: no-repeat;
+    background-repeat: repeat;
     transition: background-image 0.7s ease-in-out, opacity 0.7s ease-in-out;
     background-color: transparent; /* Alterado para transparente */
     opacity: 1;
@@ -104,49 +104,42 @@ h1 {
     font-size: 2.5rem;
     font-weight: 700;
     color: var(--purple-light);
-    text-shadow: 0 0 15px rgba(130, 0, 255, 0.5);
+    text-shadow: 0 0 15px rgba(130, 0, 255, 0.2);
     margin-bottom: 1.5rem; /* Margem ajustada */
     text-align: center;
 }
 
 .random-button {
-   background: linear-gradient(135deg, rgba(89, 59, 162, 0.3) 0%, rgba(162, 0, 255, 0.3) 100%); /* Softer purple to violet with transparency */
-  border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle white border */
-  border-radius: 5%; 
-  width: 150px; 
-  height: 100px; 
-  display: flex;
+  background: linear-gradient(135deg, rgba(89, 59, 162, 0.4) 0%, rgba(162, 0, 255, 0.2) 100%); /* Increased transparency and slightly adjusted colors */
+  border: none; /* Removed solid border for a cleaner look */
+  border-radius: 10%; /* Slightly more rounded corners */
+  width: 120px; /* Slightly wider */
+  height: 100px; /* Slightly taller */
+  display: grid;
   align-items: center;
   justify-content: center;
-  font-size: 40px; 
+  font-size: 48px; /* Larger font size */
   color: white;
   cursor: pointer;
-  text-decoration: none; 
-  /* Updated: More subtle box-shadow */
-  box-shadow: 0 4px 15px rgba(130, 0, 255, 0.15), /* Softer glowing shadow */
-              0 1px 5px rgba(0, 0, 0, 0.15); /* Lighter base shadow */
-  position: relative; 
-  overflow: hidden; 
+  text-decoration: none;
+  box-shadow: 0 8px 20px rgba(130, 0, 255, 0.2), /* Enhanced glow shadow */
+              inset 0 2px 5px rgba(0, 0, 0, 0.2); /* Added subtle inner shadow for depth */
+  position: relative;
+  overflow: hidden;
   -webkit-tap-highlight-color: transparent;
   opacity: 1;
-  /* Original transform seems like an initial animation state, keeping the transition for smooth changes */
-  transform: translateX(0) scale(1) rotate(0deg); /* Reset to default visual state */
-  transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 0.20), /* Smoother bouncy transition for transform */
-              background 0.35s ease-out, 
-              box-shadow 0.35s ease-out, 
-              opacity 0.3s ease-out, 
-              height 0.35s cubic-bezier(0.23, 1, 0.32, 0.20),
-              width 0.35s cubic-bezier(0.23, 1, 0.32, 0.20),
-              font-size 0.35s cubic-bezier(0.23, 1, 0.32, 0.20),
-              margin-top 0.35s ease-out,
-              margin-bottom 0.35s ease-out,
-              padding-top 0.35s ease-out,
-              padding-bottom 0.35s ease-out,
-              border-width 0.35s ease-out;
-              background-color: rgba(0,0,0,0.2);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    box-shadow: 0 4px 10px -3px rgba(0,0,0,0.20);
+  transform: translateX(0) scale(1) rotate(0deg);
+  transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 0.20),
+              background 0.35s ease-out,
+              box-shadow 0.35s ease-out,
+              opacity 0.3s ease-out;
+
+  /* Blur and background color adjustments */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background-color: rgba(20, 20, 20, 0.6); /* Darker, more subtle background */
+}
+
 }
 .random-button:hover {
     background-color: var(--button-blur-bg-hover); /* Fundo de hover mais transparente */
@@ -405,3 +398,4 @@ h1 {
     font-size: 1.1rem;
 }
 
+                                       
