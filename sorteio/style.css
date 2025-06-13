@@ -110,35 +110,45 @@ h1 {
 }
 
 .random-button {
-  background: linear-gradient(135deg, rgba(89, 59, 162, 0.4) 0%, rgba(162, 0, 255, 0.2) 100%); /* Increased transparency and slightly adjusted colors */
-  border: none; /* Removed solid border for a cleaner look */
-  border-radius: 10%; /* Slightly more rounded corners */
-  width: 120px; /* Slightly wider */
-  height: 100px; /* Slightly taller */
+  background: linear-gradient(135deg, rgba(89, 59, 162, 0.4) 0%, rgba(162, 0, 255, 0.2) 100%);
+  border: none;
+  border-radius: 10px; /* Slightly more rounded corners, using px for better consistency */
   display: grid;
   align-items: center;
   justify-content: center;
-  font-size: 48px; /* Larger font size */
   color: white;
   cursor: pointer;
   text-decoration: none;
-  box-shadow: 0 8px 20px rgba(130, 0, 255, 0.2), /* Enhanced glow shadow */
-              inset 0 2px 5px rgba(0, 0, 0, 0.2); /* Added subtle inner shadow for depth */
+  box-shadow: 0 8px 20px rgba(130, 0, 255, 0.2),
+              inset 0 2px 5px rgba(0, 0, 0, 0.2);
   position: relative;
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
   opacity: 1;
-  transform: translateX(0) scale(1) rotate(0deg);
   transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 0.20),
               background 0.35s ease-out,
               box-shadow 0.35s ease-out,
               opacity 0.3s ease-out;
 
+  /* Responsive sizing */
+  padding: 20px 40px; /* Use padding for better responsiveness */
+  font-size: 1.5em; /* Use em units for relative sizing */
+  min-width: 150px; /* Minimum width to prevent it from becoming too small */
+
   /* Blur and background color adjustments */
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  background-color: rgba(20, 20, 20, 0.6); /* Darker, more subtle background */
+  backdrop-filter: blur(10px); /* Reduced blur for better readability on larger screens */
+  -webkit-backdrop-filter: blur(10px);
+  background-color: rgba(20, 20, 20, 0.6);
 }
+
+/* Media query for larger screens - adjust as needed */
+@media (min-width: 768px) {
+  .random-button {
+    font-size: 2em; /* Increase font size on larger screens */
+    padding: 25px 50px; /* Increase padding on larger screens */
+  }
+}
+
 
 }
 .random-button:hover {
@@ -398,4 +408,4 @@ h1 {
     font-size: 1.1rem;
 }
 
-                                       
+  
