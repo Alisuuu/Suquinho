@@ -59,7 +59,7 @@ body {
   --md-sys-color-surface-container-highest: #2E2E2E;
   --modal-background-neutral-gradient: linear-gradient(160deg, rgba(10, 10, 10, 0.8), rgba(20, 20, 20, 0.8)); /* Mais transparente */
   --modal-border-neutral: rgba(255, 255, 255, 0.08); /* Borda um pouco mais visível */
-  --modal-shadow-neutral-glow: 0 0 40px rgba(0, 0, 0, 0.7); /* Brilho escuro e neutro */
+  --modal-shadow-neutral-glow: 0 0 40px rgba(0, 0, 0, 0.2); /* Brilho escuro e neutro */
 
   /* Converter cores hex para RGB para uso em rgba() */
   --md-sys-color-surface-container-rgb: 26, 26, 26; /* 1A1A1A em RGB */
@@ -158,7 +158,8 @@ body {
 
 /* Aumentar o tamanho do cartão */
 .item {
-  min-height: 180px; /* Aumentado de 140px */
+  width: 200px;
+  min-height: 100px; /* Aumentado de 140px */
   border-radius: 1.5rem; /* Mais arredondado - rounded-xl */
   background-color: var(--md-sys-color-surface-container); /* Usa a cor de superfície do Material 3 */
   border: 1px solid rgba(var(--md-sys-color-outline-rgb), 0.2); /* Borda sutil */
@@ -166,8 +167,8 @@ body {
 }
 
 .item .poster {
-  width: 80px; /* Aumentado */
-  height: 120px; /* Aumentado */
+  width: 300px; /* Aumentado */
+  height: 200px; /* Aumentado */
 }
 
 .item .relative.w-full.h-24 {
@@ -175,7 +176,7 @@ body {
 }
 
 .item .content {
-  margin-top: -60px; /* Ajuste para compensar o poster maior */
+  margin-top: 0px; /* Ajuste para compensar o poster maior */
 }
 
 /* Novo estilo para o header transparente com blur */
@@ -197,4 +198,3 @@ body {
   /* ... suas outras variáveis ... */
   --md-sys-color-background-rgb: 0, 0, 0; /* 000000 em RGB */
 }
-
