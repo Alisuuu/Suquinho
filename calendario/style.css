@@ -1,200 +1,275 @@
-/* Configuração personalizada do Tailwind para usar a fonte Inter e cores Material 3 */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+:root {
+  /* Cores para o tema claro (light theme) - Mantenha se for usar */
+  --md-sys-color-primary-light: #5e5e00;
+  --md-sys-color-on-primary-light: #ffffff;
+  --md-sys-color-primary-container-light: #e3e371;
+  --md-sys-color-on-primary-container-light: #1b1c00;
+  --md-sys-color-secondary-light: #616120;
+  --md-sys-color-on-secondary-light: #ffffff;
+  --md-sys-color-secondary-container-light: #e7e596;
+  --md-sys-color-on-secondary-container-light: #1c1d00;
+  --md-sys-color-tertiary-light: #3f6555;
+  --md-sys-color-on-tertiary-light: #ffffff;
+  --md-sys-color-tertiary-container-light: #c1ebd5;
+  --md-sys-color-on-tertiary-container-light: #002116;
+  --md-sys-color-error-light: #ba1a1a;
+  --md-sys-color-error-container-light: #ffdad6;
+  --md-sys-color-on-error-light: #ffffff;
+  --md-sys-color-on-error-container-light: #410002;
+  --md-sys-color-background-light: #fffcf4;
+  --md-sys-color-on-background-light: #1d1c16;
+  --md-sys-color-surface-light: #fffcf4;
+  --md-sys-color-on-surface-light: #1d1c16;
+  --md-sys-color-surface-variant-light: #e5e3d7;
+  --md-sys-color-on-surface-variant-light: #47473b;
+  --md-sys-color-outline-light: #78786c;
+  --md-sys-color-inverse-on-surface-light: #f5f0e7;
+  --md-sys-color-inverse-surface-light: #32312b;
+  --md-sys-color-inverse-primary-light: #c7c758;
+  --md-sys-color-shadow-light: #000000;
+  --md-sys-color-surface-tint-light: #5e5e00;
+  --md-sys-color-outline-variant-light: #c8c7bb;
+  --md-sys-color-scrim-light: #000000;
+  --md-sys-color-surface-container-light: #f5f0e7;
+  --md-sys-color-surface-container-high-light: #efebe2;
+  --md-sys-color-surface-container-highest-light: #e9e5dc;
+  --md-sys-color-surface-container-low-light: #fbf6ee;
+  --md-sys-color-surface-container-lowest-light: #ffffff;
+  --md-sys-color-surface-bright-light: #fffcf4;
+  --md-sys-color-surface-dim-light: #ded8ce;
 
-/* Definindo a fonte Inter como padrão para o corpo */
+  /* Cores para o tema escuro (dark theme) - AMOLED com lilás e blur */
+  --md-sys-color-primary-dark: #bb86fc; /* Um lilás vibrante para destaque */
+  --md-sys-color-on-primary-dark: #ffffff;
+  --md-sys-color-primary-container-dark: #7b4dd6;
+  --md-sys-color-on-primary-container-dark: #ffffff;
+  --md-sys-color-secondary-dark: #9c73ff;
+  --md-sys-color-on-secondary-dark: #ffffff;
+  --md-sys-color-secondary-container-dark: #5c3c9c;
+  --md-sys-color-on-secondary-container-dark: #ffffff;
+  --md-sys-color-tertiary-dark: #70d8c0;
+  --md-sys-color-on-tertiary-dark: #00372f;
+  --md-sys-color-tertiary-container-dark: #005045;
+  --md-sys-color-on-tertiary-container-dark: #91f8e0;
+  --md-sys-color-error-dark: #ffb4ab;
+  --md-sys-color-error-container-dark: #93000a;
+  --md-sys-color-on-error-dark: #690005;
+  --md-sys-color-on-error-container-dark: #ffdad6;
+  --md-sys-color-background-dark: #000000; /* PRETO PURO AMOLED */
+  --md-sys-color-on-background-dark: #e6e2da;
+  --md-sys-color-surface-dark: #000000; /* PRETO PURO AMOLED */
+  --md-sys-color-on-surface-dark: #e6e2da;
+  --md-sys-color-surface-variant-dark: #2c2c2c;
+  --md-sys-color-on-surface-variant-dark: #cccccc;
+  --md-sys-color-outline-dark: #4d4d4d;
+  --md-sys-color-inverse-on-surface-dark: #000000;
+  --md-sys-color-inverse-surface-dark: #e6e2da;
+  --md-sys-color-inverse-primary-dark: #bb86fc;
+  --md-sys-color-shadow-dark: #000000;
+  --md-sys-color-surface-tint-dark: #bb86fc;
+  --md-sys-color-outline-variant-dark: #2c2c2c;
+  --md-sys-color-scrim-dark: #000000;
+
+  /* Cores de container com ALTA TRANSPARÊNCIA e base escura */
+  --md-sys-color-surface-container-lowest-dark: rgba(10, 10, 10, 0.4); /* Mais transparente */
+  --md-sys-color-surface-container-low-dark: rgba(15, 15, 15, 0.5);
+  --md-sys-color-surface-container-dark: rgba(20, 20, 20, 0.6);
+  --md-sys-color-surface-container-high-dark: rgba(25, 25, 25, 0.7);
+  --md-sys-color-surface-container-highest-dark: rgba(30, 30, 30, 0.8); /* Menos transparente */
+
+  --md-sys-color-surface-bright-dark: #121212;
+  --md-sys-color-surface-dim-dark: #000000;
+}
+
 body {
   font-family: 'Inter', sans-serif;
-  /* Adicionar um background para o blur ser mais notável.
-     Use uma imagem sutil ou um gradiente para o efeito ser visível.
-     Por exemplo: background: url('https://placehold.co/1920x1080/0A0A0A/BB86FC?text=Background') no-repeat center center fixed;
-     background-size: cover;
-  */
-  background-color: var(--md-sys-color-background); /* Garante que o fundo seja preto AMOLED */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding-top: 100px; /* Mantém o espaço para o cabeçalho fixo */
+  /* Propriedades para desabilitar o zoom em alguns navegadores (redundante com a meta tag, mas boa prática) */
+  touch-action: pan-x pan-y;
+  -ms-content-zooming: none;
+  overscroll-behavior: contain;
 }
 
-/* Cores Material 3 para o tema escuro (AMOLED com destaque Lilás mais escuro) */
-:root {
-  --md-sys-color-primary: #BB86FC; /* Lilás vibrante, ligeiramente mais escuro */
-  --md-sys-color-on-primary: #000000; /* Texto escuro no lilás */
-  --md-sys-color-primary-container: #825BB2; /* Lilás mais escuro para container */
-  --md-sys-color-on-primary-container: #FFFFFF; /* Texto claro no container lilás */
-
-  --md-sys-color-secondary: #03DAC6; /* Cian para contraste, se necessário */
-  --md-sys-color-on-secondary: #000000;
-  --md-sys-color-secondary-container: #018786;
-  --md-sys-color-on-secondary-container: #000000;
-
-  --md-sys-color-tertiary: #CF6679; /* Vermelho suave para alerta/hoje */
-  --md-sys-color-on-tertiary: #000000;
-  --md-sys-color-tertiary-container: #A42C44;
-  --md-sys-color-on-tertiary-container: #FFFFFF;
-
-  --md-sys-color-error: #FF4444; /* Vermelho mais forte para erros */
-  --md-sys-color-on-error: #000000;
-  --md-sys-color-error-container: #CC0000;
-  --md-sys-color-on-error-container: #FFFFFF;
-
-  --md-sys-color-background: #000000; /* Preto AMOLED */
-  --md-sys-color-on-background: #FFFFFF; /* Texto branco */
-  --md-sys-color-surface: #121212; /* Superfície muito escura */
-  --md-sys-color-on-surface: #FFFFFF;
-  --md-sys-color-surface-variant: #2C2C2C; /* Variante de superfície */
-  --md-sys-color-on-surface-variant: #CCCCCC;
-  --md-sys-color-outline: #424242; /* Contorno escuro */
-  --md-sys-color-outline-variant: #333333; /* Variante de contorno */
-
-  --md-sys-color-shadow: #000000;
-  --md-sys-color-scrim: #000000;
-  --md-sys-color-inverse-surface: #E0E0E0;
-  --md-sys-color-inverse-on-surface: #101010;
-  --md-sys-color-inverse-primary: #A060C0; /* Lilás inverso */
-  --md-sys-color-surface-dim: #0A0A0A;
-  --md-sys-color-surface-bright: #1A1A1A;
-  --md-sys-color-surface-container-lowest: #050505;
-  --md-sys-color-surface-container-low: #0F0F0F;
-  --md-sys-color-surface-container: #1A1A1A; /* Container principal */
-  --md-sys-color-surface-container-high: #242424; /* Container mais elevado */
-  --md-sys-color-surface-container-highest: #2E2E2E;
-  --modal-background-neutral-gradient: linear-gradient(160deg, rgba(10, 10, 10, 0.8), rgba(20, 20, 20, 0.8)); /* Mais transparente */
-  --modal-border-neutral: rgba(255, 255, 255, 0.08); /* Borda um pouco mais visível */
-  --modal-shadow-neutral-glow: 0 0 40px rgba(0, 0, 0, 0.2); /* Brilho escuro e neutro */
-
-  /* Converter cores hex para RGB para uso em rgba() */
-  --md-sys-color-surface-container-rgb: 26, 26, 26; /* 1A1A1A em RGB */
-  --md-sys-color-surface-container-high-rgb: 36, 36, 36; /* 242424 em RGB */
-  --md-sys-color-primary-rgb: 187, 134, 252; /* BB86FC em RGB */
-  --md-sys-color-outline-variant-rgb: 51, 51, 51; /* 333333 em RGB */
-  --md-sys-color-primary-container-rgb: 130, 91, 178; /* 825BB2 em RGB */
-  --md-sys-color-outline-rgb: 66, 66, 66; /* 424242 em RGB */
+/* Aplica o tema claro por padrão, se preferir */
+body {
+  --md-sys-color-primary: var(--md-sys-color-primary-light);
+  --md-sys-color-on-primary: var(--md-sys-color-on-primary-light);
+  --md-sys-color-primary-container: var(--md-sys-color-primary-container-light);
+  --md-sys-color-on-primary-container: var(--md-sys-color-on-primary-container-light);
+  --md-sys-color-secondary: var(--md-sys-color-secondary-light);
+  --md-sys-color-on-secondary: var(--md-sys-color-on-secondary-light);
+  --md-sys-color-secondary-container: var(--md-sys-color-secondary-container-light);
+  --md-sys-color-on-secondary-container: var(--md-sys-color-on-secondary-container-light);
+  --md-sys-color-tertiary: var(--md-sys-color-tertiary-light);
+  --md-sys-color-on-tertiary: var(--md-sys-color-on-tertiary-light);
+  --md-sys-color-tertiary-container: var(--md-sys-color-tertiary-container-light);
+  --md-sys-color-on-tertiary-container: var(--md-sys-color-on-tertiary-container-light);
+  --md-sys-color-error: var(--md-sys-color-error-light);
+  --md-sys-color-error-container: var(--md-sys-color-error-container-light);
+  --md-sys-color-on-error: var(--md-sys-color-on-error-light);
+  --md-sys-color-on-error-container: var(--md-sys-color-on-error-container-light);
+  --md-sys-color-background: var(--md-sys-color-background-light);
+  --md-sys-color-on-background: var(--md-sys-color-on-background-light);
+  --md-sys-color-surface: var(--md-sys-color-surface-light);
+  --md-sys-color-on-surface: var(--md-sys-color-on-surface-light);
+  --md-sys-color-surface-variant: var(--md-sys-color-surface-variant-light);
+  --md-sys-color-on-surface-variant: var(--md-sys-color-on-surface-variant-light);
+  --md-sys-color-outline: var(--md-sys-color-outline-light);
+  --md-sys-color-inverse-on-surface: var(--md-sys-color-inverse-on-surface-light);
+  --md-sys-color-inverse-surface: var(--md-sys-color-inverse-surface-light);
+  --md-sys-color-inverse-primary: var(--md-sys-color-inverse-primary-light);
+  --md-sys-color-shadow: var(--md-sys-color-shadow-light);
+  --md-sys-color-surface-tint: var(--md-sys-color-surface-tint-light);
+  --md-sys-color-outline-variant: var(--md-sys-color-outline-variant-light);
+  --md-sys-color-scrim: var(--md-sys-color-scrim-light);
+  --md-sys-color-surface-container: var(--md-sys-color-surface-container-light);
+  --md-sys-color-surface-container-high: var(--md-sys-color-surface-container-high-light);
+  --md-sys-color-surface-container-highest: var(--md-sys-color-surface-container-highest-light);
+  --md-sys-color-surface-container-low: var(--md-sys-color-surface-container-low-light);
+  --md-sys-color-surface-container-lowest: var(--md-sys-color-surface-container-lowest-light);
+  --md-sys-color-surface-bright: var(--md-sys-color-surface-bright-light);
+  --md-sys-color-surface-dim: var(--md-sys-color-surface-dim-light);
 }
 
-/* Estilo de rolagem personalizado para Webkit (Chrome, Safari) */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px; /* Para scroll horizontal */
+/* Dark Theme (AMOLED Preto e Lilás) */
+@media (prefers-color-scheme: dark) {
+  body {
+    --md-sys-color-primary: var(--md-sys-color-primary-dark);
+    --md-sys-color-on-primary: var(--md-sys-color-on-primary-dark);
+    --md-sys-color-primary-container: var(--md-sys-color-primary-container-dark);
+    --md-sys-color-on-primary-container: var(--md-sys-color-on-primary-container-dark);
+    --md-sys-color-secondary: var(--md-sys-color-secondary-dark);
+    --md-sys-color-on-secondary: var(--md-sys-color-on-secondary-dark);
+    --md-sys-color-secondary-container: var(--md-sys-color-secondary-container-dark);
+    --md-sys-color-on-secondary-container: var(--md-sys-color-on-secondary-container-dark);
+    --md-sys-color-tertiary: var(--md-sys-color-tertiary-dark);
+    --md-sys-color-on-tertiary: var(--md-sys-color-on-tertiary-dark);
+    --md-sys-color-tertiary-container: var(--md-sys-color-tertiary-container-dark);
+    --md-sys-color-on-tertiary-container: var(--md-sys-color-on-tertiary-container-dark);
+    --md-sys-color-error: var(--md-sys-color-error-dark);
+    --md-sys-color-error-container: var(--md-sys-color-error-container-dark);
+    --md-sys-color-on-error: var(--md-sys-color-on-error-dark);
+    --md-sys-color-on-error-container: var(--md-sys-color-on-error-container-dark);
+    --md-sys-color-background: var(--md-sys-color-background-dark);
+    --md-sys-color-on-background: var(--md-sys-color-on-background-dark);
+    --md-sys-color-surface: var(--md-sys-color-surface-dark);
+    --md-sys-color-on-surface: var(--md-sys-color-on-surface-dark);
+    --md-sys-color-surface-variant: var(--md-sys-color-surface-variant-dark);
+    --md-sys-color-on-surface-variant: var(--md-sys-color-on-surface-variant-dark);
+    --md-sys-color-outline: var(--md-sys-color-outline-dark);
+    --md-sys-color-inverse-on-surface: var(--md-sys-color-inverse-on-surface-dark);
+    --md-sys-color-inverse-surface: var(--md-sys-color-inverse-surface-dark);
+    --md-sys-color-inverse-primary: var(--md-sys-color-inverse-primary-dark);
+    --md-sys-color-shadow: var(--md-sys-color-shadow-dark);
+    --md-sys-color-surface-tint: var(--md-sys-color-surface-tint-dark);
+    --md-sys-color-outline-variant: var(--md-sys-color-outline-variant-dark);
+    --md-sys-color-scrim: var(--md-sys-color-scrim-dark);
+    --md-sys-color-surface-container: var(--md-sys-color-surface-container-dark);
+    --md-sys-color-surface-container-high: var(--md-sys-color-surface-container-high-dark);
+    --md-sys-color-surface-container-highest: var(--md-sys-color-surface-container-highest-dark);
+    --md-sys-color-surface-container-low: var(--md-sys-color-surface-container-low-dark);
+    --md-sys-color-surface-container-lowest: var(--md-sys-color-surface-container-lowest-dark);
+    --md-sys-color-surface-bright: var(--md-sys-color-surface-bright-dark);
+    --md-sys-color-surface-dim: var(--md-sys-color-surface-dim-dark);
+  }
 }
 
-::-webkit-scrollbar-track {
-  background: var(--md-sys-color-surface-container-low);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--md-sys-color-outline);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--md-sys-color-outline-variant);
-}
-
-/* Estilo para simular o efeito ripple em botões (apenas visual) */
-.btn-ripple:active {
-  transform: scale(0.98);
-  transition: transform 0.1s ease-out;
-}
-.btn-ripple:focus {
-  outline: none; /* Remover outline padrão */
-  box-shadow: 0 0 0 2px var(--md-sys-color-primary-container), 0 0 0 4px var(--md-sys-color-primary); /* Anel de foco */
-}
-
-/* Classes para o efeito de blur nos botões */
-.button-blur {
-  backdrop-filter: blur(24px); /* Aumentado de 16px para 24px - blur mais intenso */
-  -webkit-backdrop-filter: blur(24px); /* Compatibilidade com Webkit */
-  background-color: rgba(var(--md-sys-color-surface-container-rgb), 0.5); /* Fundo semi-transparente */
-  border: 1px solid rgba(var(--md-sys-color-outline-variant-rgb), 0.3); /* Borda sutil */
-}
-
-/* Ajustes para cores ativas e hover com blur */
-.filters button, .period button {
-  padding: 0.8rem 1.6rem; /* Aumentado o padding para botões maiores */
-  border-radius: 1rem; /* Mais arredondado */
-  font-weight: 600;
-  font-size: 1rem; /* Aumentado o tamanho da fonte */
-  border: 1px solid rgba(255, 255, 255, 0.15); /* Borda mais sutil para o estado normal */
-  background-color: rgba(var(--md-sys-color-surface-container-rgb), 0.3); /* Fundo mais transparente */
-  color: var(--md-sys-color-on-surface); /* Cor de texto padrão */
-  transition: all 0.2s ease;
-  margin-left: 0.5rem;
-  flex-shrink: 0;
-  backdrop-filter: blur(12px); /* Blur base para todos os botões */
-  -webkit-backdrop-filter: blur(12px);
-}
-
-.filters button.active, .period button.active {
-  padding: 0.8rem 1.6rem; /* Padding consistente com o tamanho maior */
-  border-radius: 1rem; /* Consistente com o tamanho maior */
-  font-weight: 600;
-  font-size: 1rem; /* Fonte consistente com o tamanho maior */
-  border: 1px solid rgba(255, 255, 255, 0.5); /* Borda mais visível para o estado ativo */
-  /* Gradiente mais expressivo e ligeiramente mais opaco para o estado ativo */
-  background: linear-gradient(135deg, rgba(var(--md-sys-color-primary-container-rgb), 0.4), rgba(var(--md-sys-color-primary-rgb), 0.5));
-  color: var(--md-sys-color-on-primary-container); /* Usar a cor de texto do container primário */
-  box-shadow: 0 4px 15px rgba(var(--md-sys-color-primary-rgb), 0.4); /* Sombra que reflete a cor primária */
-  backdrop-filter: blur(20px); /* Blur intenso para o botão ativo */
-  -webkit-backdrop-filter: blur(20px);
-}
-
-.filters button:hover:not(.active), .period button:hover:not(.active) {
-  /* Mantenho o gradiente de hover forte para expressividade, mas com um toque de blur */
-  background: linear-gradient(135deg, rgba(89, 59, 162, 0.7), rgba(162, 0, 255, 0.7));
-  border-color: rgba(255, 255, 255, 0.3); /* Borda um pouco mais visível no hover */
-  box-shadow: 0 6px 20px rgba(130, 0, 255, 0.3), 0 2px 8px rgba(0,0,0,0.3); /* Sombra um pouco mais forte */
-  backdrop-filter: blur(15px); /* Blur mais intenso no hover */
-  -webkit-backdrop-filter: blur(15px);
-}
-
-/* Blur para o conteúdo do modal */
-#filterModal .modal-content {
-  backdrop-filter: blur(20px); /* Aumentado de 12px para 20px - blur mais intenso */
-  -webkit-backdrop-filter: blur(20px);
-  background-color: rgba(var(--md-sys-color-surface-container-high-rgb), 0.6); /* Fundo semi-transparente para o modal */
-  border: 1px solid var(--modal-border-neutral); /* Garante a borda definida */
-  box-shadow: var(--modal-shadow-neutral-glow); /* Garante o brilho da sombra */
-}
-
-/* Aumentar o tamanho do cartão */
-.item {
-  width: 200px;
-  min-height: 100px; /* Aumentado de 140px */
-  border-radius: 1.5rem; /* Mais arredondado - rounded-xl */
-  background-color: var(--md-sys-color-surface-container); /* Usa a cor de superfície do Material 3 */
-  border: 1px solid rgba(var(--md-sys-color-outline-rgb), 0.2); /* Borda sutil */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); /* Sombra para profundidade */
-}
-
-.item .poster {
-  width: 300px; /* Aumentado */
-  height: 200px; /* Aumentado */
-}
-
-.item .relative.w-full.h-24 {
-  height: 140px; /* Aumentado o backdrop */
-}
-
-.item .content {
-  margin-top: 0px; /* Ajuste para compensar o poster maior */
-}
-
-/* Novo estilo para o header transparente com blur */
-.header-blur {
-  position: sticky; /* ou fixed, dependendo do comportamento desejado */
+.header {
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  padding: 1rem 1.5rem; /* Padding para o header */
-  background-color: rgba(var(--md-sys-color-background-rgb), 0.6); /* Fundo semi-transparente */
-  backdrop-filter: blur(30px); /* Blur bem intenso para o header */
-  -webkit-backdrop-filter: blur(30px); /* Compatibilidade com Webkit */
-  z-index: 1000; /* Garante que o header fique acima de outros elementos */
-  border-bottom: 1px solid rgba(var(--md-sys-color-outline-variant-rgb), 0.2); /* Borda inferior sutil */
+  z-index: 20;
+  background-color: var(--md-sys-color-surface-container-high-dark); /* Container mais opaco para o header */
+  backdrop-filter: blur(25px); /* MUITO BLUR */
+  -webkit-backdrop-filter: blur(25px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); /* Sombra mais forte para o AMOLED */
 }
 
-/* Adicione a variável RGB para a cor do background */
-:root {
-  /* ... suas outras variáveis ... */
-  --md-sys-color-background-rgb: 0, 0, 0; /* 000000 em RGB */
+/* Ripple effect and blur for buttons */
+.btn-ripple {
+  position: relative;
+  overflow: hidden;
+  transform: translate3d(0, 0, 0);
+}
+
+.btn-ripple:after {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, #ffffff 10%, transparent 10.01%); /* Ripple mais claro */
+  background-repeat: no-repeat;
+  background-position: 50%;
+  transform: scale(10, 10);
+  opacity: 0;
+  transition: transform .5s, opacity 1s;
+}
+
+.btn-ripple:active:after {
+  transform: scale(0, 0);
+  opacity: .3; /* Ripple mais visível */
+  transition: 0s;
+}
+
+.button-blur {
+  background-color: var(--md-sys-color-surface-container-dark); /* Botões com boa transparência */
+  backdrop-filter: blur(20px); /* Muito blur nos botões */
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--md-sys-color-outline-dark); /* Borda mais sutil no AMOLED */
+}
+
+.modal-content {
+  background-color: var(--md-sys-color-surface-container-highest-dark); /* Modal bem transparente */
+  backdrop-filter: blur(35px); /* EXTREMO BLUR para o modal */
+  -webkit-backdrop-filter: blur(35px);
+  color: var(--md-sys-color-on-surface-dark);
+  border: 1px solid var(--md-sys-color-outline-dark);
+}
+
+/* Active state for filter buttons */
+.filters .active, .period .active {
+  background-color: var(--md-sys-color-primary-dark); /* Lilás vibrante para o destaque */
+  color: var(--md-sys-color-on-primary-dark);
+  border-color: var(--md-sys-color-primary-dark);
+}
+
+.weekdays {
+  margin-top: 10px;
+  background-color: var(--md-sys-color-surface-container-dark); /* Fundo dos dias com transparência */
+  backdrop-filter: blur(20px); /* Blur nos dias da semana */
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--md-sys-color-outline-dark); /* Adiciona borda sutil */
+  border-bottom: none; /* Remove borda inferior para conectar com o calendário */
+}
+
+#calendar {
+  margin-bottom: 10px;
+  background-color: var(--md-sys-color-surface-container-lowest-dark); /* Fundo do calendário com mais transparência */
+  backdrop-filter: blur(15px); /* Blur no calendário */
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--md-sys-color-outline-dark); /* Borda sutil */
+  border-top: none; /* Remove borda superior para conectar com os dias da semana */
+}
+
+/* Estilos gerais para remover seleção de texto e comportamento de zoom em alguns casos */
+body, html {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+  -webkit-tap-highlight-color: transparent; /* Remove o destaque de toque em mobile */
+}
+
+input, button, select, textarea {
+  -webkit-user-select: auto; /* Permite seleção de texto em campos de input */
 }
