@@ -1,175 +1,294 @@
-const apiURL = 'https://superflixapi.pw/calendario.php';
-let data = [];
-let periodo = 'semana';
+document.addEventListener('DOMContentLoaded', () => {
+    const apiURL = 'https://superflixapi.pw/calendario.php';
+    let data = [];
+    let periodo = 'semana';
+    let itemsByDay = {};
+    let selectedDateKey = null;
 
-// Referências para os elementos do modal
-const filterModal = document.getElementById('filterModal');
-const toggleFiltersBtn = document.getElementById('toggleFiltersBtn');
-const closeModalBtn = document.getElementById('closeModalBtn');
-const calendarElement = document.getElementById('calendar');
-const searchInput = document.getElementById('search');
-
-// Função para buscar os dados da API
-async function fetchData() {
-  try {
-    const response = await fetch(apiURL);
-    data = await response.json();
-    render();
-  } catch (error) {
-    console.error('Erro ao buscar dados da API:', error);
-    // Poderia adicionar um tratamento de erro na UI aqui, se desejar
-  }
-}
-
-// Função para atualizar as classes 'active' dos botões
-function updateButtonActiveState(buttonElement, isActive) {
-  if (isActive) {
-    buttonElement.classList.add('active');
-  } else {
-    buttonElement.classList.remove('active');
-  }
-}
-
-// Adiciona listener para o botão de toggle de filtros (abre o modal)
-toggleFiltersBtn.addEventListener('click', () => {
-  filterModal.classList.remove('hidden');
-  // Sincroniza o estado dos botões do modal com os filtros aplicados
-  document.querySelectorAll('#filterModal .filters button[data-type]').forEach(b => {
-    const currentActiveType = document.querySelector('.filters button[data-type].active')?.dataset.type;
-    updateButtonActiveState(b, b.dataset.type === currentActiveType);
-  });
-  document.querySelectorAll('#filterModal .filters button[data-status]').forEach(b => {
-    const currentActiveStatuses = [...document.querySelectorAll('.filters button[data-status].active')].map(btn => btn.dataset.status);
-    updateButtonActiveState(b, currentActiveStatuses.includes(b.dataset.status));
-  });
-});
-
-// Adiciona listener para o botão de fechar o modal
-closeModalBtn.addEventListener('click', () => {
-  filterModal.classList.add('hidden');
-});
-
-// Adiciona listener para fechar o modal clicando no overlay
-filterModal.addEventListener('click', (event) => {
-  if (event.target === filterModal) {
-    filterModal.classList.add('hidden');
-  }
-});
-
-// Adiciona listeners para os botões de filtro de tipo e status (dentro do modal)
-document.querySelectorAll('#filterModal .filters button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    if (btn.dataset.type) {
-      document.querySelectorAll('#filterModal [data-type]').forEach(b => updateButtonActiveState(b, false));
+    const contentArea = document.getElementById('content-area');
+    const searchInput = document.getElementById('search');
+    const filterModal = document.getElementById('filterModal');
+    const weekNav = document.getElementById('week-navigation');
+    
+    async function fetchData() {
+        contentArea.innerHTML = `<p class="text-center col-span-full p-10 text-[var(--on-surface-variant-color)]">Carregando lançamentos...</p>`;
+        try {
+            const response = await fetch(apiURL);
+            if (!response.ok) throw new Error(`Erro na API: ${response.statusText}`);
+            data = await response.json();
+            initializeFilters();
+            render();
+        } catch (error) {
+            console.error('Erro ao buscar dados da API:', error);
+            contentArea.innerHTML = `<p class="text-center col-span-full p-10 text-[var(--status-atrasado)]">Não foi possível carregar os dados.</p>`;
+        }
     }
-    if (btn.dataset.status) {
-      updateButtonActiveState(btn, !btn.classList.contains('active'));
-    } else {
-      updateButtonActiveState(btn, true);
+    
+    function initializeFilters() {
+        document.querySelectorAll('#filterModal .filters button').forEach(btn => {
+            btn.className = "button-blur px-4 py-2 rounded-full text-sm text-[var(--on-surface-variant-color)] bg-[var(--surface-color)] border border-[var(--outline-color)] transition-all";
+            if(btn.classList.contains('active')) {
+                btn.classList.add('active');
+            }
+        });
     }
-    render(); // Re-renderiza o calendário com os novos filtros
-  });
-});
 
-// Adiciona listeners para os botões de período (Semana/Mês)
-document.querySelectorAll('.period button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    periodo = btn.id;
-    document.querySelectorAll('.period button').forEach(b => updateButtonActiveState(b, false));
-    updateButtonActiveState(btn, true);
-    render();
-  });
-});
+    // ========================================================================
+    // EVENT LISTENERS
+    // ========================================================================
 
-// Adiciona listener para o campo de busca
-searchInput.addEventListener('input', render);
-
-function render() {
-  // Obtém os filtros ativos dos botões no modal
-  const type = document.querySelector('#filterModal .filters button.active[data-type]')?.dataset.type;
-  const activeStatuses = [...document.querySelectorAll('#filterModal .filters button.active[data-status]')].map(b => b.dataset.status);
-  const search = searchInput.value.toLowerCase();
-
-  const hoje = new Date();
-  let start, end;
-  if (periodo === 'semana') {
-    start = new Date(hoje);
-    start.setDate(hoje.getDate() - hoje.getDay()); // Define para o início da semana (Domingo)
-    start.setHours(0, 0, 0, 0); // Zera a hora para comparação
-    end = new Date(start);
-    end.setDate(start.getDate() + 6); // Define para o final da semana (Sábado)
-    end.setHours(23, 59, 59, 999); // Define a hora para o final do dia
-  } else { // Período 'mes'
-    start = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-    start.setHours(0, 0, 0, 0);
-    end = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0); // Último dia do mês
-    end.setHours(23, 59, 59, 999);
-  }
-
-  const days = [];
-  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-    days.push(new Date(d));
-  }
-
-  calendarElement.innerHTML = '';
-  days.forEach(day => {
-    const dayEl = document.createElement('div');
-    dayEl.className = 'day flex flex-col bg-[var(--md-sys-color-surface-container)] rounded-lg border border-[var(--md-sys-color-outline-variant)] shadow-sm min-h-36 overflow-y-auto';
-    const label = day.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit' });
-    dayEl.innerHTML = `<h3 class="text-sm font-semibold px-2 py-1 bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface)] rounded-t-lg border-b border-[var(--md-sys-color-outline-variant)] sticky top-0 z-10">${label}</h3>`;
-
-    data.filter(item => {
-      const itemDate = new Date(item.air_date);
-      itemDate.setHours(0, 0, 0, 0); // Zera a hora do item para comparação apenas da data
-      
-      const matchDate = itemDate.toDateString() === day.toDateString();
-      const matchType = (type === 'all' || !type) || (item.type.toString() === type);
-      const matchStatus = activeStatuses.length === 0 || activeStatuses.includes(item.status); // Se nenhum status estiver ativo, mostra todos
-      const matchSearch = !search || item.title.toLowerCase().includes(search) || item.episode.toLowerCase().includes(search);
-      
-      return matchDate && matchType && matchStatus && matchSearch;
-    }).forEach(item => {
-      const ep = document.createElement('div');
-      const posterURL = item.poster ? `https://image.tmdb.org/t/p/w185${item.poster}` : 'https://placehold.co/40x60/363636/DDDDDD?text=No+Poster';
-      const backdropURL = item.backdrop ? `https://image.tmdb.org/t/p/w500${item.backdrop}` : '';
-
-      ep.className = `item relative flex flex-col rounded-xl overflow-hidden m-1 shadow-md
-        transition-transform duration-200 hover:scale-[1.02] cursor-pointer
-        ${item.status === 'Atualizado' ? 'border-l-4 border-[var(--md-sys-color-primary)]' : ''}
-        ${item.status === 'Hoje' ? 'border-l-4 border-[var(--md-sys-color-tertiary)]' : ''}
-        ${item.status === 'Futuro' ? 'border-l-4 border-[var(--md-sys-color-secondary)]' : ''}
-        ${item.status === 'Atrasado' ? 'border-l-4 border-[var(--md-sys-color-error)]' : ''}
-      `;
-      ep.innerHTML = `
-        <div class="relative w-full h-[140px] overflow-hidden rounded-t-xl">
-          ${backdropURL ? `<img class="absolute inset-0 w-full h-full object-cover opacity-60" src="${backdropURL}" alt="Backdrop de ${item.title}">` : `<div class="absolute inset-0 w-full h-full bg-[var(--md-sys-color-surface-container-high)]"></div>`}
-          <div class="absolute inset-0 bg-gradient-to-t from-[var(--md-sys-color-surface-container-high)] to-transparent"></div>
-          <img class="absolute left-2 bottom-2 w-20 h-32 object-cover flex-shrink-0 rounded-lg shadow-md border-2 border-[var(--md-sys-color-outline-variant)]" src="${posterURL}" alt="Poster de ${item.title}">
-        </div>
-        <div class="content p-2 flex flex-col justify-end flex-grow mt-[-60px] z-10 bg-[var(--md-sys-color-surface-container-high)] rounded-b-xl">
-          <div class="title font-bold text-[var(--md-sys-color-on-surface)] text-base mb-0.5 leading-tight">${item.title}</div>
-          <div class="episode text-[var(--md-sys-color-on-surface-variant)] text-sm leading-tight">${item.episode} (T${item.season}E${item.number})</div>
-          <div class="status text-[var(--md-sys-color-on-surface-variant)] text-sm mt-1 leading-tight">${item.status}</div>
-        </div>
-      `;
-      dayEl.appendChild(ep);
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal || event.target.closest('[data-close-modal]')) {
+                modal.classList.add('hidden');
+            }
+        });
     });
 
-    calendarElement.appendChild(dayEl);
-  });
+    document.getElementById('toggleFiltersBtn').addEventListener('click', () => filterModal.classList.remove('hidden'));
 
-  // Garante que o estado inicial dos botões ativos seja configurado na renderização inicial
-  // para os botões do modal e período, pois eles controlam o filtro agora
-  document.querySelectorAll('#filterModal .filters button[data-type]').forEach(b => {
-    const activeType = document.querySelector('#filterModal .filters button[data-type].active')?.dataset.type;
-    updateButtonActiveState(b, b.dataset.type === activeType);
-  });
-  document.querySelectorAll('#filterModal .filters button[data-status]').forEach(b => {
-    const activeStatuses = [...document.querySelectorAll('#filterModal .filters button[data-status].active')].map(btn => btn.dataset.status);
-    updateButtonActiveState(b, activeStatuses.includes(b.dataset.status));
-  });
-  document.querySelectorAll('.period button.active').forEach(b => updateButtonActiveState(b, true));
-}
+    filterModal.addEventListener('click', (event) => {
+        const btn = event.target.closest('button');
+        if (!btn || !btn.parentElement.classList.contains('filters') || btn.hasAttribute('data-close-modal')) return;
+        
+        if (btn.dataset.type) {
+            btn.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        }
+        btn.classList.toggle('active');
+        render();
+    });
 
-// Inicia a busca de dados e a renderização
-fetchData();
+    document.querySelector('.period').addEventListener('click', (event) => {
+        const btn = event.target.closest('button');
+        if (btn && btn.id) {
+            periodo = btn.id;
+            document.querySelectorAll('.period button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            render();
+        }
+    });
+
+    let searchTimeout;
+    searchInput.addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(render, 300);
+    });
+
+    weekNav.addEventListener('click', (event) => {
+        const dayButton = event.target.closest('.day-button');
+        if (!dayButton) return;
+        selectedDateKey = dayButton.dataset.datekey;
+        renderContentForDay(selectedDateKey);
+    });
+
+    contentArea.addEventListener('click', (event) => {
+        const dayCell = event.target.closest('.month-day-cell');
+        if(!dayCell || !dayCell.dataset.datekey) return;
+        const dateKey = dayCell.dataset.datekey;
+        showMonthDetailModal(dateKey, itemsByDay[dateKey] || []);
+    });
+
+    // ========================================================================
+    // FUNÇÕES DE RENDERIZAÇÃO
+    // ========================================================================
+
+    function showMonthDetailModal(dateKey, items) {
+        const modal = document.getElementById('monthDetailModal');
+        const modalTitle = document.getElementById('monthDetailModalTitle');
+        const modalContent = document.getElementById('monthDetailModalContent');
+        
+        const day = new Date(dateKey + 'T00:00:00');
+        modalTitle.textContent = day.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' });
+        
+        modalContent.innerHTML = '';
+        if(items.length > 0) {
+            items.forEach(item => modalContent.appendChild(createItemCard(item)));
+        }
+        modal.classList.remove('hidden');
+    }
+
+    function createItemCard(item) {
+        const posterURL = item.poster ? `https://image.tmdb.org/t/p/w185${item.poster}` : 'https://placehold.co/185x278/607D8B/FFFFFF?text=N/A';
+        const backdropURL = item.backdrop ? `https://image.tmdb.org/t/p/w500${item.backdrop}` : '';
+        const overviewHTML = item.overview ? `<p class="text-xs text-[var(--on-surface-variant-color)] mt-2">${item.overview}</p>` : '';
+        
+        let borderColor = '';
+        switch (item.status) {
+            case 'Atualizado': borderColor = 'var(--status-atualizado)'; break;
+            case 'Hoje': borderColor = 'var(--status-hoje)'; break;
+            case 'Futuro': borderColor = 'var(--status-futuro)'; break;
+            case 'Atrasado': borderColor = 'var(--status-atrasado)'; break;
+        }
+
+        const itemEl = document.createElement('div');
+        itemEl.className = `relative overflow-hidden flex flex-col bg-black/30 backdrop-blur-xl rounded-2xl border border-white/20`;
+        itemEl.style.borderLeft = `4px solid ${borderColor}`;
+
+        itemEl.innerHTML = `
+            ${backdropURL ? `<img src="${backdropURL}" class="absolute top-0 left-0 w-full h-full object-cover opacity-30 z-0">` : ''}
+            <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/80 via-black/50 to-transparent z-10"></div>
+            <div class="relative z-20 p-3 flex flex-col justify-end flex-grow">
+                <div class="flex items-start gap-4">
+                    <img class="w-20 h-28 object-cover flex-shrink-0 rounded-lg shadow-md" src="${posterURL}" alt="Poster" loading="lazy" onerror="this.src='https://placehold.co/185x278/607D8B/FFFFFF?text=N/A'">
+                    <div class="flex-grow pt-10">
+                        <h3 class="font-bold text-[var(--on-surface-color)]">${item.title}</h3>
+                        <p class="text-sm text-[var(--on-surface-variant-color)] mt-1">${item.episode} (T${item.season}E${item.number})</p>
+                        ${overviewHTML}
+                    </div>
+                </div>
+            </div>
+        `;
+        return itemEl;
+    }
+
+    function renderContentForDay(dateKey) {
+        contentArea.innerHTML = '';
+        document.querySelectorAll('.day-button').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll(`.day-button[data-datekey="${dateKey}"]`).forEach(btn => btn.classList.add('active'));
+
+        const items = itemsByDay[dateKey] || [];
+        if (items.length === 0) {
+            contentArea.innerHTML = `<p class="text-center p-10 text-[var(--on-surface-variant-color)]">Nenhum lançamento para este dia.</p>`;
+            return;
+        }
+
+        const contentWrapper = document.createElement('div');
+        contentWrapper.className = "grid grid-cols-1 md:grid-cols-2 gap-4";
+        items.forEach(item => contentWrapper.appendChild(createItemCard(item)));
+        contentArea.appendChild(contentWrapper);
+    }
+
+    function renderWeekNavigation() {
+        weekNav.innerHTML = '';
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+        const startOfWeek = new Date(hoje);
+        startOfWeek.setDate(hoje.getDate() - hoje.getDay());
+
+        for (let i = 0; i < 7; i++) {
+            const day = new Date(startOfWeek);
+            day.setDate(startOfWeek.getDate() + i);
+            const dateKey = day.toISOString().split('T')[0];
+            const itemCount = itemsByDay[dateKey]?.length || 0;
+
+            const dayButton = document.createElement('button');
+            dayButton.className = 'day-button relative flex-shrink-0 flex flex-col items-center justify-center p-2 rounded-xl border border-white/20 bg-black/20 transition-all duration-200 hover:bg-white/10 w-20 h-20';
+            dayButton.dataset.datekey = dateKey;
+            
+            let dayLabelClass = "font-semibold text-xs text-[var(--on-surface-variant-color)]";
+            let dayNumberClass = "font-bold text-2xl text-[var(--on-surface-color)]";
+            if(dateKey === hoje.toISOString().split('T')[0]){
+                 dayLabelClass = "font-bold text-xs text-[var(--primary-color)]";
+                 dayNumberClass = "font-bold text-2xl text-[var(--primary-color)]";
+            }
+            
+            dayButton.innerHTML = `
+                <p class="${dayLabelClass}">${day.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '').toUpperCase()}</p>
+                <p class="${dayNumberClass}">${day.getDate()}</p>
+                ${itemCount > 0 ? `<span class="absolute top-1 right-1 text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full bg-[var(--primary-color)] text-white">${itemCount}</span>` : ''}
+            `;
+            
+            weekNav.appendChild(dayButton);
+        }
+    }
+    
+    function renderMonthView() {
+        contentArea.innerHTML = '';
+        const hoje = new Date();
+        hoje.setHours(0,0,0,0);
+        const startOfMonth = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+        const endOfMonth = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+        const daysInMonth = endOfMonth.getDate();
+        const startDayOfWeek = startOfMonth.getDay();
+
+        const weekdays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+        const headerGrid = document.createElement('div');
+        headerGrid.className = "grid grid-cols-7 gap-2 text-center mb-2";
+        weekdays.forEach(day => {
+            headerGrid.innerHTML += `<div class="text-xs font-bold text-[var(--on-surface-variant-color)]">${day.toUpperCase()}</div>`;
+        });
+        contentArea.appendChild(headerGrid);
+
+        const calendarGrid = document.createElement('div');
+        calendarGrid.className = "grid grid-cols-7 gap-2";
+
+        for (let i = 0; i < startDayOfWeek; i++) {
+            calendarGrid.appendChild(document.createElement('div'));
+        }
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dayCell = document.createElement('div');
+            const currentDate = new Date(hoje.getFullYear(), hoje.getMonth(), day);
+            const dateKey = currentDate.toISOString().split('T')[0];
+            const itemCount = itemsByDay[dateKey]?.length || 0;
+
+            dayCell.className = `month-day-cell relative flex flex-col items-center justify-start h-24 rounded-2xl bg-black/20 border border-white/10 transition-all duration-200 p-2`;
+            
+            let dayNumberClass = "font-bold text-lg text-[var(--on-surface-color)]";
+
+            if (itemCount > 0) {
+                dayCell.classList.add('cursor-pointer', 'hover:bg-white/20');
+                dayCell.dataset.datekey = dateKey;
+                dayCell.innerHTML = `<span class="absolute top-1 right-2 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[var(--primary-color)] text-white">${itemCount}</span>`;
+            }
+
+            if (currentDate.toDateString() === hoje.toDateString()) {
+                dayCell.classList.add('border-2', 'border-[var(--primary-color)]');
+                dayNumberClass = "font-bold text-lg text-[var(--primary-color)]";
+            }
+            
+            const dayNumberEl = document.createElement('span');
+            dayNumberEl.className = `${dayNumberClass} self-start`;
+            dayNumberEl.textContent = day;
+            dayCell.prepend(dayNumberEl);
+
+            calendarGrid.appendChild(dayCell);
+        }
+        contentArea.appendChild(calendarGrid);
+    }
+
+    function render() {
+        const type = document.querySelector('.filters button[data-type].active')?.dataset.type || 'all';
+        const activeStatuses = [...document.querySelectorAll('.filters button[data-status].active')].map(b => b.dataset.status);
+        const search = searchInput.value.toLowerCase();
+
+        itemsByDay = {};
+        data.filter(item => {
+            if (!item.air_date) return false;
+            const matchType = type === 'all' || (item.type && item.type.toString() === type);
+            const matchStatus = activeStatuses.length === 0 || activeStatuses.includes(item.status);
+            const matchSearch = !search || (item.title && item.title.toLowerCase().includes(search)) || (item.episode && item.episode.toLowerCase().includes(search));
+            return matchType && matchStatus && matchSearch;
+        }).forEach(item => {
+            const dateKey = item.air_date.split(' ')[0];
+            if (!itemsByDay[dateKey]) itemsByDay[dateKey] = [];
+            itemsByDay[dateKey].push(item);
+        });
+
+        if (periodo === 'semana') {
+            weekNav.classList.remove('hidden');
+            renderWeekNavigation();
+            const todayKey = new Date().toISOString().split('T')[0];
+            selectedDateKey = itemsByDay[todayKey] ? todayKey : Object.keys(itemsByDay).find(key => {
+                const d = new Date(key + "T00:00:00");
+                const start = new Date(todayKey);
+                start.setDate(start.getDate() - start.getDay());
+                start.setHours(0,0,0,0);
+                const end = new Date(start);
+                end.setDate(start.getDate()+6);
+                return d >= start && d <= end;
+            }) || todayKey;
+            renderContentForDay(selectedDateKey);
+        } else {
+            weekNav.classList.add('hidden');
+            renderMonthView();
+        }
+
+        document.querySelectorAll('.filters button').forEach(btn => {
+            btn.classList.toggle('active', btn.matches('.active'));
+        });
+    }
+
+    fetchData();
+});
+
