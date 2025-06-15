@@ -8,9 +8,11 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-    <button id="fullscreenBtn" class="fullscreen-toggle" title="Tela cheia">
+    <!-- Botão fullscreen (desktop only) -->
+<button id="fullscreenBtn" class="fullscreen-toggle" title="Tela cheia">
   <i class="fas fa-expand"></i>
 </button>
+
 
   <iframe id="newsFrame" src="Catalogo1/index.html" title="inicio"></iframe>
 
@@ -21,28 +23,28 @@
     <a href="#" class="icon-button" id="iframeBackButton" title="Voltar" style="display: none;">
       <i class="fas fa-arrow-left"></i>
     </a>
-    
-    <a href="?pagina=https%3A%2F%2Ffeed-pearl.vercel.app%2F" class="icon-button" title="Notícias">
-      <i class="fas fa-newspaper"></i>
+    <!-- Novo Botão de Notícias -->
+    <a href="https://feed-pearl.vercel.app/" class="icon-button" title="Notícias">
+      <i class="fas fa-newspaper"></i> <!-- Ícone de exemplo para notícias -->
     </a>
-    <a href="?pagina=Hyper/hyper.html" class="icon-button" title="Hyper">
+    <a href="Hyper/hyper.html" class="icon-button" title="Hyper">
       <img src="p.png" alt="Hyper" style="width: 1em; height: 1em; vertical-align: middle;" onerror="this.alt='Imagem não encontrada'; this.src='https://placehold.co/24x24/transparent/777?text=H&font=fontawesome'; console.error('Erro ao carregar p.png. Verifique o caminho do ficheiro.')">
     </a>
-    <a href="?pagina=Yt/yt.html" class="icon-button" title="YouTube">
+    <a href="Yt/yt.html" class="icon-button" title="YouTube">
       <i class="fa-brands fa-youtube"></i>
     </a>
-    <a href="?pagina=sorteio/index.html" class="icon-button" title="Not2">
+    <a href="sorteio/index.html" class="icon-button" title="Not2">
       <i class="fa-solid fa-cube"></i>
     </a>
-    <a href="?pagina=links/links.html" class="icon-button" title="Links">
+    <a href="links/links.html" class="icon-button" title="Links">
       <i class="fa-solid fa-link"></i>
     </a>
-    <a href="?pagina=calendario/index.html" class="icon-button" title="Calendário">
+    <a href="calendario/index.html" class="icon-button" title="Links">
       <i class="fa-solid fa-calendar-days"></i>
     </a>
   </div>
 
-  <script src="./js/script.js"></script>
+  <script src="js/script.js"></script>
 
 </body>
 </html>
