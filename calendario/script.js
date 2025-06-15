@@ -224,6 +224,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 </span>
             </div>
         `;
+
+        // NOVO: HTML para a tag de status
+        const statusTagHTML = `
+            <span class="status-tag status-tag-${item.status.toLowerCase()}">
+                ${item.status}
+            </span>
+        `;
         
         let borderColor = 'var(--outline-color)';
         switch (item.status) {
@@ -236,8 +243,8 @@ document.addEventListener('DOMContentLoaded', () => {
         itemEl.style.borderLeft = `3px solid ${borderColor}`;
 
         itemEl.innerHTML = `
+            ${statusTagHTML}
             <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/80 via-black/50 to-transparent z-10"></div>
-             <!-- MUDANÇA: Opacidade do backdrop do card aumentada para 30% -->
             ${backdropURL ? `<img src="${backdropURL}" class="absolute top-0 left-0 w-full h-full object-cover opacity-30 z-0" loading="lazy">` : ''}
             <div class="relative z-20 p-4 flex flex-col justify-end flex-grow">
                 <div class="flex items-start gap-4">
