@@ -39,6 +39,35 @@
   </div>
 
   <script src="./js/script.js"></script>
+<script>
+// Registro do Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(registration => {
+        console.log('✅ Service Worker registrado:', registration.scope);
+        
+        // Atualização automática quando novo SW estiver disponível
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              console.log('📦 Nova versão disponível! Atualize a página.');
+              // Adicione aqui lógica para pedir atualização ao usuário
+            }
+          });
+        });
+      })
+      .catch(error => {
+        console.error('❌ Falha no registro:', error);
+      });
+  });
 
+  // Verifica atualizações a cada acesso
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    window.location.reload();
+  });
+}
+</script>
 </body>
 </html>
