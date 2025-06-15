@@ -6,62 +6,39 @@
   <title>Calendário de Lançamentos</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <!-- Google Fonts -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
   <!-- Folha de Estilo Personalizada -->
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="min-h-screen flex flex-col font-sans">
+<body class="min-h-screen flex flex-col font-sans text-gray-200">
+
+<!-- Container para o fundo dinâmico -->
+<div id="backdrop-container"></div>
 
 <!-- Cabeçalho -->
 <header class="flex flex-wrap gap-4 p-4 items-center justify-center sm:justify-start sticky top-0 z-20 bg-black/50 backdrop-blur-lg border-b border-white/10">
-  <div class="flex flex-grow max-w-full sm:max-w-lg gap-2">
-    <input id="search" placeholder="Buscar série ou episódio..." class="flex-grow bg-[var(--surface-color)] text-[var(--on-surface-color)] px-4 py-2 rounded-full border border-[var(--outline-color)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] text-sm transition-all"/>
-    <button id="toggleFiltersBtn" class="bg-[var(--surface-color)] text-[var(--on-surface-color)] px-4 py-2 rounded-full border border-[var(--outline-color)] transition-all duration-200 text-sm flex-shrink-0 hover:bg-white/20">Filtros</button>
+  <!-- Container para busca e filtros -->
+  <div class="flex flex-grow w-full max-w-full lg:max-w-2xl gap-3 items-center">
+    <!-- Barra de Busca -->
+    <div class="flex-grow relative flex items-center">
+      <input id="search" placeholder="Buscar filmes ou séries..." class="w-full text-white placeholder-gray-300 pl-5 pr-12 py-3 rounded-xl focus:outline-none text-sm"/>
+      <svg class="absolute right-5 w-5 h-5 text-gray-300 pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
+      </svg>
+    </div>
+    <!-- Botão de Filtro -->
+    <button id="toggleFiltersBtn" class="text-white px-6 py-3 rounded-xl text-sm flex-shrink-0 font-semibold shadow-md">Filtros</button>
   </div>
+  
+  <!-- Botões de Período -->
   <div class="period flex flex-wrap gap-2 justify-center sm:justify-start w-full sm:w-auto">
-    <button id="semana" class="button-blur px-4 py-2 rounded-full text-sm text-[var(--on-surface-variant-color)] bg-[var(--surface-color)] border border-[var(--outline-color)] active">Semana</button>
-    <button id="mes" class="button-blur px-4 py-2 rounded-full text-sm text-[var(--on-surface-variant-color)] bg-[var(--surface-color)] border border-[var(--outline-color)]">Mês</button>
+    <button id="semana" class="button-blur px-4 py-2 rounded-full text-sm active">Semana</button>
+    <button id="mes" class="button-blur px-4 py-2 rounded-full text-sm">Mês</button>
   </div>
 </header>
-
-<!-- Modal de Filtros -->
-<div id="filterModal" class="modal fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden p-4 transition-opacity duration-300">
-  <div class="modal-container p-6 rounded-2xl shadow-xl w-11/12 max-w-md relative bg-gray-900/70 backdrop-blur-2xl border border-white/20">
-    <button data-close-modal class="absolute top-3 right-3 text-white/40 hover:text-white/80 text-2xl font-bold">&times;</button>
-    <h2 class="text-xl font-bold mb-6 text-[var(--on-surface-color)]">Opções de Filtro</h2>
-    <div class="mb-6">
-      <h3 class="text-lg font-semibold text-[var(--on-surface-color)] mb-2">Tipo:</h3>
-      <div class="filters flex flex-wrap gap-2">
-        <button data-type="all" class="button-blur px-4 py-2 rounded-full text-sm active">Todos</button>
-        <button data-type="2" class="button-blur px-4 py-2 rounded-full text-sm">Séries</button>
-        <button data-type="3" class="button-blur px-4 py-2 rounded-full text-sm">Animes</button>
-      </div>
-    </div>
-    <div>
-      <h3 class="text-lg font-semibold text-[var(--on-surface-color)] mb-2">Status:</h3>
-      <div class="filters flex flex-wrap gap-2">
-        <button data-status="Atualizado" class="button-blur px-4 py-2 rounded-full text-sm active">Atualizado</button>
-        <button data-status="Hoje" class="button-blur px-4 py-2 rounded-full text-sm active">Hoje</button>
-        <button data-status="Futuro" class="button-blur px-4 py-2 rounded-full text-sm active">Futuro</button>
-        <button data-status="Atrasado" class="button-blur px-4 py-2 rounded-full text-sm active">Atrasado</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal para Detalhes do Dia (Visão Mês) -->
-<div id="monthDetailModal" class="modal fixed inset-0 bg-black/50 flex items-center justify-center z-40 hidden p-4 transition-opacity duration-300">
-    <div class="modal-container flex flex-col p-0 rounded-2xl shadow-xl w-11/12 max-w-2xl relative bg-gray-900/70 backdrop-blur-2xl border border-white/20 h-[90vh] max-h-[700px]">
-        <header class="p-4 border-b border-white/10 flex items-center justify-between sticky top-0 bg-gray-900/50 backdrop-blur-xl rounded-t-2xl">
-            <h2 id="monthDetailModalTitle" class="text-xl font-bold text-[var(--on-surface-color)]">Lançamentos</h2>
-            <button data-close-modal class="text-white/40 hover:text-white/80 text-2xl font-bold">&times;</button>
-        </header>
-        <div id="monthDetailModalContent" class="flex-grow p-4 overflow-y-auto space-y-3">
-            <!-- Conteúdo do modal (lançamentos do dia) é inserido aqui -->
-        </div>
-    </div>
-</div>
 
 <!-- Container Principal do Conteúdo -->
 <main class="flex-grow p-4 flex flex-col gap-4">
@@ -73,7 +50,7 @@
     </div>
 </main>
 
-<!-- Script -->
+<!-- Script do Projeto -->
 <script src="script.js"></script>
 
 </body>
