@@ -134,7 +134,7 @@ async function performSearch(query) {
         window.location.href = '../Hyper/hyper.html';
         return;
     }
-    if (trimmedQuery === 'st') {
+    if (trimmedQuery === 'yt') {
         window.location.href = '../Yt/yt.html';
         return;
     }
