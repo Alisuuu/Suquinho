@@ -4,216 +4,140 @@ window.addEventListener('load', () => {
   const newsFrame = document.getElementById('newsFrame');
   const iframeBackButton = document.getElementById('iframeBackButton');
 
-  const HOME_PAGE = 'Catalogo1/index.html';
-  let iframeSrcHistory = [HOME_PAGE];
+  let inactivityTimerId;
+  const INACTIVITY_TIMEOUT_MS = 4000;
+  let iframeSrcHistory = ['Catalogo1/index.html'];
 
-  if (!sidebarToggleBtn || !sidebarButtonsContainer || !newsFrame || !iframeBackButton) return;
+  if (sidebarToggleBtn && sidebarButtonsContainer && newsFrame && iframeBackButton) {
+    const buttonsToToggleVisibility = Array.from(sidebarButtonsContainer.children)
+      .filter(child => child.classList.contains('icon-button') && 
+                       child.id !== 'sidebarToggleBtn' &&
+                       child.id !== 'iframeBackButton');
+    const toggleIconElement = sidebarToggleBtn.querySelector('i');
 
-  const toggleIconElement = sidebarToggleBtn.querySelector('i');
-  const buttonsToToggleVisibility = Array.from(sidebarButtonsContainer.children)
-    .filter(child =>
-      child.classList.contains('icon-button') &&
-      child.id !== 'sidebarToggleBtn' &&
-      child.id !== 'iframeBackButton' &&
-      !['index', HOME_PAGE].includes(child.getAttribute('href'))
-    );
+    const resetInactivityTimer = () => {
+      clearTimeout(inactivityTimerId);
+      const isExpanded = !sidebarButtonsContainer.classList.contains('sidebar-container-condensed');
+      if (isExpanded) {
+        inactivityTimerId = setTimeout(() => {
+          updateSidebarState(false);
+        }, INACTIVITY_TIMEOUT_MS);
+      }
+    };
 
-  const isIframeHome = () => newsFrame.src.endsWith(HOME_PAGE);
+    const updateIframeBackButtonVisibility = () => {
+      iframeBackButton.style.display = iframeSrcHistory.length > 1 ? 'flex' : 'none';
+    };
 
-  const updateIframeBackButtonVisibility = () => {
-    const isHome = isIframeHome();
-    iframeBackButton.style.display = isHome ? 'none' : 'flex';
-    sidebarToggleBtn.style.display = isHome ? 'flex' : 'none';
-    buttonsToToggleVisibility.forEach(btn => {
-      btn.style.display = isHome ? 'flex' : 'none';
-    });
-  };
-
-  const updateSidebarState = (expand) => {
-    buttonsToToggleVisibility.forEach(button => {
-      button.classList.toggle('sidebar-item-hidden', !expand);
-    });
-
-    sidebarButtonsContainer.classList.toggle('sidebar-container-condensed', !expand);
-
-    if (toggleIconElement) {
-      toggleIconElement.classList.remove('fa-times');
-      toggleIconElement.classList.add('fa-bars');
-    }
-
-    if (expand) {
-      sidebarToggleBtn.style.display = 'none';
-    } else if (isIframeHome()) {
-      sidebarToggleBtn.style.display = 'flex';
-    }
-  };
-
-  const setupIframeLinks = () => {
-    try {
-      const iframeDoc = newsFrame.contentDocument || newsFrame.contentWindow.document;
-      iframeDoc.addEventListener('click', (event) => {
-        const link = event.target.closest('a');
-        if (link && link.href && !link.target && !link.href.startsWith('javascript:')) {
-          event.preventDefault();
-          const href = link.href;
-          iframeSrcHistory.push(href);
-          history.pushState({ iframe: href }, '', '');
-          newsFrame.src = href;
-          updateIframeBackButtonVisibility();
-        }
+    const updateSidebarState = (expand) => {
+      buttonsToToggleVisibility.forEach(button => {
+        button.classList.toggle('sidebar-item-hidden', !expand);
       });
-    } catch (e) {
-      console.warn("Erro ao configurar links da iframe:", e);
-    }
-  };
 
-  const setupIframeContentListeners = () => {
-    if (newsFrame.contentWindow) {
-      const handleFrameInteraction = () => {
-        if (!sidebarButtonsContainer.classList.contains('sidebar-container-condensed')) {
-          if (isIframeHome()) updateSidebarState(false);
-        }
-      };
+      sidebarButtonsContainer.classList.toggle('sidebar-container-condensed', !expand);
+      
+      if (toggleIconElement) {
+        toggleIconElement.classList.remove('fa-times');
+        toggleIconElement.classList.add('fa-bars');
+      }
+      
+      if (expand) {
+        sidebarToggleBtn.style.display = 'none';
+        resetInactivityTimer();
+      } else {
+        sidebarToggleBtn.style.display = 'flex';
+        sidebarToggleBtn.classList.add('toggle-btn-shrunk');
+        clearTimeout(inactivityTimerId);
+      }
+    };
+    
+    const setupIframeContentListeners = () => {
+      if (newsFrame.contentWindow) {
+        const handleFrameInteraction = () => {
+          if (!sidebarButtonsContainer.classList.contains('sidebar-container-condensed')) {
+            updateSidebarState(false);
+          }
+        };
+        
+        newsFrame.contentWindow.addEventListener('scroll', handleFrameInteraction);
+        newsFrame.contentWindow.addEventListener('click', handleFrameInteraction);
+        newsFrame.contentWindow.addEventListener('touchstart', handleFrameInteraction, { passive: true });
+      }
+    };
 
-      newsFrame.contentWindow.addEventListener('scroll', handleFrameInteraction);
-      newsFrame.contentWindow.addEventListener('click', handleFrameInteraction);
-      newsFrame.contentWindow.addEventListener('touchstart', handleFrameInteraction, { passive: true });
-    }
-  };
+    const setupIframeLinks = () => {
+      try {
+        const iframeDoc = newsFrame.contentDocument || newsFrame.contentWindow.document;
+        
+        iframeDoc.addEventListener('click', (event) => {
+          const link = event.target.closest('a');
+          
+          if (link && link.href && !link.target && !link.href.startsWith('javascript:')) {
+            event.preventDefault();
+            
+            if (link.href.startsWith('http') && !link.href.startsWith(window.location.origin)) {
+              newsFrame.src = link.href;
+            } else {
+              iframeSrcHistory.push(link.href);
+              newsFrame.src = link.href;
+            }
+            
+            updateIframeBackButtonVisibility();
+          }
+        });
+      } catch (e) {
+        console.warn("Não foi possível configurar links da iframe:", e);
+      }
+    };
 
-  sidebarToggleBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    updateSidebarState(true);
-  });
-
-  iframeBackButton.addEventListener('click', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (iframeSrcHistory.length > 1) {
-      iframeSrcHistory.pop();
-      const previous = iframeSrcHistory[iframeSrcHistory.length - 1];
-      newsFrame.src = previous;
-      history.back();
-    } else {
-      newsFrame.src = HOME_PAGE;
-      iframeSrcHistory = [HOME_PAGE];
-      history.pushState({ iframe: HOME_PAGE }, '', '');
-    }
-    updateIframeBackButtonVisibility();
-  });
-
-  const iframeButtonLinks = sidebarButtonsContainer.querySelectorAll('a.icon-button:not(#sidebarToggleBtn):not(#iframeBackButton)');
-  iframeButtonLinks.forEach(button => {
-    const href = button.getAttribute('href');
-    if (href === 'index' || href === HOME_PAGE) {
-      button.style.display = 'none'; // Esconde esses botões diretamente no DOM também
-      return;
-    }
-
-    button.addEventListener('click', (e) => {
-      e.preventDefault();
-      iframeSrcHistory.push(href);
-      history.pushState({ iframe: href }, '', '');
-      newsFrame.src = href;
-      updateIframeBackButtonVisibility();
+    sidebarToggleBtn.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      updateSidebarState(true);
     });
-  });
+    
+    iframeBackButton.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (iframeSrcHistory.length > 1) {
+        iframeSrcHistory.pop();
+        newsFrame.src = iframeSrcHistory[iframeSrcHistory.length - 1];
+      }
+    });
 
-  window.addEventListener('popstate', () => {
-    if (iframeSrcHistory.length > 1) iframeSrcHistory.pop();
-    const prev = iframeSrcHistory[iframeSrcHistory.length - 1] || HOME_PAGE;
-    newsFrame.src = prev;
+    sidebarButtonsContainer.addEventListener('mousemove', resetInactivityTimer);
+    sidebarButtonsContainer.addEventListener('touchstart', resetInactivityTimer, { passive: true });
+
+    document.addEventListener('click', (event) => {
+      if (!sidebarButtonsContainer.classList.contains('sidebar-container-condensed') && 
+          !sidebarButtonsContainer.contains(event.target)) {
+        updateSidebarState(false);
+      }
+    });
+
+    newsFrame.addEventListener('load', () => {
+      updateIframeBackButtonVisibility();
+      setupIframeContentListeners();
+      setupIframeLinks();
+    });
+
+    const iframeButtonLinks = sidebarButtonsContainer.querySelectorAll('a.icon-button:not(#sidebarToggleBtn):not(#iframeBackButton)');
+    iframeButtonLinks.forEach(button => {
+      button.addEventListener('click', event => {
+        const targetHref = button.getAttribute('href');
+
+        if (targetHref === 'Hyper/hyper' || targetHref === 'Yt/yt') return;
+        if (targetHref === '#') return;
+
+        event.preventDefault();
+        let urlToLoad = targetHref === 'index' ? 'Catalogo1/index.html' : targetHref;
+        
+        iframeSrcHistory.push(urlToLoad);
+        newsFrame.src = urlToLoad;
+      });
+    });
+
+    updateSidebarState(false);
     updateIframeBackButtonVisibility();
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!sidebarButtonsContainer.classList.contains('sidebar-container-condensed') &&
-        !sidebarButtonsContainer.contains(e.target)) {
-      updateSidebarState(false);
-    }
-  });
-
-  newsFrame.addEventListener('load', () => {
-    updateIframeBackButtonVisibility();
-    setupIframeContentListeners();
-    setupIframeLinks();
-  });
-
-  newsFrame.src = HOME_PAGE;
-  history.replaceState({ iframe: HOME_PAGE }, '', '');
-  updateSidebarState(false);
-  updateIframeBackButtonVisibility();
-
-  // --- INÍCIO: Código Fullscreen com botão no topo direito (desktop only) ---
-  // Cria o botão fullscreen e insere no body
-  const fullscreenBtn = document.createElement('button');
-  fullscreenBtn.id = 'fullscreenBtn';
-  fullscreenBtn.title = 'Tela cheia';
-  fullscreenBtn.style.cssText = `
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    background: rgba(0,0,0,0.4);
-    border: none;
-    padding: 10px;
-    border-radius: 50%;
-    z-index: 9999;
-    cursor: pointer;
-    color: #fff;
-    backdrop-filter: blur(6px);
-    transition: background 0.2s;
-    display: none; /* Oculto por padrão */
-  `;
-
-  const icon = document.createElement('i');
-  icon.classList.add('fas', 'fa-expand');
-  fullscreenBtn.appendChild(icon);
-
-  document.body.appendChild(fullscreenBtn);
-
-  // Exibe botão só em tela maior que 768px
-  const checkScreen = () => {
-    if (window.innerWidth > 768) {
-      fullscreenBtn.style.display = 'flex';
-    } else {
-      fullscreenBtn.style.display = 'none';
-    }
-  };
-
-  window.addEventListener('resize', checkScreen);
-  checkScreen();
-
-  fullscreenBtn.addEventListener('mouseenter', () => {
-    fullscreenBtn.style.background = 'rgba(255,255,255,0.1)';
-  });
-  fullscreenBtn.addEventListener('mouseleave', () => {
-    fullscreenBtn.style.background = 'rgba(0,0,0,0.4)';
-  });
-
-  fullscreenBtn.addEventListener('click', () => {
-    const docEl = document.documentElement;
-
-    if (!document.fullscreenElement) {
-      if (docEl.requestFullscreen) docEl.requestFullscreen();
-      else if (docEl.webkitRequestFullscreen) docEl.webkitRequestFullscreen();
-      else if (docEl.msRequestFullscreen) docEl.msRequestFullscreen();
-    } else {
-      if (document.exitFullscreen) document.exitFullscreen();
-      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-      else if (document.msExitFullscreen) document.msExitFullscreen();
-    }
-  });
-
-  document.addEventListener('fullscreenchange', () => {
-    if (document.fullscreenElement) {
-      icon.classList.remove('fa-expand');
-      icon.classList.add('fa-compress');
-    } else {
-      icon.classList.remove('fa-compress');
-      icon.classList.add('fa-expand');
-    }
-  });
-  // --- FIM: Fullscreen ---
+  }
 });
