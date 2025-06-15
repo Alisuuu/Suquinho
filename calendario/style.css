@@ -22,15 +22,50 @@
 body {
   font-family: 'Inter', sans-serif;
   background-color: var(--background-color);
-  /* Fundo com gradiente sutil */
-  background-image: 
-    radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 30%);
 }
+
+/* Container do slideshow de fundo */
+#backdrop-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.backdrop-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  /* MUDANÇA: Efeito de zoom removido, apenas transição de opacidade */
+  transition: opacity 2s ease-in-out;
+}
+
+.backdrop-image.active {
+  opacity: 1;
+}
+
+/* Filtro sobre o fundo */
+#backdrop-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* MUDANÇA: Blur removido, mantendo apenas o overlay escuro para contraste */
+  background: rgba(0, 0, 0, 0.7); 
+}
+
 
 /* Elementos com efeito de vidro */
 #week-navigation, 
-#monthDetailModalContent,
 .task-item,
 .card {
   background: var(--glass-bg);
@@ -47,19 +82,27 @@ body {
 .button-blur {
   background: rgba(139, 92, 246, 0.12);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(139, 92, 246, 0.15);
   box-shadow: 
     0 2px 10px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
   transition: all 0.3s ease;
+  color: var(--on-surface-variant-color);
 }
 
-.button-blur:hover {
-  background: rgba(139, 92, 246, 0.2);
+/* Estilo do botão de filtro ATIVO */
+.button-blur.active {
+  background: var(--primary-color);
+  color: var(--on-primary-color);
+  border-color: var(--primary-color);
   box-shadow: 
     0 4px 15px rgba(139, 92, 246, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
+ .button-blur:hover:not(.active) {
+   background: rgba(139, 92, 246, 0.2);
+ }
 
 /* Botões de dia com efeito de vidro */
 .day-button {
@@ -76,6 +119,7 @@ body {
 
 .day-button.active {
   background: rgba(139, 92, 246, 0.25);
+  border-color: var(--primary-color);
   box-shadow: 
     0 0 15px rgba(139, 92, 246, 0.4),
     inset 0 0 8px rgba(255, 255, 255, 0.1);
@@ -83,61 +127,79 @@ body {
 
 /* Scrollbar com efeito transparente */
 #week-navigation::-webkit-scrollbar, 
-#monthDetailModalContent::-webkit-scrollbar { 
+.swal-scroll-container::-webkit-scrollbar { 
     height: 6px; 
     width: 6px; 
 }
 
 #week-navigation::-webkit-scrollbar-thumb, 
-#monthDetailModalContent::-webkit-scrollbar-thumb { 
+.swal-scroll-container::-webkit-scrollbar-thumb { 
     background: rgba(139, 92, 246, 0.3); 
     border-radius: 4px; 
 }
 
 #week-navigation::-webkit-scrollbar-thumb:hover, 
-#monthDetailModalContent::-webkit-scrollbar-thumb:hover { 
+.swal-scroll-container::-webkit-scrollbar-thumb:hover { 
     background: rgba(139, 92, 246, 0.5); 
-}
-
-/* Inputs com efeito de vidro */
-input, select, textarea {
-  background: rgba(40, 40, 40, 0.2) !important;
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--outline-color) !important;
-  box-shadow: 
-    inset 0 1px 2px rgba(0, 0, 0, 0.2),
-    0 1px 0 rgba(255, 255, 255, 0.03) !important;
 }
 
 /* Efeito de preenchimento automático */
 input:-webkit-autofill {
-  -webkit-box-shadow: 0 0 0 30px rgba(30, 30, 30, 0.2) inset !important;
+  -webkit-box-shadow: 0 0 0 30px #2E4F58 inset !important;
   -webkit-text-fill-color: var(--on-surface-color) !important;
 }
 
-/* Status com transparência */
-.status-badge {
-  backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+/* Estilos personalizados para SweetAlert2 */
+.swal2-popup {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--blur-intensity)) !important;
+  -webkit-backdrop-filter: blur(var(--blur-intensity)) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.03) !important;
+  color: var(--on-surface-color) !important;
+}
+.swal2-title {
+  color: var(--on-surface-color) !important;
+}
+.swal2-close {
+    color: var(--on-surface-variant-color) !important;
+    transition: color 0.2s ease;
+}
+.swal2-close:hover {
+    color: var(--primary-color) !important;
+}
+.swal2-confirm {
+    background-color: var(--primary-color) !important;
+    border-radius: 9999px !important;
+    padding: 0.5rem 1.5rem !important;
+    transition: background-color 0.2s ease !important;
+}
+.swal2-confirm:hover {
+    background-color: #7c3aed !important;
 }
 
-.status-atualizado { background: rgba(103, 80, 164, 0.25); }
-.status-hoje { background: rgba(33, 150, 243, 0.25); }
-.status-futuro { background: rgba(255, 193, 7, 0.25); }
-.status-atrasado { background: rgba(244, 67, 54, 0.25); }
-
-/* Elementos ativos com brilho suave */
-.button-blur.active,
-.day-button.active {
-  box-shadow: 
-    0 0 0 2px rgba(139, 92, 246, 0.3),
-    0 0 20px rgba(139, 92, 246, 0.4) !important;
+/* Novos estilos para busca e filtro */
+#search, #toggleFiltersBtn {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
 }
 
-/* Transições suaves para todos os elementos */
-* {
-  transition: 
-    background-color 0.25s ease,
-    border-color 0.25s ease,
-    box-shadow 0.25s ease;
+#search {
+    background: rgba(139, 92, 246, 0.1) !important;
+    border: 1px solid rgba(139, 92, 246, 0.15) !important;
+}
+ #search:focus {
+    background: rgba(139, 92, 246, 0.15) !important;
+    border-color: rgba(139, 92, 246, 0.3) !important;
+ }
+
+#toggleFiltersBtn {
+    background: rgba(139, 92, 246, 0.2) !important;
+    border: 1px solid rgba(139, 92, 246, 0.25) !important;
+}
+#toggleFiltersBtn:hover {
+    background: rgba(139, 92, 246, 0.3) !important;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.25);
 }
