@@ -36,8 +36,10 @@
 }
 
 body {
-    font-family: 'Inter', sans-serif;   background: linear-gradient(135deg, rgba(89, 59, 162, 0.6) 80%, rgba(162, 0, 255, 0.6) 100%); /* Softer purple to violet with transparency */
-
+    font-family: 'Inter', sans-serif;   
+    /* MD3 Applied */
+    background-color: rgba(89,59,162,0.25);
+    backdrop-filter: blur(20px);
     color: var(--text-primary);
     transition: background-image 0.5s ease-in-out;
     overflow: hidden !important; /* Desabilita rolagem totalmente */
@@ -90,6 +92,13 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     justify-content: center;
     padding: 1rem;
     z-index: 10; /* Garante que esteja acima do backdrop */
+    transition: opacity 0.2s ease-out; /* Adicionado para transição suave */
+}
+
+/* Oculta os botões de sorteio principais quando o modal está aberto */
+body.swal2-shown .main-container {
+    opacity: 0;
+    pointer-events: none;
 }
 
 .button-group { /* Novo contêiner para agrupar os botões de filme/série lado a lado */
@@ -110,9 +119,10 @@ h1 {
 }
 
 .random-button {
-  background: linear-gradient(135deg, rgba(89, 59, 162, 0.4) 0%, rgba(162, 0, 255, 0.2) 100%);
-  border: none;
-  border-radius: 10px; /* Slightly more rounded corners, using px for better consistency */
+  /* MD3 Applied */
+  background-color: rgba(89,59,162,0.50);
+  border: 1px solid rgba(89,59,162,0.60);
+  border-radius: 24px;
   display: grid;
   align-items: center;
   justify-content: center;
@@ -129,36 +139,31 @@ h1 {
               background 0.35s ease-out,
               box-shadow 0.35s ease-out,
               opacity 0.3s ease-out;
+  padding: 20px 40px;
+  font-size: 1.5em;
+  min-width: 150px;
 
-  /* Responsive sizing */
-  padding: 20px 40px; /* Use padding for better responsiveness */
-  font-size: 1.5em; /* Use em units for relative sizing */
-  min-width: 150px; /* Minimum width to prevent it from becoming too small */
-
-  /* Blur and background color adjustments */
-  backdrop-filter: blur(10px); /* Reduced blur for better readability on larger screens */
-  -webkit-backdrop-filter: blur(10px);
-  background-color: rgba(20, 20, 20, 0.6);
+  /* MD3 Applied */
+  backdrop-filter: blur(5px);
 }
 
 /* Media query for larger screens - adjust as needed */
 @media (min-width: 768px) {
   .random-button {
-    font-size: 2em; /* Increase font size on larger screens */
-    padding: 25px 50px; /* Increase padding on larger screens */
+    font-size: 2em;
+    padding: 25px 50px;
   }
 }
 
-
-}
 .random-button:hover {
-    background-color: var(--button-blur-bg-hover); /* Fundo de hover mais transparente */
-    transform: translateY(-3px) scale(1.03); /* Efeito de hover ajustado */
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4); /* Sombra de hover ajustada */
+    /* MD3 Applied */
+    background-color: rgba(89,59,162,0.7);
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
 }
 
 .random-button .fas {
-    font-size: 1.5rem; /* Ícone ajustado */
+    font-size: 1.5rem;
 }
 
 /* Loader */
@@ -214,7 +219,7 @@ h1 {
     background-color: rgba(255,255,255,0.2);
 }
 .swal-details-popup.swal2-popup {
-    width: 850px !important;
+    width: 600px !important;
     max-width: 95vw !important;
     max-height: 90vh !important;
     display: flex !important;
@@ -260,13 +265,12 @@ h1 {
     margin: 0 auto 0.5rem auto; 
     border: 2px solid var(--purple-accent); 
     background-color: var(--border-color); 
-    /* Adicionado para usar p2.png como imagem de fundo */
     background-image: url('p2.png'); 
     background-size: cover; 
     background-position: center; 
     background-repeat: no-repeat;
 }
-.cast-member-photo img { /* Garante que a imagem carregada dinamicamente seja exibida */
+.cast-member-photo img { 
     width: 100%;
     height: 100%;
     border-radius: 50%;
@@ -285,125 +289,135 @@ h1 {
 @media (max-width: 767px) { /* Mobile */
     h1 { font-size: 2rem; }
     .random-button {
-        padding: 0.7rem 1.2rem; /* Mais compacto em mobile */
+        padding: 0.7rem 1.2rem;
         font-size: 1rem;
     }
     .random-button .fas { font-size: 1.2rem; }
 
-    .button-group { /* Agrupa os botões de filme/série em coluna no mobile */
+    .button-group {
         flex-direction: column;
     }
 
     #externalCopyButtonContainer {
-        gap: 0.5rem; /* Espaçamento menor em mobile */
-        max-width: 300px; /* Limite de largura para mobile */
+        gap: 0.5rem;
+        max-width: 300px;
     }
     #pickAgainButton,
-    #trailerButton { /* Removido favoriteButton */
-        padding: 0.4rem 0.6rem; /* Botões menores */
-        font-size: 0.85rem; /* Fonte menor */
+    #trailerButton {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.85rem;
     }
     #externalCopyLinkButton {
-        width: 40px; /* Menor */
-        height: 40px; /* Menor */
+        width: 40px;
+        height: 40px;
     }
     #externalCopyLinkButton .fas {
-        font-size: 1.1rem; /* Ícone menor */
+        font-size: 1.1rem;
     }
 }
 /* Estilos do botão "Sortear Novamente", "Trailer" e "Copiar Link" no rodapé */
-#externalCopyButtonContainer { /* Reutilizado para agrupar todos os botões de ação do modal */
+#externalCopyButtonContainer {
     position: fixed;
-    bottom: 1rem; /* Distância do rodapé */
+    bottom: 1rem;
     left: 50%;
-    transform: translateX(-50%);
-    z-index: 1080; /* Acima do modal */
-    display: flex; /* Inicia oculto, mas será 'flex' quando exibido */
-    justify-content: center; /* Centraliza botões horizontalmente */
+    z-index: 1080;
+    display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 0.75rem; /* Espaço entre os botões */
-    width: 100%; /* Ocupa a largura total para centralizar */
-    max-width: 500px; /* Limita a largura do grupo de botões */
-    padding: 0 1rem; /* Padding nas laterais */
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 500px;
+    padding: 0 1rem;
     box-sizing: border-box;
+    /* INÍCIO DA MODIFICAÇÃO: Controle de visibilidade */
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 100%); /* Começa fora da tela (embaixo) para animar a entrada */
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    /* FIM DA MODIFICAÇÃO */
 }
 
-#pickAgainButton,
-#trailerButton { /* Estilo base para os botões "Sortear Novamente" e "Trailer" */
-    background-color: rgba(89, 59, 162, 0.2); /* Fundo semi-transparente com blur */
-    backdrop-filter: blur(8px) saturate(1.8);
-    -webkit-backdrop-filter: blur(8px) saturate(1.8);
-    color: var(--text-primary); /* Texto principal */
-    border: 1px solid rgba(255, 255, 255, 0.1); /* Borda sutil */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Sombra mais sutil */
+/* NOVO: Torna os botões do rodapé visíveis quando o modal está aberto */
+body.swal2-shown #externalCopyButtonContainer {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%); /* Move para a posição original fixa no rodapé */
+}
 
-    padding: 0.5rem 0.8rem; /* Padding reduzido para um tamanho mais sutil */
-    border-radius: 0.8rem; /* Arredondamento padrão */
-    font-size: 0.9rem; /* Tamanho da fonte reduzido */
-    font-weight: 600; /* Peso da fonte ajustado */
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
-    flex: 1; /* Permite que os botões cresçam e ocupem o espaço disponível */
-    max-width: 180px; /* Limita a largura máxima de cada botão */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
-    text-transform: uppercase;
-    text-decoration: none;
+
+#pickAgainButton,
+#trailerButton {
+  /* MD3 Applied */
+  background-color: rgba(89,59,162,0.20);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(89,59,162,0.60);
+  color: var(--text-primary);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  padding: 0.5rem 0.8rem;
+  border-radius: 0.8rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  flex: 1;
+  max-width: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  text-transform: uppercase;
+  text-decoration: none;
 }
 
 #pickAgainButton:hover,
 #trailerButton:hover {
-    background-color: rgba(140, 112, 200, 0.3); /* Fundo de hover mais transparente */
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4); /* Sombra de hover ajustada */
-}
-
-/* Ícone para o botão Sortear Novamente - REMOVIDO NO HTML */
-#pickAgainButton .fas { 
-    display: none; 
-}
-/* Texto para o botão Sortear Novamente */
-#pickAgainButton span { 
-    display: inline; 
-}
-
-
-#externalCopyLinkButton { /* Estilo específico para o botão de copiar (redondo, só ícone) */
-    background-color: rgba(89, 59, 162, 0.2); /* Fundo semi-transparente com blur */
-    backdrop-filter: blur(8px) saturate(1.8);
-    -webkit-backdrop-filter: blur(8px) saturate(1.8);
-    color: var(--text-primary);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-
-    padding: 0.8rem; /* Aumenta padding para ícone ficar no centro */
-    border-radius: 50%; /* Torna o botão redondo */
-    width: 45px; /* Tamanho fixo para o círculo */
-    height: 45px; /* Tamanho fixo para o círculo */
-    flex-shrink: 0; /* Impede que ele encolha */
-    flex-grow: 0; /* Impede que ele cresça */
-    display: flex; /* Para centralizar o ícone */
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
-}
-#externalCopyLinkButton:hover {
-    background-color: rgba(140, 112, 200, 0.3);
+    /* MD3 Applied */
+    background-color: rgba(89,59,162,0.3);
     transform: translateY(-2px) scale(1.02);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
 }
-#externalCopyLinkButton .fas { /* Ícone do botão de copiar */
-    font-size: 1.2rem; /* Tamanho do ícone */
-    display: inline; /* Garante que o ícone apareça */
+
+#pickAgainButton .fas {
+    display: none;
 }
-#externalCopyLinkButton span { /* Texto do Copiar Link */
-    display: none; /* Garante que o texto esteja oculto */
+#pickAgainButton span {
+    display: inline;
 }
 
-/* Estilo específico para o botão Trailer */
+
+#externalCopyLinkButton {
+  /* MD3 Applied */
+  background-color: rgba(89,59,162,0.20);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(89,59,162,0.60);
+  color: var(--text-primary);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  padding: 0.8rem;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  flex-shrink: 0;
+  flex-grow: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+#externalCopyLinkButton:hover {
+    /* MD3 Applied */
+    background-color: rgba(89,59,162,0.3);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+#externalCopyLinkButton .fas {
+    font-size: 1.2rem;
+    display: inline;
+}
+#externalCopyLinkButton span {
+    display: none;
+}
+
 #trailerButton .fas {
     font-size: 1.1rem;
 }
