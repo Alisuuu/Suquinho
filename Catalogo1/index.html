@@ -11,6 +11,21 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 <body>
+    <script>
+    window.onload = function() {
+        const params = new URLSearchParams(window.location.search);
+        const paginaCodificada = params.get('pagina');
+
+        if (paginaCodificada) {
+            const paginaDecodificada = decodeURIComponent(paginaCodificada);
+            const iframe = document.getElementById('meu-iframe');
+            
+            if (iframe) {
+                iframe.src = paginaDecodificada;
+            }
+        }
+    };
+    </script>
     <div id="pageBackdrop"></div>
 
     <header> 
