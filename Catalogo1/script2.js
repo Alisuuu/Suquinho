@@ -130,15 +130,15 @@ async function loadMoreTopRatedTvShows() {
 async function performSearch(query) {
     const trimmedQuery = query ? query.trim().toLowerCase() : '';
 
-    if (trimmedQuery === 'Sq') {
+    if (trimmedQuery === 'sq') {
         window.location.href = '../Hyper/hyper.html';
         return;
     }
-    if (trimmedQuery === 'Yt') {
+    if (trimmedQuery === 'st') {
         window.location.href = '../Yt/yt.html';
         return;
     }
-    if (trimmedQuery === 'Suquin') {
+    if (trimmedQuery === 'suquin') {
         window.location.href = '../game/index.html';
         return;
     }
