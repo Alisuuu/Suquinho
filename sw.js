@@ -1,5 +1,5 @@
 const CACHE_NAME = 'suquinho-cache-v1';
-const OFFLINE_PAGE = '/offline.html';
+const OFFLINE_PAGE = '/index.html';
 
 const urlsToCache = [
   '/index.html', 
