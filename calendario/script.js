@@ -212,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // MODIFICAÇÃO: Usando ../ para subir um nível (de /calendario/ para /Suquinho/)
         // e adicionando a string de consulta com o valor que o script de destino espera.
-        itemEl.href = `../?pagina=Catalogo1%2Findex.html%3Ftype%3Dtv%26id%3D${item.tmdb_id}`;
+        itemEl.href = `https://alisuuu.github.io/Suquinho/?pagina=Catalogo1%2Findex.html%3Ftype%3Dtv%26id%3D${item.tmdb_id}`;
         
         // REMOVIDO: Target="_blank" para abrir o link na mesma aba/janela
         // itemEl.target = '_blank'; 
