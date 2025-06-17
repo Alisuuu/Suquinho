@@ -4,7 +4,7 @@ window.addEventListener('load', () => {
   const newsFrame = document.getElementById('newsFrame');
   const iframeBackButton = document.getElementById('iframeBackButton');
 
-  const HOME_PAGE = 'Catalogo1/index.html';
+  const HOME_PAGE = '#';
   
   // LÓGICA PARA LER O PARÂMETRO DA URL NA CARGA INICIAL
   const urlParams = new URLSearchParams(window.location.search);
