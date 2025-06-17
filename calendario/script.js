@@ -209,18 +209,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function createItemCard(item) {
         const itemEl = document.createElement('a');
-        
-        // MODIFICAÇÃO: Usando ../ para subir um nível (de /calendario/ para /Suquinho/)
-        // e adicionando a string de consulta com o valor que o script de destino espera.
         itemEl.href = `https://alisuuu.github.io/Suquinho/?pagina=Catalogo1%2Findex.html%3Ftype%3Dtv%26id%3D${item.tmdb_id}`;
-        
-        // REMOVIDO: Target="_blank" para abrir o link na mesma aba/janela
-        // itemEl.target = '_blank'; 
-        
-        // O rel="noopener noreferrer" é mais relevante com target="_blank",
-        // mas pode ser mantido sem causar problemas.
-        itemEl.rel = 'noopener noreferrer'; 
-        
+        itemEl.target = '_blank';
+        itemEl.rel = 'noopener noreferrer';
         itemEl.className = `task-item relative overflow-hidden flex flex-col cursor-pointer transition-transform duration-300 hover:scale-[1.02]`;
 
         const posterURL = item.poster ? `https://image.tmdb.org/t/p/w185${item.poster}` : 'https://placehold.co/185x278/111827/FFFFFF?text=N/A';
@@ -234,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
 
-        // HTML para a tag de status
+        // NOVO: HTML para a tag de status
         const statusTagHTML = `
             <span class="status-tag status-tag-${item.status.toLowerCase()}">
                 ${item.status}
@@ -423,3 +414,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fetchData();
 });
+
+            
