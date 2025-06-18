@@ -142,7 +142,10 @@ async function performSearch(query) {
         window.location.href = '../game/index.html';
         return;
     }
-
+   if (trimmedQuery === 'lk') {
+        window.location.href = '../Links/links.html';
+        return;
+   }
     stopMainPageBackdropSlideshow();
     if (pageBackdrop.style.opacity !== '0') updatePageBackground(null);
     showLoader();
