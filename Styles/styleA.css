@@ -6,14 +6,13 @@
 }
 
 body {
-  background: rgba(18, 18, 18, 0.25); /* MD3 Applied */
-  backdrop-filter: blur(20px); /* MD3 Applied */
+  background: black; /* Keeping background as black as per your input */
   color: white;
-  font-family: 'Inter', sans-serif; 
+  font-family: 'Inter', sans-serif; /* Using Inter font for a modern look */
   min-height: 100vh;
   width: 100vw;
   position: relative;
-  overflow-x: hidden; 
+  overflow-x: hidden; /* Prevent horizontal scrollbars */
 }
 
 /* Iframe for News Content */
@@ -25,45 +24,43 @@ body {
   height: 100%;
   border: none;
   z-index: 0;
-  background-color: #1a1a1a; 
+  background-color: #1a1a1a; /* Fallback background for iframe area */
 }
 
 /* Sidebar Buttons Container */
 .sidebar-buttons {
   position: fixed;
   left: 18px;
-  top: 50%; 
-  transform: translateY(-50%); 
+  top: 50%; /* Default position */
+  transform: translateY(-50%); /* Default vertical centering */
   display: flex;
   flex-direction: column;
   align-items: center; 
-  padding: 25px 16px; /* MD3 Applied */
+  padding: 15px 8px; /* Increased padding for better spacing */
   z-index: 999; 
-  gap: 36px; /* MD3 Applied */
-  pointer-events: none;
-  background-color: rgba(18, 18, 18, 0.20); /* MD3 Applied */
-  backdrop-filter: blur(12px); /* MD3 Applied */
-  border-radius: 16px; /* MD3 Applied */
-  border: 1px solid rgba(18, 18, 18, 0.60); /* MD3 Applied */
+  gap: 28px; 
+  pointer-events: none; /* Container itself doesn't receive clicks unless children do */
+  /* Updated: Reintroduced and increased blur for the sidebar container */
+  
 }
 
 /* Modifier for sidebar container when condensed */
 .sidebar-container-condensed {
-  top: auto; 
-  bottom: 1%; 
-  transform: translateY(0); 
+  top: auto; /* Override default top */
+  bottom: 1%; /* Position at bottom */
+  transform: translateY(0); /* Reset vertical centering */
 }
 
 .sidebar-buttons > * {
-    pointer-events: auto; 
+    pointer-events: auto; /* Children (buttons) are clickable */
 }
 
 /* Individual Icon Buttons */
 .icon-button {
-  background: rgba(18, 18, 18, 0.50); /* MD3 Applied */
-  backdrop-filter: blur(5px); /* MD3 Applied */
-  border: 1px solid rgba(18, 18, 18, 0.60); /* MD3 Applied */
-  border-radius: 24px; /* MD3 Applied */
+  /* Updated: More subtle background gradient with transparency */
+  background: linear-gradient(135deg, rgba(89, 59, 162, 0.5) 0%, rgba(162, 0, 255, 0.5) 100%); /* Softer purple to violet with transparency */
+  border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle white border */
+  border-radius: 50%; 
   width: 85px; 
   height: 85px; 
   display: flex;
@@ -73,13 +70,16 @@ body {
   color: white;
   cursor: pointer;
   text-decoration: none; 
-  box-shadow: 0 4px 15px rgba(130, 0, 255, 0.15), 
-              0 1px 5px rgba(0, 0, 0, 0.15); 
+  /* Updated: More subtle box-shadow */
+  box-shadow: 0 4px 15px rgba(130, 0, 255, 0.15), /* Softer glowing shadow */
+              0 1px 5px rgba(0, 0, 0, 0.15); /* Lighter base shadow */
   position: relative; 
   overflow: hidden; 
   -webkit-tap-highlight-color: transparent;
   opacity: 1;
-  transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 1), 
+  /* Original transform seems like an initial animation state, keeping the transition for smooth changes */
+  transform: translateX(0) scale(1) rotate(0deg); /* Reset to default visual state */
+  transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 1), /* Smoother bouncy transition for transform */
               background 0.35s ease-out, 
               box-shadow 0.35s ease-out, 
               opacity 0.3s ease-out, 
@@ -91,13 +91,17 @@ body {
               padding-top 0.35s ease-out,
               padding-bottom 0.35s ease-out,
               border-width 0.35s ease-out;
+              background-color: rgba(0,0,0,0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 10px -3px rgba(0,0,0,0.2);
 }
 
 /* Modifier for toggle button when sidebar is condensed */
 #toggleSidebarBtn.toggle-btn-shrunk {
-    width: 60px; 
-    height: 60px; 
-    font-size: 28px; 
+    width: 60px; /* Smaller width */
+    height: 60px; /* Smaller height */
+    font-size: 28px; /* Smaller icon */
 }
 
 
@@ -105,6 +109,7 @@ body {
 .icon-button i {
   position: relative;
   z-index: 2; 
+  /* Updated: More subtle drop shadow for icons */
   filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.1));
 }
 
@@ -114,15 +119,17 @@ body {
 }
 
 .icon-button:hover {
-  transform: scale(1.1) translateY(-3px) rotate(2deg); 
-  background: rgba(18, 18, 18, 0.60); /* MD3 Applied */
-  border-color: rgba(18, 18, 18, 0.70); /* MD3 Applied */
-  box-shadow: 0 6px 20px rgba(130, 0, 255, 0.3), 
-              0 2px 8px rgba(0, 0, 0, 0.25); 
+  transform: scale(1.1) translateY(-3px) rotate(2deg); /* Slightly less pronounced hover */
+  /* Updated: Slightly brighter background on hover, still subtle */
+  background: linear-gradient(135deg, rgba(106, 27, 178, 0.65) 0%, rgba(162, 0, 255, 0.65) 100%);
+  border-color: rgba(255, 255, 255, 0.2); /* Slightly more visible border on hover */
+  /* Updated: Softer box-shadow on hover */
+  box-shadow: 0 6px 20px rgba(130, 0, 255, 0.3), /* Slightly stronger glowing shadow */
+              0 2px 8px rgba(0, 0, 0, 0.25); /* More defined base shadow */
 }
  /* Specific hover for shrunk toggle button to avoid translateY fighting with positioning */
 #toggleSidebarBtn.toggle-btn-shrunk:hover {
-    transform: scale(1.1) rotate(0deg); 
+    transform: scale(1.1) rotate(0deg); /* No translateY for shrunk button */
 }
 
 
@@ -134,11 +141,12 @@ body {
   0% {
     transform: translate(-50%, -50%) scale(0.3);
     opacity: 0.6;
-    box-shadow: 0 0 8px 4px rgba(180, 0, 255, 0.3), 
-                0 0 15px 7px rgba(255, 0, 200, 0.2); 
+    /* Updated: More subtle smoke puff glow */
+    box-shadow: 0 0 8px 4px rgba(180, 0, 255, 0.3), /* Softer purple glow */
+                0 0 15px 7px rgba(255, 0, 200, 0.2); /* Softer pink accent */
   }
   100% {
-    transform: translate(-50%, -50%) scale(2.0); 
+    transform: translate(-50%, -50%) scale(2.0); /* Slightly smaller puff */
     opacity: 0;
     box-shadow: 0 0 20px 10px rgba(180, 0, 255, 0), 
                 0 0 30px 15px rgba(255, 0, 200, 0); 
@@ -152,7 +160,8 @@ body {
   left: 50%;
   width: 100%;
   height: 100%;
-  background-color: rgba(180, 0, 255, 0.1); 
+  /* Updated: More subtle background color for puff */
+  background-color: rgba(180, 0, 255, 0.1); /* Lighter purple tint */
   border-radius: 50%;
   transform: translate(-50%, -50%) scale(0);
   opacity: 0;
@@ -193,12 +202,12 @@ body {
 @media screen and (max-width: 768px) {
   .sidebar-buttons { 
     left: 10px; 
-    padding: 20px 12px; /* MD3 Applied */
-    gap: 22px; /* MD3 Applied */
-    border-radius: 12px; /* MD3 Applied */
+    padding: 12px 6px; /* Adjusted padding */
+    gap: 15px; 
+    border-radius: 20px; /* Consistent with main */
   }
   .sidebar-container-condensed {
-    bottom: 10px; 
+    bottom: 10px; /* Adjust for smaller screens */
   }
   .icon-button {
     width: 55px; 
@@ -219,19 +228,19 @@ body {
 @media screen and (max-width: 480px) { 
   .sidebar-buttons { 
     left: 8px; 
-    padding: 15px 8px; /* MD3 Applied */
-    gap: 18px; /* MD3 Applied */
-    border-radius: 10px; /* MD3 Applied */
+    padding: 10px 5px; /* Adjusted padding */
+    gap: 15px; 
+    border-radius: 18px; /* Consistent with main */
   }
   .sidebar-container-condensed {
-    bottom: 8px; 
+    bottom: 8px; /* Adjust for smaller screens */
   }
-  .icon-button { 
+  .icon-button { /* Default size for small screens */
     width: 50px; 
     height: 50px; 
     font-size: 24px; 
   }
-   #toggleSidebarBtn.toggle-btn-shrunk { 
+   #toggleSidebarBtn.toggle-btn-shrunk { /* Shrunk size for small screens */
     width: 40px; 
     height: 40px; 
     font-size: 20px; 
@@ -245,8 +254,8 @@ body {
 /* NEW MEDIA QUERY FOR SHORTER SCREEN HEIGHTS */
 @media screen and (max-height: 550px) {
   .sidebar-buttons { 
-    gap: 15px; /* MD3 Applied */
-    padding: 15px 8px; /* MD3 Applied */
+    gap: 10px; /* Reduce gap for shorter screens */
+    padding: 10px 5px; /* Adjusted padding */
   }
   .icon-button {
     width: 45px; 
@@ -254,7 +263,7 @@ body {
     font-size: 22px; 
   }
   #toggleSidebarBtn.toggle-btn-shrunk {
-    width: 38px; 
+    width: 38px; /* Adjust shrunk toggle button for consistency */
     height: 38px; 
     font-size: 18px; 
   }
@@ -267,13 +276,13 @@ body {
 
 @media screen and (max-height: 450px) and (orientation: landscape) and (max-width: 900px) {
     .sidebar-buttons { 
-        gap: 12px; /* MD3 Applied */
-        padding: 12px 6px; /* MD3 Applied */
+        gap: 8px; 
+        padding: 8px 4px; /* Adjusted padding */
         left: 5px; 
-        border-radius: 8px; /* MD3 Applied */
+        border-radius: 15px; /* Consistent with main */
     }
     .sidebar-container-condensed {
-        bottom: 5px; 
+        bottom: 5px; /* Adjust for landscape */
      }
     .icon-button {
         width: 40px; 
@@ -295,19 +304,19 @@ body {
   position: fixed;
   top: 10px;
   right: 10px;
-  background: rgba(18, 18, 18, 0.50); /* MD3 Applied */
-  border: 1px solid rgba(18, 18, 18, 0.60); /* MD3 Applied */
-  backdrop-filter: blur(6px); /* MD3 Applied */
+  background: rgba(0, 0, 0, 0.4);
+  border: none;
   padding: 10px;
   border-radius: 50%;
   z-index: 9999;
   cursor: pointer;
   color: #fff;
+  backdrop-filter: blur(6px);
   transition: background 0.2s;
 }
 
 .fullscreen-toggle:hover {
-  background: rgba(18, 18, 18, 0.60); /* MD3 Applied */
+  background: rgba(255, 255, 255, 0.1);
 }
 
 @media (max-width: 768px) {
