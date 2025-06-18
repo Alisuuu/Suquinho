@@ -142,7 +142,7 @@ async function performSearch(query) {
         window.location.href = '../game/index.html';
         return;
     }
-   if (trimmedQuery === 'Lk') {
+   if (trimmedQuery === 'lk') {
         window.location.href = '../links/links.html';
         return;
    }
