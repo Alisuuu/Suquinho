@@ -17,36 +17,31 @@
     --danger-red: #E53E3E;
     --danger-red-hover: #C53030;
     --success-green: #48BB78;
-    --header-height-mobile: 5rem; /* Altura do header no mobile */
-    /* Variáveis para gradientes e sombras expressivas - CORES MAIS SUTIS E ESCURAS */
+    --header-height-mobile: 5rem;
     --expressive-gradient-light: linear-gradient(135deg, rgba(40, 20, 80, 0.2), rgba(80, 0, 120, 0.2));
     --expressive-gradient-dark: linear-gradient(160deg, rgba(15, 0, 30, 0.85), rgba(25, 0, 40, 0.85));
     --expressive-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 2px 10px rgba(0, 0, 0, 0.6);
     --subtle-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 10px rgba(0, 0, 0, 0.2);
-
-    /* NOVAS VARIÁVEIS PARA TONS NEUTROS E ESCUROS NO MODAL */
     --modal-background-neutral-gradient: linear-gradient(160deg, rgba(10, 10, 10, 0.8), rgba(20, 20, 20, 0.8));
     --modal-border-neutral: rgba(255, 255, 255, 0.08);
     --modal-shadow-neutral-glow: 0 0 40px rgba(0, 0, 0, 0.7);
-
-    /* Variáveis para botões com blur transparente */
-    --button-blur-bg: rgba(89, 59, 162, 0.2); /* Roxo com transparência */
-    --button-blur-bg-hover: rgba(140, 112, 200, 0.3); /* Roxo claro com mais transparência no hover */
-    --button-backdrop-filter: blur(8px) saturate(1.8); /* Efeito de blur para o fundo */
+    --button-blur-bg: rgba(89, 59, 162, 0.2);
+    --button-blur-bg-hover: rgba(140, 112, 200, 0.3);
+    --button-backdrop-filter: blur(8px) saturate(1.8);
 }
 
 body {
     font-family: 'Inter', sans-serif;   
     /* MD3 Applied */
-    background-color: rgba(18,18,18,0.25);
+    background-color: rgba(89,59,162,0.25);
     backdrop-filter: blur(20px);
     color: var(--text-primary);
     transition: background-image 0.5s ease-in-out;
-    overflow: hidden !important; /* Desabilita rolagem totalmente */
+    overflow: hidden !important;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center; /* Centraliza tudo na tela */
+    justify-content: center;
     min-height: 100vh;
 }
 
@@ -65,7 +60,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     background-position: center center;
     background-repeat: repeat;
     transition: background-image 0.7s ease-in-out, opacity 0.7s ease-in-out;
-    background-color: transparent; /* Alterado para transparente */
+    background-color: transparent;
     opacity: 1;
 }
 
@@ -76,36 +71,34 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: transparent; /* Alterado para transparente */
-    backdrop-filter: none; /* Removido o blur */
-    -webkit-backdrop-filter: none; /* Removido o blur */
-    box-shadow: none; /* Removido box-shadow */
+    background-color: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
     z-index: -1;
 }
 
-/* Container principal para o conteúdo dos botões */
 .main-container {
     display: flex;
-    flex-direction: column; /* Coluna para o título e depois linha para os botões */
-    gap: 5rem; /* Espaçamento ajustado */
+    flex-direction: column;
+    gap: 5rem;
     align-items: center;
     justify-content: center;
     padding: 1rem;
-    z-index: 10; /* Garante que esteja acima do backdrop */
-    transition: opacity 0.2s ease-out; /* Adicionado para transição suave */
+    z-index: 10;
+    transition: opacity 0.2s ease-out;
 }
 
-/* Oculta os botões de sorteio principais quando o modal está aberto */
 body.swal2-shown .main-container {
     opacity: 0;
     pointer-events: none;
 }
 
-.button-group { /* Novo contêiner para agrupar os botões de filme/série lado a lado */
+.button-group {
     display: flex;
     gap: 1rem;
-    flex-wrap: wrap; /* Permite que os botões quebrem linha em telas pequenas */
-    justify-content: center; /* Centraliza os botões */
+    flex-wrap: wrap;
+    justify-content: center;
     width: 100%;
 }
 
@@ -114,14 +107,14 @@ h1 {
     font-weight: 700;
     color: var(--purple-light);
     text-shadow: 0 0 15px rgba(130, 0, 255, 0.2);
-    margin-bottom: 1.5rem; /* Margem ajustada */
+    margin-bottom: 1.5rem;
     text-align: center;
 }
 
 .random-button {
   /* MD3 Applied */
-  background-color: rgba(18,18,18,0.50);
-  border: 1px solid rgba(18,18,18,0.60);
+  background-color: rgba(89,59,162,0.50);
+  border: 1px solid rgba(89,59,162,0.60);
   border-radius: 24px;
   display: grid;
   align-items: center;
@@ -147,7 +140,6 @@ h1 {
   backdrop-filter: blur(5px);
 }
 
-/* Media query for larger screens - adjust as needed */
 @media (min-width: 768px) {
   .random-button {
     font-size: 2em;
@@ -157,7 +149,7 @@ h1 {
 
 .random-button:hover {
     /* MD3 Applied */
-    background-color: rgba(18,18,18,0.7);
+    background-color: rgba(89,59,162,0.7);
     transform: translateY(-3px) scale(1.03);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
 }
@@ -166,7 +158,6 @@ h1 {
     font-size: 1.5rem;
 }
 
-/* Loader */
 .loader {
     position: center;
     left: 50%;
@@ -183,7 +174,6 @@ h1 {
 }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-/* SweetAlert2 General Customizations */
 .swal2-popup {
     color: var(--text-primary) !important;
     border-radius: 1.2rem !important;
@@ -285,8 +275,7 @@ h1 {
 .details-iframe-container iframe { width: 100%; height: 100%; border: none; display: block; }
 .swal-details-content .details-player-unavailable { margin-top: 1.25rem; text-align: center; color: #FFD700; background-color: rgba(255, 215, 0, 0.15); padding: 0.75rem; border-radius: 0.5rem; font-size: 0.875rem; }
 
-/* Media Queries para responsividade */
-@media (max-width: 767px) { /* Mobile */
+@media (max-width: 767px) {
     h1 { font-size: 2rem; }
     .random-button {
         padding: 0.7rem 1.2rem;
@@ -315,7 +304,7 @@ h1 {
         font-size: 1.1rem;
     }
 }
-/* Estilos do botão "Sortear Novamente", "Trailer" e "Copiar Link" no rodapé */
+
 #externalCopyButtonContainer {
     position: fixed;
     bottom: 1rem;
@@ -329,28 +318,25 @@ h1 {
     max-width: 500px;
     padding: 0 1rem;
     box-sizing: border-box;
-    /* INÍCIO DA MODIFICAÇÃO: Controle de visibilidade */
     opacity: 0;
     pointer-events: none;
-    transform: translate(-50%, 100%); /* Começa fora da tela (embaixo) para animar a entrada */
+    transform: translate(-50%, 100%);
     transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-    /* FIM DA MODIFICAÇÃO */
 }
 
-/* NOVO: Torna os botões do rodapé visíveis quando o modal está aberto */
 body.swal2-shown #externalCopyButtonContainer {
     opacity: 1;
     pointer-events: auto;
-    transform: translateX(-50%); /* Move para a posição original fixa no rodapé */
+    transform: translateX(-50%);
 }
 
 
 #pickAgainButton,
 #trailerButton {
   /* MD3 Applied */
-  background-color: rgba(18,18,18,0.20);
+  background-color: rgba(89,59,162,0.20);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(18,18,18,0.60);
+  border: 1px solid rgba(89,59,162,0.60);
   color: var(--text-primary);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   padding: 0.5rem 0.8rem;
@@ -372,7 +358,7 @@ body.swal2-shown #externalCopyButtonContainer {
 #pickAgainButton:hover,
 #trailerButton:hover {
     /* MD3 Applied */
-    background-color: rgba(18,18,18,0.3);
+    background-color: rgba(89,59,162,0.3);
     transform: translateY(-2px) scale(1.02);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
 }
@@ -387,9 +373,9 @@ body.swal2-shown #externalCopyButtonContainer {
 
 #externalCopyLinkButton {
   /* MD3 Applied */
-  background-color: rgba(18,18,18,0.20);
+  background-color: rgba(89,59,162,0.20);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(18,18,18,0.60);
+  border: 1px solid rgba(89,59,162,0.60);
   color: var(--text-primary);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   padding: 0.8rem;
@@ -406,7 +392,7 @@ body.swal2-shown #externalCopyButtonContainer {
 }
 #externalCopyLinkButton:hover {
     /* MD3 Applied */
-    background-color: rgba(18,18,18,0.3);
+    background-color: rgba(89,59,162,0.3);
     transform: translateY(-2px) scale(1.02);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
 }
