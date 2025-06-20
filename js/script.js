@@ -6,7 +6,6 @@ window.addEventListener('load', () => {
 
   const HOME_PAGE = 'Catalogo1/index.html';
   
-  // LÓGICA PARA LER O PARÂMETRO DA URL NA CARGA INICIAL
   const urlParams = new URLSearchParams(window.location.search);
   const paginaParaCarregar = urlParams.get('pagina');
   const initialPage = paginaParaCarregar ? decodeURIComponent(paginaParaCarregar) : HOME_PAGE;
@@ -26,7 +25,6 @@ window.addEventListener('load', () => {
 
   const isIframeHome = () => newsFrame.src.endsWith(HOME_PAGE);
 
-  // SUA LÓGICA DE VISIBILIDADE ORIGINAL (PRESERVADA)
   const updateIframeBackButtonVisibility = () => {
     const isHome = isIframeHome();
     iframeBackButton.style.display = isHome ? 'none' : 'flex';
@@ -36,7 +34,6 @@ window.addEventListener('load', () => {
     });
   };
   
-  // SUA LÓGICA DA SIDEBAR ORIGINAL (PRESERVADA)
   const updateSidebarState = (expand) => {
     buttonsToToggleVisibility.forEach(button => {
       button.classList.toggle('sidebar-item-hidden', !expand);
@@ -89,7 +86,6 @@ window.addEventListener('load', () => {
     }
   };
 
-  // SEUS EVENT LISTENERS ORIGINAIS (PRESERVADOS)
   sidebarToggleBtn.addEventListener('click', (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -150,14 +146,12 @@ window.addEventListener('load', () => {
     setupIframeLinks();
   });
 
-  // CARGA INICIAL DA PÁGINA (COM A LÓGICA DE LINK DIRETO)
   newsFrame.src = initialPage;
   history.replaceState({ iframe: initialPage }, '', '');
 
   updateSidebarState(false);
   updateIframeBackButtonVisibility();
 
-  // SEU CÓDIGO DO FULLSCREEN ORIGINAL (PRESERVADO)
   const fullscreenBtn = document.getElementById('fullscreenBtn');
 
   const checkScreen = () => {
@@ -205,6 +199,28 @@ window.addEventListener('load', () => {
       } else {
         icon.classList.remove('fa-compress');
         icon.classList.add('fa-expand');
+      }
+    });
+  }
+
+  // Lógica do Botão de Doação e Modal
+  const donateBtn = document.getElementById('donateBtn');
+  const donateModal = document.getElementById('donateModal');
+  const closeButton = donateModal ? donateModal.querySelector('.close-button') : null;
+
+  if (donateBtn && donateModal && closeButton) {
+    donateBtn.addEventListener('click', () => {
+      donateModal.style.display = 'flex';
+    });
+
+    closeButton.addEventListener('click', () => {
+      donateModal.style.display = 'none';
+    });
+
+    donateModal.addEventListener('click', (event) => {
+      // Garante que o clique fora do modal-content feche o modal
+      if (event.target === donateModal) {
+        donateModal.style.display = 'none';
       }
     });
   }
