@@ -225,3 +225,11 @@ window.addEventListener('load', () => {
     });
   }
 });
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.matchMedia('(display-mode: fullscreen)').matches) {
+    // Já está em fullscreen
+  } else {
+    // Tenta ativar fullscreen
+    document.documentElement.requestFullscreen().catch(console.error);
+  }
+});
