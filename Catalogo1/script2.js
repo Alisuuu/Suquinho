@@ -1,4 +1,4 @@
-// --- Script 2: API Functions, Core Logic, Filter Logic, Item Details Modal 
+// --- Script 2: API Functions, Core Logic, Filter Logic, Item Details Modal ---
 
 // getCompanyConfigForQuery usa companyKeywordMap do Script 1
 function getCompanyConfigForQuery(query) {
@@ -59,11 +59,6 @@ async function fetchTMDB(endpoint, params = {}) {
 async function loadMainPageContent() {
     console.log("loadMainPageContent called");
     showLoader(); // showLoader de Script 3
-
-    // NOVO: Resetar estados de favoritos e filtros
-    favoritesActive = false; // favoritesActive de Script 1
-    if (favoritesButton) favoritesButton.classList.remove('active'); // favoritesButton de Script 1
-
     if (defaultContentSections) defaultContentSections.style.display = 'block';
     if (singleResultsSection) singleResultsSection.style.display = 'none';
     if (filterToggleButton) filterToggleButton.classList.remove('active');
@@ -72,12 +67,6 @@ async function loadMainPageContent() {
 
     popularMoviesCurrentPage = 1; popularMoviesTotalPages = 1; isLoadingMorePopularMovies = false; // Variáveis de Script 1
     topRatedTvShowsCurrentPage = 1; topRatedTvShowsTotalPages = 1; isLoadingMoreTopRatedTvShows = false; // Variáveis de Script 1
-    
-    // NOVO: Resetar variáveis de paginação de anime
-    animeMoviesCurrentPage = 1; animeMoviesTotalPages = 1;
-    animeTvCurrentPage = 1; animeTvTotalPages = 1;
-    isLoadingMoreAnime = false;
-
     if (moviesResultsGrid) moviesResultsGrid.innerHTML = '';
     if (tvShowsResultsGrid) tvShowsResultsGrid.innerHTML = '';
     mainPageBackdropPaths = []; currentMainPageBackdropIndex = 0; // Resetar backdrops (variáveis de Script 1)
@@ -160,11 +149,6 @@ async function performSearch(query) {
     stopMainPageBackdropSlideshow();
     if (pageBackdrop.style.opacity !== '0') updatePageBackground(null);
     showLoader();
-
-    // NOVO: Resetar estados de favoritos e filtros
-    favoritesActive = false; // favoritesActive de Script 1
-    if (favoritesButton) favoritesButton.classList.remove('active'); // favoritesButton de Script 1
-
     activeAppliedGenre = { id: null, name: null, type: null };
     selectedGenreSA = { id: null, name: null, type: null };
     if (filterToggleButton) filterToggleButton.classList.remove('active');
@@ -172,12 +156,6 @@ async function performSearch(query) {
     totalPages.search = 1; 
     currentContentContext = 'search';
     isLoadingMore = false;
-
-    // NOVO: Resetar variáveis de paginação de anime
-    animeMoviesCurrentPage = 1; animeMoviesTotalPages = 1;
-    animeTvCurrentPage = 1; animeTvTotalPages = 1;
-    isLoadingMoreAnime = false;
-
     if (!query || !query.trim()) { 
         loadMainPageContent(); 
         hideLoader(); 
@@ -239,127 +217,10 @@ async function performSearch(query) {
     }
 }
 
-// NOVO: Funções de gerenciamento de favoritos
-function getFavorites() {
-    try {
-        const favorites = JSON.parse(localStorage.getItem(FAVORITES_KEY)) || [];
-        return favorites;
-    } catch (e) {
-        console.error("Erro ao carregar favoritos do localStorage:", e);
-        return [];
-    }
-}
-
-function saveFavorites(favorites) {
-    try {
-        localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
-    } catch (e) {
-        console.error("Erro ao salvar favoritos no localStorage:", e);
-    }
-}
-
-function isFavorite(itemId, mediaType) {
-    const favorites = getFavorites();
-    return favorites.some(fav => fav.id === itemId && fav.mediaType === mediaType);
-}
-
-function toggleFavorite(item) {
-    let favorites = getFavorites();
-    const { id, mediaType, title, name, poster_path, backdrop_path } = item;
-    const existingIndex = favorites.findIndex(fav => fav.id === id && fav.mediaType === mediaType);
-
-    if (existingIndex !== -1) {
-        favorites.splice(existingIndex, 1);
-        Swal.fire({ toast: true, position: 'top-end', icon: 'info', title: 'Removido dos favoritos!', showConfirmButton: false, timer: 1500, background: 'var(--card-bg)', color: 'var(--text-primary)', timerProgressBar: true, iconColor: 'var(--text-secondary)' });
-    } else {
-        favorites.push({ id, mediaType, title: title || name, poster_path, backdrop_path });
-        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Adicionado aos favoritos!', showConfirmButton: false, timer: 1500, background: 'var(--card-bg)', color: 'var(--text-primary)', timerProgressBar: true, iconColor: 'var(--success-green)' });
-    }
-    saveFavorites(favorites);
-    // Atualiza o ícone do botão no card, se estiver visível
-    const favoriteButtonOnCard = document.querySelector(`.favorite-button[data-item-id="${id}"][data-media-type="${mediaType}"]`);
-    if (favoriteButtonOnCard) {
-        if (isFavorite(id, mediaType)) {
-            favoriteButtonOnCard.innerHTML = '<i class="fas fa-heart"></i>';
-            favoriteButtonOnCard.classList.add('active');
-        } else {
-            favoriteButtonOnCard.innerHTML = '<i class="far fa-heart"></i>';
-            favoriteButtonOnCard.classList.remove('active');
-        }
-    }
-}
-
-// NOVO: Função para exibir o conteúdo dos favoritos
-async function displayFavoritesContent() {
-    stopMainPageBackdropSlideshow();
-    updatePageBackground(null);
-    showLoader();
-
-    favoritesActive = true; // favoritesActive de Script 1
-    if (favoritesButton) favoritesButton.classList.add('active'); // favoritesButton de Script 1
-    if (filterToggleButton) filterToggleButton.classList.remove('active');
-    activeAppliedGenre = { id: null, name: null, type: null };
-    selectedGenreSA = { id: null, name: null, type: null };
-    currentContentContext = 'favorites'; // currentContentContext de Script 1
-
-    // NOVO: Resetar variáveis de paginação de anime
-    animeMoviesCurrentPage = 1; animeMoviesTotalPages = 1;
-    animeTvCurrentPage = 1; animeTvTotalPages = 1;
-    isLoadingMoreAnime = false;
-
-    if (defaultContentSections) defaultContentSections.style.display = 'none';
-    if (singleResultsSection) singleResultsSection.style.display = 'block';
-    if (singleResultsGrid) singleResultsGrid.innerHTML = '';
-    if (singleSectionTitleEl) singleSectionTitleEl.textContent = 'Meus Favoritos';
-
-    const favorites = getFavorites();
-    if (favorites.length === 0) {
-        if (singleResultsGrid) singleResultsGrid.innerHTML = '<p class="text-center col-span-full text-[var(--text-secondary)] py-10 text-lg">Você ainda não adicionou nenhum item aos favoritos.</p>';
-        hideLoader();
-        return;
-    }
-
-    // Para exibir favoritos, usamos os dados básicos armazenados.
-    // Se precisar de detalhes mais completos, pode fazer um fetch para cada item,
-    // mas para a exibição básica, os dados já salvos são suficientes.
-    // Opcional: buscar detalhes completos de cada favorito para garantir dados atualizados (pode ser lento para muitos favoritos)
-    const detailedFavoritesPromises = favorites.map(fav => getItemDetails(fav.id, fav.mediaType).then(details => {
-        if (details && !details.error) {
-            return {
-                id: fav.id,
-                media_type: fav.mediaType,
-                title: details.title || details.name,
-                name: details.name || details.title, // Garante que ambos estejam disponíveis
-                poster_path: details.poster_path,
-                backdrop_path: details.backdrop_path,
-                // Adicione quaisquer outros detalhes necessários para exibição
-            };
-        }
-        return null; // Retorna null se houver erro ao buscar detalhes
-    }));
-
-    const detailedFavorites = (await Promise.all(detailedFavoritesPromises)).filter(item => item !== null);
-
-    if (singleResultsGrid) {
-        if (detailedFavorites.length > 0) {
-            displayResults(detailedFavorites, null, singleResultsGrid, true);
-        } else {
-            singleResultsGrid.innerHTML = '<p class="text-center col-span-full text-[var(--text-secondary)] py-10 text-lg">Não foi possível carregar os detalhes dos seus favoritos.</p>';
-        }
-    }
-    hideLoader();
-}
-
-
 async function applyGenreFilterFromSA() {
     stopMainPageBackdropSlideshow(); // Parar o slideshow ao aplicar filtro
     if (pageBackdrop.style.opacity !== '0') updatePageBackground(null); // Limpar o backdrop atual (updatePageBackground de Script 3)
-    
-    // NOVO: Resetar estado de favoritos
-    favoritesActive = false;
-    if (favoritesButton) favoritesButton.classList.remove('active');
-
-    if (!selectedGenreSA.id && selectedGenreSA.type !== 'anime') { // selectedGenreSA de Script 1
+    if (!selectedGenreSA.id) { // selectedGenreSA de Script 1
         activeAppliedGenre = { id: null, name: null, type: null }; // activeAppliedGenre de Script 1
         if (filterToggleButton) filterToggleButton.classList.remove('active');
         loadMainPageContent(); return;
@@ -368,54 +229,18 @@ async function applyGenreFilterFromSA() {
     activeAppliedGenre = { ...selectedGenreSA }; // activeAppliedGenre e selectedGenreSA de Script 1
     filterCurrentPage = 1; totalPages.filter = 1; currentContentContext = 'filter'; // Variáveis de Script 1
     isLoadingMore = false; // isLoadingMore de Script 1
-
-    // NOVO: Resetar variáveis de paginação de anime
-    animeMoviesCurrentPage = 1; animeMoviesTotalPages = 1;
-    animeTvCurrentPage = 1; animeTvTotalPages = 1;
-    isLoadingMoreAnime = false;
-
     if (defaultContentSections) defaultContentSections.style.display = 'none';
     if (singleResultsSection) singleResultsSection.style.display = 'block';
     if (singleResultsGrid) singleResultsGrid.innerHTML = ''; 
-    
-    if (activeAppliedGenre.type === 'anime') {
-        if (singleSectionTitleEl) singleSectionTitleEl.textContent = `Animes (Filmes e Séries)`;
-        const moviePromise = fetchTMDB(`/discover/movie`, { with_genres: 16, sort_by: 'popularity.desc', page: 1 });
-        const tvPromise = fetchTMDB(`/discover/tv`, { with_genres: 16, sort_by: 'popularity.desc', page: 1 });
-
-        const [movieData, tvData] = await Promise.all([moviePromise, tvPromise]);
-        let combinedResults = [];
-
-        if (movieData && !movieData.error && movieData.results) {
-            combinedResults.push(...movieData.results.filter(item => item.poster_path).map(item => ({ ...item, media_type: 'movie' })));
-            animeMoviesTotalPages = movieData.total_pages || 1;
-            animeMoviesCurrentPage = 1;
-        } else if (movieData && movieData.error) console.error("Erro ao carregar filmes de animação:", movieData.message);
-
-        if (tvData && !tvData.error && tvData.results) {
-            combinedResults.push(...tvData.results.filter(item => item.poster_path).map(item => ({ ...item, media_type: 'tv' })));
-            animeTvTotalPages = tvData.total_pages || 1;
-            animeTvCurrentPage = 1;
-        } else if (tvData && tvData.error) console.error("Erro ao carregar séries de animação:", tvData.message);
-
-        combinedResults.sort((a, b) => (b.popularity || 0) - (a.popularity || 0)); // Ordena resultados combinados por popularidade
-
-        if (singleResultsGrid) {
-            if (combinedResults.length > 0) displayResults(combinedResults, null, singleResultsGrid, true);
-            else singleResultsGrid.innerHTML = `<p class="text-center col-span-full text-[var(--text-secondary)] py-10 text-lg">Nenhum anime encontrado.</p>`;
-        }
-    } else {
-        if (singleSectionTitleEl) singleSectionTitleEl.textContent = `${activeAppliedGenre.type === 'movie' ? 'Filmes' : 'Séries'} do Gênero: ${activeAppliedGenre.name}`;
-        const data = await fetchTMDB(`/discover/${activeAppliedGenre.type}`, { with_genres: activeAppliedGenre.id, sort_by: 'popularity.desc', page: filterCurrentPage });
-        if (singleResultsGrid) {
-            if (data && !data.error && data.results) {
-                totalPages.filter = data.total_pages || 1;
-                if (data.results.length > 0) displayResults(data.results, activeAppliedGenre.type, singleResultsGrid, true); // displayResults de Script 3
-                else singleResultsGrid.innerHTML = `<p class="text-center col-span-full text-[var(--text-secondary)] py-10 text-lg">Nenhum item encontrado para o gênero ${activeAppliedGenre.name}.</p>`;
-            } else singleResultsGrid.innerHTML = `<p class="text-center col-span-full text-[var(--text-secondary)] py-10 text-lg">Não foi possível aplicar o filtro. ${data?.message || ''}</p>`;
-        }
+    if (singleSectionTitleEl) singleSectionTitleEl.textContent = `${activeAppliedGenre.type === 'movie' ? 'Filmes' : 'Séries'} do Gênero: ${activeAppliedGenre.name}`;
+    const data = await fetchTMDB(`/discover/${activeAppliedGenre.type}`, { with_genres: activeAppliedGenre.id, sort_by: 'popularity.desc', page: filterCurrentPage });
+    if (singleResultsGrid) {
+        if (data && !data.error && data.results) {
+            totalPages.filter = data.total_pages || 1;
+            if (data.results.length > 0) displayResults(data.results, activeAppliedGenre.type, singleResultsGrid, true); // displayResults de Script 3
+            else singleResultsGrid.innerHTML = `<p class="text-center col-span-full">Nenhum item encontrado para o gênero ${activeAppliedGenre.name}.</p>`;
+        } else singleResultsGrid.innerHTML = `<p class="text-center col-span-full">Não foi possível aplicar o filtro. ${data?.message || 'Tente novamente.'}</p>`;
     }
-
     hideLoader(); // hideLoader de Script 3
     if (filterToggleButton) filterToggleButton.classList.add('active');
 }
@@ -542,73 +367,16 @@ if(currentExternalBtn) {
     if (details.credits && details.credits.cast && details.credits.cast.length > 0) {
         const castMembers = details.credits.cast.slice(0, 15);
         // PLACEHOLDER_PERSON_IMAGE de Script 1
-        castSectionHTML = `<div class="details-cast-section"><h3 class="details-section-subtitle">Elenco Principal</h3><div class="details-cast-scroller">${castMembers.map(person => `<div class="cast-member-card"><img src="${person.profile_path ? TMDB_IMAGE_BASE_URL + 'w185' + person.profile_path : PLACEHOLDER_PERSON_IMAGE}" alt="${person.name || 'Ator/Atriz sem nome listado'}" class="cast-member-photo" onerror="this.onerror=null; this.src='${PLACEHOLDER_PERSON_IMAGE}';">
-            <p class="cast-member-name">${person.name || 'Nome não disponível'}</p>
-            <p class="cast-member-character">${person.character || ''}</p>
-            </div>`).join('')}</div></div>`;
+        castSectionHTML = `<div class="details-cast-section"><h3 class="details-section-subtitle">Elenco Principal</h3><div class="details-cast-scroller">${castMembers.map(person => `<div class="cast-member-card"><img src="${person.profile_path ? TMDB_IMAGE_BASE_URL + 'w185' + person.profile_path : PLACEHOLDER_PERSON_IMAGE}" alt="${person.name || 'Ator/Atriz sem nome listado'}" class="cast-member-photo" onerror="this.onerror=null; this.src='${PLACEHOLDER_PERSON_IMAGE}';"><p class="cast-member-name">${person.name || 'Nome não disponível'}</p><p class="cast-member-character">${person.character || ''}</p></div>`).join('')}</div></div>`;
     }
     let playerSectionHTML = '';
     if (superflixPlayerUrl) playerSectionHTML = `<div class="details-player-section"><h3 class="details-section-subtitle">Assistir Agora</h3><div class="details-iframe-container ${iframeContainerClass}"><iframe id="swal-details-iframe" src="${superflixPlayerUrl}" allowfullscreen title="Player de ${titleText.replace(/"/g, '&quot;')}" sandbox="allow-scripts allow-same-origin"></iframe></div></div>`;
     else playerSectionHTML = `<div class="details-player-section"><p class="details-player-unavailable">Player não disponível para este título.</p></div>`;
-    
-    // NOVO: Adicionar botão de favoritos ao modal
-    const isFav = isFavorite(itemId, mediaType);
-    const favoriteButtonModalHTML = `
-        <button class="favorite-button-modal ${isFav ? 'active' : ''}" data-item-id="${itemId}" data-media-type="${mediaType}" aria-label="Adicionar/Remover dos favoritos">
-            <i class="${isFav ? 'fas' : 'far'} fa-heart"></i>
-            &nbsp; ${isFav ? 'Remover dos Favoritos' : 'Adicionar aos Favoritos'}
-        </button>
-    `;
-
-    const detailsHTML = `
-        <div class="swal-details-content">
-            <div class="details-flex-container">
-                <img src="${posterModalPath}" alt="Pôster de ${titleText.replace(/"/g, '&quot;')}" class="details-poster" onerror="this.onerror=null; this.src='https://placehold.co/780x1170/0A0514/F0F0F0?text=Erro+Imagem&font=inter';">
-                <div class="details-info-area">
-                    <h2 class="details-content-title">${titleText}</h2>
-                    <div class="details-meta-info">
-                        ${releaseDate ? `<span><i class="fas fa-calendar-alt"></i> ${new Date(releaseDate).toLocaleDateString('pt-BR', { year: 'numeric', month: '2-digit', day: '2-digit' })}</span>` : ''}
-                        ${rating !== 'N/A' ? `<span><i class="fas fa-star"></i> ${rating} / 10</span>` : ''}
-                        ${runtime ? `<span><i class="fas fa-clock"></i> ${runtime} min</span>` : ''}
-                    </div>
-                    ${genres ? `<p class="details-genres"><strong>Gêneros:</strong> ${genres}</p>` : ''}
-                    ${favoriteButtonModalHTML} <!-- NOVO: Botão de favoritos aqui -->
-                    <h3 class="details-section-subtitle">Sinopse</h3>
-                    <p class="details-overview">${overview}</p>
-                </div>
-            </div>
-            ${castSectionHTML}
-            ${playerSectionHTML}
-        </div>
-    `;
+    const detailsHTML = `<div class="swal-details-content"><div class="details-flex-container"><img src="${posterModalPath}" alt="Pôster de ${titleText.replace(/"/g, '&quot;')}" class="details-poster" onerror="this.onerror=null; this.src='https://placehold.co/780x1170/0A0514/F0F0F0?text=Erro+Imagem&font=inter';"><div class="details-info-area"><h2 class="details-content-title">${titleText}</h2><div class="details-meta-info">${releaseDate ? `<span><i class="fas fa-calendar-alt"></i> ${new Date(releaseDate).toLocaleDateString('pt-BR', { year: 'numeric', month: '2-digit', day: '2-digit' })}</span>` : ''}${rating !== 'N/A' ? `<span><i class="fas fa-star"></i> ${rating} / 10</span>` : ''}${runtime ? `<span><i class="fas fa-clock"></i> ${runtime} min</span>` : ''}</div>${genres ? `<p class="details-genres"><strong>Gêneros:</strong> ${genres}</p>` : ''}<h3 class="details-section-subtitle">Sinopse</h3><p class="details-overview">${overview}</p></div></div>${castSectionHTML}${playerSectionHTML}</div>`;
     
     console.log("LOG: HTML dos detalhes construído. Tentando atualizar o modal...");
     Swal.update({ title: '', html: detailsHTML, showConfirmButton: false, showCloseButton: true, allowOutsideClick: true });
     console.log("LOG: Modal ATUALIZADO com conteúdo final.");
-
-    // NOVO: Adicionar listener ao botão de favoritos do modal
-    const modalFavoriteButton = document.querySelector('.swal-details-content .favorite-button-modal');
-    if (modalFavoriteButton) {
-        modalFavoriteButton.onclick = (e) => {
-            e.stopPropagation();
-            const itemToToggle = {
-                id: itemId,
-                mediaType: mediaType,
-                title: details.title || details.name,
-                poster_path: details.poster_path,
-                backdrop_path: details.backdrop_path
-            };
-            toggleFavorite(itemToToggle);
-            // Atualizar o texto e o ícone do botão imediatamente
-            if (isFavorite(itemId, mediaType)) {
-                modalFavoriteButton.innerHTML = '<i class="fas fa-heart"></i>&nbsp; Remover dos Favoritos';
-                modalFavoriteButton.classList.add('active');
-            } else {
-                modalFavoriteButton.innerHTML = '<i class="far fa-heart"></i>&nbsp; Adicionar aos Favoritos';
-                modalFavoriteButton.classList.remove('active');
-            }
-        };
-    }
 }
 
 async function openFilterSweetAlert() { 
@@ -617,8 +385,6 @@ async function openFilterSweetAlert() {
         <div class="swal-genre-filter-type-selector mb-4">
             <button id="swalMovieGenreTypeButton" data-type="movie" class="${currentFilterTypeSA === 'movie' ? 'active' : ''}">Filmes</button>
             <button id="swalTvGenreTypeButton" data-type="tv" class="${currentFilterTypeSA === 'tv' ? 'active' : ''}">Séries</button>
-            <!-- NOVO: Botão de filtro para Animes -->
-            <button id="swalAnimeGenreTypeButton" data-type="anime" class="${currentFilterTypeSA === 'anime' ? 'active' : ''}">Animes</button>
         </div>
         <div id="swalGenreButtonsPanel" class="swal-genre-buttons-panel my-4">
             Carregando gêneros...
@@ -629,24 +395,17 @@ async function openFilterSweetAlert() {
         denyButtonText: 'Limpar Filtro', confirmButtonText: 'Aplicar Filtro',
         customClass: { popup: 'swal2-popup', title: 'swal2-title', htmlContainer: 'swal2-html-container', closeButton: 'swal2-close', actions: 'swal-filter-actions', confirmButton: 'swal2-confirm', denyButton: 'swal2-deny' },
         didOpen: () => {
-            const movieBtn = document.getElementById('swalMovieGenreTypeButton'); 
-            const tvBtn = document.getElementById('swalTvGenreTypeButton');
-            // NOVO: Referência ao botão de Animes
-            const animeBtn = document.getElementById('swalAnimeGenreTypeButton');
+            const movieBtn = document.getElementById('swalMovieGenreTypeButton'); const tvBtn = document.getElementById('swalTvGenreTypeButton');
             const genrePanel = document.getElementById('swalGenreButtonsPanel');
-
             if (movieBtn) movieBtn.addEventListener('click', () => fetchAndDisplayGenresInSA('movie', genrePanel));
             if (tvBtn) tvBtn.addEventListener('click', () => fetchAndDisplayGenresInSA('tv', genrePanel));
-            // NOVO: Listener para o botão de Animes
-            if (animeBtn) animeBtn.addEventListener('click', () => fetchAndDisplayGenresInSA('anime', genrePanel));
-
             fetchAndDisplayGenresInSA(currentFilterTypeSA, genrePanel); updateClearButtonVisibilitySA();
         },
         preConfirm: () => { return selectedGenreSA; }, // selectedGenreSA de Script 1
     });
     currentOpenSwalRef.then(async (result) => { // currentOpenSwalRef de Script 1
         if (result.isConfirmed) {
-            if (selectedGenreSA.id || selectedGenreSA.type === 'anime') await applyGenreFilterFromSA(); // selectedGenreSA de Script 1
+            if (selectedGenreSA.id) await applyGenreFilterFromSA(); // selectedGenreSA de Script 1
             else { activeAppliedGenre = { id: null, name: null, type: null }; if(filterToggleButton) filterToggleButton.classList.remove('active'); loadMainPageContent(); } // activeAppliedGenre de Script 1
         } else if (result.isDenied) {
             selectedGenreSA = { id: null, name: null, type: null }; activeAppliedGenre = { id: null, name: null, type: null }; // selectedGenreSA, activeAppliedGenre de Script 1
@@ -658,42 +417,14 @@ async function openFilterSweetAlert() {
 async function fetchAndDisplayGenresInSA(mediaType, genrePanelElement) { 
     if (!genrePanelElement) { console.error("Painel de gêneros do SweetAlert não encontrado."); return; }
     currentFilterTypeSA = mediaType; // currentFilterTypeSA de Script 1
-    
-    // Atualiza o estado dos botões de tipo (Filmes, Séries, Animes)
-    const movieBtn = document.getElementById('swalMovieGenreTypeButton'); 
-    const tvBtn = document.getElementById('swalTvGenreTypeButton');
-    const animeBtn = document.getElementById('swalAnimeGenreTypeButton');
-    
-    if (movieBtn) movieBtn.classList.toggle('active', mediaType === 'movie'); 
-    if (tvBtn) tvBtn.classList.toggle('active', mediaType === 'tv');
-    if (animeBtn) animeBtn.classList.toggle('active', mediaType === 'anime');
-
-    // NOVO: Lógica específica para o filtro de Animes
-    if (mediaType === 'anime') {
-        // Para "Animes", pré-selecionamos o gênero "Animação" (ID 16)
-        selectedGenreSA = { id: 16, name: 'Animação', type: 'anime' }; // selectedGenreSA de Script 1
-        genrePanelElement.innerHTML = `
-            <button class="active" data-genre-id="16" data-genre-name="Animação" data-genre-type="anime" role="button">Animação (Filmes e Séries)</button>
-        `;
-        updateClearButtonVisibilitySA();
-        return; // Não busca mais gêneros da API
-    }
-
-    // Se o tipo de mídia mudou de 'anime' para 'movie'/'tv', reseta o gênero selecionado
-    if (selectedGenreSA.type === 'anime' && mediaType !== 'anime') {
-        selectedGenreSA = { id: null, name: null, type: null };
-    }
-
+    const movieBtn = document.getElementById('swalMovieGenreTypeButton'); const tvBtn = document.getElementById('swalTvGenreTypeButton');
+    if (movieBtn) movieBtn.classList.toggle('active', mediaType === 'movie'); if (tvBtn) tvBtn.classList.toggle('active', mediaType === 'tv');
+    if (selectedGenreSA.id && mediaType !== selectedGenreSA.type) selectedGenreSA = { id: null, name: null, type: null }; // selectedGenreSA de Script 1
     genrePanelElement.innerHTML = '<div class="loader mx-auto my-3" style="width: 30px; height: 30px; border-width: 3px;"></div>';
     const data = await fetchTMDB(`/genre/${mediaType}/list`); genrePanelElement.innerHTML = '';
     if (data && !data.error && data.genres) {
         data.genres.forEach(genre => {
-            const button = document.createElement('button'); 
-            button.textContent = genre.name; 
-            button.dataset.genreId = genre.id; 
-            button.dataset.genreName = genre.name; 
-            button.dataset.genreType = mediaType; // Adiciona o tipo de mídia ao dataset
-            button.setAttribute('role', 'button');
+            const button = document.createElement('button'); button.textContent = genre.name; button.dataset.genreId = genre.id; button.dataset.genreName = genre.name; button.setAttribute('role', 'button');
             if (genre.id === selectedGenreSA.id && mediaType === selectedGenreSA.type) button.classList.add('active'); // selectedGenreSA de Script 1
             button.onclick = () => {
                 if (selectedGenreSA.id === genre.id && selectedGenreSA.type === mediaType) selectedGenreSA = { id: null, name: null, type: null }; // selectedGenreSA de Script 1
@@ -708,89 +439,17 @@ async function fetchAndDisplayGenresInSA(mediaType, genrePanelElement) {
 function updateGenreButtonsInSAUI(genrePanelElement) { 
     if (!genrePanelElement) return;
     const buttons = genrePanelElement.querySelectorAll('button');
-    buttons.forEach(btn => { 
-        const genreId = parseInt(btn.dataset.genreId); 
-        const genreType = btn.dataset.genreType; // Pega o tipo do dataset
-        btn.classList.toggle('active', genreId === selectedGenreSA.id && genreType === selectedGenreSA.type); 
-    }); // selectedGenreSA de Script 1
+    buttons.forEach(btn => { const genreId = parseInt(btn.dataset.genreId); btn.classList.toggle('active', genreId === selectedGenreSA.id && currentFilterTypeSA === selectedGenreSA.type); }); // selectedGenreSA, currentFilterTypeSA de Script 1
 }
 function updateClearButtonVisibilitySA() { 
     if (typeof Swal === 'undefined' || !Swal.getDenyButton) return;
     const denyButton = Swal.getDenyButton();
-    if (denyButton) denyButton.style.display = (selectedGenreSA.id || activeAppliedGenre.id || selectedGenreSA.type === 'anime' || activeAppliedGenre.type === 'anime') ? 'inline-flex' : 'none'; // selectedGenreSA, activeAppliedGenre de Script 1
+    if (denyButton) denyButton.style.display = (selectedGenreSA.id || activeAppliedGenre.id) ? 'inline-flex' : 'none'; // selectedGenreSA, activeAppliedGenre de Script 1
 }
 
-// MODIFICADO: loadMoreItems usa searchResultsLoader e lida com Animes
+// MODIFICADO: loadMoreItems usa searchResultsLoader
 async function loadMoreItems() {
-    if (isLoadingMore || isLoadingMoreAnime) return; // isLoadingMore, isLoadingMoreAnime de Script 1
-
-    if (currentContentContext === 'filter' && activeAppliedGenre.type === 'anime') {
-        if (animeMoviesCurrentPage >= animeMoviesTotalPages && animeTvCurrentPage >= animeTvTotalPages) {
-            if (searchResultsLoader) searchResultsLoader.style.display = 'none';
-            return;
-        }
-        isLoadingMoreAnime = true;
-        if (searchResultsLoader) searchResultsLoader.style.display = 'block';
-
-        console.log(`LOG: loadMoreItems ACIONADO para Animes. Filmes: ${animeMoviesCurrentPage + 1}/${animeMoviesTotalPages}, Séries: ${animeTvCurrentPage + 1}/${animeTvTotalPages}`);
-
-        let moreMovieAnime = [];
-        let moreTvAnime = [];
-        let fetchPromises = [];
-
-        if (animeMoviesCurrentPage < animeMoviesTotalPages) {
-            animeMoviesCurrentPage++;
-            fetchPromises.push(fetchTMDB(`/discover/movie`, { with_genres: 16, sort_by: 'popularity.desc', page: animeMoviesCurrentPage }).then(data => {
-                if (data && !data.error && data.results) {
-                    animeMoviesTotalPages = data.total_pages || animeMoviesTotalPages;
-                    moreMovieAnime = data.results.filter(item => item.poster_path).map(item => ({ ...item, media_type: 'movie' }));
-                } else if (data && data.error) {
-                    console.error("Erro ao carregar mais filmes de animação:", data.message);
-                    animeMoviesCurrentPage--; // Reverter página em caso de erro
-                }
-                return moreMovieAnime;
-            }));
-        }
-
-        if (animeTvCurrentPage < animeTvTotalPages) {
-            animeTvCurrentPage++;
-            fetchPromises.push(fetchTMDB(`/discover/tv`, { with_genres: 16, sort_by: 'popularity.desc', page: animeTvCurrentPage }).then(data => {
-                if (data && !data.error && data.results) {
-                    animeTvTotalPages = data.total_pages || animeTvTotalPages;
-                    moreTvAnime = data.results.filter(item => item.poster_path).map(item => ({ ...item, media_type: 'tv' }));
-                } else if (data && data.error) {
-                    console.error("Erro ao carregar mais séries de animação:", data.message);
-                    animeTvCurrentPage--; // Reverter página em caso de erro
-                }
-                return moreTvAnime;
-            }));
-        }
-
-        if (fetchPromises.length === 0) {
-            if (searchResultsLoader) searchResultsLoader.style.display = 'none';
-            isLoadingMoreAnime = false;
-            return;
-        }
-
-        try {
-            const allNewAnimeResults = await Promise.all(fetchPromises);
-            let combinedNewAnimeResults = [];
-            allNewAnimeResults.forEach(results => {
-                combinedNewAnimeResults.push(...results);
-            });
-
-            combinedNewAnimeResults.sort((a, b) => (b.popularity || 0) - (a.popularity || 0)); // Re-sort combined results
-            displayResults(combinedNewAnimeResults, null, singleResultsGrid, false); // displayResults de Script 3
-        } catch (error) {
-            console.error("LOG (loadMoreItems - Anime): Erro geral ao carregar mais animes:", error);
-        } finally {
-            if (searchResultsLoader) searchResultsLoader.style.display = 'none';
-            isLoadingMoreAnime = false;
-        }
-        return; // Sai da função após lidar com animes
-    }
-
-    // Lógica existente para busca e filtro normal
+    if (isLoadingMore) return; // isLoadingMore de Script 1
     isLoadingMore = true; // isLoadingMore de Script 1
     if (searchResultsLoader) searchResultsLoader.style.display = 'block'; // searchResultsLoader de Script 1
     
@@ -816,7 +475,6 @@ async function loadMoreItems() {
                 }
                 break;
             case 'filter':
-                // Já lidamos com 'anime' acima, então aqui é para filtros normais de filme/série
                 if (filterCurrentPage >= totalPages.filter) { // filterCurrentPage, totalPages de Script 1
                     if (searchResultsLoader) searchResultsLoader.style.display = 'none'; // searchResultsLoader de Script 1
                     isLoadingMore = false; return; // isLoadingMore de Script 1
@@ -827,13 +485,9 @@ async function loadMoreItems() {
                     totalPages.filter = nextPageData.total_pages || totalPages.filter; // totalPages de Script 1
                     displayResults(nextPageData.results, activeAppliedGenre.type, singleResultsGrid, false); // displayResults de Script 3
                 } else if (nextPageData && nextPageData.error) { 
-                    console.error("LOG (loadMoreItems): Erro ao carregar mais resultados do filtro:&quot;", nextPageData.message); 
+                    console.error("LOG (loadMoreItems): Erro ao carregar mais resultados do filtro:", nextPageData.message); 
                     filterCurrentPage--; // filterCurrentPage de Script 1
                 }
-                break;
-            case 'favorites':
-                // Não há paginação infinita para favoritos, pois todos são carregados de uma vez.
-                console.log("LOG (loadMoreItems): Tentativa de carregar mais favoritos, mas não há paginação para esta seção.");
                 break;
             default: 
                 console.warn(`LOG (loadMoreItems): Contexto desconhecido: ${currentContentContext}`); // currentContentContext de Script 1
@@ -848,3 +502,4 @@ async function loadMoreItems() {
     }
 }
 
+    

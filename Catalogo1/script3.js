@@ -53,34 +53,7 @@ function displayResults(items, defaultMediaType = null, targetGridElement, repla
         img.onerror = function() { this.src = `https://placehold.co/780x1170/0A0514/F0F0F0?text=Indispon%C3%ADvel&font=inter`; this.alt = 'Imagem indisponível'; this.onerror = null; };
         const titleOverlay = document.createElement('div'); titleOverlay.className = 'title-overlay';
         const titleDiv = document.createElement('div'); titleDiv.className = 'title'; titleDiv.textContent = item.title || item.name || "Título não disponível";
-        titleOverlay.appendChild(titleDiv); card.appendChild(img); card.appendChild(titleOverlay); 
-        
-        // NOVO: Adicionar botão de favoritos ao card
-        const favoriteBtn = document.createElement('button');
-        favoriteBtn.className = 'favorite-button';
-        favoriteBtn.setAttribute('data-item-id', item.id);
-        favoriteBtn.setAttribute('data-media-type', mediaType);
-        favoriteBtn.setAttribute('aria-label', `Adicionar/Remover ${item.title || item.name} dos favoritos`);
-        favoriteBtn.innerHTML = isFavorite(item.id, mediaType) ? '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>';
-        if (isFavorite(item.id, mediaType)) {
-            favoriteBtn.classList.add('active');
-        }
-        favoriteBtn.onclick = (e) => {
-            e.stopPropagation(); // Previne que o clique no botão abra o modal do item
-            toggleFavorite(item); // toggleFavorite de Script 2
-            // Atualiza o ícone do botão imediatamente após a ação
-            if (isFavorite(item.id, mediaType)) {
-                favoriteBtn.innerHTML = '<i class="fas fa-heart"></i>';
-                favoriteBtn.classList.add('active');
-            } else {
-                favoriteBtn.innerHTML = '<i class="far fa-heart"></i>';
-                favoriteBtn.classList.remove('active');
-            }
-        };
-        card.appendChild(favoriteBtn);
-        // FIM NOVO
-
-        targetGridElement.appendChild(card);
+        titleOverlay.appendChild(titleDiv); card.appendChild(img); card.appendChild(titleOverlay); targetGridElement.appendChild(card);
         displayedCountThisCall++;
     });
     if (replace && displayedCountThisCall === 0 && items.length > 0) {
@@ -122,8 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
          if(moviesResultsGrid) moviesResultsGrid.innerHTML = errorMsgHtml; if(tvShowsResultsGrid) tvShowsResultsGrid.innerHTML = errorMsgHtml; if(singleResultsGrid) singleResultsGrid.innerHTML = errorMsgHtml;
          // searchInput, searchButton, filterToggleButton, loader de Script 1
          if(searchInput) searchInput.disabled = true; if(searchButton) searchButton.disabled = true; if(filterToggleButton) filterToggleButton.disabled = true; if(loader) loader.style.display = 'none';
-         // NOVO: Desabilitar botão de favoritos se a API estiver inválida
-         if(favoritesButton) favoritesButton.disabled = true;
          const header = document.querySelector('header'); const errorDiv = document.createElement('div'); errorDiv.innerHTML = `<div style="background-color: #B91C1C; color: white; text-align: center; padding: 0.75rem; font-weight: bold;">ERRO: Chave da API TMDB necessária.</div>`;
          if(header && header.parentNode) header.parentNode.insertBefore(errorDiv, header.nextSibling); else document.body.insertBefore(errorDiv, document.body.firstChild);
          return;
@@ -135,17 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
     else console.warn("Elemento searchButton não encontrado.");
     if (filterToggleButton) filterToggleButton.addEventListener('click', openFilterSweetAlert); // openFilterSweetAlert de Script 2
     else console.warn("Elemento filterToggleButton não encontrado.");
-    
-    // NOVO: Listener para o botão de favoritos
-    if (favoritesButton) favoritesButton.addEventListener('click', () => {
-        if (favoritesActive) { // favoritesActive de Script 1
-            loadMainPageContent(); // Volta para o conteúdo principal
-        } else {
-            displayFavoritesContent(); // Exibe os favoritos
-        }
-    });
-    else console.warn("Elemento favoritesButton não encontrado.");
-
     document.addEventListener('keydown', (event) => { if (event.key === 'Escape') { if (typeof Swal !== 'undefined' && Swal.isVisible()) Swal.close(); } });
 
     // --- Listeners de Scroll para Infinite Scroll ---
@@ -208,27 +168,16 @@ document.addEventListener('DOMContentLoaded', () => {
         // currentContentContext, searchCurrentPage, totalPages, filterCurrentPage, isLoadingMore de Script 1
         // singleResultsSection de Script 1
         const isSingleSectionVisible = singleResultsSection && singleResultsSection.style.display === 'block';
-        if (!isSingleSectionVisible || isLoadingMore || isLoadingMoreAnime) { // NOVO: Verificar isLoadingMoreAnime
+        if (!isSingleSectionVisible || isLoadingMore) { 
             return;
         }
 
         let canLoadMoreContext = false;
         if (currentContentContext === 'search' && searchCurrentPage < totalPages.search) {
             canLoadMoreContext = true;
-        } else if (currentContentContext === 'filter') {
-            if (activeAppliedGenre.type === 'anime') { // NOVO: Lógica para anime
-                if (animeMoviesCurrentPage < animeMoviesTotalPages || animeTvCurrentPage < animeTvTotalPages) {
-                    canLoadMoreContext = true;
-                }
-            } else if (filterCurrentPage < totalPages.filter) {
-                canLoadMoreContext = true;
-            }
+        } else if (currentContentContext === 'filter' && filterCurrentPage < totalPages.filter) {
+            canLoadMoreContext = true;
         }
-        // NOVO: Favoritos não tem paginação infinita
-        if (currentContentContext === 'favorites') {
-            canLoadMoreContext = false;
-        }
-
         if (!canLoadMoreContext) return;
 
         let scrolledToEnd;
@@ -268,3 +217,4 @@ document.addEventListener('DOMContentLoaded', () => {
         loadMainPageContent(); // loadMainPageContent de Script 2
     }
 });
+
