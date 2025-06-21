@@ -10,7 +10,7 @@ const trailerButton = document.getElementById('trailerButton');
 const pageBackdrop = document.getElementById('pageBackdrop');
 
 let pickedMediaHistory = [];
-const MAX_HISTORY_SIZE = 25;
+const MAX_HISTORY_SIZE = 40;
 let lastPickedMediaType = null;
 let currentModalItemId = null;
 let currentModalItemType = null;
