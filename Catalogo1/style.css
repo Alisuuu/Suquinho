@@ -417,13 +417,13 @@
         #floatingFavoritesButton {
             position: fixed;
             bottom: 1.5rem;
-            right: 1.5rem;
+            right: 0.5rem;
             z-index: 1060;
             background: linear-gradient(45deg, var(--purple-accent), var(--purple-light));
             color: var(--amoled-black);
             padding: 1rem;
-            width: 4rem;
-            height: 4rem;
+            width: 2rem;
+            height: 2rem;
             border-radius: 50%;
             box-shadow: 0 6px 15px rgba(0,0,0,0.4),
                         0 0 20px rgba(89, 59, 162, 0.5);
@@ -434,6 +434,8 @@
             justify-content: center;
             cursor: pointer;
             border: none;
+            left: 83%;
+            top: 12%;'
         }
         #floatingFavoritesButton:hover {
             background: linear-gradient(45deg, var(--purple-light), var(--purple-accent));
@@ -606,8 +608,8 @@
             }
 
             #floatingFavoritesButton {
-                width: 3.5rem;
-                height: 3.5rem;
+                width: 3rem;
+                height: 3rem;
                 bottom: 1rem;
                 right: 1rem;
             }
