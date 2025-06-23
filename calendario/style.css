@@ -330,6 +330,7 @@ input:-webkit-autofill {
         .details-trailer-container--fallback {
             /* No padding-top needed, height will be determined by the image */
             line-height: 0; /* Removes extra space below the image */
+          border-radius: 0.8rem;
         }
 
         .details-poster-fallback {
@@ -339,6 +340,7 @@ input:-webkit-autofill {
             max-height: 50vh;
             object-fit: cover;
             object-position: top center;
+          border-radius: 0.8rem;
         }
 
         .swal-details-content .details-info-area {
