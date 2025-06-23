@@ -367,13 +367,38 @@
                 };
                 currentExternalBtn.addEventListener('click', externalCopyButtonHandler);
             }
+            
             const titleText = details.title || details.name || "Título Indisponível";
-            const overview = details.overview || 'Sinopse não disponível.';
+
+            // --- START: Logic to get Trailer or Fallback Poster ---
+            let headerContentHTML = '';
+            const videos = details.videos?.results || [];
+            const trailer = videos.find(video => video.site === 'YouTube' && video.type === 'Trailer') || videos.find(video => video.site === 'YouTube'); // Fallback to any youtube video
             const posterModalPath = details.poster_path ? `${TMDB_IMAGE_BASE_URL}w780${details.poster_path}` : `https://placehold.co/780x1170/0A0514/F0F0F0?text=Indispon%C3%ADvel&font=inter`;
+
+            if (trailer && trailer.key) {
+                headerContentHTML = `
+                    <div class="details-trailer-container">
+                        <iframe
+                            src="https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=1&rel=0&loop=1&playlist=${trailer.key}"
+                            frameborder="0"
+                            allow="autoplay; fullscreen; picture-in-picture"
+                            allowfullscreen
+                            title="Trailer de ${titleText.replace(/"/g, '&quot;')}"
+                        ></iframe>
+                    </div>`;
+            } else {
+                 const headerImagePath = details.backdrop_path ? `${TMDB_IMAGE_BASE_URL}w1280${details.backdrop_path}` : posterModalPath;
+                 headerContentHTML = `<img src="${headerImagePath}" alt="Pôster de ${titleText.replace(/"/g, '&quot;')}" class="details-poster-fallback" onerror="this.onerror=null; this.src='https://placehold.co/1280x720/0A0514/F0F0F0?text=Erro+Imagem&font=inter';">`;
+            }
+            // --- END: Logic to get Trailer or Fallback Poster ---
+
+            const overview = details.overview || 'Sinopse não disponível.';
             const releaseDate = details.release_date || details.first_air_date;
             const rating = details.vote_average ? details.vote_average.toFixed(1) : 'N/A';
             const genres = details.genres && details.genres.length > 0 ? details.genres.map(g => g.name).join(', ') : 'Gêneros não informados';
             const runtime = details.runtime || (details.episode_run_time && details.episode_run_time.length > 0 ? details.episode_run_time[0] : null);
+            
             const iframeContainerClass = mediaType === 'tv' ? 'iframe-series-dimensions' : '';
             let castSectionHTML = '';
             if (details.credits && details.credits.cast && details.credits.cast.length > 0) {
@@ -390,8 +415,26 @@
                     ${isFav ? '<i class="fas fa-heart"></i> Remover dos Favoritos' : '<i class="far fa-heart"></i> Adicionar aos Favoritos'}
                 </button>
             `;
-
-            const detailsHTML = `<div class="swal-details-content"><div class="details-flex-container"><img src="${posterModalPath}" alt="Pôster de ${titleText.replace(/"/g, '&quot;')}" class="details-poster" onerror="this.onerror=null; this.src='https://placehold.co/780x1170/0A0514/F0F0F0?text=Erro+Imagem&font=inter';"> <div class="details-info-area"><h2 class="details-content-title">${titleText}</h2><div class="details-meta-info">${releaseDate ? `<span><i class="fas fa-calendar-alt"></i> ${new Date(releaseDate).toLocaleDateString('pt-BR', { year: 'numeric', month: '2-digit', day: '2-digit' })}</span>` : ''}${rating !== 'N/A' ? `<span><i class="fas fa-star"></i> ${rating} / 10</span>` : ''}${runtime ? `<span><i class="fas fa-clock"></i> ${runtime} min</span>` : ''}</div>${genres ? `<p class="details-genres"><strong>Gêneros:</strong> ${genres}</p>` : ''}${favoriteButtonHTML}<h3 class="details-section-subtitle">Sinopse</h3><p class="details-overview">${overview}</p></div></div>${castSectionHTML}${playerSectionHTML}</div>`;
+            
+            // --- Final HTML structure for the modal ---
+            const detailsHTML = `
+                <div class="swal-details-content">
+                    ${headerContentHTML}
+                    <div class="details-info-area">
+                        <h2 class="details-content-title">${titleText}</h2>
+                        <div class="details-meta-info">
+                            ${releaseDate ? `<span><i class="fas fa-calendar-alt"></i> ${new Date(releaseDate).toLocaleDateString('pt-BR', { year: 'numeric', month: '2-digit', day: '2-digit' })}</span>` : ''}
+                            ${rating !== 'N/A' ? `<span><i class="fas fa-star"></i> ${rating} / 10</span>` : ''}
+                            ${runtime ? `<span><i class="fas fa-clock"></i> ${runtime} min</span>` : ''}
+                        </div>
+                        ${genres ? `<p class="details-genres"><strong>Gêneros:</strong> ${genres}</p>` : ''}
+                        ${favoriteButtonHTML}
+                        <h3 class="details-section-subtitle" style="padding-left:0;">Sinopse</h3>
+                        <p class="details-overview">${overview}</p>
+                    </div>
+                    ${castSectionHTML}
+                    ${playerSectionHTML}
+                </div>`;
 
             console.log("LOG: HTML dos detalhes construído. Tentando atualizar o modal...");
             Swal.update({ title: '', html: detailsHTML, showConfirmButton: false, showCloseButton: true, allowOutsideClick: true });
