@@ -281,13 +281,9 @@
                 const zoomControls = document.getElementById('zoom-controls');
                 const customFullscreenBtn = document.getElementById('custom-fullscreen-btn');
 
-                if (!playerContainer || !customFullscreenBtn || !zoomControls) return;
+                if (!customFullscreenBtn || !zoomControls) return;
 
-                const isFullscreen = document.fullscreenElement === playerContainer;
-                
-                playerContainer.classList.toggle('is-fullscreen', isFullscreen);
-
-                if (isFullscreen) {
+                if (document.fullscreenElement === playerContainer) {
                     zoomControls.style.display = 'flex';
                     customFullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
                 } else {
@@ -437,29 +433,20 @@
                 castSectionHTML = `<div class="details-cast-section"><h3 class="details-section-subtitle">Elenco Principal</h3><div class="details-cast-scroller">${castMembers.map(person => `<div class="cast-member-card"><img src="${person.profile_path ? TMDB_IMAGE_BASE_URL + 'w185' + person.profile_path : PLACEHOLDER_PERSON_IMAGE}" alt="${person.name || 'Ator/Atriz sem nome listado'}" class="cast-member-photo" onerror="this.onerror=null; this.src='${PLACEHOLDER_PERSON_IMAGE}';"> <p class="cast-member-name">${person.name || 'Nome não disponível'}</p><p class="cast-member-character">${person.character || ''}</p></div>`).join('')}</div></div>`;
             }
             
-            // --- NEW: Player Section with Custom Controls & Central Play Button ---
+            // --- NEW: Player Section with Custom Controls ---
             let playerSectionHTML = '';
             if (superflixPlayerUrl) {
-                // The iframe src is empty, we use data-src to load it on demand
                 playerSectionHTML = `
                     <div class="details-player-section">
                         <h3 class="details-section-subtitle">Assistir Agora</h3>
-                        <div id="player-container" class="details-iframe-container ${iframeContainerClass} video-inactive">
+                        <div id="player-container" class="details-iframe-container ${iframeContainerClass}">
                             <iframe 
                                 id="swal-details-iframe" 
-                                src=""
-                                data-src="${superflixPlayerUrl}" 
+                                src="${superflixPlayerUrl}" 
                                 allowfullscreen 
                                 title="Player de ${titleText.replace(/"/g, '&quot;')}" 
                                 sandbox="allow-scripts allow-same-origin allow-fullscreen">
                             </iframe>
-
-                            <div class="video-overlay">
-                                <button id="central-play-btn" aria-label="Reproduzir Vídeo">
-                                    <i class="fas fa-play"></i>
-                                </button>
-                            </div>
-
                             <div id="custom-player-controls" class="custom-player-controls">
                                 <div id="zoom-controls" class="zoom-controls">
                                     <button class="zoom-btn" data-zoom-type="contain">Padrão</button>
@@ -513,26 +500,8 @@
             const playerContainer = document.getElementById('player-container');
             const customFullscreenBtn = document.getElementById('custom-fullscreen-btn');
             const videoIframe = document.getElementById('swal-details-iframe');
-            const centralPlayBtn = document.getElementById('central-play-btn');
 
-            if (playerContainer && videoIframe && centralPlayBtn) {
-                 // Central Play Button
-                 centralPlayBtn.addEventListener('click', () => {
-                    // Load the video source
-                    if (videoIframe.src !== videoIframe.dataset.src) {
-                        videoIframe.src = videoIframe.dataset.src;
-                    }
-
-                    // Make player active
-                    playerContainer.classList.remove('video-inactive');
-                    playerContainer.classList.add('video-active');
-                    
-                    // Request fullscreen
-                    playerContainer.requestFullscreen().catch(err => {
-                        console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
-                    });
-                 });
-
+            if (playerContainer && customFullscreenBtn && videoIframe) {
                 // Custom Fullscreen Button
                 customFullscreenBtn.addEventListener('click', () => {
                     if (!document.fullscreenElement) {
@@ -553,9 +522,10 @@
 
                         const zoomType = e.currentTarget.dataset.zoomType;
                         
+                        // Default to scale 1, then apply specific zoom
                         let scaleValue = 1;
                         if (zoomType === 'cover') {
-                            scaleValue = 1.35; 
+                            scaleValue = 1.35; // Adjust this value for best "fill" effect
                         } else if (zoomType !== 'contain') {
                             scaleValue = parseFloat(zoomType);
                         }
