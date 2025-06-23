@@ -209,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function createItemCard(item) {
         const itemEl = document.createElement('a');
-        itemEl.href = `https://alisuuu.github.io/Suquinho/?pagina=Catalogo1%2Findex.html%3Ftype%3Dtv%26id%3D${item.tmdb_id}`;
+        itemEl.href = `/?pagina=Catalogo1%2Findex.html%3Ftype%3Dtv%26id%3D${item.tmdb_id}`;
         itemEl.target = '_blank';
         itemEl.rel = 'noopener noreferrer';
         itemEl.className = `task-item relative overflow-hidden flex flex-col cursor-pointer transition-transform duration-300 hover:scale-[1.02]`;
