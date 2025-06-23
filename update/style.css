@@ -1,0 +1,194 @@
+/* Definição das variáveis de cor do Material 3 (Tema Expressivo) */
+:root {
+    --md-sys-color-primary: #8A63D4;
+    --md-sys-color-on-primary: #FFFFFF;
+    --md-sys-color-primary-container: #EADDFF;
+    --md-sys-color-on-primary-container: #21005D;
+    --md-sys-color-surface-container: #F3EDF7;
+    --md-sys-color-on-surface: #1D1B20;
+    --md-sys-color-on-surface-variant: #49454F;
+    --md-sys-color-tertiary: #FFB584;
+    --md-sys-color-error: #B3261E;
+    --md-sys-color-outline: #79747E;
+    --md-sys-color-background: #000000;
+}
+
+/* Reset e configurações globais */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Roboto Flex', sans-serif;
+    /* MD3 Applied */
+    background-color: rgba(89,59,162,0.25);
+    backdrop-filter: blur(20px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Impede seleção de texto e highlight de toque */
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* O cartão principal que contém a interface */
+.card-container {
+    position: relative;
+    width: clamp(320px, 90vw, 380px);
+    height: clamp(450px, 80vh, 550px);
+    /* MD3 Applied */
+    background-color: rgba(89,59,162,0.20);
+    backdrop-filter: blur(12px);
+    border-radius: 28px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    /* MD3 Applied */
+    border: 1px solid rgba(89,59,162,0.60);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.header {
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.app-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--md-sys-color-on-surface);
+}
+
+.repo-subtitle {
+    font-size: 14px;
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+/* Área central de status */
+.status-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    text-align: center;
+    color: var(--md-sys-color-on-surface);
+}
+
+#status-icon .material-symbols-outlined {
+    font-size: 64px;
+    font-variation-settings: 'FILL' 1;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.icon-loading .material-symbols-outlined {
+    animation: spin 1.5s linear infinite;
+}
+
+#status-text {
+    font-size: 28px;
+    font-weight: 500;
+}
+
+#version-info {
+    font-size: 14px;
+    color: var(--md-sys-color-on-surface-variant);
+    min-height: 20px;
+    padding: 0 10px;
+}
+
+/* Container e Botão de Download */
+#download-container {
+    padding: 20px 0;
+    display: flex;
+    justify-content: center;
+}
+
+.download-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 24px;
+    /* MD3 Applied */
+    background-color: rgba(89,59,162,0.50);
+    /* MD3 Applied */
+    border: 1px solid rgba(89,59,162,0.60);
+    color: var(--md-sys-color-on-primary-container);
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+    /* MD3 Applied */
+    transition: all 0.3s ease;
+}
+
+.download-button:hover {
+    /* MD3 Applied */
+    background-color: rgba(89,59,162,0.70);
+}
+
+.download-button .material-symbols-outlined {
+    font-size: 18px;
+}
+
+/* Botão de Ação Flutuante (FAB) */
+.fab {
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    /* MD3 Applied */
+    background-color: rgba(89,59,162,0.50);
+    /* MD3 Applied */
+    backdrop-filter: blur(5px);
+    color: var(--md-sys-color-on-primary);
+    border-radius: 16px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    /* MD3 Applied */
+    transition: all 0.3s ease;
+}
+
+.fab .material-symbols-outlined {
+    font-size: 24px;
+    /* MD3 Applied */
+    transition: all 0.3s ease;
+}
+
+.fab:hover {
+    /* MD3 Applied */
+    transform: translateY(-4px);
+}
+
+.fab:active {
+    /* MD3 Applied */
+    transform: translateY(0);
+}
+
+.fab:disabled {
+    /* MD3 Applied */
+    background-color: rgba(89,59,162,0.20);
+    cursor: not-allowed;
+    transform: translateY(0);
+}
+
+.fab:disabled .material-symbols-outlined {
+    transform: rotate(180deg);
+}
