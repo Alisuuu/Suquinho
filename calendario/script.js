@@ -15,6 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('search');
     const weekNav = document.getElementById('week-navigation');
     
+    // NOTA: Esta função `openItemModal` deve existir no seu projeto para que o clique funcione.
+    // O código abaixo agora irá chamá-la corretamente.
+
     async function fetchData() {
         contentArea.innerHTML = `<p class="text-center col-span-full p-10 text-[var(--on-surface-variant-color)]">Carregando lançamentos...</p>`;
         try {
@@ -103,11 +106,14 @@ document.addEventListener('DOMContentLoaded', () => {
         renderContentForDay(selectedDateKey);
     });
 
+    // Listener para abrir o modal do dia na visão de "Mês"
     contentArea.addEventListener('click', (event) => {
-        const dayCell = event.target.closest('.month-day-cell');
-        if (event.target.closest('.swal2-html-container')) return;
+        // CORREÇÃO: Impede que um clique dentro de um modal já aberto acione este listener
+        if (event.target.closest('.swal2-container')) return;
         
+        const dayCell = event.target.closest('.month-day-cell');
         if(!dayCell || !dayCell.dataset.datekey) return;
+
         const dateKey = dayCell.dataset.datekey;
         showMonthDetailModal(dateKey, itemsByDay[dateKey] || []);
     });
@@ -150,6 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
             confirmButtonText: 'Aplicar Filtros',
             showCloseButton: true,
             background: 'transparent',
+            customClass: { popup: 'blur-backdrop' },
             willOpen: () => {
                 const popup = Swal.getPopup();
                 
@@ -181,42 +188,61 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    /**
+     * CORREÇÃO PRINCIPAL: Esta função agora constrói os elementos DOM
+     * e os anexa ao SweetAlert, preservando os event listeners.
+     */
     function showMonthDetailModal(dateKey, items) {
         const day = new Date(dateKey + 'T00:00:00');
         const title = day.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' });
         
-        let contentHTML = '';
+        // 1. Cria o contêiner que será passado para o SweetAlert.
+        const contentContainer = document.createElement('div');
+        contentContainer.className = 'swal-scroll-container space-y-3 max-h-[60vh] overflow-y-auto p-1';
+
         if (items.length > 0) {
-            const container = document.createElement('div');
             items.forEach(item => {
-                container.appendChild(createItemCard(item));
+                // 2. Cria o card como um elemento DOM (que já tem o listener de clique).
+                const cardElement = createItemCard(item);
+                // 3. Anexa o elemento DOM diretamente ao contêiner.
+                contentContainer.appendChild(cardElement);
             });
-            contentHTML = container.innerHTML;
         } else {
-            contentHTML = `<p class="text-center p-10 text-[var(--on-surface-variant-color)]">Nenhum lançamento para este dia.</p>`;
+            contentContainer.innerHTML = `<p class="text-center p-10 text-[var(--on-surface-variant-color)]">Nenhum lançamento para este dia.</p>`;
         }
 
         Swal.fire({
             title: title,
-            html: `<div class="swal-scroll-container space-y-3 max-h-[60vh] overflow-y-auto p-1">${contentHTML}</div>`,
+            // 4. Passa o contêiner (elemento DOM) para o `html`.
+            // O SweetAlert irá anexá-lo, mantendo os listeners intactos.
+            html: contentContainer,
             width: '90%',
             maxWidth: '768px',
             showConfirmButton: false,
             showCloseButton: true,
             background: 'transparent',
+            customClass: { popup: 'blur-backdrop' },
         });
     }
 
     function createItemCard(item) {
-        const itemEl = document.createElement('a');
-        itemEl.href = `/?pagina=Catalogo1%2Findex.html%3Ftype%3Dtv%26id%3D${item.tmdb_id}`;
-        itemEl.target = '_blank';
-        itemEl.rel = 'noopener noreferrer';
+        const itemEl = document.createElement('div');
+        
+        // Listener que chama a função de modal existente no seu projeto
+        itemEl.addEventListener('click', () => {
+            const mediaType = (item.type == '2' || item.type == '3') ? 'tv' : 'movie';
+            // Esta chamada agora funcionará dentro do modal do mês
+            openItemModal(item.tmdb_id, mediaType, item.backdrop);
+        });
+        
+        // Removi os atributos href, target e rel, pois não são válidos para uma <div>
+        // e o clique já é tratado pelo JavaScript.
         itemEl.className = `task-item relative overflow-hidden flex flex-col cursor-pointer transition-transform duration-300 hover:scale-[1.02]`;
 
         const posterURL = item.poster ? `https://image.tmdb.org/t/p/w185${item.poster}` : 'https://placehold.co/185x278/111827/FFFFFF?text=N/A';
         const backdropURL = item.backdrop ? `https://image.tmdb.org/t/p/w500${item.backdrop}` : '';
         
+        // Mantido o botão original
         const watchButtonHTML = `
             <div class="mt-4">
                 <span class="inline-block bg-[var(--primary-color)] text-[var(--on-primary-color)] px-4 py-2 rounded-full text-xs font-semibold pointer-events-none">
@@ -225,7 +251,6 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
 
-        // NOVO: HTML para a tag de status
         const statusTagHTML = `
             <span class="status-tag status-tag-${item.status.toLowerCase()}">
                 ${item.status}
@@ -269,7 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const items = itemsByDay[dateKey] || [];
         if (items.length === 0) {
-            contentArea.innerHTML = `<p class="text-center p-10 text-[var(--on-surface-variant-color)]">Nenhum lançamento para este dia.</p>`;
+            contentArea.innerHTML = `<p class="text-center col-span-full p-10 text-[var(--on-surface-variant-color)]">Nenhum lançamento para este dia.</p>`;
             return;
         }
 
@@ -414,5 +439,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fetchData();
 });
-
-            
