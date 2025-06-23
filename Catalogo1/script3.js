@@ -275,40 +275,13 @@
             stopMainPageBackdropSlideshow();
             updatePageBackground(backdropPath);
 
-             // Define handler here to be accessible in both didOpen and willClose
-            const handleFullscreenChange = () => {
-                const playerContainer = document.getElementById('player-container');
-                const zoomControls = document.getElementById('zoom-controls');
-                const customFullscreenBtn = document.getElementById('custom-fullscreen-btn');
-
-                if (!customFullscreenBtn || !zoomControls) return;
-
-                if (document.fullscreenElement === playerContainer) {
-                    zoomControls.style.display = 'flex';
-                    customFullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
-                } else {
-                    zoomControls.style.display = 'none';
-                    customFullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
-                }
-            };
-
-
             currentOpenSwalRef = Swal.fire({
                 title: 'Carregando Detalhes...',
                 html: '<div class="loader mx-auto my-10" style="width: 40px; height: 40px; border-width: 4px;"></div>',
                 showConfirmButton: false, showCloseButton: true, allowOutsideClick: true,
                 customClass: { popup: 'swal2-popup swal-details-popup', title: 'swal2-title', htmlContainer: 'swal2-html-container', closeButton: 'swal2-close' },
-                didOpen: () => {
-                    document.addEventListener('fullscreenchange', handleFullscreenChange);
-                },
                 willClose: () => {
                     console.log("LOG: Modal de detalhes prestes a fechar. Restaurando fundo.");
-                    document.removeEventListener('fullscreenchange', handleFullscreenChange); // Cleanup listener
-
-                    if (document.fullscreenElement) {
-                        document.exitFullscreen();
-                    }
-
                     updatePageBackground(null);
 
                     const iframe = document.getElementById('swal-details-iframe');
@@ -432,38 +405,9 @@
                 const castMembers = details.credits.cast.slice(0, 15);
                 castSectionHTML = `<div class="details-cast-section"><h3 class="details-section-subtitle">Elenco Principal</h3><div class="details-cast-scroller">${castMembers.map(person => `<div class="cast-member-card"><img src="${person.profile_path ? TMDB_IMAGE_BASE_URL + 'w185' + person.profile_path : PLACEHOLDER_PERSON_IMAGE}" alt="${person.name || 'Ator/Atriz sem nome listado'}" class="cast-member-photo" onerror="this.onerror=null; this.src='${PLACEHOLDER_PERSON_IMAGE}';"> <p class="cast-member-name">${person.name || 'Nome não disponível'}</p><p class="cast-member-character">${person.character || ''}</p></div>`).join('')}</div></div>`;
             }
-            
-            // --- NEW: Player Section with Custom Controls ---
             let playerSectionHTML = '';
-            if (superflixPlayerUrl) {
-                playerSectionHTML = `
-                    <div class="details-player-section">
-                        <h3 class="details-section-subtitle">Assistir Agora</h3>
-                        <div id="player-container" class="details-iframe-container ${iframeContainerClass}">
-                            <iframe 
-                                id="swal-details-iframe" 
-                                src="${superflixPlayerUrl}" 
-                                allowfullscreen 
-                                title="Player de ${titleText.replace(/"/g, '&quot;')}" 
-                                sandbox="allow-scripts allow-same-origin allow-fullscreen">
-                            </iframe>
-                            <div id="custom-player-controls" class="custom-player-controls">
-                                <div id="zoom-controls" class="zoom-controls">
-                                    <button class="zoom-btn" data-zoom-type="contain">Padrão</button>
-                                    <button class="zoom-btn active" data-zoom-type="cover">Preencher</button>
-                                    <button class="zoom-btn" data-zoom-type="1.25">125%</button>
-                                    <button class="zoom-btn" data-zoom-type="1.50">150%</button>
-                                </div>
-                                <button id="custom-fullscreen-btn" class="custom-fullscreen-btn" aria-label="Tela Cheia">
-                                    <i class="fas fa-expand"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>`;
-            } else {
-                playerSectionHTML = `<div class="details-player-section"><p class="details-player-unavailable">Player não disponível para este título.</p></div>`;
-            }
-
+            if (superflixPlayerUrl) playerSectionHTML = `<div class="details-player-section"><h3 class="details-section-subtitle">Assistir Agora</h3><div class="details-iframe-container ${iframeContainerClass}"><iframe id="swal-details-iframe" src="${superflixPlayerUrl}" allowfullscreen title="Player de ${titleText.replace(/"/g, '&quot;')}" sandbox="allow-scripts allow-same-origin"></iframe></div></div>`;
+            else playerSectionHTML = `<div class="details-player-section"><p class="details-player-unavailable">Player não disponível para este título.</p></div>`;
 
             const isFav = isFavorite(itemId, mediaType);
             const favoriteButtonHTML = `
@@ -495,51 +439,6 @@
             console.log("LOG: HTML dos detalhes construído. Tentando atualizar o modal...");
             Swal.update({ title: '', html: detailsHTML, showConfirmButton: false, showCloseButton: true, allowOutsideClick: true });
             console.log("LOG: Modal ATUALIZADO com conteúdo final.");
-            
-            // --- Add Event Listeners for Custom Controls ---
-            const playerContainer = document.getElementById('player-container');
-            const customFullscreenBtn = document.getElementById('custom-fullscreen-btn');
-            const videoIframe = document.getElementById('swal-details-iframe');
-
-            if (playerContainer && customFullscreenBtn && videoIframe) {
-                // Custom Fullscreen Button
-                customFullscreenBtn.addEventListener('click', () => {
-                    if (!document.fullscreenElement) {
-                        playerContainer.requestFullscreen().catch(err => {
-                            console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
-                        });
-                    } else {
-                        document.exitFullscreen();
-                    }
-                });
-
-                // Zoom Buttons
-                const zoomBtns = document.querySelectorAll('.zoom-btn');
-                zoomBtns.forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        zoomBtns.forEach(b => b.classList.remove('active'));
-                        e.currentTarget.classList.add('active');
-
-                        const zoomType = e.currentTarget.dataset.zoomType;
-                        
-                        // Default to scale 1, then apply specific zoom
-                        let scaleValue = 1;
-                        if (zoomType === 'cover') {
-                            scaleValue = 1.35; // Adjust this value for best "fill" effect
-                        } else if (zoomType !== 'contain') {
-                            scaleValue = parseFloat(zoomType);
-                        }
-                        videoIframe.style.transform = `scale(${scaleValue})`;
-                    });
-                });
-                
-                // Set initial zoom state based on the active button
-                const initialZoomBtn = document.querySelector('.zoom-btn.active');
-                if (initialZoomBtn && initialZoomBtn.dataset.zoomType === 'cover') {
-                    videoIframe.style.transform = 'scale(1.35)';
-                }
-            }
-
 
             const modalFavButton = document.getElementById('modalFavoriteButton');
             if (modalFavButton) {

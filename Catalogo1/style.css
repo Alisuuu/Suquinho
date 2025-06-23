@@ -352,31 +352,9 @@
         .cast-member-name { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); line-height: 1.2; height: 2.4em; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.25rem; }
         .cast-member-character { font-size: 0.75rem; color: var(--text-secondary); line-height: 1.2; height: 2.4em; overflow: hidden; text-overflow: ellipsis; }
         .details-player-section { margin-top: 1rem; padding: 0 1rem;}
-        
-        .details-iframe-container { 
-            margin-top: 0.5rem; 
-            background-color: #000; 
-            border-radius: 0.8rem; 
-            overflow: hidden; 
-            box-shadow: 0 6px 20px rgba(0,0,0,0.5); 
-            aspect-ratio: 16 / 9;
-            position: relative;
-        }
-
+        .details-iframe-container { margin-top: 0.5rem; background-color: #000; border-radius: 0.8rem; overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,0.5); aspect-ratio: 16 / 9; }
         .details-iframe-container.iframe-series-dimensions { aspect-ratio: auto; height: 400px; }
-        
-        #swal-details-iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%; 
-            height: 100%; 
-            border: none; 
-            display: block;
-            transform-origin: center center;
-            transition: transform 0.3s ease-in-out;
-        }
-        
+        .details-iframe-container iframe { width: 100%; height: 100%; border: none; display: block; }
         .swal-details-content .details-player-unavailable { margin-top: 1.25rem; text-align: center; color: #FFD700; background-color: rgba(255, 215, 0, 0.15); padding: 0.75rem; border-radius: 0.5rem; font-size: 0.875rem; }
         /* --- END: Styles for Details Modal Content --- */
 
@@ -854,93 +832,4 @@ button:disabled {
     background: linear-gradient(135deg, rgba(130, 0, 255, 0.45), rgba(180, 0, 255, 0.45));
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(130, 0, 255, 0.4), 0 0 16px rgba(130, 0, 255, 0.3);
-}
-
-/* === Custom Player & Zoom Controls === */
-
-.custom-player-controls {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 15px;
-    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
-    z-index: 50; /* Needs to be above the iframe content */
-}
-
-/* Show controls when hovering the container or when in fullscreen */
-.details-iframe-container:hover .custom-player-controls,
-.details-iframe-container:fullscreen .custom-player-controls {
-    opacity: 1;
-    visibility: visible;
-}
-
-.custom-fullscreen-btn {
-    background: rgba(40, 40, 40, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    font-size: 1.2rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s;
-}
-.custom-fullscreen-btn:hover {
-    background: var(--purple-accent);
-}
-
-.zoom-controls {
-    display: none; /* Hidden by default, shown via JS on fullscreen */
-    gap: 10px;
-    align-items: center;
-}
-
-.zoom-btn {
-    background: rgba(40, 40, 40, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    padding: 8px 12px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s, border-color 0.2s;
-}
-
-.zoom-btn:hover {
-    background-color: rgba(60, 60, 60, 0.9);
-    border-color: rgba(255, 255, 255, 0.4);
-}
-
-.zoom-btn.active {
-    background-color: var(--purple-accent);
-    border-color: var(--purple-light);
-    color: white;
-    font-weight: 700;
-}
-
-/* === Fullscreen Behavior === */
-
-/* Show zoom controls when the container is in fullscreen */
-.details-iframe-container:fullscreen .zoom-controls {
-    display: flex;
-}
-
-/* Adjust container styles for fullscreen */
-.details-iframe-container:fullscreen {
-    padding: 0;
-    margin: 0;
-    border: none;
-    border-radius: 0;
-    aspect-ratio: auto !important;
 }
