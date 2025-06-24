@@ -83,13 +83,12 @@
                 if (latestRelease.tag_name !== lastSeenVersion) {
                     statusIcon.innerHTML = '<span class="material-symbols-outlined">sparkle</span>';
                     statusIcon.style.color = 'var(--md-sys-color-tertiary)';
-                    statusText.textContent = 'Nova atualização!
-                        dns dns.quad9.net faz milagres, desligue e ligue o wifi';
+                    statusText.textContent = 'Nova atualização!';
                     localStorage.setItem(localStorageKey, latestRelease.tag_name);
                 } else {
                     statusIcon.innerHTML = '<span class="material-symbols-outlined">verified</span>';
                     statusIcon.style.color = 'var(--md-sys-color-primary)';
-                    statusText.textContent = 'O suquin agora usa uma api sem muito conteúdo:/';
+                    statusText.textContent = 'O suquin agora usa uma api limitada';
                 }
                 
                 // Exibe a versão com data e hora
