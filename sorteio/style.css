@@ -440,6 +440,7 @@ body.swal2-shown #externalCopyButtonContainer {
 #pickAgainButton,
 #trailerButton {
   /* MD3 Applied */
+  display: none;
   background-color: rgba(89,59,162,0.20);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(89,59,162,0.60);
