@@ -1,33 +1,53 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <!-- Carrega o manifest -->
-<link rel="manifest" href="/manifest.json">
-
-<!-- iOS meta tags -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-<!-- Registra Service Worker -->
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js');
-    });
-  }
-</script><meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+  <!-- Metatags Essenciais -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  
+  <!-- Título da Página -->
   <title>Suquinho</title>
+
+  <!-- Configuração do PWA -->
+  <!-- CORREÇÃO: O caminho para o manifest agora é relativo. -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Meta Tags para iOS (Safari) -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Suquinho">
+
+  <!-- Ícone para iOS -->
+  <link rel="apple-touch-icon" href="caminho/para/seu/icone-180x180.png">
+
+  <!-- Folhas de Estilo -->
   <link rel="stylesheet" href="Styles/styleA.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Registro do Service Worker -->
+  <script>
+    // Verifica se o navegador suporta Service Workers
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        // CORREÇÃO: O caminho para o Service Worker agora é relativo.
+        // Isso garante que ele seja encontrado na mesma pasta do index.html
+        navigator.serviceWorker.register('sw.js')
+          .then(registration => {
+            console.log('Service Worker registrado com sucesso:', registration);
+          })
+          .catch(error => {
+            console.log('Falha ao registrar o Service Worker:', error);
+          });
+      });
+    }
+  </script>
 </head>
 <body>
-    <!-- Botão fullscreen (desktop only) -->
-<button id="fullscreenBtn" class="fullscreen-toggle" title="Tela cheia">
-  <i class="fas fa-expand"></i>
-</button>
-  <iframe id="newsFrame" src="Catalogo1/index.html" title="inicio"></iframe>
 
+  <!-- Iframe principal para conteúdo -->
+  <iframe id="newsFrame" src="Catalogo1/index.html" title="Início"></iframe>
+
+  <!-- Barra lateral com botões de navegação -->
   <div class="sidebar-buttons">
     <a href="#" class="icon-button" id="sidebarToggleBtn" title="Mostrar Menu">
       <i class="fas fa-bars"></i>
@@ -35,23 +55,28 @@
     <a href="#" class="icon-button" id="iframeBackButton" title="Voltar" style="display: none;">
       <i class="fas fa-arrow-left"></i>
     </a>
-    <!-- Novo Botão de Notícias -->
     <a href="https://feed-pearl.vercel.app/" class="icon-button" title="Notícias">
-      <i class="fas fa-newspaper"></i> <!-- Ícone de exemplo para notícias -->
+      <i class="fas fa-newspaper"></i>
     </a>
-    <a href="./sorteio/index.html" class="icon-button" title="Not2">
+    <a href="./sorteio/index.html" class="icon-button" title="Sorteio">
       <i class="fa-solid fa-cube"></i>
     </a>
-    <a href="./calendario/index.html" class="icon-button" title="Links">
+    <a href="./calendario/index.html" class="icon-button" title="Calendário">
       <i class="fa-solid fa-calendar-days"></i>
     </a>
-    <a href="./update/index.html" class="icon-button" title="Links">
+    <a href="./update/index.html" class="icon-button" title="Atualizações">
       <i class="fa-solid fa-circle-down"></i>
     </a>
   </div>
-
-  <!-- Modal de Doação -->
   
+  <!-- Botão de tela cheia para Desktop -->
+  <button id="fullscreenBtn" class="fullscreen-toggle" title="Tela cheia">
+    <i class="fas fa-expand"></i>
+  </button>
+  
+  <!-- Script principal do seu site -->
   <script src="./js/script.js"></script>
+
 </body>
 </html>
+
