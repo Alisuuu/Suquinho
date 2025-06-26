@@ -514,3 +514,31 @@ user-select: none;
             background-color: var(--danger-red-hover);
             transform: scale(1.15);
         }
+
+/* --- NOVOS ESTILOS PARA O LOADER --- */
+.swal2-container.swal-loading-overlay {
+    background: rgba(0,0,0,0.7) !important;
+    backdrop-filter: blur(10px);
+}
+
+.swal-loading-popup {
+    background: transparent !important;
+    box-shadow: none !important;
+    color: #FFF !important;
+}
+
+.swal-loading-spinner {
+    border: 6px solid rgba(255, 255, 255, 0.2);
+    border-left-color: var(--primary-color);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: swal-spin 1s linear infinite;
+    margin: 1rem auto;
+}
+
+@keyframes swal-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

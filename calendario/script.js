@@ -15,9 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('search');
     const weekNav = document.getElementById('week-navigation');
     
-    // NOTA: Esta função `openItemModal` deve existir no seu projeto para que o clique funcione.
-    // O código abaixo agora irá chamá-la corretamente.
-
     async function fetchData() {
         contentArea.innerHTML = `<p class="text-center col-span-full p-10 text-[var(--on-surface-variant-color)]">Carregando lançamentos...</p>`;
         try {
@@ -27,7 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!Array.isArray(data) || data.length === 0) {
                  throw new Error('API não retornou dados válidos.');
             }
-            setupBackdropSlideshow(data); // Inicia o slideshow de fundo
+            // Inicia o slideshow de fundo com a lógica otimizada
+            setupBackdropSlideshow(data); 
             render();
         } catch (error) {
             console.error('Erro ao buscar dados da API:', error);
@@ -36,43 +34,60 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ========================================================================
-    // LÓGICA DO SLIDESHOW DE FUNDO
+    // LÓGICA DO SLIDESHOW DE FUNDO OTIMIZADA
     // ========================================================================
     function setupBackdropSlideshow(items) {
         const backdropContainer = document.getElementById('backdrop-container');
         if (!backdropContainer) return;
 
-        const backdropUrls = items
-            .filter(item => item.backdrop)
-            .map(item => `https://image.tmdb.org/t/p/w1280${item.backdrop}`);
-
+        // Filtra, pega URLs únicos e embaralha para variedade
+        const backdropUrls = [...new Set(items.filter(item => item.backdrop).map(item => `https://image.tmdb.org/t/p/w1280${item.backdrop}`))];
         if (backdropUrls.length === 0) return;
-
-        // Preload para transições suaves
-        backdropUrls.forEach(url => { (new Image()).src = url; });
         
-        backdropContainer.innerHTML = '';
-        backdropUrls.forEach(url => {
-            const img = document.createElement('img');
-            img.src = url;
-            img.className = 'backdrop-image';
-            img.loading = 'lazy';
-            backdropContainer.appendChild(img);
-        });
+        // Embaralha o array
+        for (let i = backdropUrls.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [backdropUrls[i], backdropUrls[j]] = [backdropUrls[j], backdropUrls[i]];
+        }
+
+        backdropContainer.innerHTML = ''; // Limpa conteúdo antigo
+
+        // Cria apenas dois elementos de imagem para a transição de fade
+        const img1 = document.createElement('img');
+        const img2 = document.createElement('img');
+        img1.className = 'backdrop-image';
+        img2.className = 'backdrop-image';
+        backdropContainer.appendChild(img1);
+        backdropContainer.appendChild(img2);
 
         let currentIndex = 0;
-        const images = backdropContainer.querySelectorAll('.backdrop-image');
+        let currentImageElement = img1;
 
-        if(images.length > 0) {
-            images[0].classList.add('active'); // Ativa a primeira imagem
+        // Função para carregar a imagem e então fazer a transição
+        function loadAndTransition(imgElement, url) {
+             // Cria uma imagem temporária em memória para carregar o arquivo
+            const tempImg = new Image();
+            tempImg.onload = () => {
+                // Quando o load termina, atualiza o src e a classe
+                imgElement.src = url;
+                const activeImg = backdropContainer.querySelector('.backdrop-image.active');
+                if (activeImg) activeImg.classList.remove('active');
+                imgElement.classList.add('active');
+            };
+            tempImg.src = url; // Inicia o carregamento
         }
-        
-        if (images.length > 1) {
+
+        // Carrega a primeira imagem
+        loadAndTransition(currentImageElement, backdropUrls[currentIndex]);
+
+        // Se houver mais de uma imagem, inicia o intervalo
+        if (backdropUrls.length > 1) {
             setInterval(() => {
-                images[currentIndex].classList.remove('active');
-                currentIndex = (currentIndex + 1) % images.length;
-                images[currentIndex].classList.add('active');
-            }, 4000); // Muda a imagem a cada 4 segundos
+                currentIndex = (currentIndex + 1) % backdropUrls.length;
+                // Alterna entre os dois elementos de imagem
+                currentImageElement = (currentImageElement === img1) ? img2 : img1;
+                loadAndTransition(currentImageElement, backdropUrls[currentIndex]);
+            }, 5000); // Muda a imagem a cada 5 segundos
         }
     }
 
@@ -106,9 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderContentForDay(selectedDateKey);
     });
 
-    // Listener para abrir o modal do dia na visão de "Mês"
     contentArea.addEventListener('click', (event) => {
-        // CORREÇÃO: Impede que um clique dentro de um modal já aberto acione este listener
         if (event.target.closest('.swal2-container')) return;
         
         const dayCell = event.target.closest('.month-day-cell');
@@ -187,24 +200,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
-    /**
-     * CORREÇÃO PRINCIPAL: Esta função agora constrói os elementos DOM
-     * e os anexa ao SweetAlert, preservando os event listeners.
-     */
+    
     function showMonthDetailModal(dateKey, items) {
         const day = new Date(dateKey + 'T00:00:00');
         const title = day.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' });
         
-        // 1. Cria o contêiner que será passado para o SweetAlert.
         const contentContainer = document.createElement('div');
         contentContainer.className = 'swal-scroll-container space-y-3 max-h-[60vh] overflow-y-auto p-1';
 
         if (items.length > 0) {
             items.forEach(item => {
-                // 2. Cria o card como um elemento DOM (que já tem o listener de clique).
                 const cardElement = createItemCard(item);
-                // 3. Anexa o elemento DOM diretamente ao contêiner.
                 contentContainer.appendChild(cardElement);
             });
         } else {
@@ -213,8 +219,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         Swal.fire({
             title: title,
-            // 4. Passa o contêiner (elemento DOM) para o `html`.
-            // O SweetAlert irá anexá-lo, mantendo os listeners intactos.
             html: contentContainer,
             width: '90%',
             maxWidth: '768px',
@@ -228,21 +232,44 @@ document.addEventListener('DOMContentLoaded', () => {
     function createItemCard(item) {
         const itemEl = document.createElement('div');
         
-        // Listener que chama a função de modal existente no seu projeto
+        // Listener que chama a função de modal do seu projeto
         itemEl.addEventListener('click', () => {
-            const mediaType = (item.type == '2' || item.type == '3') ? 'tv' : 'movie';
-            // Esta chamada agora funcionará dentro do modal do mês
-            openItemModal(item.tmdb_id, mediaType, item.backdrop);
+            // MOSTRA O MODAL DE CARREGAMENTO
+            Swal.fire({
+                title: 'Buscando informações...',
+                html: '<div class="swal-loading-spinner"></div>',
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                customClass: {
+                    popup: 'swal-loading-popup',
+                    container: 'swal-loading-overlay'
+                }
+            });
+
+            // Adiciona um pequeno delay para garantir que o loader renderize antes de continuar
+            setTimeout(() => {
+                if (typeof openItemModal === 'function') {
+                    const mediaType = (item.type == '2' || item.type == '3') ? 'tv' : 'movie';
+                    // A função openItemModal (do seu outro script) irá substituir o loader
+                    openItemModal(item.tmdb_id, mediaType, item.backdrop);
+                } else {
+                    console.error('A função "openItemModal" não foi encontrada.');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro de Carregamento',
+                        text: 'Não foi possível abrir os detalhes. A função necessária não está disponível.',
+                        background: 'transparent',
+                        customClass: { popup: 'blur-backdrop' },
+                    });
+                }
+            }, 100); // 100ms é suficiente
         });
         
-        // Removi os atributos href, target e rel, pois não são válidos para uma <div>
-        // e o clique já é tratado pelo JavaScript.
         itemEl.className = `task-item relative overflow-hidden flex flex-col cursor-pointer transition-transform duration-300 hover:scale-[1.02]`;
 
         const posterURL = item.poster ? `https://image.tmdb.org/t/p/w185${item.poster}` : 'https://placehold.co/185x278/111827/FFFFFF?text=N/A';
         const backdropURL = item.backdrop ? `https://image.tmdb.org/t/p/w500${item.backdrop}` : '';
         
-        // Mantido o botão original
         const watchButtonHTML = `
             <div class="mt-4">
                 <span class="inline-block bg-[var(--primary-color)] text-[var(--on-primary-color)] px-4 py-2 rounded-full text-xs font-semibold pointer-events-none">
@@ -290,7 +317,23 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderContentForDay(dateKey) {
         contentArea.innerHTML = '';
         document.querySelectorAll('.day-button').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll(`.day-button[data-datekey="${dateKey}"]`).forEach(btn => btn.classList.add('active'));
+        
+        const activeButtons = document.querySelectorAll(`.day-button[data-datekey="${dateKey}"]`);
+        activeButtons.forEach(btn => btn.classList.add('active'));
+
+        // *** LÓGICA DE ROLAGEM MAIS ROBUSTA ***
+        if (activeButtons.length > 0) {
+            // Adiciona um pequeno delay para garantir que o navegador tenha renderizado os botões
+            // antes de tentar rolar a tela para eles.
+            setTimeout(() => {
+                activeButtons[0].scrollIntoView({
+                    behavior: 'smooth',
+                    inline: 'center',
+                    block: 'nearest'
+                });
+            }, 100); // Um delay de 100ms é geralmente suficiente
+        }
+        // *** FIM DA LÓGICA DE ROLAGEM ***
 
         const items = itemsByDay[dateKey] || [];
         if (items.length === 0) {
@@ -312,6 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
         weekNav.innerHTML = '';
         const hoje = new Date();
         hoje.setHours(0, 0, 0, 0);
+        // Ajuste para a semana começar no Domingo (getDay() retorna 0 para Domingo)
         const startOfWeek = new Date(hoje);
         startOfWeek.setDate(hoje.getDate() - hoje.getDay());
 
