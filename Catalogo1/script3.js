@@ -272,6 +272,9 @@
 
         async function openItemModal(itemId, mediaType, backdropPath = null) {
             console.log(`LOG: openItemModal iniciada. ID: ${itemId}, Tipo: ${mediaType}`);
+            
+            document.body.classList.add('modal-is-open');
+
             stopMainPageBackdropSlideshow();
             updatePageBackground(backdropPath);
 
@@ -282,6 +285,9 @@
                 customClass: { popup: 'swal2-popup swal-details-popup', title: 'swal2-title', htmlContainer: 'swal2-html-container', closeButton: 'swal2-close' },
                 willClose: () => {
                     console.log("LOG: Modal de detalhes prestes a fechar. Restaurando fundo.");
+                    
+                    document.body.classList.remove('modal-is-open');
+
                     updatePageBackground(null);
 
                     const iframe = document.getElementById('swal-details-iframe');
@@ -370,17 +376,23 @@
             
             const titleText = details.title || details.name || "Título Indisponível";
 
-            // --- START: Logic to get Trailer or Fallback Poster ---
             let headerContentHTML = '';
             const videos = details.videos?.results || [];
-            const trailer = videos.find(video => video.site === 'YouTube' && video.type === 'Trailer') || videos.find(video => video.site === 'YouTube'); // Fallback to any youtube video
-            const posterModalPath = details.poster_path ? `${TMDB_IMAGE_BASE_URL}w780${details.poster_path}` : `https://placehold.co/780x1170/0A0514/F0F0F0?text=Indispon%C3%ADvel&font=inter`;
+            const trailer = videos.find(video => video.site === 'YouTube' && video.type === 'Trailer') || videos.find(video => video.site === 'YouTube');
+            const coverImagePath = details.backdrop_path ? `${TMDB_IMAGE_BASE_URL}w1280${details.backdrop_path}` : (details.poster_path ? `${TMDB_IMAGE_BASE_URL}w780${details.poster_path}` : 'https://placehold.co/1280x720/0A0514/F0F0F0?text=Indispon%C3%ADvel&font=inter');
 
             if (trailer && trailer.key) {
                 headerContentHTML = `
                     <div class="details-trailer-container">
+                        <div class="trailer-cover">
+                            <img src="${coverImagePath}" alt="Capa de ${titleText.replace(/"/g, '&quot;')}" class="trailer-cover-img" onerror="this.onerror=null; this.src='https://placehold.co/1280x720/0A0514/F0F0F0?text=Erro+Imagem&font=inter';">
+                            <div class="play-icon-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
                         <iframe
-                            src="https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=1&rel=0&loop=1&playlist=${trailer.key}"
+                            id="trailer-iframe"
+                            src="https://www.youtube.com/embed/${trailer.key}?enablejsapi=1&autoplay=0&mute=1&rel=0&loop=1&playlist=${trailer.key}"
                             frameborder="0"
                             allow="autoplay; fullscreen; picture-in-picture"
                             allowfullscreen
@@ -388,10 +400,8 @@
                         ></iframe>
                     </div>`;
             } else {
-                 const headerImagePath = details.backdrop_path ? `${TMDB_IMAGE_BASE_URL}w1280${details.backdrop_path}` : posterModalPath;
-                 headerContentHTML = `<img src="${headerImagePath}" alt="Pôster de ${titleText.replace(/"/g, '&quot;')}" class="details-poster-fallback" onerror="this.onerror=null; this.src='https://placehold.co/1280x720/0A0514/F0F0F0?text=Erro+Imagem&font=inter';">`;
+                 headerContentHTML = `<div class="details-trailer-container details-trailer-container--fallback"><img src="${coverImagePath}" alt="Pôster de ${titleText.replace(/"/g, '&quot;')}" class="details-poster-fallback" onerror="this.onerror=null; this.src='https://placehold.co/1280x720/0A0514/F0F0F0?text=Erro+Imagem&font=inter';"></div>`;
             }
-            // --- END: Logic to get Trailer or Fallback Poster ---
 
             const overview = details.overview || 'Sinopse não disponível.';
             const releaseDate = details.release_date || details.first_air_date;
@@ -416,7 +426,6 @@
                 </button>
             `;
             
-            // --- Final HTML structure for the modal ---
             const detailsHTML = `
                 <div class="swal-details-content">
                     ${headerContentHTML}
@@ -439,6 +448,20 @@
             console.log("LOG: HTML dos detalhes construído. Tentando atualizar o modal...");
             Swal.update({ title: '', html: detailsHTML, showConfirmButton: false, showCloseButton: true, allowOutsideClick: true });
             console.log("LOG: Modal ATUALIZADO com conteúdo final.");
+
+            if (trailer && trailer.key) {
+                const trailerContainer = document.querySelector('.details-trailer-container');
+                const trailerCover = document.querySelector('.trailer-cover');
+                const trailerIframe = document.getElementById('trailer-iframe');
+
+                if (trailerCover && trailerIframe) {
+                    trailerCover.addEventListener('click', () => {
+                        if(trailerContainer) trailerContainer.classList.add('trailer-playing');
+                        trailerIframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+                    }, { once: true });
+                }
+            }
+
 
             const modalFavButton = document.getElementById('modalFavoriteButton');
             if (modalFavButton) {
@@ -473,12 +496,12 @@
                 didOpen: () => {
                     const movieBtn = document.getElementById('swalMovieGenreTypeButton');
                     const tvBtn = document.getElementById('swalTvGenreTypeButton');
-                    const animeBtn = document.getElementById('swalAnimeGenreTypeButton'); // New Anime button
+                    const animeBtn = document.getElementById('swalAnimeGenreTypeButton');
                     const genrePanel = document.getElementById('swalGenreButtonsPanel');
 
                     if (movieBtn) movieBtn.addEventListener('click', () => fetchAndDisplayGenresInSA('movie', genrePanel));
                     if (tvBtn) tvBtn.addEventListener('click', () => fetchAndDisplayGenresInSA('tv', genrePanel));
-                    if (animeBtn) animeBtn.addEventListener('click', () => fetchAndDisplayGenresInSA('anime', genrePanel)); // Event for Anime
+                    if (animeBtn) animeBtn.addEventListener('click', () => fetchAndDisplayGenresInSA('anime', genrePanel));
 
                     fetchAndDisplayGenresInSA(currentFilterTypeSA, genrePanel);
                     updateClearButtonVisibilitySA();
@@ -487,7 +510,7 @@
             });
             currentOpenSwalRef.then(async (result) => {
                 if (result.isConfirmed) {
-                    if (selectedGenreSA.id || selectedGenreSA.type === 'anime') await applyGenreFilterFromSA(); // Apply filter even if no specific genre for anime
+                    if (selectedGenreSA.id || selectedGenreSA.type === 'anime') await applyGenreFilterFromSA();
                     else { activeAppliedGenre = { id: null, name: null, type: null }; if(filterToggleButton) filterToggleButton.classList.remove('active'); loadMainPageContent(); }
                 } else if (result.isDenied) {
                     selectedGenreSA = { id: null, name: null, type: null }; activeAppliedGenre = { id: null, name: null, type: null };
@@ -501,12 +524,10 @@
             if (!genrePanelElement) { console.error("Painel de gêneros do SweetAlert não encontrado."); return; }
             currentFilterTypeSA = mediaType;
 
-            // Update active state for type buttons
             document.querySelectorAll('.swal-genre-filter-type-selector button').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.type === mediaType);
             });
 
-            // If switching type, clear selected genre
             if (selectedGenreSA.id && mediaType !== selectedGenreSA.type) {
                 selectedGenreSA = { id: null, name: null, type: null };
             }
@@ -515,18 +536,17 @@
 
             let genresToFetchType = mediaType;
             if (mediaType === 'anime') {
-                genresToFetchType = 'tv'; // Animes are generally TV shows, so fetch TV genres
+                genresToFetchType = 'tv';
             }
 
             const data = await fetchTMDB(`/genre/${genresToFetchType}/list`);
             genrePanelElement.innerHTML = '';
 
             if (data && !data.error && data.genres) {
-                // Add an "All" button for anime if no specific genre is selected
                 if (mediaType === 'anime') {
                     const allButton = document.createElement('button');
                     allButton.textContent = 'Todos os Animes';
-                    allButton.dataset.genreId = ''; // No specific ID
+                    allButton.dataset.genreId = '';
                     allButton.dataset.genreName = 'Todos';
                     allButton.setAttribute('role', 'button');
                     if (selectedGenreSA.id === null && selectedGenreSA.type === 'anime') {
@@ -553,7 +573,6 @@
                     button.onclick = () => {
                         if (selectedGenreSA.id === genre.id && selectedGenreSA.type === mediaType) {
                             selectedGenreSA = { id: null, name: null, type: null };
-                            // If it was anime and we deselect a genre, default to "All Animes"
                             if (mediaType === 'anime') {
                                 selectedGenreSA = { id: null, name: 'Todos', type: 'anime' };
                             }
@@ -578,7 +597,7 @@
             buttons.forEach(btn => {
                 const genreId = btn.dataset.genreId ? parseInt(btn.dataset.genreId) : null;
                 const isActive = (genreId === selectedGenreSA.id && currentFilterTypeSA === selectedGenreSA.type) ||
-                                 (genreId === null && selectedGenreSA.id === null && currentFilterTypeSA === selectedGenreSA.type && currentFilterTypeSA === 'anime'); // For "All Animes" button
+                                 (genreId === null && selectedGenreSA.id === null && currentFilterTypeSA === selectedGenreSA.type && currentFilterTypeSA === 'anime');
                 btn.classList.toggle('active', isActive);
             });
         }
@@ -663,6 +682,36 @@
 
         // --- Utility Functions, Event Listeners, Initialization ---
 
+        // NEW: Custom Toast Notification Function
+        function showCustomToast(message, type = 'info') {
+            // Remove any existing toasts
+            document.querySelectorAll('.custom-toast').forEach(toast => toast.remove());
+
+            const toast = document.createElement('div');
+            toast.className = `custom-toast custom-toast--${type}`;
+            
+            const iconClass = type === 'success' ? 'fa-check-circle' : 'fa-info-circle';
+            toast.innerHTML = `<i class="fas ${iconClass}"></i><span>${message}</span>`;
+            
+            document.body.appendChild(toast);
+
+            // Trigger the animation
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 10); // Small delay to allow the element to be in the DOM before animating
+
+            // Hide the toast after 2.5 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+                // Remove the element from DOM after transition ends
+                setTimeout(() => {
+                    if (toast.parentElement) {
+                        toast.parentElement.removeChild(toast);
+                    }
+                }, 400); // Should match the transition duration in CSS
+            }, 2500);
+        }
+
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -714,16 +763,13 @@
             return favorites.some(fav => fav.id === id && fav.media_type === mediaType);
         }
 
+        // UPDATED: toggleFavorite uses the new custom toast
         function toggleFavorite(item, mediaType) {
             const index = favorites.findIndex(fav => fav.id === item.id && fav.media_type === mediaType);
             if (index > -1) {
                 // Remove from favorites
                 favorites.splice(index, 1);
-                Swal.fire({
-                    toast: true, position: 'top-end', icon: 'info',
-                    title: 'Removido dos Favoritos!', showConfirmButton: false, timer: 1500,
-                    background: 'var(--card-bg)', color: 'var(--text-primary)', iconColor: 'var(--text-secondary)'
-                });
+                showCustomToast('Removido dos Favoritos!', 'info');
             } else {
                 // Add to favorites
                 const favItem = {
@@ -731,28 +777,22 @@
                     media_type: mediaType,
                     title: item.title || item.name,
                     poster_path: item.poster_path,
-                    backdrop_path: item.backdrop_path // Store backdrop for details modal
+                    backdrop_path: item.backdrop_path
                 };
                 favorites.push(favItem);
-                Swal.fire({
-                    toast: true, position: 'top-end', icon: 'success',
-                    title: 'Adicionado aos Favoritos!', showConfirmButton: false, timer: 1500,
-                    background: 'var(--card-bg)', color: 'var(--text-primary)', iconColor: 'var(--success-green)'
-                });
+                showCustomToast('Adicionado aos Favoritos!', 'success');
             }
             saveFavorites(favorites);
-            updateFavoriteButtonsState(item.id, mediaType); // Update all relevant buttons
+            updateFavoriteButtonsState(item.id, mediaType);
         }
 
         function updateFavoriteButtonsState(itemId, mediaType) {
             const isFav = isFavorite(itemId, mediaType);
-            // Update card buttons
             document.querySelectorAll(`.favorite-button[data-id="${itemId}"][data-type="${mediaType}"]`).forEach(btn => {
                 btn.classList.toggle('active', isFav);
                 btn.innerHTML = isFav ? '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>';
                 btn.title = isFav ? 'Remover dos Favoritos' : 'Adicionar aos Favoritos';
             });
-            // Update modal button if open
             const modalFavButton = document.getElementById('modalFavoriteButton');
             if (modalFavButton && modalFavButton.dataset.id == itemId && modalFavButton.dataset.type == mediaType) {
                 modalFavButton.classList.toggle('active', isFav);
@@ -781,25 +821,23 @@
                 const titleDiv = document.createElement('div'); titleDiv.className = 'title'; titleDiv.textContent = item.title || item.name || "Título não disponível";
                 titleOverlay.appendChild(titleDiv);
 
-                // Add Favorite Button to card
                 const favButton = document.createElement('button');
                 favButton.className = 'favorite-button';
                 favButton.dataset.id = item.id;
                 favButton.dataset.type = mediaType;
                 favButton.title = 'Adicionar aos Favoritos';
-                favButton.innerHTML = '<i class="far fa-heart"></i>'; // Default: not favorited
+                favButton.innerHTML = '<i class="far fa-heart"></i>';
 
                 favButton.addEventListener('click', (event) => {
-                    event.stopPropagation(); // Prevent card click from opening modal
+                    event.stopPropagation();
                     toggleFavorite(item, mediaType);
                 });
 
                 card.appendChild(img);
                 card.appendChild(titleOverlay);
-                card.appendChild(favButton); // Append to card
+                card.appendChild(favButton);
                 targetGridElement.appendChild(card);
                 displayedCountThisCall++;
-                // Update button state immediately after creating it
                 updateFavoriteButtonsState(item.id, mediaType);
             });
             if (replace && displayedCountThisCall === 0 && items.length > 0) {
@@ -810,10 +848,13 @@
         function copyToClipboard(textToCopy, isPlayerLink = false) {
             const linkType = isPlayerLink ? "do player" : "da página";
             const warningTitle = `Nenhum link ${linkType} disponível para copiar.`; const successTitle = `Link ${linkType} copiado!`; const errorTitle = `Falha ao copiar link ${linkType}!`;
-            if (!textToCopy) { if (typeof Swal !== 'undefined') Swal.fire({ toast: true, position: 'top-end', icon: 'warning', title: warningTitle, showConfirmButton: false, timer: 2500, background: 'var(--card-bg)', color: 'var(--text-primary)', iconColor: 'var(--text-secondary)'}); return; }
+            if (!textToCopy) { 
+                showCustomToast(warningTitle, 'info');
+                return;
+            }
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(textToCopy)
-                    .then(() => { if (typeof Swal !== 'undefined') Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: successTitle, showConfirmButton: false, timer: 1500, background: 'var(--card-bg)', color: 'var(--text-primary)', timerProgressBar: true, iconColor: 'var(--success-green)' }); })
+                    .then(() => { showCustomToast(successTitle, 'success'); })
                     .catch(errN => legacyCopyToClipboard(textToCopy, successTitle, errorTitle));
             } else legacyCopyToClipboard(textToCopy, successTitle, errorTitle);
         }
@@ -822,10 +863,10 @@
             document.body.appendChild(tempTextArea); tempTextArea.select(); tempTextArea.setSelectionRange(0, 99999); let success = false;
             try { success = document.execCommand('copy'); } catch (err) { console.error("[legacyCopyToClipboard] Erro:", err); }
             document.body.removeChild(tempTextArea);
-            if (typeof Swal !== 'undefined') {
-                const swalProps = { toast: true, position: 'top-end', showConfirmButton: false, timer: 1500, background: 'var(--card-bg)', color: 'var(--text-primary)', timerProgressBar: true };
-                if (success) Swal.fire({ ...swalProps, icon: 'success', title: successTitle, iconColor: 'var(--success-green)' });
-                else Swal.fire({ ...swalProps, icon: 'error', title: errorTitle, timer:2000, iconColor: 'var(--danger-red)' });
+            if (success) {
+                showCustomToast(successTitle, 'success');
+            } else {
+                showCustomToast(errorTitle, 'info'); // Using 'info' for error to avoid red color if not critical
             }
         }
 
@@ -839,8 +880,8 @@
                     <div class="favorites-grid">
                         ${currentFavs.map(item => `
                             <div class="content-card favorite-card" role="button" tabindex="0" aria-label="Ver detalhes de ${item.title || item.name}"
-                                onclick="openItemModal(${item.id}, '${item.media_type}', '${item.backdrop_path || ''}')"
-                                onkeydown="if(event.key === 'Enter' || event.key === ' ') openItemModal(${item.id}, '${item.media_type}', '${item.backdrop_path || ''}')">
+                                onclick="Swal.close(); openItemModal(${item.id}, '${item.media_type}', '${item.backdrop_path || ''}')"
+                                onkeydown="if(event.key === 'Enter' || event.key === ' ') { Swal.close(); openItemModal(${item.id}, '${item.media_type}', '${item.backdrop_path || ''}'); }">
                                 <img src="${TMDB_IMAGE_BASE_URL}w342${item.poster_path}" alt="Pôster de ${item.title || item.name}" loading="lazy" onerror="this.src='https://placehold.co/342x513/0A0514/F0F0F0?text=Indispon%C3%ADvel&font=inter'; this.alt='Imagem indisponível'; this.onerror=null;">
                                 <div class="title-overlay"><div class="title">${item.title || item.name}</div></div>
                                 <button class="remove-favorite-button" data-id="${item.id}" data-type="${item.media_type}" title="Remover dos Favoritos">
@@ -867,15 +908,21 @@
                 didOpen: () => {
                     document.querySelectorAll('.remove-favorite-button').forEach(button => {
                         button.addEventListener('click', (event) => {
-                            event.stopPropagation(); // Prevent card click
+                            event.stopPropagation();
                             const itemId = parseInt(button.dataset.id);
                             const mediaType = button.dataset.type;
                             const itemToRemove = currentFavs.find(fav => fav.id === itemId && fav.media_type === mediaType);
                             if (itemToRemove) {
                                 toggleFavorite(itemToRemove, mediaType);
-                                // Re-open the favorites modal to reflect changes
-                                Swal.close();
-                                openFavoritesModal();
+                                // Refresh the favorites modal content without closing and reopening
+                                button.closest('.favorite-card').style.transition = 'opacity 0.3s';
+                                button.closest('.favorite-card').style.opacity = '0';
+                                setTimeout(() => {
+                                    button.closest('.favorite-card').remove();
+                                    if(document.querySelector('.favorites-grid').children.length === 0) {
+                                        document.querySelector('.swal-favorites-popup .swal2-html-container').innerHTML = '<p class="text-center text-[var(--text-secondary)] py-5">Você não tem nenhum favorito ainda.</p>';
+                                    }
+                                }, 300);
                             }
                         });
                     });
@@ -898,7 +945,7 @@
                  return;
             }
 
-            favorites = getFavorites(); // Load favorites on startup
+            favorites = getFavorites();
 
             if (searchInput) searchInput.addEventListener('input', () => { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => { if (searchInput.value !== undefined) performSearch(searchInput.value); }, 500); });
             else console.warn("Elemento searchInput não encontrado.");
@@ -908,14 +955,12 @@
             else console.warn("Elemento filterToggleButton não encontrado.");
             document.addEventListener('keydown', (event) => { if (event.key === 'Escape') { if (typeof Swal !== 'undefined' && Swal.isVisible()) Swal.close(); } });
 
-            // Floating Favorites Button Listener
             if (floatingFavoritesButton) {
                 floatingFavoritesButton.addEventListener('click', openFavoritesModal);
             } else {
                 console.warn("Elemento floatingFavoritesButton não encontrado.");
             }
 
-            // --- Scroll Listeners for Infinite Scroll ---
             if (moviesResultsGrid) {
                 moviesResultsGrid.addEventListener('scroll', () => {
                     if (defaultContentSections && defaultContentSections.style.display === 'block' &&
@@ -995,7 +1040,6 @@
                 }
             });
 
-            // --- Page Content Initialization ---
             const urlParams = new URLSearchParams(window.location.search);
             const typeParam = urlParams.get('type'); const idParam = urlParams.get('id');
             if (typeParam && idParam && (typeParam === 'movie' || typeParam === 'tv')) {
