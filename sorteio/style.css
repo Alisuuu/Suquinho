@@ -473,10 +473,8 @@ body.swal2-shown #externalCopyButtonContainer {
 }
 
 
-#pickAgainButton,
-#trailerButton {
+#pickAgainButton {
   /* MD3 Applied */
-  display: none;
   background-color: rgba(89,59,162,0.20);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(89,59,162,0.60);
@@ -621,3 +619,10 @@ body.swal2-shown #externalCopyButtonContainer {
         .modal-favorite-button .fas, .modal-favorite-button .far {
             margin-right: 0.5rem;
         }
+
+}
+
+/* *** CORREÇÃO: Oculta o botão de trailer *** */
+#trailerButton {
+    display: none !important;
+}
