@@ -454,11 +454,34 @@
                 const trailerCover = document.querySelector('.trailer-cover');
                 const trailerIframe = document.getElementById('trailer-iframe');
 
-                if (trailerCover && trailerIframe) {
-                    trailerCover.addEventListener('click', () => {
-                        if(trailerContainer) trailerContainer.classList.add('trailer-playing');
+                if (trailerContainer && trailerCover && trailerIframe) {
+                    let hasBeenRevealed = false;
+
+                    const revealAndPlay = () => {
+                        if (hasBeenRevealed) return;
+                        hasBeenRevealed = true;
+
+                        console.log("LOG: Revelando e tocando o trailer (manual ou automático).");
                         trailerIframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-                    }, { once: true });
+                        trailerContainer.classList.add('trailer-playing');
+                    };
+                    
+                    trailerCover.addEventListener('click', revealAndPlay);
+
+                    setTimeout(() => {
+                        if (hasBeenRevealed) return;
+                        console.log("LOG: Iniciando playback do trailer por baixo da capa.");
+                        trailerIframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+
+                        setTimeout(() => {
+                            if (!hasBeenRevealed) {
+                                console.log("LOG: Revelando trailer automaticamente.");
+                                hasBeenRevealed = true;
+                                trailerContainer.classList.add('trailer-playing');
+                            }
+                        }, 2000);
+
+                    }, 1000);
                 }
             }
 
@@ -682,9 +705,7 @@
 
         // --- Utility Functions, Event Listeners, Initialization ---
 
-        // NEW: Custom Toast Notification Function
         function showCustomToast(message, type = 'info') {
-            // Remove any existing toasts
             document.querySelectorAll('.custom-toast').forEach(toast => toast.remove());
 
             const toast = document.createElement('div');
@@ -695,20 +716,17 @@
             
             document.body.appendChild(toast);
 
-            // Trigger the animation
             setTimeout(() => {
                 toast.classList.add('show');
-            }, 10); // Small delay to allow the element to be in the DOM before animating
+            }, 10);
 
-            // Hide the toast after 2.5 seconds
             setTimeout(() => {
                 toast.classList.remove('show');
-                // Remove the element from DOM after transition ends
                 setTimeout(() => {
                     if (toast.parentElement) {
                         toast.parentElement.removeChild(toast);
                     }
-                }, 400); // Should match the transition duration in CSS
+                }, 400);
             }, 2500);
         }
 
@@ -763,15 +781,12 @@
             return favorites.some(fav => fav.id === id && fav.media_type === mediaType);
         }
 
-        // UPDATED: toggleFavorite uses the new custom toast
         function toggleFavorite(item, mediaType) {
             const index = favorites.findIndex(fav => fav.id === item.id && fav.media_type === mediaType);
             if (index > -1) {
-                // Remove from favorites
                 favorites.splice(index, 1);
                 showCustomToast('Removido dos Favoritos!', 'info');
             } else {
-                // Add to favorites
                 const favItem = {
                     id: item.id,
                     media_type: mediaType,
@@ -866,7 +881,7 @@
             if (success) {
                 showCustomToast(successTitle, 'success');
             } else {
-                showCustomToast(errorTitle, 'info'); // Using 'info' for error to avoid red color if not critical
+                showCustomToast(errorTitle, 'info');
             }
         }
 
@@ -911,10 +926,12 @@
                             event.stopPropagation();
                             const itemId = parseInt(button.dataset.id);
                             const mediaType = button.dataset.type;
-                            const itemToRemove = currentFavs.find(fav => fav.id === itemId && fav.media_type === mediaType);
+                            
+                            // FIX: Find item in the up-to-date global 'favorites' array instead of the stale snapshot.
+                            const itemToRemove = favorites.find(fav => fav.id === itemId && fav.media_type === mediaType);
+                            
                             if (itemToRemove) {
                                 toggleFavorite(itemToRemove, mediaType);
-                                // Refresh the favorites modal content without closing and reopening
                                 button.closest('.favorite-card').style.transition = 'opacity 0.3s';
                                 button.closest('.favorite-card').style.opacity = '0';
                                 setTimeout(() => {
