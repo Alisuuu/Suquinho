@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const weekNav = document.getElementById('week-navigation');
     
     async function fetchData() {
-        contentArea.innerHTML = `<p class="text-center col-span-full p-10 text-[var(--on-surface-variant-color)]">Carregando lançamentos...</p>`;
+        contentArea.innerHTML = `<p class="text-center col-span-full p-10 text-[var(--on-surface-variant-color)]">A carregar lançamentos...</p>`;
         try {
             const response = await fetch(apiURL);
             if (!response.ok) throw new Error(`Erro na API: ${response.statusText}`);
@@ -232,25 +232,25 @@ document.addEventListener('DOMContentLoaded', () => {
     function createItemCard(item) {
         const itemEl = document.createElement('div');
         
-        // Listener que chama a função de modal do seu projeto
         itemEl.addEventListener('click', () => {
-            // MOSTRA O MODAL DE CARREGAMENTO
+            // *** CORRIGIDO ***
+            // MOSTRA O MODAL DE CARREGAMENTO USANDO A CLASSE .loader E A CLASSE DE CUSTOMIZAÇÃO
             Swal.fire({
-                title: 'Buscando informações...',
-                html: '<div class="swal-loading-spinner"></div>',
+                titleText: 'A buscar informações...', // Usar titleText para evitar conflitos de estilo
+                html: '<div class="loader"></div>',
                 showConfirmButton: false,
                 allowOutsideClick: false,
+                // Adiciona a classe para tornar o fundo do modal transparente
                 customClass: {
-                    popup: 'swal-loading-popup',
-                    container: 'swal-loading-overlay'
+                    popup: 'swal-loader-popup' 
                 }
             });
 
-            // Adiciona um pequeno delay para garantir que o loader renderize antes de continuar
             setTimeout(() => {
+                // Assumindo que a função openItemModal existe em outro script
                 if (typeof openItemModal === 'function') {
                     const mediaType = (item.type == '2' || item.type == '3') ? 'tv' : 'movie';
-                    // A função openItemModal (do seu outro script) irá substituir o loader
+                    // A função openItemModal irá substituir o loader
                     openItemModal(item.tmdb_id, mediaType, item.backdrop);
                 } else {
                     console.error('A função "openItemModal" não foi encontrada.');
@@ -258,11 +258,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         icon: 'error',
                         title: 'Erro de Carregamento',
                         text: 'Não foi possível abrir os detalhes. A função necessária não está disponível.',
-                        background: 'transparent',
-                        customClass: { popup: 'blur-backdrop' },
                     });
                 }
-            }, 100); // 100ms é suficiente
+            }, 100); 
         });
         
         itemEl.className = `task-item relative overflow-hidden flex flex-col cursor-pointer transition-transform duration-300 hover:scale-[1.02]`;
@@ -273,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const watchButtonHTML = `
             <div class="mt-4">
                 <span class="inline-block bg-[var(--primary-color)] text-[var(--on-primary-color)] px-4 py-2 rounded-full text-xs font-semibold pointer-events-none">
-                    Assistir Agora
+                    Ver Agora
                 </span>
             </div>
         `;
@@ -321,19 +319,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const activeButtons = document.querySelectorAll(`.day-button[data-datekey="${dateKey}"]`);
         activeButtons.forEach(btn => btn.classList.add('active'));
 
-        // *** LÓGICA DE ROLAGEM MAIS ROBUSTA ***
+        // LÓGICA DE ROLAGEM MAIS ROBUSTA
         if (activeButtons.length > 0) {
-            // Adiciona um pequeno delay para garantir que o navegador tenha renderizado os botões
-            // antes de tentar rolar a tela para eles.
             setTimeout(() => {
                 activeButtons[0].scrollIntoView({
                     behavior: 'smooth',
                     inline: 'center',
                     block: 'nearest'
                 });
-            }, 100); // Um delay de 100ms é geralmente suficiente
+            }, 100); 
         }
-        // *** FIM DA LÓGICA DE ROLAGEM ***
 
         const items = itemsByDay[dateKey] || [];
         if (items.length === 0) {
