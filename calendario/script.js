@@ -118,14 +118,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // *** NOVO: Ouve por atualizações nos favoritos para manter a UI sincronizada ***
-    window.addEventListener('favorites-updated', () => {
+    window.parent.addEventListener('favorites-updated', () => {
         console.log("Atualização de favoritos detetada no calendário.");
         document.querySelectorAll('.favorite-button-calendar').forEach(btn => {
             const mediaType = btn.dataset.type;
             const itemId = btn.dataset.id;
-            // Verifica se a função 'isFavorite' do script3.js está disponível
-            if (typeof isFavorite === 'function') {
-                const isFav = isFavorite(itemId, mediaType);
+            // Verifica se a função 'isFavorite' do script pai está disponível
+            if (window.parent && typeof window.parent.isFavorite === 'function') {
+                const isFav = window.parent.isFavorite(itemId, mediaType);
                 btn.classList.toggle('active', isFav);
                 btn.innerHTML = isFav ? '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>';
             }
@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showCloseButton: true,
             background: 'transparent',
             customClass: { popup: 'blur-backdrop' },
-            willOpen: () => {
+            didOpen: () => {
                 const popup = Swal.getPopup();
                 
                 popup.querySelector('#swal-type-filters').addEventListener('click', e => {
@@ -235,61 +235,39 @@ document.addEventListener('DOMContentLoaded', () => {
         itemEl.className = `task-item relative overflow-hidden flex flex-col cursor-pointer transition-transform duration-300 hover:scale-[1.02]`;
         
         itemEl.addEventListener('click', (event) => {
-            // Impede a abertura do modal se o clique for no botão de favorito
-            if (event.target.closest('.favorite-button-calendar')) return; 
+            if (event.target.closest('.favorite-button-calendar')) return;
             
-            Swal.fire({
-                titleText: 'A buscar informações...',
-                html: '<div class="loader"></div>',
-                showConfirmButton: false,
-                allowOutsideClick: false,
-                customClass: { popup: 'swal-loader-popup' }
-            });
-
-            setTimeout(() => {
-                if (typeof openItemModal === 'function') {
-                    const mediaType = (item.type == '2' || item.type == '3') ? 'tv' : 'movie';
-                    openItemModal(item.tmdb_id, mediaType, item.backdrop);
-                } else {
-                    console.error('A função "openItemModal" não foi encontrada.');
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Erro de Carregamento',
-                        text: 'Não foi possível abrir os detalhes. A função necessária não está disponível.',
-                    });
-                }
-            }, 100); 
+            // Chama a função da página pai para abrir o modal
+            if (window.parent && typeof window.parent.openItemModal === 'function') {
+                 // Fecha o modal do SweetAlert que poderia estar aberto dentro do iframe
+                Swal.close();
+                const mediaType = (item.type == '2' || item.type == '3') ? 'tv' : 'movie';
+                window.parent.openItemModal(item.tmdb_id, mediaType, item.backdrop);
+            } else {
+                console.error('A função "openItemModal" não foi encontrada na página principal.');
+                Swal.fire('Erro', 'Não foi possível abrir os detalhes.', 'error');
+            }
         });
         
         const posterURL = item.poster ? `https://image.tmdb.org/t/p/w185${item.poster}` : 'https://placehold.co/185x278/111827/FFFFFF?text=N/A';
         const backdropURL = item.backdrop ? `https://image.tmdb.org/t/p/w500${item.backdrop}` : '';
-        
-        const watchButtonHTML = `
-            <div class="mt-4">
-                <span class="inline-block bg-[var(--primary-color)] text-[var(--on-primary-color)] px-4 py-2 rounded-full text-xs font-semibold pointer-events-none">
-                    Ver Detalhes
-                </span>
-            </div>
-        `;
-
+        const watchButtonHTML = `<div class="mt-4"><span class="inline-block bg-[var(--primary-color)] text-[var(--on-primary-color)] px-4 py-2 rounded-full text-xs font-semibold pointer-events-none">Ver Detalhes</span></div>`;
         const statusTagHTML = `<span class="status-tag status-tag-${item.status.toLowerCase()}">${item.status}</span>`;
         
         let borderColor = 'var(--outline-color)';
-        switch (item.status) {
-            case 'Atualizado': borderColor = 'var(--status-atualizado)'; break;
-            case 'Hoje': borderColor = 'var(--status-hoje)'; break;
-            case 'Futuro': borderColor = 'var(--status-futuro)'; break;
-            case 'Atrasado': borderColor = 'var(--status-atrasado)'; break;
-        }
+        if (item.status === 'Atualizado') borderColor = 'var(--status-atualizado)';
+        else if (item.status === 'Hoje') borderColor = 'var(--status-hoje)';
+        else if (item.status === 'Futuro') borderColor = 'var(--status-futuro)';
+        else if (item.status === 'Atrasado') borderColor = 'var(--status-atrasado)';
 
         itemEl.style.borderLeft = `3px solid ${borderColor}`;
 
-        // *** LÓGICA DE FAVORITOS INTEGRADA ***
+        // *** LÓGICA DE FAVORITOS INTEGRADA COM A PÁGINA PAI ***
         const mediaType = (item.type == '2' || item.type == '3') ? 'tv' : 'movie';
         let isFav = false;
-        // Verifica se a função isFavorite do script3.js existe antes de a chamar
-        if (typeof isFavorite === 'function') {
-            isFav = isFavorite(item.tmdb_id, mediaType);
+        // Verifica se a função isFavorite do script pai existe
+        if (window.parent && typeof window.parent.isFavorite === 'function') {
+            isFav = window.parent.isFavorite(item.tmdb_id, mediaType);
         }
 
         const favoriteButtonHTML = `
@@ -322,20 +300,18 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         
         const favButton = itemEl.querySelector('.favorite-button-calendar');
-        // Verifica se a função toggleFavorite do script3.js existe antes de a usar
-        if (favButton && typeof toggleFavorite === 'function') {
+        // Adiciona o evento de clique que chama a função da página pai
+        if (favButton) {
             favButton.addEventListener('click', (event) => {
                 event.stopPropagation();
-                
-                // Cria um objeto com a estrutura que a função toggleFavorite espera
-                const itemDataForFavorite = {
-                    id: item.tmdb_id,
-                    title: item.title,
-                    poster_path: item.poster,
-                    backdrop_path: item.backdrop,
-                };
-
-                toggleFavorite(itemDataForFavorite, mediaType);
+                if (window.parent && typeof window.parent.toggleFavorite === 'function') {
+                    const itemDataForFavorite = {
+                        id: item.tmdb_id, title: item.title, poster_path: item.poster, backdrop_path: item.backdrop,
+                    };
+                    window.parent.toggleFavorite(itemDataForFavorite, mediaType);
+                } else {
+                    console.error('A função "toggleFavorite" não foi encontrada na página principal.');
+                }
             });
         }
         
@@ -350,13 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
         activeButtons.forEach(btn => btn.classList.add('active'));
 
         if (activeButtons.length > 0) {
-            setTimeout(() => {
-                activeButtons[0].scrollIntoView({
-                    behavior: 'smooth',
-                    inline: 'center',
-                    block: 'nearest'
-                });
-            }, 100); 
+            setTimeout(() => { activeButtons[0].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' }); }, 100); 
         }
 
         const items = itemsByDay[dateKey] || [];
