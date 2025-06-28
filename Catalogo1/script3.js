@@ -356,19 +356,31 @@
 
             const imdbId = details.external_ids?.imdb_id;
             let superflixPlayerUrl = '';
-            if (imdbId) superflixPlayerUrl = mediaType === 'movie' ? `${PLAYER_BASE_URL_MOVIE}${imdbId}` : `${PLAYER_BASE_URL_SERIES}${imdbId}`;
 
+            // *** LÓGICA CORRIGIDA AQUI ***
+            // Filmes usam o ID do IMDb. Séries usam o ID do TMDB (variável 'itemId').
+            if (mediaType === 'movie' && imdbId) {
+                superflixPlayerUrl = `${PLAYER_BASE_URL_MOVIE}${imdbId}`;
+            } else if (mediaType === 'tv') {
+                superflixPlayerUrl = `${PLAYER_BASE_URL_SERIES}${itemId}/1/`;
+            }
+
+            // *** LÓGICA DE CÓPIA RESTAURADA AQUI ***
+            // Gera um link para a página do catálogo, não para o player.
             const linkForContentPage = mediaType === 'movie'
                 ? `https://alisuuu.github.io/Suquinho/?pagina=Catalogo1%2Findex.html%3Ftype%3Dmovie%26id%3D${itemId}`
                 : `https://alisuuu.github.io/Suquinho/?pagina=Catalogo1%2Findex.html%3Ftype%3Dtv%26id%3D${itemId}`;
-
+            
             currentExternalCopyUrl = linkForContentPage;
 
-            if(externalCopyButtonContainer) externalCopyButtonContainer.style.display = 'flex';
+            if(externalCopyButtonContainer) {
+                 externalCopyButtonContainer.style.display = 'flex';
+            }
             const currentExternalBtn = document.getElementById('externalCopyLinkButton');
             if(currentExternalBtn) {
                 if (externalCopyButtonHandler) currentExternalBtn.removeEventListener('click', externalCopyButtonHandler);
                 externalCopyButtonHandler = () => {
+                    // O booleano 'false' indica que é um link de PÁGINA para a mensagem do Toast
                     if(currentExternalCopyUrl) copyToClipboard(currentExternalCopyUrl, false);
                 };
                 currentExternalBtn.addEventListener('click', externalCopyButtonHandler);
