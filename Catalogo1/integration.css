@@ -24,7 +24,7 @@ body.calendar-open {
     width: 80%; /* Ocupa 80% da largura da tela */
     max-width: 900px; /* Limite máximo para telas grandes */
     height: 100vh; /* Ocupa 100% da altura */
-    z-index: 2000;
+    z-index: 999;
     
     background-color: #05030a; /* Fundo escuro para o painel */
     
@@ -59,8 +59,8 @@ body.calendar-open #main-content {
 /* Botão de fechar posicionado DENTRO do painel, à esquerda */
 #close-calendar-btn {
     position: absolute;
-    top: 90%;
-    left: 80%;
+    top: 10%;
+    left: 10%;
     z-index: 10; /* Garante que fique acima do iframe */
     
     /* Estilo do botão */
