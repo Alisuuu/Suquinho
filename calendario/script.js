@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!Array.isArray(data) || data.length === 0) {
                  throw new Error('API não retornou dados válidos.');
             }
-            setupBackdropSlideshow(data); 
+            // A chamada para setupBackdropSlideshow(data) foi removida daqui.
             render();
         } catch (error) {
             console.error('Erro ao buscar dados da API:', error);
@@ -32,51 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function setupBackdropSlideshow(items) {
-        const backdropContainer = document.getElementById('backdrop-container');
-        if (!backdropContainer) return;
-
-        const backdropUrls = [...new Set(items.filter(item => item.backdrop).map(item => `https://image.tmdb.org/t/p/w1280${item.backdrop}`))];
-        if (backdropUrls.length === 0) return;
-        
-        for (let i = backdropUrls.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [backdropUrls[i], backdropUrls[j]] = [backdropUrls[j], backdropUrls[i]];
-        }
-
-        backdropContainer.innerHTML = ''; 
-
-        const img1 = document.createElement('img');
-        const img2 = document.createElement('img');
-        img1.className = 'backdrop-image';
-        img2.className = 'backdrop-image';
-        backdropContainer.appendChild(img1);
-        backdropContainer.appendChild(img2);
-
-        let currentIndex = 0;
-        let currentImageElement = img1;
-
-        function loadAndTransition(imgElement, url) {
-            const tempImg = new Image();
-            tempImg.onload = () => {
-                imgElement.src = url;
-                const activeImg = backdropContainer.querySelector('.backdrop-image.active');
-                if (activeImg) activeImg.classList.remove('active');
-                imgElement.classList.add('active');
-            };
-            tempImg.src = url;
-        }
-
-        loadAndTransition(currentImageElement, backdropUrls[currentIndex]);
-
-        if (backdropUrls.length > 1) {
-            setInterval(() => {
-                currentIndex = (currentIndex + 1) % backdropUrls.length;
-                currentImageElement = (currentImageElement === img1) ? img2 : img1;
-                loadAndTransition(currentImageElement, backdropUrls[currentIndex]);
-            }, 5000); 
-        }
-    }
+    // A função setupBackdropSlideshow foi completamente removida.
 
     // ========================================================================
     // EVENT LISTENERS
@@ -117,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showMonthDetailModal(dateKey, itemsByDay[dateKey] || []);
     });
     
-    // *** NOVO: Ouve por atualizações nos favoritos para manter a UI sincronizada ***
+    // Ouve por atualizações nos favoritos para manter a UI sincronizada
     window.parent.addEventListener('favorites-updated', () => {
         console.log("Atualização de favoritos detetada no calendário.");
         document.querySelectorAll('.favorite-button-calendar').forEach(btn => {
@@ -169,8 +125,8 @@ document.addEventListener('DOMContentLoaded', () => {
             showConfirmButton: true,
             confirmButtonText: 'Aplicar Filtros',
             showCloseButton: true,
-            background: 'transparent',
-            customClass: { popup: 'blur-backdrop' },
+            background: 'var(--translucent-bg, rgba(30, 30, 40, 0.5))', // Fundo translúcido
+            customClass: { popup: 'translucent-surface' }, // Usa a classe para consistência
             didOpen: () => {
                 const popup = Swal.getPopup();
                 
@@ -225,21 +181,19 @@ document.addEventListener('DOMContentLoaded', () => {
             maxWidth: '768px',
             showConfirmButton: false,
             showCloseButton: true,
-            background: 'transparent',
-            customClass: { popup: 'blur-backdrop' },
+            background: 'var(--translucent-bg, rgba(30, 30, 40, 0.5))',
+            customClass: { popup: 'translucent-surface' },
         });
     }
 
     function createItemCard(item) {
         const itemEl = document.createElement('div');
-        itemEl.className = `task-item relative overflow-hidden flex flex-col cursor-pointer transition-transform duration-300 hover:scale-[1.02]`;
+        itemEl.className = `task-item translucent-surface relative overflow-hidden flex flex-col cursor-pointer transition-transform duration-300 hover:scale-[1.02]`;
         
         itemEl.addEventListener('click', (event) => {
             if (event.target.closest('.favorite-button-calendar')) return;
             
-            // Chama a função da página pai para abrir o modal
             if (window.parent && typeof window.parent.openItemModal === 'function') {
-                 // Fecha o modal do SweetAlert que poderia estar aberto dentro do iframe
                 Swal.close();
                 const mediaType = (item.type == '2' || item.type == '3') ? 'tv' : 'movie';
                 window.parent.openItemModal(item.tmdb_id, mediaType, item.backdrop);
@@ -262,10 +216,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         itemEl.style.borderLeft = `3px solid ${borderColor}`;
 
-        // *** LÓGICA DE FAVORITOS INTEGRADA COM A PÁGINA PAI ***
         const mediaType = (item.type == '2' || item.type == '3') ? 'tv' : 'movie';
         let isFav = false;
-        // Verifica se a função isFavorite do script pai existe
         if (window.parent && typeof window.parent.isFavorite === 'function') {
             isFav = window.parent.isFavorite(item.tmdb_id, mediaType);
         }
@@ -284,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ${statusTagHTML}
             ${favoriteButtonHTML}
             <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/80 via-black/50 to-transparent z-10"></div>
-            ${backdropURL ? `<img src="${backdropURL}" class="absolute top-0 left-0 w-full h-full object-cover opacity-30 z-0" loading="lazy">` : ''}
+            ${backdropURL ? `<img src="${backdropURL}" class="absolute top-0 left-0 w-full h-full object-cover opacity-20 z-0" loading="lazy">` : ''}
             <div class="relative z-20 p-4 flex flex-col justify-end flex-grow">
                 <div class="flex items-start gap-4">
                     <img class="w-20 sm:w-24 h-auto object-cover flex-shrink-0 rounded-lg shadow-lg border border-white/10" src="${posterURL}" alt="Poster" loading="lazy" onerror="this.src='https://placehold.co/185x278/1f2937/FFFFFF?text=N/A'">
@@ -300,7 +252,6 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         
         const favButton = itemEl.querySelector('.favorite-button-calendar');
-        // Adiciona o evento de clique que chama a função da página pai
         if (favButton) {
             favButton.addEventListener('click', (event) => {
                 event.stopPropagation();
