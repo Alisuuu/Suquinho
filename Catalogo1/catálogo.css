@@ -460,75 +460,6 @@ header h1 .fa-film { color: var(--purple-accent); margin-right: 0.5rem; }
 .header-controls-wrapper { display: flex; align-items: center; gap: 0.75rem; }
 .header-controls { display: flex; align-items: center; gap: 0.75rem; }
 
-/* Botão de Cópia Externo */
-#externalCopyButtonContainer {
-    position: fixed;
-    bottom: 1.5rem;
-    right: 5%;
-    z-index: 1070;
-    top: 90%;
-    left: 78%;
-}
-#externalCopyLinkButton {
-    background: linear-gradient(45deg, rgba(89, 59, 162, 0.4), rgba(162, 0, 255, 0.4));
-    color: var(--text-primary);
-    padding: 0.8rem;
-    width: 3.8rem;
-    height: 3.8rem;
-    border-radius: 50%;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.4),
-                0 0 20px rgba(130, 0, 255, 0.3);
-    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    border: none;
-}
-#externalCopyLinkButton:hover {
-    background: linear-gradient(45deg, rgba(89, 59, 162, 0.6), rgba(162, 0, 255, 0.6));
-    transform: translateY(-4px) scale(1.08);
-    box-shadow: 0 10px 25px rgba(89, 59, 162, 0.6),
-                0 0 30px rgba(130, 0, 255, 0.5);
-}
-#externalCopyLinkButton .fas { font-size: 1.6em; margin: 0; }
-#externalCopyLinkButton span { display: none; }
-
-/* Floating Favorites Button */
-#floatingFavoritesButton {
-    position: fixed;
-    bottom: 1.5rem;
-    right: 0.5rem;
-    z-index: 1060;
-    background: linear-gradient(45deg, var(--purple-accent), var(--purple-light));
-    color: var(--amoled-black);
-    padding: 1rem;
-    width: 2rem;
-    height: 2rem;
-    border-radius: 20%;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.4),
-                0 0 20px rgba(89, 59, 162, 0.5);
-    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    border: none;
-    left: 83%;
-    top: 12%;'
-}
-#floatingFavoritesButton:hover {
-    background: linear-gradient(45deg, var(--purple-light), var(--purple-accent));
-    transform: translateY(-5px) scale(1.1);
-    box-shadow: 0 10px 25px rgba(89, 59, 162, 0.6),
-                0 0 30px rgba(89, 59, 162, 0.7);
-}
-#floatingFavoritesButton .fas {
-    font-size: 1.8em;
-}
-
 /* Favorites Button on Content Cards */
 .content-card .favorite-button {
     position: absolute;
@@ -717,9 +648,7 @@ header h1 .fa-film { color: var(--purple-accent); margin-right: 0.5rem; }
     .swal-details-content .details-content-title { font-size: 1.5rem; }
     .details-iframe-container.iframe-series-dimensions { height: 300px; }
     .cast-member-photo { width: 60px; height: 60px; }
-    #externalCopyLinkButton { width: 3rem; height: 3rem; padding: 0.6rem; left: 80%; }
-    #externalCopyLinkButton .fas { font-size: 1.2em; }
-
+    
     .horizontal-scroll-grid,
     .main-results-grid,
     #singleResultsGrid {
@@ -727,20 +656,11 @@ header h1 .fa-film { color: var(--purple-accent); margin-right: 0.5rem; }
         gap: 0.75rem;
     }
 
-    #floatingFavoritesButton {
-        width: 3rem;
-        height: 3rem;
+    #floatingButtonWrapper {
         bottom: 1rem;
         right: 1rem;
-        letf: 80%;
     }
-    #floatingFavoritesButton .fas {
-        font-size: 1.5em;
-    }
-    #externalCopyButtonContainer {
-        right: 5.5rem;
-        bottom: 1rem;
-    }
+
     .swal-favorites-popup.swal2-popup {
         width: 95vw !important;
     }
@@ -818,7 +738,6 @@ header h1 .fa-film { color: var(--purple-accent); margin-right: 0.5rem; }
 
 
 /* === UX/UI Final — Botões Compactos, Naturais e Sem Distorção === */
-/* CORREÇÃO: Removido #filterToggleButton daqui para restaurar seu estilo original */
 button,
 .swal-genre-buttons-panel button {
     display: inline-flex;
@@ -837,7 +756,6 @@ button,
     white-space: nowrap;
 }
 
-/* CORREÇÃO: Removido #filterToggleButton:hover daqui */
 button:hover,
 .swal-genre-buttons-panel button:hover {
     background: linear-gradient(135deg, rgba(89, 59, 162, 0.3), rgba(162, 0, 255, 0.3));
@@ -861,14 +779,15 @@ button:disabled {
     bottom: 1rem;
     right: 1rem;
     display: flex;
-    flex-direction: column;
+    flex-direction: row; /* ALTERADO: Alinha os botões horizontalmente */
     gap: 0.75rem;
     z-index: 998;
 }
 
+/* Estilo unificado para todos os botões no wrapper */
 #externalCopyLinkButton,
 #floatingFavoritesButton,
-#open-calendar-btn { /* Adicionado o botão do calendário aqui para o mesmo estilo */
+#open-calendar-btn { 
     width: 3.5rem;
     height: 3.5rem;
     border-radius: 20%;
@@ -884,13 +803,13 @@ button:disabled {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 0 10px rgba(130, 0, 255, 0.2);
     transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;
-    z-index: 998;
-}
+    position: relative; /* Alterado de fixed para relativo ao wrapper */
+    z-index: 1;
 }
 
 #externalCopyLinkButton:hover,
 #floatingFavoritesButton:hover,
-#open-calendar-btn:hover { /* Adicionado o botão do calendário aqui */
+#open-calendar-btn:hover {
     background: linear-gradient(135deg, rgba(130, 0, 255, 0.45), rgba(180, 0, 255, 0.45));
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(130, 0, 255, 0.4), 0 0 16px rgba(130, 0, 255, 0.3);
