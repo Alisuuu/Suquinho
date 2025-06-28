@@ -59,12 +59,12 @@ body.calendar-open #main-content {
 /* Botão de fechar posicionado DENTRO do painel, à esquerda */
 #close-calendar-btn {
     position: absolute;
-    top: 10%;
-    left: 10%;
+    bottom: 3%;
+    left: 86%;
     z-index: 3000; /* Garante que fique acima do iframe */
     
     /* Estilo do botão */
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(12, 12, 12, 0.5);
     color: white;
     width: 2.75rem;
     height: 2.75rem;
