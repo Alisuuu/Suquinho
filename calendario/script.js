@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!Array.isArray(data) || data.length === 0) {
                  throw new Error('API não retornou dados válidos.');
             }
-            // Inicia o slideshow de fundo com a lógica otimizada
             setupBackdropSlideshow(data); 
             render();
         } catch (error) {
@@ -33,26 +32,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ========================================================================
-    // LÓGICA DO SLIDESHOW DE FUNDO OTIMIZADA
-    // ========================================================================
     function setupBackdropSlideshow(items) {
         const backdropContainer = document.getElementById('backdrop-container');
         if (!backdropContainer) return;
 
-        // Filtra, pega URLs únicos e embaralha para variedade
         const backdropUrls = [...new Set(items.filter(item => item.backdrop).map(item => `https://image.tmdb.org/t/p/w1280${item.backdrop}`))];
         if (backdropUrls.length === 0) return;
         
-        // Embaralha o array
         for (let i = backdropUrls.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [backdropUrls[i], backdropUrls[j]] = [backdropUrls[j], backdropUrls[i]];
         }
 
-        backdropContainer.innerHTML = ''; // Limpa conteúdo antigo
+        backdropContainer.innerHTML = ''; 
 
-        // Cria apenas dois elementos de imagem para a transição de fade
         const img1 = document.createElement('img');
         const img2 = document.createElement('img');
         img1.className = 'backdrop-image';
@@ -63,34 +56,27 @@ document.addEventListener('DOMContentLoaded', () => {
         let currentIndex = 0;
         let currentImageElement = img1;
 
-        // Função para carregar a imagem e então fazer a transição
         function loadAndTransition(imgElement, url) {
-             // Cria uma imagem temporária em memória para carregar o arquivo
             const tempImg = new Image();
             tempImg.onload = () => {
-                // Quando o load termina, atualiza o src e a classe
                 imgElement.src = url;
                 const activeImg = backdropContainer.querySelector('.backdrop-image.active');
                 if (activeImg) activeImg.classList.remove('active');
                 imgElement.classList.add('active');
             };
-            tempImg.src = url; // Inicia o carregamento
+            tempImg.src = url;
         }
 
-        // Carrega a primeira imagem
         loadAndTransition(currentImageElement, backdropUrls[currentIndex]);
 
-        // Se houver mais de uma imagem, inicia o intervalo
         if (backdropUrls.length > 1) {
             setInterval(() => {
                 currentIndex = (currentIndex + 1) % backdropUrls.length;
-                // Alterna entre os dois elementos de imagem
                 currentImageElement = (currentImageElement === img1) ? img2 : img1;
                 loadAndTransition(currentImageElement, backdropUrls[currentIndex]);
-            }, 5000); // Muda a imagem a cada 5 segundos
+            }, 5000); 
         }
     }
-
 
     // ========================================================================
     // EVENT LISTENERS
@@ -129,6 +115,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const dateKey = dayCell.dataset.datekey;
         showMonthDetailModal(dateKey, itemsByDay[dateKey] || []);
+    });
+    
+    // *** NOVO: Ouve por atualizações nos favoritos para manter a UI sincronizada ***
+    window.addEventListener('favorites-updated', () => {
+        console.log("Atualização de favoritos detetada no calendário.");
+        document.querySelectorAll('.favorite-button-calendar').forEach(btn => {
+            const mediaType = btn.dataset.type;
+            const itemId = btn.dataset.id;
+            // Verifica se a função 'isFavorite' do script3.js está disponível
+            if (typeof isFavorite === 'function') {
+                const isFav = isFavorite(itemId, mediaType);
+                btn.classList.toggle('active', isFav);
+                btn.innerHTML = isFav ? '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>';
+            }
+        });
     });
 
     // ========================================================================
@@ -231,26 +232,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function createItemCard(item) {
         const itemEl = document.createElement('div');
+        itemEl.className = `task-item relative overflow-hidden flex flex-col cursor-pointer transition-transform duration-300 hover:scale-[1.02]`;
         
-        itemEl.addEventListener('click', () => {
-            // *** CORRIGIDO ***
-            // MOSTRA O MODAL DE CARREGAMENTO USANDO A CLASSE .loader E A CLASSE DE CUSTOMIZAÇÃO
+        itemEl.addEventListener('click', (event) => {
+            // Impede a abertura do modal se o clique for no botão de favorito
+            if (event.target.closest('.favorite-button-calendar')) return; 
+            
             Swal.fire({
-                titleText: 'A buscar informações...', // Usar titleText para evitar conflitos de estilo
+                titleText: 'A buscar informações...',
                 html: '<div class="loader"></div>',
                 showConfirmButton: false,
                 allowOutsideClick: false,
-                // Adiciona a classe para tornar o fundo do modal transparente
-                customClass: {
-                    popup: 'swal-loader-popup' 
-                }
+                customClass: { popup: 'swal-loader-popup' }
             });
 
             setTimeout(() => {
-                // Assumindo que a função openItemModal existe em outro script
                 if (typeof openItemModal === 'function') {
                     const mediaType = (item.type == '2' || item.type == '3') ? 'tv' : 'movie';
-                    // A função openItemModal irá substituir o loader
                     openItemModal(item.tmdb_id, mediaType, item.backdrop);
                 } else {
                     console.error('A função "openItemModal" não foi encontrada.');
@@ -263,24 +261,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 100); 
         });
         
-        itemEl.className = `task-item relative overflow-hidden flex flex-col cursor-pointer transition-transform duration-300 hover:scale-[1.02]`;
-
         const posterURL = item.poster ? `https://image.tmdb.org/t/p/w185${item.poster}` : 'https://placehold.co/185x278/111827/FFFFFF?text=N/A';
         const backdropURL = item.backdrop ? `https://image.tmdb.org/t/p/w500${item.backdrop}` : '';
         
         const watchButtonHTML = `
             <div class="mt-4">
                 <span class="inline-block bg-[var(--primary-color)] text-[var(--on-primary-color)] px-4 py-2 rounded-full text-xs font-semibold pointer-events-none">
-                    Ver Agora
+                    Ver Detalhes
                 </span>
             </div>
         `;
 
-        const statusTagHTML = `
-            <span class="status-tag status-tag-${item.status.toLowerCase()}">
-                ${item.status}
-            </span>
-        `;
+        const statusTagHTML = `<span class="status-tag status-tag-${item.status.toLowerCase()}">${item.status}</span>`;
         
         let borderColor = 'var(--outline-color)';
         switch (item.status) {
@@ -292,8 +284,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
         itemEl.style.borderLeft = `3px solid ${borderColor}`;
 
+        // *** LÓGICA DE FAVORITOS INTEGRADA ***
+        const mediaType = (item.type == '2' || item.type == '3') ? 'tv' : 'movie';
+        let isFav = false;
+        // Verifica se a função isFavorite do script3.js existe antes de a chamar
+        if (typeof isFavorite === 'function') {
+            isFav = isFavorite(item.tmdb_id, mediaType);
+        }
+
+        const favoriteButtonHTML = `
+            <button 
+                class="favorite-button-calendar favorite-button ${isFav ? 'active' : ''}" 
+                data-id="${item.tmdb_id}" 
+                data-type="${mediaType}" 
+                title="${isFav ? 'Remover dos Favoritos' : 'Adicionar aos Favoritos'}">
+                ${isFav ? '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>'}
+            </button>
+        `;
+
         itemEl.innerHTML = `
             ${statusTagHTML}
+            ${favoriteButtonHTML}
             <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/80 via-black/50 to-transparent z-10"></div>
             ${backdropURL ? `<img src="${backdropURL}" class="absolute top-0 left-0 w-full h-full object-cover opacity-30 z-0" loading="lazy">` : ''}
             <div class="relative z-20 p-4 flex flex-col justify-end flex-grow">
@@ -309,6 +320,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
         `;
+        
+        const favButton = itemEl.querySelector('.favorite-button-calendar');
+        // Verifica se a função toggleFavorite do script3.js existe antes de a usar
+        if (favButton && typeof toggleFavorite === 'function') {
+            favButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                
+                // Cria um objeto com a estrutura que a função toggleFavorite espera
+                const itemDataForFavorite = {
+                    id: item.tmdb_id,
+                    title: item.title,
+                    poster_path: item.poster,
+                    backdrop_path: item.backdrop,
+                };
+
+                toggleFavorite(itemDataForFavorite, mediaType);
+            });
+        }
+        
         return itemEl;
     }
 
@@ -319,7 +349,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const activeButtons = document.querySelectorAll(`.day-button[data-datekey="${dateKey}"]`);
         activeButtons.forEach(btn => btn.classList.add('active'));
 
-        // LÓGICA DE ROLAGEM MAIS ROBUSTA
         if (activeButtons.length > 0) {
             setTimeout(() => {
                 activeButtons[0].scrollIntoView({
@@ -350,7 +379,6 @@ document.addEventListener('DOMContentLoaded', () => {
         weekNav.innerHTML = '';
         const hoje = new Date();
         hoje.setHours(0, 0, 0, 0);
-        // Ajuste para a semana começar no Domingo (getDay() retorna 0 para Domingo)
         const startOfWeek = new Date(hoje);
         startOfWeek.setDate(hoje.getDate() - hoje.getDay());
 
