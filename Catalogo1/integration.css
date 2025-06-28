@@ -61,7 +61,7 @@ body.calendar-open #main-content {
     position: absolute;
     top: 10%;
     left: 10%;
-    z-index: 10; /* Garante que fique acima do iframe */
+    z-index: 3000; /* Garante que fique acima do iframe */
     
     /* Estilo do botão */
     background-color: rgba(255, 255, 255, 0.1);
