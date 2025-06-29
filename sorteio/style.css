@@ -23,7 +23,7 @@
 }
 
 body {
-    font-family: 'Inter', sans-serif;   
+    font-family: 'Inter', sans-serif;
     background-color: rgba(89,59,162,0.25);
     backdrop-filter: blur(20px);
     color: var(--text-primary);
@@ -286,10 +286,9 @@ h1 {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    z-index: 1; 
+    z-index: 1;
 }
 
-/* CORREÇÃO: Ajuste de z-index e posicionamento para o logo */
 .details-logo-container {
     position: absolute;
     top: 50%;
@@ -298,7 +297,7 @@ h1 {
     width: 60%;
     max-width: 350px;
     pointer-events: none;
-    z-index: 2; /* Acima da imagem de capa */
+    z-index: 2;
 }
 
 .details-logo-img {
@@ -318,8 +317,8 @@ h1 {
     justify-content: center;
     align-items: center;
     background-color: rgba(0, 0, 0, 0.4);
-    transition: background-color 0.3s ease;
-    z-index: 3; /* Acima do logo */
+    transition: background-color: 0.3s ease;
+    z-index: 3;
 }
 
 .trailer-cover:hover .cover-elements-overlay {
@@ -327,7 +326,7 @@ h1 {
 }
 
 .play-icon-wrapper {
-    z-index: 4; /* Acima de tudo para ser clicável */
+    z-index: 4;
 }
 
 .play-icon-wrapper .fa-play {
@@ -415,7 +414,7 @@ body.swal2-shown #externalCopyButtonContainer {
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
-/* --- Estilos para o Player Avançado --- */
+/* ========= Player Styles MODIFICADOS ========= */
 #player-fullscreen-wrapper {
     position: fixed;
     top: 0;
@@ -423,91 +422,213 @@ body.swal2-shown #externalCopyButtonContainer {
     width: 100%;
     height: 100%;
     background-color: #000;
-    display: none;
-    align-items: center;
-    justify-content: center;
     z-index: 9999;
-    cursor: grab;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
 }
-#player-fullscreen-wrapper.grabbing {
-    cursor: grabbing;
-}
+
 #player-fullscreen-wrapper iframe {
     width: 100%;
     height: 100%;
     border: none;
-    object-fit: contain; /* Padrão inicial */
-    transition: transform 0.2s ease-out; /* Transição para o pan */
+    position: absolute;
+    transition: transform 0.3s ease-in-out;
+    object-fit: contain; /* Default fit mode */
 }
+
+#player-fullscreen-wrapper.zoomed iframe {
+    cursor: grab;
+}
+
+#player-fullscreen-wrapper.zoomed.grabbing iframe {
+    cursor: grabbing;
+}
+
+#player-close-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 45px;
+    height: 45px;
+    background-color: rgba(30, 30, 30, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 10002;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease-in-out;
+}
+
+#player-close-btn:hover {
+    background-color: rgba(89, 59, 162, 0.8);
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(89, 59, 162, 0.5);
+}
+
 #player-controls {
     position: absolute;
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(30, 30, 30, 0.7);
     backdrop-filter: blur(10px);
-    padding: 10px 20px;
-    border-radius: 15px;
+    -webkit-backdrop-filter: blur(10px);
+    padding: 10px 15px;
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
+    flex-wrap: wrap; /* Allows groups to wrap to the next line */
+    justify-content: center;
     align-items: center;
-    gap: 20px;
-    transition: opacity 0.3s ease-in-out;
+    gap: 1.5rem; /* Space between control groups */
+    z-index: 10001;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
 }
+
 #player-controls.hidden {
     opacity: 0;
+    visibility: hidden;
     pointer-events: none;
 }
+
 #player-logo {
-    height: 40px;
-    max-width: 120px;
+    height: 30px;
+    max-width: 100px;
     object-fit: contain;
+    opacity: 0.9;
 }
-#player-zoom-controls {
+
+.player-control-group {
     display: flex;
     align-items: center;
     gap: 10px;
+}
+
+#player-zoom-label {
+    font-size: 0.9rem;
     color: white;
+    font-weight: 500;
+    min-width: 50px;
+    text-align: center;
+    background-color: rgba(0,0,0,0.3);
+    padding: 4px 8px;
+    border-radius: 8px;
 }
-#player-zoom-slider {
-    width: 150px;
-}
-#player-fit-btn {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 5px;
-}
-#show-controls-button {
-    position: absolute;
-    bottom: 10px;
-    /* --- CORREÇÃO: Posição do botão "olho" --- */
-    right: 10px; 
-    left: auto; /* Garante que a propriedade 'left' não interfira */
+
+input[type="range"]#player-zoom-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 120px;
+    height: 6px;
     background: rgba(255, 255, 255, 0.2);
-    border: none;
-    color: white;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    font-size: 1.2rem;
+    border-radius: 5px;
+    outline: none;
+    transition: opacity 0.2s, background 0.2s;
+}
+
+input[type="range"]#player-zoom-slider:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+input[type="range"]#player-zoom-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--purple-light);
     cursor: pointer;
-    display: none; /* Inicia oculto */
+    border-radius: 50%;
+    border: 2px solid white;
+    transition: transform 0.2s ease;
+}
+input[type="range"]#player-zoom-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+input[type="range"]#player-zoom-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: var(--purple-light);
+    cursor: pointer;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+#player-zoom-in-btn,
+#player-zoom-out-btn,
+.player-fit-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
     align-items: center;
     justify-content: center;
+    line-height: 1;
 }
-#player-controls.hidden + #show-controls-button {
+
+#player-zoom-in-btn:hover,
+#player-zoom-out-btn:hover,
+.player-fit-btn:hover {
+    background-color: var(--purple-accent);
+    border-color: var(--purple-light);
+    transform: scale(1.1);
+}
+
+.player-fit-btn.active {
+    background-color: var(--purple-light);
+    color: white;
+    border-color: var(--purple-accent);
+    box-shadow: 0 0 10px var(--purple-light);
+    transform: scale(1.1);
+}
+
+#player-zoom-in-btn:disabled,
+#player-zoom-out-btn:disabled {
+    color: #666;
+    background-color: rgba(0,0,0,0.2);
+    border-color: rgba(255,255,255,0.1);
+    cursor: not-allowed;
+    transform: none;
+}
+
+#show-controls-button {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(0, 0, 0, 0.6);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+#show-controls-button.visible {
     display: flex;
 }
 
-@media (max-width: 767px) {
-    h1 { font-size: 2rem; }
-    .button-group { flex-direction: column; gap: 0.75rem; }
-    .random-button { padding: 1rem 1.5rem; width: 100%; max-width: 300px; }
-    #player-controls { flex-direction: column; }
-    #player-zoom-slider { width: 120px; }
-}
 .modal-actions-wrapper {
     display: flex;
     gap: 0.75rem;
@@ -532,7 +653,7 @@ body.swal2-shown #externalCopyButtonContainer {
     transition: all 0.2s ease;
     cursor: pointer;
     box-shadow: var(--subtle-shadow);
-    flex-shrink: 0; 
+    flex-shrink: 0;
 }
 
 .modal-favorite-button:hover,
@@ -569,7 +690,7 @@ body.swal2-shown #externalCopyButtonContainer {
     color: var(--text-primary);
     font-size: 0.9rem;
     font-weight: 500;
-    z-index: 2000; 
+    z-index: 2000;
     opacity: 0;
     visibility: hidden;
     transition: all 0.4s cubic-bezier(0.215, 0.610, 0.355, 1.000);
@@ -596,3 +717,20 @@ body.swal2-shown #externalCopyButtonContainer {
 .custom-toast .fas {
     font-size: 1.1rem;
 }
+
+@media (max-width: 767px) {
+    h1 { font-size: 2rem; }
+    .button-group { flex-direction: column; gap: 0.75rem; }
+    .random-button { padding: 1rem 1.5rem; width: 100%; max-width: 300px; }
+
+    /* Player Controls on Mobile */
+    #player-controls {
+        flex-direction: column;
+        gap: 1rem;
+        bottom: 10px;
+        border-radius: 20px;
+    }
+
+    #player-zoom-slider { width: 150px; }
+}
+
