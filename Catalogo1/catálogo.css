@@ -36,11 +36,6 @@ body {
     overflow-x: hidden;
 }
 
-body.modal-is-open header,
-body.modal-is-open main#contentArea {
-    display: none !important;
-}
-
 body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
      overflow: hidden !important;
 }
@@ -270,6 +265,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 /* --- Styles for Details Modal Content --- */
 .swal-details-content { padding-bottom: 1.5rem; }
 
+/* CORREÇÃO: Adicionado cursor:pointer para indicar que a área é clicável */
 .details-trailer-container {
     position: relative;
     background-color: #000;
@@ -279,6 +275,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(130, 0, 255, 0.2);
     border: 1px solid var(--modal-border-neutral);
     padding-top: 56.25%; /* 16:9 Aspect Ratio */
+    cursor: pointer;
 }
 
 .details-trailer-container--fallback {
@@ -287,7 +284,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 }
 
 .details-trailer-container iframe,
-.details-trailer-container .trailer-cover {
+.details-trailer-container .trailer-cover-img {
     position: absolute;
     top: 0;
     left: 0;
@@ -296,15 +293,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     border: none;
 }
 
-.trailer-cover {
-    cursor: pointer;
-    z-index: 5;
-    transition: opacity 0.4s ease-in-out, visibility 0.4s ease-in-out;
-}
-
 .trailer-cover-img {
-    width: 100%;
-    height: 100%;
     object-fit: cover;
     object-position: center center;
 }
@@ -322,7 +311,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     transition: background-color 0.3s ease;
 }
 
-.trailer-cover:hover .play-icon-overlay {
+.details-trailer-container:hover .play-icon-overlay {
     background-color: rgba(0, 0, 0, 0.6);
 }
 
@@ -333,15 +322,11 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     transition: transform 0.3s ease;
 }
 
-.trailer-cover:hover .play-icon-overlay .fa-play {
+.details-trailer-container:hover .play-icon-overlay .fa-play {
     transform: scale(1.15);
 }
 
-.details-trailer-container.trailer-playing .trailer-cover {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-}
+/* CORREÇÃO: Classe .trailer-playing removida pois não é mais usada */
 
 .details-poster-fallback {
     width: 100%;
@@ -494,8 +479,17 @@ header h1 .fa-film { color: var(--purple-accent); margin-right: 0.5rem; }
     color: white;
 }
 
-/* Favorites Button in Modal */
-.modal-favorite-button {
+/* Favorites & Copy Button in Modal */
+.modal-actions-wrapper {
+    display: flex;
+    flex-wrap: wrap; /* Permite que os botões quebrem a linha em telas menores */
+    gap: 0.75rem;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.modal-favorite-button,
+.modal-copy-link-button {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -508,30 +502,38 @@ header h1 .fa-film { color: var(--purple-accent); margin-right: 0.5rem; }
     background: linear-gradient(135deg, rgba(40, 20, 80, 0.3), rgba(80, 0, 120, 0.3));
     color: var(--text-primary);
     transition: all 0.2s ease;
-    margin-top: 1rem;
     cursor: pointer;
     box-shadow: var(--subtle-shadow);
+    flex-grow: 1; /* Permite que os botões dividam o espaço */
+    flex-basis: 200px; /* Base para o crescimento */
 }
-.modal-favorite-button:hover {
+
+.modal-favorite-button:hover,
+.modal-copy-link-button:hover {
     background: linear-gradient(135deg, rgba(89, 59, 162, 0.7), rgba(162, 0, 255, 0.7));
     color: var(--text-primary);
     border-color: rgba(255, 255, 255, 0.2);
     box-shadow: 0 6px 20px rgba(130, 0, 255, 0.3), 0 2px 8px rgba(0,0,0,0.3);
 }
+
 .modal-favorite-button.active {
     background-color: var(--danger-red);
     color: var(--text-primary);
     border-color: var(--danger-red);
     box-shadow: 0 0 15px rgba(229, 62, 62, 0.7);
 }
+
 .modal-favorite-button.active:hover {
     background-color: var(--danger-red-hover);
     border-color: var(--danger-red-hover);
     box-shadow: 0 6px 20px rgba(229, 62, 62, 0.5);
 }
-.modal-favorite-button .fas, .modal-favorite-button .far {
+
+.modal-favorite-button .fas, .modal-favorite-button .far,
+.modal-copy-link-button .fas {
     margin-right: 0.5rem;
 }
+
 
 /* Favorites Modal Specific Styles */
 .swal-favorites-popup.swal2-popup {
@@ -779,7 +781,7 @@ button:disabled {
     bottom: 1rem;
     right: 1rem;
     display: flex;
-    flex-direction: row; /* ALTERADO: Alinha os botões horizontalmente */
+    flex-direction: row; 
     gap: 0.75rem;
     z-index: 998;
 }
@@ -803,7 +805,7 @@ button:disabled {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 0 10px rgba(130, 0, 255, 0.2);
     transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;
-    position: relative; /* Alterado de fixed para relativo ao wrapper */
+    position: relative; 
     z-index: 1;
 }
 

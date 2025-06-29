@@ -10,8 +10,6 @@ const singleResultsSection = document.getElementById('singleResultsSection');
 const singleSectionTitleEl = document.getElementById('singleSectionTitle');
 const singleResultsGrid = document.getElementById('singleResultsGrid');
 const loader = document.getElementById('loader');
-const externalCopyButtonContainer = document.getElementById('externalCopyButtonContainer');
-const externalCopyLinkButton = document.getElementById('externalCopyLinkButton');
 const floatingFavoritesButton = document.getElementById('floatingFavoritesButton');
 const searchResultsLoader = document.getElementById('searchResultsLoader');
 const openCalendarBtn = document.getElementById('open-calendar-panel-btn');
@@ -41,6 +39,5 @@ let topRatedTvShowsCurrentPage = 1;
 let topRatedTvShowsTotalPages = 1;
 let isLoadingMoreTopRatedTvShows = false;
 
-// State for item modal's copy button
-let currentExternalCopyUrl = '';
-let externalCopyButtonHandler = null;
+// CORREÇÃO: Variáveis relacionadas ao botão de copiar flutuante foram removidas,
+// pois a funcionalidade agora está diretamente no modal.
