@@ -1,7 +1,5 @@
 // =========================================================================
-// SCRIPT PRINCIPAL DO CATÁLOGO (CORRIGIDO)
-// Versão corrigida para criar dinamicamente o wrapper do player,
-// garantindo que o modal funcione mesmo quando chamado de outros scripts.
+// SCRIPT PRINCIPAL DO CATÁLOGO
 // =========================================================================
 
 // --- Funções da API, Lógica Principal, Filtros e Modal de Detalhes ---
@@ -264,15 +262,30 @@ async function applyGenreFilterFromSA() {
 }
 
 async function getItemDetails(itemId, mediaType) {
-    const data = await fetchTMDB(`/${mediaType}/${itemId}`, { append_to_response: 'external_ids,credits,videos' });
+    const data = await fetchTMDB(`/${mediaType}/${itemId}`, { append_to_response: 'external_ids,credits,videos,images' });
     return data;
 }
+
+function selectBestLogo(logos) {
+    if (!logos || logos.length === 0) return null;
+
+    const preferredLogos = logos.filter(logo => logo.iso_639_1 === 'pt' || logo.iso_639_1 === 'en' || logo.iso_639_1 === null);
+    if (preferredLogos.length === 0) preferredLogos.push(...logos);
+
+    const svgLogo = preferredLogos.find(logo => logo.file_path.endsWith('.svg'));
+    if (svgLogo) return svgLogo.file_path;
+
+    preferredLogos.sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0));
+    return preferredLogos[0]?.file_path || null;
+}
+
 
 async function openItemModal(itemId, mediaType, backdropPath = null) {
     stopMainPageBackdropSlideshow();
     updatePageBackground(backdropPath);
 
-    let mainPlayerUrl = ''; // Armazena a URL do player principal
+    let mainPlayerUrl = '';
+    let logoPathForPlayer = null;
 
     currentOpenSwalRef = Swal.fire({
         title: 'Carregando Detalhes...',
@@ -316,17 +329,24 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
     
     const shareUrl = `https://alisuuu.github.io/Suquinho/?pagina=Catalogo1%2Findex.html%3Ftype%3D${mediaType}%26id%3D${itemId}`;
     const titleText = details.title || details.name || "Título Indisponível";
-    const videos = details.videos?.results || [];
-    const trailer = videos.find(v => v.site === 'YouTube' && v.type === 'Trailer') || videos.find(v => v.site === 'YouTube');
     const coverImagePath = details.backdrop_path ? `${TMDB_IMAGE_BASE_URL}w1280${details.backdrop_path}` : (details.poster_path ? `${TMDB_IMAGE_BASE_URL}w780${details.poster_path}` : 'https://placehold.co/1280x720/0A0514/F0F0F0?text=Indispon%C3%ADvel');
 
+    logoPathForPlayer = selectBestLogo(details.images?.logos);
+    const logoHTML = logoPathForPlayer 
+        ? `<div class="details-logo-container"><img src="${TMDB_IMAGE_BASE_URL}w500${logoPathForPlayer}" class="details-logo-img" alt="${titleText} Logo"></div>` 
+        : '';
+    
     const headerContentHTML = `
         <div class="details-trailer-container" id="details-header-cover">
             <div class="trailer-cover">
                 <img src="${coverImagePath}" alt="Capa de ${titleText}" class="trailer-cover-img" onerror="this.onerror=null; this.src='https://placehold.co/1280x720/0A0514/F0F0F0?text=Erro';">
-                <div class="play-icon-overlay"><i class="fas fa-play"></i></div>
+                ${logoHTML}
+                <div class="cover-elements-overlay">
+                    <div class="play-icon-wrapper">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
             </div>
-            ${trailer && trailer.key ? `<iframe id="trailer-iframe" src="https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=1&controls=0&showinfo=0&loop=1&playlist=${trailer.key}" frameborder="0" allow="autoplay; encrypted-media" title="Trailer de ${titleText}"></iframe>` : ''}
         </div>`;
 
     const overview = details.overview || 'Sinopse não disponível.';
@@ -367,60 +387,161 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
 
     Swal.update({ title: '', html: detailsHTML, showConfirmButton: false });
     
-    // ======================= INÍCIO DA CORREÇÃO =======================
     document.getElementById('details-header-cover')?.addEventListener('click', () => {
         if (mainPlayerUrl) {
-            let wrapper = document.getElementById('player-fullscreen-wrapper');
-
-            // Se o wrapper não existir no DOM, o cria dinamicamente.
-            if (!wrapper) {
-                console.warn("Elemento #player-fullscreen-wrapper não encontrado. Criando dinamicamente. Recomenda-se adicioná-lo ao seu HTML.");
-                wrapper = document.createElement('div');
-                wrapper.id = 'player-fullscreen-wrapper';
-                // Adiciona estilos essenciais para o funcionamento
-                Object.assign(wrapper.style, {
-                    position: 'fixed',
-                    top: '0',
-                    left: '0',
-                    width: '100%',
-                    height: '100%',
-                    backgroundColor: 'black',
-                    display: 'none',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    zIndex: '9999'
-                });
-                document.body.appendChild(wrapper);
-            }
-
-            // Define o conteúdo e exibe o player
-            wrapper.innerHTML = `<iframe src="${mainPlayerUrl}" style="width:100%; height:100%; border:none;" allowfullscreen></iframe>`;
-            wrapper.style.display = 'flex';
-            
-            // Tenta entrar em modo tela cheia
-            if (wrapper.requestFullscreen) {
-                wrapper.requestFullscreen().catch(err => {
-                    console.error(`Erro ao tentar ativar modo tela cheia: ${err.message} (${err.name})`);
-                });
-            } else if (wrapper.webkitRequestFullscreen) { // Safari
-                wrapper.webkitRequestFullscreen();
-            } else if (wrapper.msRequestFullscreen) { // IE11
-                wrapper.msRequestFullscreen();
-            }
+            launchAdvancedPlayer(mainPlayerUrl, logoPathForPlayer);
         } else {
-            showCustomToast('Player principal não disponível.', 'info');
+            showCustomToast('Leitor de vídeo principal não disponível.', 'info');
         }
     });
-    // ======================= FIM DA CORREÇÃO =======================
 
     document.getElementById('modalFavoriteButton')?.addEventListener('click', () => toggleFavorite(details, mediaType));
     document.getElementById('modalCopyLinkButton')?.addEventListener('click', () => copyToClipboard(shareUrl));
 }
 
+// =========================================================================
+// LÓGICA DO LEITOR DE VÍDEO AVANÇADO
+// =========================================================================
+let controlsHideTimer = null;
+let zoomState = { level: 1, max: 3, x: 0, y: 0 };
+let isPanning = false;
+let panStart = { x: 0, y: 0 };
+const fitModes = ['contain', 'cover', 'fill'];
+let currentFitModeIndex = 0;
+
+function launchAdvancedPlayer(url, logoPath) {
+    const wrapper = document.getElementById('player-fullscreen-wrapper');
+    if (!wrapper) {
+        console.error("Elemento #player-fullscreen-wrapper não foi encontrado no HTML!");
+        return;
+    }
+
+    zoomState = { level: 1, max: 3, x: 0, y: 0 };
+    currentFitModeIndex = 0;
+
+    const logoForPlayerHTML = logoPath
+        ? `<img src="${TMDB_IMAGE_BASE_URL}w300${logoPath}" id="player-logo" alt="logo do conteúdo">`
+        : '';
+    
+    wrapper.innerHTML = `
+        <iframe 
+            src="${url}" 
+            allowfullscreen 
+            sandbox="allow-scripts allow-same-origin allow-presentation">
+        </iframe>
+        <div id="player-controls">
+            ${logoForPlayerHTML}
+            <div id="player-zoom-controls">
+                <span id="player-zoom-label">100%</span>
+                <input type="range" id="player-zoom-slider" min="100" max="300" value="100" step="1">
+            </div>
+            <button id="player-fit-btn" title="Mudar Enquadramento"><i class="fas fa-expand"></i></button>
+        </div>
+        <button id="show-controls-button"><i class="fas fa-eye"></i></button>
+    `;
+
+    wrapper.style.display = 'flex';
+    if (wrapper.requestFullscreen) {
+        wrapper.requestFullscreen().catch(err => console.error(`Erro ao ativar ecrã inteiro: ${err.message}`));
+    }
+
+    setupPlayerEventListeners(wrapper);
+    updatePlayerZoom();
+    updatePlayerFit();
+    resetControlsTimer();
+}
+
+function setupPlayerEventListeners(wrapper) {
+    const zoomSlider = document.getElementById('player-zoom-slider');
+    const zoomLabel = document.getElementById('player-zoom-label');
+
+    zoomSlider?.addEventListener('input', (e) => {
+        const newZoomLevel = parseFloat(e.target.value) / 100;
+        zoomState.level = newZoomLevel;
+        if (zoomState.level === 1) {
+            zoomState.x = 0;
+            zoomState.y = 0;
+        }
+        updatePlayerZoom();
+        zoomLabel.textContent = `${Math.round(newZoomLevel * 100)}%`;
+    });
+    
+    document.getElementById('player-fit-btn')?.addEventListener('click', (e) => { e.stopPropagation(); changeFit(); });
+    
+    wrapper.addEventListener('mousedown', (e) => {
+        if (zoomState.level > 1) {
+            isPanning = true;
+            panStart.x = e.clientX - zoomState.x;
+            panStart.y = e.clientY - zoomState.y;
+            wrapper.classList.add('grabbing');
+        }
+    });
+    wrapper.addEventListener('mouseup', () => { isPanning = false; wrapper.classList.remove('grabbing'); });
+    wrapper.addEventListener('mouseleave', () => { isPanning = false; wrapper.classList.remove('grabbing'); });
+    wrapper.addEventListener('mousemove', (e) => {
+        resetControlsTimer();
+        if (isPanning) {
+            zoomState.x = e.clientX - panStart.x;
+            zoomState.y = e.clientY - panStart.y;
+            updatePlayerZoom();
+        }
+    });
+
+    wrapper.querySelector('#show-controls-button')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        wrapper.querySelector('#player-controls')?.classList.remove('hidden');
+        wrapper.querySelector('#show-controls-button')?.classList.remove('visible');
+        resetControlsTimer();
+    });
+}
+
+function updatePlayerZoom() {
+    const wrapper = document.getElementById('player-fullscreen-wrapper');
+    const iframe = wrapper?.querySelector('iframe');
+    if (!iframe) return;
+
+    iframe.style.transform = `translate(${zoomState.x}px, ${zoomState.y}px) scale(${zoomState.level})`;
+    wrapper.classList.toggle('zoomed', zoomState.level > 1);
+}
+
+function changeFit() {
+    currentFitModeIndex = (currentFitModeIndex + 1) % fitModes.length;
+    updatePlayerFit();
+    const modeName = fitModes[currentFitModeIndex];
+    showCustomToast(`Modo de Ecrã: ${modeName.charAt(0).toUpperCase() + modeName.slice(1)}`, 'info');
+    resetControlsTimer();
+}
+
+function updatePlayerFit() {
+    const iframe = document.querySelector('#player-fullscreen-wrapper iframe');
+    if (iframe) {
+        iframe.style.objectFit = fitModes[currentFitModeIndex];
+    }
+}
+
+function resetControlsTimer() {
+    clearTimeout(controlsHideTimer);
+    const controls = document.getElementById('player-controls');
+    const showControlsBtn = document.getElementById('show-controls-button');
+    
+    if(controls) controls.classList.remove('hidden');
+    if(showControlsBtn) showControlsBtn.classList.remove('visible');
+
+    controlsHideTimer = setTimeout(() => {
+        if(controls) controls.classList.add('hidden');
+        if(showControlsBtn) showControlsBtn.classList.add('visible');
+    }, 3000);
+}
+
+// =========================================================================
+// FIM DO LEITOR DE VÍDEO
+// =========================================================================
+
+
 async function openFilterSweetAlert() {
     const swalHTML = `<div class="swal-genre-filter-type-selector mb-4"><button id="swalMovieGenreTypeButton" data-type="movie" class="${currentFilterTypeSA === 'movie' ? 'active' : ''}">Filmes</button><button id="swalTvGenreTypeButton" data-type="tv" class="${currentFilterTypeSA === 'tv' ? 'active' : ''}">Séries</button><button id="swalAnimeGenreTypeButton" data-type="anime" class="${currentFilterTypeSA === 'anime' ? 'active' : ''}">Animes</button></div><div id="swalGenreButtonsPanel" class="swal-genre-buttons-panel my-4">Carregando...</div>`;
     Swal.fire({
-        title: 'Filtrar por Gênero', html: swalHTML, showCloseButton: true, showDenyButton: true,
+        title: 'Filtrar por Género', html: swalHTML, showCloseButton: true, showDenyButton: true,
         denyButtonText: 'Limpar Filtro', confirmButtonText: 'Aplicar Filtro',
         customClass: { popup: 'swal2-popup' },
         didOpen: () => {
@@ -465,7 +586,7 @@ async function fetchAndDisplayGenresInSA(mediaType, genrePanelElement) {
         });
         updateGenreButtonsInSAUI(genrePanelElement);
     } else {
-        genrePanelElement.innerHTML = `<p class="text-xs text-center">Gêneros não encontrados.</p>`;
+        genrePanelElement.innerHTML = `<p class="text-xs text-center">Géneros não encontrados.</p>`;
     }
 }
 
@@ -585,7 +706,7 @@ async function openFavoritesModal() {
             </div>`).join('')}</div>`;
     }
     Swal.fire({
-        title: 'Meus Favoritos', html: favsHtml, showConfirmButton: false, showCloseButton: true,
+        title: 'Os Meus Favoritos', html: favsHtml, showConfirmButton: false, showCloseButton: true,
         customClass: { popup: 'swal-favorites-popup' },
         didOpen: () => {
             document.querySelectorAll('.remove-favorite-button').forEach(button => {
@@ -617,7 +738,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (filterToggleButton) filterToggleButton.addEventListener('click', openFilterSweetAlert);
     if (floatingFavoritesButton) floatingFavoritesButton.addEventListener('click', openFavoritesModal);
 
-    // --- LÓGICA FINAL DO PAINEL LATERAL ---
     const openBtn = document.getElementById('open-calendar-btn');
     const closeBtn = document.getElementById('close-calendar-btn');
     const mainContent = document.getElementById('main-content');
@@ -626,7 +746,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (closeBtn) closeBtn.addEventListener('click', () => document.body.classList.remove('calendar-open'));
     if (mainContent) mainContent.addEventListener('click', () => { if (document.body.classList.contains('calendar-open')) document.body.classList.remove('calendar-open'); });
 
-    // Scroll infinito para as seções principais
     if(moviesResultsGrid) moviesResultsGrid.addEventListener('scroll', () => {
         if (defaultContentSections?.style.display === 'block' && !isLoadingMorePopularMovies && popularMoviesCurrentPage < popularMoviesTotalPages && (moviesResultsGrid.scrollLeft + moviesResultsGrid.clientWidth >= moviesResultsGrid.scrollWidth - 200)) {
             loadMorePopularMovies();
@@ -639,7 +758,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Scroll infinito para a página de resultados únicos (busca/filtro)
     const scrollTargetForResults = window.innerWidth < 768 ? document.getElementById('contentArea') : window;
     scrollTargetForResults?.addEventListener('scroll', () => {
         const isSingleSectionVisible = singleResultsSection?.style.display === 'block';
@@ -656,7 +774,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if(scrolledToEnd) loadMoreItems();
     });
 
-    // Listener para limpar o wrapper do player ao sair da tela cheia
     document.addEventListener('fullscreenchange', () => {
         if (!document.fullscreenElement) {
             const wrapper = document.getElementById('player-fullscreen-wrapper');
@@ -664,6 +781,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 wrapper.style.display = 'none';
                 wrapper.innerHTML = '';
             }
+            clearTimeout(controlsHideTimer);
         }
     });
 
@@ -673,3 +791,4 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeParam && idParam) openItemModal(idParam, typeParam);
     else loadMainPageContent();
 });
+

@@ -22,3 +22,4 @@ const companyKeywordMap = {
     'sony': { name: 'Sony', ids: [5] },
     'paramount': { name: 'Paramount', ids: [4] }
 };
+
