@@ -139,7 +139,7 @@ async function performSearch(query) {
     if (trimmedQuery === 'yt') { window.location.href = '../Yt/yt.html'; return; }
     if (trimmedQuery === 'suquin') { window.location.href = '../game/index.html'; return; }
     if (trimmedQuery === 'lk') { window.location.href = '../links/links.html'; return; }
-    
+
     stopMainPageBackdropSlideshow();
     if (pageBackdrop.style.opacity !== '0') updatePageBackground(null);
     showLoader();
@@ -150,13 +150,13 @@ async function performSearch(query) {
     totalPages.search = 1;
     currentContentContext = 'search';
     isLoadingMore = false;
-    
+
     if (!query || !query.trim()) {
         loadMainPageContent();
         hideLoader();
         return;
     }
-    
+
     if (defaultContentSections) defaultContentSections.style.display = 'none';
     if (singleResultsSection) singleResultsSection.style.display = 'block';
     if (singleResultsGrid) singleResultsGrid.innerHTML = '';
@@ -173,7 +173,7 @@ async function performSearch(query) {
         fetchPromises.push(fetchTMDB(`/discover/tv`, { with_companies: companyIdsString, page: 1, sort_by: 'popularity.desc' }));
     }
     if (singleSectionTitleEl) singleSectionTitleEl.textContent = searchTitle;
-    
+
     try {
         const allFetchedResults = await Promise.all(fetchPromises);
         const multiSearchData = allFetchedResults[0];
@@ -236,7 +236,7 @@ async function applyGenreFilterFromSA() {
     let endpointType = activeAppliedGenre.type === 'movie' ? 'movie' : 'tv';
 
     if (activeAppliedGenre.id) params.with_genres = activeAppliedGenre.id;
-    
+
     if (activeAppliedGenre.type === 'anime') {
         titlePrefix = 'Animes';
         params.with_origin_country = TMDB_JAPAN_COUNTRY_CODE;
@@ -295,7 +295,7 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
         willClose: () => {
             updatePageBackground(null);
             currentOpenSwalRef = null;
-            
+
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('type') && urlParams.has('id')) {
                 window.history.replaceState({}, document.title, window.location.pathname);
@@ -311,7 +311,7 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
             }
         }
     });
-    
+
     let details;
     try {
         details = await getItemDetails(itemId, mediaType);
@@ -332,16 +332,16 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
     const imdbId = details.external_ids?.imdb_id;
     if (mediaType === 'movie' && imdbId) mainPlayerUrl = `${PLAYER_BASE_URL_MOVIE}${imdbId}`;
     else if (mediaType === 'tv') mainPlayerUrl = `${PLAYER_BASE_URL_SERIES}${itemId}/1/`;
-    
+
     const shareUrl = `https://alisuuu.github.io/Suquinho/?pagina=Catalogo1%2Findex.html%3Ftype%3D${mediaType}%26id%3D${itemId}`;
     const titleText = details.title || details.name || "Título Indisponível";
     const coverImagePath = details.backdrop_path ? `${TMDB_IMAGE_BASE_URL}w1280${details.backdrop_path}` : (details.poster_path ? `${TMDB_IMAGE_BASE_URL}w780${details.poster_path}` : 'https://placehold.co/1280x720/0A0514/F0F0F0?text=Indispon%C3%ADvel');
 
     logoPathForPlayer = selectBestLogo(details.images?.logos);
-    const logoHTML = logoPathForPlayer 
-        ? `<div class="details-logo-container"><img src="${TMDB_IMAGE_BASE_URL}w500${logoPathForPlayer}" class="details-logo-img" alt="${titleText} Logo"></div>` 
+    const logoHTML = logoPathForPlayer
+        ? `<div class="details-logo-container"><img src="${TMDB_IMAGE_BASE_URL}w500${logoPathForPlayer}" class="details-logo-img" alt="${titleText} Logo"></div>`
         : '';
-    
+
     const headerContentHTML = `
         <div class="details-trailer-container" id="details-header-cover">
             <div class="trailer-cover">
@@ -360,16 +360,16 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
     const rating = details.vote_average ? details.vote_average.toFixed(1) : 'N/A';
     const genres = details.genres?.map(g => g.name).join(', ') || 'Não informado';
     const runtime = details.runtime || details.episode_run_time?.[0] || null;
-    
+
     let castSectionHTML = '';
     if (details.credits?.cast?.length > 0) {
         castSectionHTML = `<div class="details-cast-section"><h3 class="details-section-subtitle">Elenco Principal</h3><div class="details-cast-scroller">${details.credits.cast.slice(0, 15).map(person => `<div class="cast-member-card"><img src="${person.profile_path ? TMDB_IMAGE_BASE_URL + 'w185' + person.profile_path : PLACEHOLDER_PERSON_IMAGE}" alt="${person.name}" class="cast-member-photo" onerror="this.onerror=null; this.src='${PLACEHOLDER_PERSON_IMAGE}';"><p class="cast-member-name">${person.name}</p><p class="cast-member-character">${person.character}</p></div>`).join('')}</div></div>`;
     }
-    
+
     const isFav = isFavorite(itemId, mediaType);
     const favoriteButtonHTML = `<button id="modalFavoriteButton" class="modal-favorite-button ${isFav ? 'active' : ''}" data-id="${itemId}" data-type="${mediaType}" title="${isFav ? 'Remover dos Favoritos' : 'Adicionar aos Favoritos'}">${isFav ? '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>'}</button>`;
     const copyLinkButtonHTML = `<button id="modalCopyLinkButton" class="modal-copy-link-button" title="Copiar Link"><i class="fas fa-link"></i></button>`;
-    
+
     const detailsHTML = `
         <div class="swal-details-content">
             ${headerContentHTML}
@@ -392,7 +392,7 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
         </div>`;
 
     Swal.update({ title: '', html: detailsHTML, showConfirmButton: false });
-    
+
     document.getElementById('details-header-cover')?.addEventListener('click', () => {
         if (mainPlayerUrl) {
             launchAdvancedPlayer(mainPlayerUrl, logoPathForPlayer);
@@ -406,23 +406,20 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
 }
 
 // =========================================================================
-// LÓGICA DO LEITOR DE VÍDEO AVANÇADO
+// LÓGICA DO LEITOR DE VÍDEO AVANÇADO (CORRIGIDO)
 // =========================================================================
 let controlsHideTimer = null;
 let zoomState = { level: 1, max: 3, x: 0, y: 0 };
 let isPanning = false;
 let panStart = { x: 0, y: 0 };
-const fitModes = ['contain', 'cover', 'fill'];
-let currentFitModeIndex = 0;
+let playerState = { currentFitMode: 'contain' };
 
-// NOVA FUNÇÃO: Para fechar o player
 function closeAdvancedPlayer() {
     const wrapper = document.getElementById('player-fullscreen-wrapper');
-    // Verifica se o wrapper é o elemento em tela cheia para evitar erros
-    if (document.fullscreenElement === wrapper) {
+    if (document.fullscreenElement) {
         document.exitFullscreen().catch(err => console.error(`Error attempting to exit fullscreen: ${err.message}`));
-    } else if (wrapper) {
-        // Fallback caso o player esteja visível mas não em tela cheia
+    }
+    if (wrapper) {
         wrapper.style.display = 'none';
         wrapper.innerHTML = '';
         if(controlsHideTimer) clearTimeout(controlsHideTimer);
@@ -438,27 +435,35 @@ function launchAdvancedPlayer(url, logoPath) {
     }
 
     zoomState = { level: 1, max: 3, x: 0, y: 0 };
-    currentFitModeIndex = 0;
+    playerState.currentFitMode = 'contain';
 
     const logoForPlayerHTML = logoPath
         ? `<img src="${TMDB_IMAGE_BASE_URL}w300${logoPath}" id="player-logo" alt="logo do conteúdo">`
         : '';
-    
-    // MODIFICADO: Adicionado botão de voltar
+
     wrapper.innerHTML = `
-        <iframe 
-            src="${url}" 
-            allowfullscreen 
+        <iframe
+            src="${url}"
+            allowfullscreen
             sandbox="allow-scripts allow-same-origin allow-presentation">
         </iframe>
+        <button id="player-close-btn" title="Voltar ao Catálogo"><i class="fas fa-arrow-left"></i></button>
+
         <div id="player-controls">
-            <button id="player-close-btn" title="Voltar ao Catálogo"><i class="fas fa-arrow-left"></i></button>
             ${logoForPlayerHTML}
-            <div id="player-zoom-controls">
+            
+            <div id="player-zoom-controls" class="player-control-group">
+                <button id="player-zoom-out-btn" title="Diminuir Zoom"><i class="fas fa-search-minus"></i></button>
+                <input type="range" id="player-zoom-slider" min="100" max="300" value="100" step="10">
+                <button id="player-zoom-in-btn" title="Aumentar Zoom"><i class="fas fa-search-plus"></i></button>
                 <span id="player-zoom-label">100%</span>
-                <input type="range" id="player-zoom-slider" min="100" max="300" value="100" step="1">
             </div>
-            <button id="player-fit-btn" title="Mudar Enquadramento"><i class="fas fa-expand"></i></button>
+
+            <div id="player-fit-controls" class="player-control-group">
+                <button class="player-fit-btn" data-mode="contain" title="Conter (Padrão)"><i class="fas fa-compress-arrows-alt"></i></button>
+                <button class="player-fit-btn" data-mode="cover" title="Preencher (Cortando)"><i class="fas fa-expand-arrows-alt"></i></button>
+                <button class="player-fit-btn" data-mode="fill" title="Esticar"><i class="fas fa-expand"></i></button>
+            </div>
         </div>
         <button id="show-controls-button"><i class="fas fa-eye"></i></button>
     `;
@@ -469,36 +474,119 @@ function launchAdvancedPlayer(url, logoPath) {
     }
 
     setupPlayerEventListeners(wrapper);
+    setPlayerFit(playerState.currentFitMode, false); 
     updatePlayerZoom();
-    updatePlayerFit();
     resetControlsTimer();
+}
+
+// CORREÇÃO: Lógica de enquadramento funcional
+function setPlayerFit(fitMode, showToast = true) {
+    const wrapper = document.getElementById('player-fullscreen-wrapper');
+    const iframe = wrapper?.querySelector('iframe');
+    if (!iframe) return;
+
+    playerState.currentFitMode = fitMode;
+
+    // Reseta estilos inline para evitar conflitos entre modos
+    iframe.style.width = '';
+    iframe.style.height = '';
+    iframe.style.top = '';
+    iframe.style.left = '';
+    iframe.style.objectFit = 'initial'; // Usa object-fit apenas para o modo 'fill'
+
+    const containerWidth = wrapper.clientWidth;
+    const containerHeight = wrapper.clientHeight;
+    const containerRatio = containerWidth / containerHeight;
+    const videoRatio = 16 / 9; // Proporção padrão para vídeos
+
+    switch (fitMode) {
+        case 'contain':
+            // O comportamento padrão do iframe dentro de um flex container já é 'contain'
+            break;
+        case 'cover':
+            if (containerRatio > videoRatio) {
+                // O contêiner é mais largo que o vídeo
+                const newHeight = containerWidth / videoRatio;
+                iframe.style.height = `${newHeight}px`;
+                iframe.style.top = `${(containerHeight - newHeight) / 2}px`;
+            } else {
+                // O contêiner é mais alto que o vídeo
+                const newWidth = containerHeight * videoRatio;
+                iframe.style.width = `${newWidth}px`;
+                iframe.style.left = `${(containerWidth - newWidth) / 2}px`;
+            }
+            break;
+        case 'fill':
+            iframe.style.objectFit = 'fill'; // Estica para preencher
+            break;
+    }
+    
+    updateFitButtonUI(fitMode);
+
+    if (showToast) {
+        const modeNames = { contain: 'Conter', cover: 'Preencher', fill: 'Esticar' };
+        showCustomToast(`Modo de Enquadramento: ${modeNames[fitMode]}`, 'info');
+    }
+    resetControlsTimer();
+}
+
+function updateFitButtonUI(activeMode) {
+    document.querySelectorAll('.player-fit-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === activeMode);
+    });
+}
+
+function updatePlayerZoom() {
+    const wrapper = document.getElementById('player-fullscreen-wrapper');
+    const iframe = wrapper?.querySelector('iframe');
+    const zoomInBtn = document.getElementById('player-zoom-in-btn');
+    const zoomOutBtn = document.getElementById('player-zoom-out-btn');
+
+    if (!iframe) return;
+
+    iframe.style.transform = `translate(${zoomState.x}px, ${zoomState.y}px) scale(${zoomState.level})`;
+    wrapper.classList.toggle('zoomed', zoomState.level > 1);
+
+    if (zoomInBtn) zoomInBtn.disabled = zoomState.level >= zoomState.max;
+    if (zoomOutBtn) zoomOutBtn.disabled = zoomState.level <= 1;
 }
 
 function setupPlayerEventListeners(wrapper) {
     const zoomSlider = document.getElementById('player-zoom-slider');
     const zoomLabel = document.getElementById('player-zoom-label');
+    const zoomInBtn = document.getElementById('player-zoom-in-btn');
+    const zoomOutBtn = document.getElementById('player-zoom-out-btn');
 
-    // MODIFICADO: Adicionado listener para o botão de fechar
     document.getElementById('player-close-btn')?.addEventListener('click', (e) => {
-        e.stopPropagation(); // Impede que o clique se propague para o wrapper
+        e.stopPropagation();
         closeAdvancedPlayer();
     });
 
-    zoomSlider?.addEventListener('input', (e) => {
-        const newZoomLevel = parseFloat(e.target.value) / 100;
-        zoomState.level = newZoomLevel;
+    const handleZoom = (newZoomLevel) => {
+        zoomState.level = Math.max(1, Math.min(newZoomLevel, zoomState.max));
+        if(zoomSlider) zoomSlider.value = zoomState.level * 100;
+        
         if (zoomState.level === 1) {
             zoomState.x = 0;
             zoomState.y = 0;
         }
         updatePlayerZoom();
-        if (zoomLabel) zoomLabel.textContent = `${Math.round(newZoomLevel * 100)}%`;
+        if (zoomLabel) zoomLabel.textContent = `${Math.round(zoomState.level * 100)}%`;
+        resetControlsTimer();
+    };
+
+    zoomSlider?.addEventListener('input', (e) => handleZoom(parseFloat(e.target.value) / 100));
+    zoomInBtn?.addEventListener('click', (e) => { e.stopPropagation(); handleZoom(zoomState.level + 0.1); });
+    zoomOutBtn?.addEventListener('click', (e) => { e.stopPropagation(); handleZoom(zoomState.level - 0.1); });
+    
+    document.querySelectorAll('.player-fit-btn').forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            setPlayerFit(button.dataset.mode);
+        });
     });
-    
-    document.getElementById('player-fit-btn')?.addEventListener('click', (e) => { e.stopPropagation(); changeFit(); });
-    
+
     wrapper.addEventListener('mousedown', (e) => {
-        // Ignora o clique se for nos botões para não iniciar o pan
         if (e.target.closest('button, input')) return;
         if (zoomState.level > 1) {
             isPanning = true;
@@ -507,8 +595,10 @@ function setupPlayerEventListeners(wrapper) {
             wrapper.classList.add('grabbing');
         }
     });
+    
     wrapper.addEventListener('mouseup', () => { isPanning = false; wrapper.classList.remove('grabbing'); });
     wrapper.addEventListener('mouseleave', () => { isPanning = false; wrapper.classList.remove('grabbing'); });
+    
     wrapper.addEventListener('mousemove', (e) => {
         resetControlsTimer();
         if (isPanning) {
@@ -526,43 +616,21 @@ function setupPlayerEventListeners(wrapper) {
     });
 }
 
-
-function updatePlayerZoom() {
-    const wrapper = document.getElementById('player-fullscreen-wrapper');
-    const iframe = wrapper?.querySelector('iframe');
-    if (!iframe) return;
-
-    iframe.style.transform = `translate(${zoomState.x}px, ${zoomState.y}px) scale(${zoomState.level})`;
-    wrapper.classList.toggle('zoomed', zoomState.level > 1);
-}
-
-function changeFit() {
-    currentFitModeIndex = (currentFitModeIndex + 1) % fitModes.length;
-    updatePlayerFit();
-    const modeName = fitModes[currentFitModeIndex];
-    showCustomToast(`Modo de Ecrã: ${modeName.charAt(0).toUpperCase() + modeName.slice(1)}`, 'info');
-    resetControlsTimer();
-}
-
-function updatePlayerFit() {
-    const iframe = document.querySelector('#player-fullscreen-wrapper iframe');
-    if (iframe) {
-        iframe.style.objectFit = fitModes[currentFitModeIndex];
-    }
-}
-
 function resetControlsTimer() {
     clearTimeout(controlsHideTimer);
     const controls = document.getElementById('player-controls');
     const showControlsBtn = document.getElementById('show-controls-button');
-    
+    const closeBtn = document.getElementById('player-close-btn');
+
     if(controls) controls.classList.remove('hidden');
     if(showControlsBtn) showControlsBtn.classList.remove('visible');
+    if(closeBtn) closeBtn.style.opacity = '1';
 
     controlsHideTimer = setTimeout(() => {
         if(controls) controls.classList.add('hidden');
         if(showControlsBtn) showControlsBtn.classList.add('visible');
-    }, 3000);
+        if(closeBtn) closeBtn.style.opacity = '0';
+    }, 4000);
 }
 
 // =========================================================================
@@ -573,7 +641,7 @@ function resetControlsTimer() {
 async function openFilterSweetAlert() {
     const swalHTML = `<div class="swal-genre-filter-type-selector mb-4"><button id="swalMovieGenreTypeButton" data-type="movie" class="${currentFilterTypeSA === 'movie' ? 'active' : ''}">Filmes</button><button id="swalTvGenreTypeButton" data-type="tv" class="${currentFilterTypeSA === 'tv' ? 'active' : ''}">Séries</button><button id="swalAnimeGenreTypeButton" data-type="anime" class="${currentFilterTypeSA === 'anime' ? 'active' : ''}">Animes</button></div><div id="swalGenreButtonsPanel" class="swal-genre-buttons-panel my-4">Carregando...</div>`;
     Swal.fire({
-        title: 'Filtrar por Género', html: swalHTML, showCloseButton: true, showDenyButton: true,
+        title: 'Filtrar por Gênero', html: swalHTML, showCloseButton: true, showDenyButton: true,
         denyButtonText: 'Limpar Filtro', confirmButtonText: 'Aplicar Filtro',
         customClass: { popup: 'swal2-popup' },
         didOpen: () => {
@@ -798,7 +866,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const openBtn = document.getElementById('open-calendar-btn');
     const closeBtn = document.getElementById('close-calendar-btn');
     const mainContent = document.getElementById('main-content');
-    
+
     if (openBtn) openBtn.addEventListener('click', (e) => { e.stopPropagation(); document.body.classList.add('calendar-open'); });
     if (closeBtn) closeBtn.addEventListener('click', () => document.body.classList.remove('calendar-open'));
     if (mainContent) mainContent.addEventListener('click', () => { if (document.body.classList.contains('calendar-open')) document.body.classList.remove('calendar-open'); });
@@ -819,7 +887,7 @@ document.addEventListener('DOMContentLoaded', () => {
     scrollTargetForResults?.addEventListener('scroll', () => {
         const isSingleSectionVisible = singleResultsSection?.style.display === 'block';
         if (!isSingleSectionVisible || isLoadingMore) return;
-        
+
         const offset = 200;
         let scrolledToEnd = false;
         if (scrollTargetForResults === window) {
@@ -835,7 +903,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!document.fullscreenElement) {
             const wrapper = document.getElementById('player-fullscreen-wrapper');
             if (wrapper && wrapper.style.display !== 'none') {
-                closeAdvancedPlayer(); // Usa a nossa função para limpar
+                closeAdvancedPlayer();
             }
         }
     });

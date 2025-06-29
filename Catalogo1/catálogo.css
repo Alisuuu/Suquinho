@@ -290,10 +290,9 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    z-index: 1; 
+    z-index: 1;
 }
 
-/* CORREÇÃO: Ajuste de z-index e posicionamento para o logo */
 .details-logo-container {
     position: absolute;
     top: 50%;
@@ -302,7 +301,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     width: 60%;
     max-width: 350px;
     pointer-events: none;
-    z-index: 2; /* Acima da imagem de capa */
+    z-index: 2;
 }
 
 .details-logo-img {
@@ -323,7 +322,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     align-items: center;
     background-color: rgba(0, 0, 0, 0.4);
     transition: background-color 0.3s ease;
-    z-index: 3; /* Acima do logo */
+    z-index: 3;
 }
 
 .trailer-cover:hover .cover-elements-overlay {
@@ -331,7 +330,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 }
 
 .play-icon-wrapper {
-    z-index: 4; /* Acima de tudo para ser clicável */
+    z-index: 4;
 }
 
 .play-icon-wrapper .fa-play {
@@ -514,7 +513,7 @@ header h1 .fa-film { color: var(--purple-accent); margin-right: 0.5rem; }
     transition: all 0.2s ease;
     cursor: pointer;
     box-shadow: var(--subtle-shadow);
-    flex-shrink: 0; 
+    flex-shrink: 0;
 }
 
 .modal-favorite-button:hover,
@@ -599,7 +598,7 @@ header h1 .fa-film { color: var(--purple-accent); margin-right: 0.5rem; }
     color: var(--text-primary);
     font-size: 0.9rem;
     font-weight: 500;
-    z-index: 2000; 
+    z-index: 2000;
     opacity: 0;
     visibility: hidden;
     transition: all 0.4s cubic-bezier(0.215, 0.610, 0.355, 1.000);
@@ -627,7 +626,7 @@ header h1 .fa-film { color: var(--purple-accent); margin-right: 0.5rem; }
     font-size: 1.1rem;
 }
 
-/* Player Styles */
+/* ========= Player Styles MODIFICADOS ========= */
 #player-fullscreen-wrapper {
     position: fixed;
     top: 0;
@@ -648,6 +647,7 @@ header h1 .fa-film { color: var(--purple-accent); margin-right: 0.5rem; }
     border: none;
     position: absolute;
     transition: transform 0.3s ease-in-out;
+    object-fit: contain; /* Default fit mode */
 }
 
 #player-fullscreen-wrapper.zoomed iframe {
@@ -658,21 +658,52 @@ header h1 .fa-film { color: var(--purple-accent); margin-right: 0.5rem; }
     cursor: grabbing;
 }
 
+#player-close-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 45px;
+    height: 45px;
+    background-color: rgba(30, 30, 30, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 10002;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease-in-out;
+}
+
+#player-close-btn:hover {
+    background-color: rgba(89, 59, 162, 0.8);
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(89, 59, 162, 0.5);
+}
+
 #player-controls {
     position: absolute;
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(30, 30, 30, 0.7);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    padding: 8px 15px;
-    border-radius: 20px;
+    padding: 10px 15px;
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
+    flex-wrap: wrap; /* Allows groups to wrap to the next line */
+    justify-content: center;
     align-items: center;
-    gap: 15px;
+    gap: 1.5rem; /* Space between control groups */
     z-index: 10001;
     transition: opacity 0.3s ease, visibility 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
 }
 
 #player-controls.hidden {
@@ -685,72 +716,104 @@ header h1 .fa-film { color: var(--purple-accent); margin-right: 0.5rem; }
     height: 30px;
     max-width: 100px;
     object-fit: contain;
-    margin-right: auto;
-    opacity: 0.8;
+    opacity: 0.9;
 }
 
-/* MODIFICAÇÃO: Estilos para o grupo de controlos de zoom */
-#player-zoom-controls {
+.player-control-group {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
 
 #player-zoom-label {
     font-size: 0.9rem;
     color: white;
+    font-weight: 500;
     min-width: 50px;
     text-align: center;
+    background-color: rgba(0,0,0,0.3);
+    padding: 4px 8px;
+    border-radius: 8px;
 }
 
 input[type="range"]#player-zoom-slider {
     -webkit-appearance: none;
     appearance: none;
     width: 120px;
-    height: 5px;
-    background: rgba(255, 255, 255, 0.3);
+    height: 6px;
+    background: rgba(255, 255, 255, 0.2);
     border-radius: 5px;
     outline: none;
-    transition: opacity 0.2s;
+    transition: opacity 0.2s, background 0.2s;
+}
+
+input[type="range"]#player-zoom-slider:hover {
+    background: rgba(255, 255, 255, 0.3);
 }
 
 input[type="range"]#player-zoom-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 15px;
-    height: 15px;
+    width: 18px;
+    height: 18px;
     background: var(--purple-light);
     cursor: pointer;
     border-radius: 50%;
+    border: 2px solid white;
+    transition: transform 0.2s ease;
 }
-
-input[type="range"]#player-zoom-slider::-moz-range-thumb {
-    width: 15px;
-    height: 15px;
-    background: var(--purple-light);
-    cursor: pointer;
-    border-radius: 50%;
-}
-
-
-#player-controls button {
-    background: transparent;
-    border: none;
-    color: white;
-    font-size: 1.4rem;
-    cursor: pointer;
-    transition: color 0.2s, transform 0.2s;
-    padding: 5px;
-    line-height: 1;
-}
-
-#player-controls button:hover {
-    color: var(--purple-light);
+input[type="range"]#player-zoom-slider::-webkit-slider-thumb:hover {
     transform: scale(1.1);
 }
 
-#player-controls button:disabled {
-    color: #555;
+input[type="range"]#player-zoom-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: var(--purple-light);
+    cursor: pointer;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+#player-zoom-in-btn,
+#player-zoom-out-btn,
+.player-fit-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+#player-zoom-in-btn:hover,
+#player-zoom-out-btn:hover,
+.player-fit-btn:hover {
+    background-color: var(--purple-accent);
+    border-color: var(--purple-light);
+    transform: scale(1.1);
+}
+
+.player-fit-btn.active {
+    background-color: var(--purple-light);
+    color: white;
+    border-color: var(--purple-accent);
+    box-shadow: 0 0 10px var(--purple-light);
+    transform: scale(1.1);
+}
+
+#player-zoom-in-btn:disabled,
+#player-zoom-out-btn:disabled {
+    color: #666;
+    background-color: rgba(0,0,0,0.2);
+    border-color: rgba(255,255,255,0.1);
     cursor: not-allowed;
     transform: none;
 }
@@ -807,7 +870,7 @@ input[type="range"]#player-zoom-slider::-moz-range-thumb {
 
     .section-title { font-size: 1.3rem; margin-bottom: 1rem; }
     .swal-details-content .details-content-title { font-size: 1.5rem; }
-    
+
     .horizontal-scroll-grid,
     .main-results-grid,
     #singleResultsGrid {
@@ -841,6 +904,14 @@ input[type="range"]#player-zoom-slider::-moz-range-thumb {
     }
     .details-trailer-container {
         margin: 0.5rem 0.5rem 1rem 0.5rem;
+    }
+
+    /* Player Controls on Mobile */
+    #player-controls {
+        flex-direction: column;
+        gap: 1rem;
+        bottom: 10px;
+        border-radius: 20px;
     }
 }
 
@@ -931,17 +1002,17 @@ button:disabled {
     bottom: 1rem;
     right: 1rem;
     display: flex;
-    flex-direction: row; 
+    flex-direction: row;
     gap: 0.75rem;
     z-index: 998;
 }
 
 #floatingFavoritesButton,
-#open-calendar-btn { 
+#open-calendar-btn {
     width: 3.5rem;
     height: 3.5rem;
     border-radius: 20%;
-    display: flex;
+    display: flex;4
     align-items: center;
     justify-content: center;
     font-size: 1.3rem;
@@ -953,7 +1024,7 @@ button:disabled {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 0 10px rgba(130, 0, 255, 0.2);
     transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;
-    position: relative; 
+    position: relative;
     z-index: 1;
 }
 
