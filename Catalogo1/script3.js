@@ -312,15 +312,11 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
         }
     });
     
-    // --- CORREÇÃO INÍCIO: Tratamento de erro robusto ---
-    // Adicionado bloco try...catch para capturar falhas na busca de detalhes (ex: problemas de rede),
-    // evitando que o modal fique "travado" em "Carregando...".
     let details;
     try {
         details = await getItemDetails(itemId, mediaType);
-        if (!Swal.isVisible()) return; // Aborta se o modal foi fechado enquanto carregava
+        if (!Swal.isVisible()) return;
         if (!details || details.error) {
-            // Lança um erro se a API retornar um erro explícito ou dados inválidos.
             throw new Error(details?.message || 'Os dados recebidos da API são inválidos.');
         }
     } catch (error) {
@@ -330,7 +326,6 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
         }
         return;
     }
-    // --- CORREÇÃO FIM ---
 
     if (!backdropPath && details.backdrop_path) updatePageBackground(details.backdrop_path);
 
@@ -420,9 +415,22 @@ let panStart = { x: 0, y: 0 };
 const fitModes = ['contain', 'cover', 'fill'];
 let currentFitModeIndex = 0;
 
+// NOVA FUNÇÃO: Para fechar o player
+function closeAdvancedPlayer() {
+    const wrapper = document.getElementById('player-fullscreen-wrapper');
+    // Verifica se o wrapper é o elemento em tela cheia para evitar erros
+    if (document.fullscreenElement === wrapper) {
+        document.exitFullscreen().catch(err => console.error(`Error attempting to exit fullscreen: ${err.message}`));
+    } else if (wrapper) {
+        // Fallback caso o player esteja visível mas não em tela cheia
+        wrapper.style.display = 'none';
+        wrapper.innerHTML = '';
+        if(controlsHideTimer) clearTimeout(controlsHideTimer);
+    }
+}
+
 function launchAdvancedPlayer(url, logoPath) {
     const wrapper = document.getElementById('player-fullscreen-wrapper');
-    // CORREÇÃO: Adicionado feedback visual para o usuário caso o elemento do player não exista.
     if (!wrapper) {
         console.error("Elemento #player-fullscreen-wrapper não foi encontrado no HTML! O player não pode ser iniciado.");
         showCustomToast('Erro Crítico: Componente do player ausente.', 'info');
@@ -436,6 +444,7 @@ function launchAdvancedPlayer(url, logoPath) {
         ? `<img src="${TMDB_IMAGE_BASE_URL}w300${logoPath}" id="player-logo" alt="logo do conteúdo">`
         : '';
     
+    // MODIFICADO: Adicionado botão de voltar
     wrapper.innerHTML = `
         <iframe 
             src="${url}" 
@@ -443,6 +452,7 @@ function launchAdvancedPlayer(url, logoPath) {
             sandbox="allow-scripts allow-same-origin allow-presentation">
         </iframe>
         <div id="player-controls">
+            <button id="player-close-btn" title="Voltar ao Catálogo"><i class="fas fa-arrow-left"></i></button>
             ${logoForPlayerHTML}
             <div id="player-zoom-controls">
                 <span id="player-zoom-label">100%</span>
@@ -468,6 +478,12 @@ function setupPlayerEventListeners(wrapper) {
     const zoomSlider = document.getElementById('player-zoom-slider');
     const zoomLabel = document.getElementById('player-zoom-label');
 
+    // MODIFICADO: Adicionado listener para o botão de fechar
+    document.getElementById('player-close-btn')?.addEventListener('click', (e) => {
+        e.stopPropagation(); // Impede que o clique se propague para o wrapper
+        closeAdvancedPlayer();
+    });
+
     zoomSlider?.addEventListener('input', (e) => {
         const newZoomLevel = parseFloat(e.target.value) / 100;
         zoomState.level = newZoomLevel;
@@ -476,12 +492,14 @@ function setupPlayerEventListeners(wrapper) {
             zoomState.y = 0;
         }
         updatePlayerZoom();
-        zoomLabel.textContent = `${Math.round(newZoomLevel * 100)}%`;
+        if (zoomLabel) zoomLabel.textContent = `${Math.round(newZoomLevel * 100)}%`;
     });
     
     document.getElementById('player-fit-btn')?.addEventListener('click', (e) => { e.stopPropagation(); changeFit(); });
     
     wrapper.addEventListener('mousedown', (e) => {
+        // Ignora o clique se for nos botões para não iniciar o pan
+        if (e.target.closest('button, input')) return;
         if (zoomState.level > 1) {
             isPanning = true;
             panStart.x = e.clientX - zoomState.x;
@@ -507,6 +525,7 @@ function setupPlayerEventListeners(wrapper) {
         resetControlsTimer();
     });
 }
+
 
 function updatePlayerZoom() {
     const wrapper = document.getElementById('player-fullscreen-wrapper');
@@ -706,14 +725,8 @@ function displayResults(items, defaultType, targetEl, replace) {
     targetEl.appendChild(fragment);
 }
 
-// --- CORREÇÃO INÍCIO: Função de copiar para a área de transferência melhorada ---
-// A função foi reescrita para usar a API moderna `navigator.clipboard` (que é mais segura e recomendada),
-// mas mantém o método antigo `document.execCommand('copy')` como um "fallback".
-// Isso garante que a funcionalidade de copiar o link funcione na maioria dos navegadores,
-// incluindo os mais antigos ou quando a página não está em um contexto seguro (HTTPS).
 function copyToClipboard(text) {
     if (navigator.clipboard && window.isSecureContext) {
-        // Usa a API moderna e segura
         navigator.clipboard.writeText(text).then(() => {
             showCustomToast('Link copiado com sucesso!', 'success');
         }).catch(err => {
@@ -721,7 +734,6 @@ function copyToClipboard(text) {
             showCustomToast('Erro ao copiar o link.', 'info');
         });
     } else {
-        // Usa o método antigo como fallback
         const textArea = document.createElement('textarea');
         textArea.value = text;
         textArea.style.position = 'absolute';
@@ -739,7 +751,6 @@ function copyToClipboard(text) {
         }
     }
 }
-// --- CORREÇÃO FIM ---
 
 async function openFavoritesModal() {
     let favsHtml = '<p class="text-center text-gray-400 py-5">Você não tem nenhum favorito ainda.</p>';
@@ -823,11 +834,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('fullscreenchange', () => {
         if (!document.fullscreenElement) {
             const wrapper = document.getElementById('player-fullscreen-wrapper');
-            if (wrapper) {
-                wrapper.style.display = 'none';
-                wrapper.innerHTML = '';
+            if (wrapper && wrapper.style.display !== 'none') {
+                closeAdvancedPlayer(); // Usa a nossa função para limpar
             }
-            clearTimeout(controlsHideTimer);
         }
     });
 
@@ -837,3 +846,4 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeParam && idParam) openItemModal(idParam, typeParam);
     else loadMainPageContent();
 });
+
