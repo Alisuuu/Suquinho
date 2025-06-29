@@ -17,22 +17,13 @@
     --danger-red: #E53E3E;
     --danger-red-hover: #C53030;
     --success-green: #48BB78;
-    --header-height-mobile: 5rem;
-    --expressive-gradient-light: linear-gradient(135deg, rgba(40, 20, 80, 0.2), rgba(80, 0, 120, 0.2));
-    --expressive-gradient-dark: linear-gradient(160deg, rgba(15, 0, 30, 0.85), rgba(25, 0, 40, 0.85));
-    --expressive-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 2px 10px rgba(0, 0, 0, 0.6);
-    --subtle-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 10px rgba(0, 0, 0, 0.2);
     --modal-background-neutral-gradient: linear-gradient(160deg, rgba(10, 10, 10, 0.8), rgba(20, 20, 20, 0.8));
     --modal-border-neutral: rgba(255, 255, 255, 0.08);
     --modal-shadow-neutral-glow: 0 0 40px rgba(0, 0, 0, 0.7);
-    --button-blur-bg: rgba(89, 59, 162, 0.2);
-    --button-blur-bg-hover: rgba(140, 112, 200, 0.3);
-    --button-backdrop-filter: blur(8px) saturate(1.8);
 }
 
 body {
     font-family: 'Inter', sans-serif;   
-    /* MD3 Applied */
     background-color: rgba(89,59,162,0.25);
     backdrop-filter: blur(20px);
     color: var(--text-primary);
@@ -58,7 +49,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     z-index: -2;
     background-size: cover;
     background-position: center center;
-    background-repeat: repeat;
+    background-repeat: no-repeat;
     transition: background-image 0.7s ease-in-out, opacity 0.7s ease-in-out;
     background-color: transparent;
     opacity: 1;
@@ -71,17 +62,15 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: transparent;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    box-shadow: none;
+    background-color: rgba(0, 0, 0, 0.5);
     z-index: -1;
 }
+
 
 .main-container {
     display: flex;
     flex-direction: column;
-    gap: 5rem;
+    gap: 2rem;
     align-items: center;
     justify-content: center;
     padding: 1rem;
@@ -105,61 +94,48 @@ body.swal2-shown .main-container {
 h1 {
     font-size: 2.5rem;
     font-weight: 700;
-    color: var(--purple-light);
-    text-shadow: 0 0 15px rgba(130, 0, 255, 0.2);
+    color: var(--text-primary);
+    text-shadow: 0 0 15px rgba(140, 112, 200, 0.5);
     margin-bottom: 1.5rem;
     text-align: center;
 }
 
 .random-button {
-  /* MD3 Applied */
   background-color: rgba(89,59,162,0.50);
   border: 1px solid rgba(89,59,162,0.60);
   border-radius: 24px;
-  display: grid;
+  display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.75rem;
   color: white;
   cursor: pointer;
   text-decoration: none;
-  box-shadow: 0 8px 20px rgba(130, 0, 255, 0.2),
-              inset 0 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 20px rgba(0,0,0, 0.2);
   position: relative;
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
   opacity: 1;
-  transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 0.20),
-              background 0.35s ease-out,
-              box-shadow 0.35s ease-out,
-              opacity 0.3s ease-out;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
   padding: 20px 40px;
-  font-size: 1.5em;
-  min-width: 150px;
-
-  /* MD3 Applied */
+  font-size: 1.2rem;
+  font-weight: 500;
+  min-width: 180px;
   backdrop-filter: blur(5px);
 }
 
-@media (min-width: 768px) {
-  .random-button {
-    font-size: 2em;
-    padding: 25px 50px;
-  }
-}
-
 .random-button:hover {
-    /* MD3 Applied */
     background-color: rgba(89,59,162,0.7);
-    transform: translateY(-3px) scale(1.03);
+    transform: translateY(-3px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
 }
 
 .random-button .fas {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
 }
 
 .loader {
-    position: center;
+    position: fixed;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
@@ -174,471 +150,250 @@ h1 {
 }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+/* --- SweetAlert2 General Styles --- */
 .swal2-popup {
     color: var(--text-primary) !important;
     border-radius: 1.2rem !important;
     border: 1px solid var(--modal-border-neutral) !important;
     max-width: 90vw !important;
     width: auto !important;
-    background: var(--modal-background-neutral-gradient);
+    background: var(--modal-background-neutral-gradient) !important;
     backdrop-filter: blur(50px) saturate(2.5) !important;
     -webkit-backdrop-filter: blur(50px) saturate(2.5) !important;
-    box-shadow: 0 6px 20px -3px rgba(0,0,0,0.8),
-                var(--modal-shadow-neutral-glow) !important;
+    box-shadow: var(--modal-shadow-neutral-glow) !important;
 }
 .swal2-title { color: var(--purple-light) !important; font-size: 1.6rem !important; padding-top: 1.5rem !important; margin-bottom: 0 !important; }
 .swal2-html-container { color: var(--text-primary) !important; margin: 0 !important; padding: 0 !important; text-align: left !important; }
+
+/* --- CORREÇÃO: Estilo do Botão de Fechar --- */
 .swal2-close {
     color: #FFFFFF !important;
     font-size: 2.2em !important;
-    transition: color 0.2s ease, transform 0.2s ease !important;
+    transition: color 0.2s ease, transform 0.2s ease, background-color 0.2s ease !important;
     position: absolute !important;
     top: 15px !important;
-    right: 30px !important;
+    right: 15px !important;
     z-index: 100;
-    width: 35px;
-    height: 35px;
-    line-height: 35px;
+    width: 40px !important;
+    height: 40px !important;
+    line-height: 40px !important;
     text-align: center;
-    border-radius: 50%;
-    background-color: rgba(255,255,255,0.1);
+    border-radius: 50% !important;
+    background-color: rgba(255,255,255,0.1) !important;
+    border: none !important;
 }
 .swal2-close:hover {
     color: var(--purple-light) !important;
-    transform: scale(1.15) !important;
-    background-color: rgba(255,255,255,0.2);
-}
-.swal-genre-filter-type-selector button,
-.swal-genre-buttons-panel button,
-.swal-filter-actions button {
-    padding: 0.7rem 1.4rem;
-    border-radius: 0.8rem;
-    font-weight: 600;
-    font-size: 0.95rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: linear-gradient(135deg, rgba(40, 20, 80, 0.3), rgba(80, 0, 120, 0.3));
-    color: var(--text-primary);
-    transition: all 0.2s ease;
-    margin: 0.3rem;
-    box-shadow: var(--subtle-shadow);
-}
-.swal-genre-filter-type-selector button:hover,
-.swal-genre-buttons-panel button:hover,
-.swal-filter-actions button:hover {
-    background: linear-gradient(135deg, rgba(89, 59, 162, 0.7), rgba(162, 0, 255, 0.7));
-    color: var(--text-primary);
-    border-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 6px 20px rgba(130, 0, 255, 0.3), 0 2px 8px rgba(0,0,0,0.3);
+    transform: scale(1.1) !important;
+    background-color: rgba(255,255,255,0.2) !important;
 }
 
-.swal-genre-filter-type-selector button.active,
-.swal-genre-buttons-panel button.active {
-    background: var(--purple-accent);
-    color: var(--amoled-black);
-    border-color: var(--purple-accent);
-    box-shadow: 0 0 15px rgba(89, 59, 162, 0.7);
-}
-.swal-filter-actions .swal2-confirm {
-    background-color: var(--purple-accent) !important;
-    color: var(--amoled-black) !important;
-    border: 1px solid var(--purple-accent) !important;
-    box-shadow: 0 4px 15px rgba(89, 59, 162, 0.4) !important;
-}
-.swal-filter-actions .swal2-confirm:hover {
-    background-color: var(--purple-light) !important;
-    border-color: var(--purple-light) !important;
-    box-shadow: 0 6px 20px rgba(89, 59, 162, 0.6) !important;
-}
-.swal-filter-actions .swal2-deny {
-    background-color: var(--danger-red) !important;
-    color: var(--text-primary) !important;
-    border: 1px solid var(--danger-red) !important;
-    box-shadow: 0 4px 15px rgba(229, 62, 62, 0.3) !important;
-}
-.swal-filter-actions .swal2-deny:hover {
-    background-color: var(--danger-red-hover) !important;
-    border-color: var(--danger-red-hover) !important;
-    box-shadow: 0 6px 20px rgba(229, 62, 62, 0.5) !important;
-}
-.swal-genre-buttons-panel {
-    display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center; max-height: 180px; overflow-y: auto; padding: 0.8rem; border: 1px solid rgba(255,255,255,0.1); border-radius: 0.8rem; margin-top: 1rem; margin-bottom: 1rem;
-    background-color: rgba(0,0,0,0.4);
-}
-.swal-genre-buttons-panel::-webkit-scrollbar { width: 6px; }
-.swal-genre-buttons-panel::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 0.6rem; }
-.swal-genre-buttons-panel::-webkit-scrollbar-thumb { background-color: var(--purple-accent); border-radius: 8px; }
 
+/* --- CORREÇÃO: Estilos para o Modal de Detalhes e Rolagem --- */
 .swal-details-popup.swal2-popup {
     width: 850px !important;
     max-width: 95vw !important;
     max-height: 90vh !important;
     display: flex !important;
     flex-direction: column !important;
+    padding: 0 !important; /* Remove padding padrão para controlar o scroll */
 }
-.swal-details-popup .swal2-html-container { overflow-y: auto !important; flex-grow: 1 !important; scrollbar-width: thin; scrollbar-color: var(--purple-accent) var(--border-color); }
+.swal-details-popup .swal2-title {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+}
+.swal-details-popup .swal2-html-container { 
+    overflow-y: auto !important; /* Garante a rolagem vertical */
+    flex-grow: 1 !important; 
+    padding: 0 1.5rem 1.5rem 1.5rem; /* Adiciona padding interno */
+    scrollbar-width: thin; 
+    scrollbar-color: var(--purple-accent) var(--border-color); 
+}
 .swal-details-popup .swal2-html-container::-webkit-scrollbar { width: 8px; }
 .swal-details-popup .swal2-html-container::-webkit-scrollbar-track { background: var(--border-color); border-radius: 10px; }
 .swal-details-popup .swal2-html-container::-webkit-scrollbar-thumb { background-color: var(--purple-accent); border-radius: 10px; }
 
-/* --- Styles for Details Modal Content --- */
-.swal-details-content { padding-bottom: 1.5rem; }
 
+/* --- Styles for Details Modal Content (from Catalog) --- */
+.swal-details-content { padding-bottom: 1.5rem; }
 .details-trailer-container {
     position: relative;
     background-color: #000;
     border-radius: 1rem;
     overflow: hidden;
-    margin: 1rem 1rem 1.5rem 1rem;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(130, 0, 255, 0.2);
+    margin: 1rem 0 1.5rem 0;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
     border: 1px solid var(--modal-border-neutral);
-    padding-top: 56.25%; /* 16:9 Aspect Ratio */
-}
-
-.details-trailer-container--fallback {
-    padding-top: 0;
-    line-height: 0;
-}
-
-.details-trailer-container iframe,
-.details-trailer-container .trailer-cover {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
-}
-
-.trailer-cover {
+    padding-top: 56.25%;
     cursor: pointer;
-    z-index: 5;
-    transition: opacity 0.4s ease-in-out, visibility 0.4s ease-in-out;
 }
-
-.trailer-cover-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center center;
-}
-
-.play-icon-overlay {
+.trailer-cover {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+}
+.trailer-cover-img { width: 100%; height: 100%; object-fit: cover; }
+.cover-elements-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
     background-color: rgba(0, 0, 0, 0.4);
     transition: background-color 0.3s ease;
 }
-
-.trailer-cover:hover .play-icon-overlay {
-    background-color: rgba(0, 0, 0, 0.6);
-}
-
-.play-icon-overlay .fa-play {
-    font-size: 4rem;
-    color: rgba(255, 255, 255, 0.85);
-    text-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
-    transition: transform 0.3s ease;
-}
-
-.trailer-cover:hover .play-icon-overlay .fa-play {
-    transform: scale(1.15);
-}
-
-.details-trailer-container.trailer-playing .trailer-cover {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-}
-
-.details-poster-fallback {
-    width: 100%;
-    height: auto;
-    display: block;
-    max-height: 50vh;
-    object-fit: cover;
-    object-position: top center;
-    border-radius: 0.8rem;
-}
-
-
-.swal-details-content .details-info-area {
-    padding: 0 1rem;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.swal-details-content .details-content-title { font-size: 1.85rem; font-weight: 700; color: var(--purple-light); line-height: 1.2; margin-bottom: 0.5rem; }
-.swal-details-content .details-meta-info { font-size: 0.9rem; color: var(--text-secondary); display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; }
-.swal-details-content .details-meta-info span { display: inline-flex; align-items: center; }
-.swal-details-content .details-meta-info .fas { margin-right: 0.375rem; }
-.swal-details-content .details-genres { font-size: 0.875rem; color: var(--text-secondary); }
-.swal-details-content .details-genres strong { color: var(--purple-light); font-size: 0.95rem; }
-.swal-details-content .details-section-subtitle { font-size: 1.2rem; font-weight: 600; color: var(--purple-light); margin-top: 0.8rem; margin-bottom: 0.6rem; padding-left: 1rem; }
-.swal-details-content .details-overview { font-size: 1rem; line-height: 1.65; color: var(--text-primary); }
-
+.details-trailer-container:hover .cover-elements-overlay { background-color: rgba(0, 0, 0, 0.6); }
+.play-icon-wrapper { font-size: 4rem; color: rgba(255, 255, 255, 0.85); transition: transform 0.3s ease; }
+.details-trailer-container:hover .play-icon-wrapper { transform: scale(1.15); }
+.details-logo-container { position: absolute; bottom: 1rem; left: 1rem; max-width: 30%; max-height: 30%; z-index: 6; }
+.details-logo-img { max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.7)); }
+.details-info-area { padding: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+.details-content-title { font-size: 1.85rem; font-weight: 700; color: var(--purple-light); }
+.details-meta-info { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; color: var(--text-secondary); }
+.details-meta-info .fas { margin-right: 0.375rem; }
+.details-genres { font-size: 0.9rem; }
+.details-section-subtitle { font-size: 1.2rem; font-weight: 600; color: var(--purple-light); margin-top: 1rem; margin-bottom: 0.5rem; }
+.details-overview { line-height: 1.6; }
 .details-cast-section { margin-top: 1.5rem; }
-.details-cast-scroller { display: flex; overflow-x: auto; gap: 1rem; padding: 0.75rem 1rem; margin-bottom: 1rem; }
-.details-cast-scroller::-webkit-scrollbar { height: 6px; }
-.details-cast-scroller::-webkit-scrollbar-track { background: var(--border-color); border-radius: 5px; }
-.details-cast-scroller::-webkit-scrollbar-thumb { background-color: var(--purple-accent); border-radius: 5px; }
-.cast-member-card { flex: 0 0 100px; text-align: center; background-color: rgba(255,255,255,0.05); padding: 0.75rem 0.5rem; border-radius: 0.6rem; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; justify-content: flex-start; }
-.cast-member-photo { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; margin: 0 auto 0.5rem auto; border: 2px solid var(--purple-accent); background-color: var(--border-color); }
-.cast-member-name { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); line-height: 1.2; height: 2.4em; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.25rem; }
-.cast-member-character { font-size: 0.75rem; color: var(--text-secondary); line-height: 1.2; height: 2.4em; overflow: hidden; text-overflow: ellipsis; }
-.details-player-section { margin-top: 1rem; padding: 0 1rem;}
-.details-iframe-container { margin-top: 0.5rem; background-color: #000; border-radius: 0.8rem; overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,0.5); aspect-ratio: 16 / 9; }
-.details-iframe-container.iframe-series-dimensions { aspect-ratio: auto; height: 400px; }
-.details-iframe-container iframe { width: 100%; height: 100%; border: none; display: block; }
-.swal-details-content .details-player-unavailable { margin-top: 1.25rem; text-align: center; color: #FFD700; background-color: rgba(255, 215, 0, 0.15); padding: 0.75rem; border-radius: 0.5rem; font-size: 0.875rem; }
-
-
-
-        /* Filter Toggle Button & Search Input & Header */
-        #filterToggleButton {
-            padding: 0.7rem 1.4rem; /* Padding ajustado */
-            border-radius: 0.8rem; /* Mais arredondado */
-            font-weight: 600;
-            font-size: 0.95rem; /* Fonte um pouco maior */
-            border: 1px solid rgba(255, 255, 255, 0.5); /* Borda sutil */
-            background: linear-gradient(135deg, rgba(40, 20, 80, 0.2), rgba(80, 0, 120, 0.3)); /* Gradiente sutil, mais transparente */
-            color: var(--text-primary); /* Texto principal */
-            transition: all 0.2s ease;
-            margin-left: 0.5rem;
-            flex-shrink: 0;
-            box-shadow: var(--subtle-shadow); /* Sombra sutil */
-               -webkit-tap-highlight-color: transparent;
-user-select: none;
-        }
-@media (max-width: 767px) {
-    h1 { font-size: 2rem; }
-    .random-button {
-        padding: 0.7rem 1.2rem;
-        font-size: 1rem;
-    }
-    .random-button .fas { font-size: 1.2rem; }
-
-    .button-group {
-        flex-direction: column;
-    }
-
-    #externalCopyButtonContainer {
-        gap: 0.5rem;
-        max-width: 300px;
-    }
-    #pickAgainButton,
-    #trailerButton {
-        padding: 0.4rem 0.6rem;
-        font-size: 0.85rem;
-    }
-    /* ESTILOS PARA BOTÃO DE COPIAR REMOVIDOS */
+.details-cast-scroller { display: flex; overflow-x: auto; gap: 1rem; padding: 0.5rem 0; }
+.cast-member-card { flex: 0 0 100px; text-align: center; }
+.cast-member-photo { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; margin-bottom: 0.5rem; border: 2px solid var(--purple-accent); }
+.cast-member-name { font-size: 0.85rem; font-weight: 600; }
+.cast-member-character { font-size: 0.75rem; color: var(--text-secondary); }
+.modal-actions-wrapper { display: flex; gap: 0.75rem; margin-top: 1rem; }
+.modal-favorite-button, .modal-copy-link-button {
+    width: 44px; height: 44px; border-radius: 50%; display: flex;
+    align-items: center; justify-content: center; border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(30, 30, 30, 0.5); color: var(--text-primary); transition: all 0.2s ease;
 }
+.modal-favorite-button:hover, .modal-copy-link-button:hover { background: var(--purple-accent); transform: scale(1.1); }
+.modal-favorite-button.active { background-color: var(--danger-red); }
 
+/* --- "Pick Again" Button --- */
 #externalCopyButtonContainer {
     position: fixed;
-    bottom: 1rem;
+    bottom: 1.5rem;
     left: 50%;
-    z-index: 1080;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.75rem;
-    width: 100%;
-    max-width: 500px;
-    padding: 0 1rem;
-    box-sizing: border-box;
+    z-index: 1080; /* Above SweetAlert overlay */
     opacity: 0;
     pointer-events: none;
     transform: translate(-50%, 100%);
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
-
 body.swal2-shown #externalCopyButtonContainer {
     opacity: 1;
     pointer-events: auto;
     transform: translateX(-50%);
 }
-
-
 #pickAgainButton {
-  /* MD3 Applied */
-  background-color: rgba(89,59,162,0.20);
+  background-color: rgba(89,59,162,0.50);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(89,59,162,0.60);
+  border: 1px solid rgba(89,59,162,0.80);
   color: var(--text-primary);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  padding: 0.5rem 0.8rem;
-  border-radius: 0.8rem;
-  font-size: 0.9rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  padding: 0.8rem 1.5rem;
+  border-radius: 1rem;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  flex: 1;
-  max-width: 180px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
+  transition: all 0.3s ease;
   text-transform: uppercase;
-  text-decoration: none;
+}
+#pickAgainButton:hover {
+    background-color: rgba(140, 112, 200, 0.7);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
-#pickAgainButton:hover,
-#trailerButton:hover {
-    /* MD3 Applied */
-    background-color: rgba(89,59,162,0.3);
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
-}
-
-#pickAgainButton .fas {
+/* --- Estilos para o Player Avançado --- */
+#player-fullscreen-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
     display: none;
-}
-#pickAgainButton span {
-    display: inline;
-}
-
-
-/* ESTILOS PARA O BOTÃO DE COPIAR LINK REMOVIDOS */
-
-#trailerButton .fas {
-    font-size: 1.1rem;
-}
- .content-card .favorite-button {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            background-color: rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: var(--text-primary);
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: background-color 0.2s, color 0.2s, transform 0.2s;
-            z-index: 10; /* Ensure it's above the image and title overlay */
-        }
-        .content-card .favorite-button:hover {
-            background-color: rgba(89, 59, 162, 0.8);
-            color: white;
-            transform: scale(1.1);
-        }
-        .content-card .favorite-button.active {
-            color: var(--danger-red); /* Red heart for favorited */
-            background-color: rgba(229, 62, 62, 0.2);
-            border-color: var(--danger-red);
-        }
-        .content-card .favorite-button.active:hover {
-            background-color: rgba(229, 62, 62, 0.4);
-            color: white; /* White on hover for active */
-        }
-
-        /* Favorites Button in Modal */
-        .modal-actions-wrapper {
-    display: flex;
-    gap: 0.75rem;
-    margin-top: 1rem;
-    margin-bottom: 0.5rem;
-    align-items: center;
-}
-      .modal-favorite-button,
-.modal-copy-link-button {
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    border-radius: 50%;
-    font-size: 1.1rem;
-    display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(30, 30, 30, 0.5);
-    color: var(--text-primary);
-    transition: all 0.2s ease;
+    z-index: 9999;
+    cursor: grab;
+}
+#player-fullscreen-wrapper.grabbing {
+    cursor: grabbing;
+}
+#player-fullscreen-wrapper iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    object-fit: contain; /* Padrão inicial */
+    transition: transform 0.2s ease-out; /* Transição para o pan */
+}
+#player-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    padding: 10px 20px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: opacity 0.3s ease-in-out;
+}
+#player-controls.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+#player-logo {
+    height: 40px;
+    max-width: 120px;
+    object-fit: contain;
+}
+#player-zoom-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+}
+#player-zoom-slider {
+    width: 150px;
+}
+#player-fit-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
     cursor: pointer;
-    box-shadow: var(--subtle-shadow);
-    flex-shrink: 0; 
+    padding: 5px;
+}
+#show-controls-button {
+    position: absolute;
+    bottom: 10px;
+    /* --- CORREÇÃO: Posição do botão "olho" --- */
+    right: 10px; 
+    left: auto; /* Garante que a propriedade 'left' não interfira */
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: none; /* Inicia oculto */
+    align-items: center;
+    justify-content: center;
+}
+#player-controls.hidden + #show-controls-button {
+    display: flex;
 }
 
-.modal-favorite-button:hover,
-.modal-copy-link-button:hover {
-    background: var(--purple-accent);
-    color: var(--text-primary);
-    border-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 4px 15px rgba(89, 59, 162, 0.4);
-    transform: scale(1.1);
-}
-
-.modal-favorite-button.active {
-    background-color: var(--danger-red);
-    border-color: var(--danger-red);
-    box-shadow: 0 0 15px rgba(229, 62, 62, 0.7);
-}
-
-.modal-favorite-button.active:hover {
-    background-color: var(--danger-red-hover);
-    border-color: var(--danger-red-hover);
-}
-
-.modal-favorite-button .fas, .modal-favorite-button .far,
-.modal-copy-link-button .fas {
-    margin-right: 0;
-}
-
-}
-
-/* *** CORREÇÃO: Oculta o botão de trailer *** */
-#trailerButton {
-    display: none !important;
-}
-
-#pickAgainButton {
-  /* MD3 Applied */
-  background-color: rgba(89,59,162,0.20);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(89,59,162,0.60);
-  color: var(--text-primary);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  padding: 0.5rem 0.8rem;
-  border-radius: 0.8rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  flex: 1;
-  max-width: 180px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  text-transform: uppercase;
-  text-decoration: none;
-}
-
-#pickAgainButton:hover,
-#trailerButton:hover {
-    /* MD3 Applied */
-    background-color: rgba(89,59,162,0.3);
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
-}
-
-#pickAgainButton .fas {
-    display: none;
-}
-#pickAgainButton span {
-    display: inline;
-}
-
+@media (max-width: 767px) {
+    h1 { font-size: 2rem; }
+    .button-group { flex-direction: column; gap: 0.75rem; }
+    .random-button { padding: 1rem 1.5rem; width: 100%; max-width: 300px; }
+    #player-controls { flex-direction: column; }
+    #player-zoom-slider { width: 120px; }
 }

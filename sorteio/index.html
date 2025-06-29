@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title></title>
+    <title>Sorteador de Mídia</title>
     <!-- Tailwind CSS para estilização rápida e responsiva -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome para ícones -->
@@ -19,8 +19,11 @@
     <div id="pageBackdrop"></div>
     <div id="loader" class="loader" style="display: none;"></div>
 
+    <!-- ADICIONADO: Contêiner para o player de vídeo em tela cheia -->
+    <div id="player-fullscreen-wrapper"></div>
+
     <div class="main-container">
-        <h1></h1>
+        <h1>Sorteador de Mídia</h1>
         <div class="button-group">
             <button id="randomMovieButton" class="random-button">
                 <i class="fas fa-film"></i>
@@ -37,7 +40,7 @@
         </div>
     </div>
 
-    <!-- Elementos necessários para o modal de detalhes, mas ocultos -->
+    <!-- Elementos necessários para os scripts do catálogo, mas ocultos -->
     <div id="defaultContentSections" style="display: none;">
         <div id="moviesSection"></div>
         <div id="tvShowsSection"></div>
@@ -47,23 +50,22 @@
         <div id="singleResultsGrid"></div>
     </div>
     
-    <!-- Container para os botões de ação do modal (Sortear Novamente) -->
+    <!-- Container para o botão de ação "Sortear Novamente" -->
     <div id="externalCopyButtonContainer">
         <button id="pickAgainButton">
             Sortear Novamente
         </button>
-        <!-- BOTÃO DE COPIAR LINK REMOVIDO -->
     </div>
     
     <!-- Scripts SweetAlert2 (necessário para o modal) -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
-    <!-- Seus scripts do catálogo. CRÍTICO: Caminhos corretos para a pasta 'Catalogo1/'. -->
+    <!-- Seus scripts do catálogo. Verifique se os caminhos estão corretos. -->
     <script src="../Catalogo1/script1.js"></script>
     <script src="../Catalogo1/script2.js"></script>
     <script src="../Catalogo1/script3.js"></script>
 
-    <!-- Link para o arquivo JavaScript externo -->
-    <script type="module" src="./script.js"></script>
+    <!-- Link para o arquivo JavaScript principal da página -->
+    <script src="./script.js"></script>
 </body>
 </html>
