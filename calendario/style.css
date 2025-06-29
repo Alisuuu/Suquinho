@@ -7,12 +7,12 @@
 
 :root {
   /* --- Variáveis do Tema --- */
-  --primary-color: #8B5CF6;
+  --primary-color: #8B5CF6; /* Roxo principal para o botão ativo */
   --on-primary-color: #FFFFFF;
-  --background-color: #0F1014; /* Um preto um pouco mais suave */
+  --background-color: #0F1014;
   --surface-color: rgba(255, 255, 255, 0.08);
   --on-surface-color: #F9FAFB;
-  --on-surface-variant-color: #9CA3AF;
+  --on-surface-variant-color: #D1D5DB; /* Cor de texto para botões inativos */
   --outline-color: rgba(255, 255, 255, 0.15);
   --status-atualizado: #6750A4;
   --status-hoje: #2196F3;
@@ -20,36 +20,27 @@
   --status-atrasado: #F44336;
   
   /* --- Variáveis para superfícies translúcidas --- */
-  --translucent-bg: rgba(30, 30, 40, 0.5); /* Fundo translúcido */
+  --translucent-bg: rgba(30, 30, 40, 0.5);
   --translucent-border: rgba(255, 255, 255, 0.1);
 
-  /* --- Variáveis do Modal --- */
+  /* --- Variáveis do Modal (AJUSTADAS PARA CORRESPONDER À IMAGEM) --- */
   --text-primary: #F9FAFB;
   --text-secondary: #9CA3AF;
   --purple-light: #A78BFA;
   --purple-accent: #8B5CF6;
   --danger-red: #E53E3E;
   --danger-red-hover: #C53030;
-  --modal-border-neutral: rgba(255, 255, 255, 0.15);
-  --modal-background-gradient: radial-gradient(circle at top, rgba(30, 20, 50, 0.9) 0%, rgba(10, 5, 20, 0.95) 100%);
-  --modal-shadow-glow: 0 0 40px -10px rgba(130, 0, 255, 0.15);
+  --modal-border-neutral: rgba(255, 255, 255, 0.08);
+  --modal-background-color: #14121E; /* Cor de fundo sólida do popup */
+  --filter-panel-bg: #1E1C2A; /* Cor de fundo do painel de gêneros */
+  --filter-button-inactive-bg: #312D40; /* Cor de fundo do botão inativo */
+  --filter-button-inactive-hover-bg: #4A455C; /* Cor do hover para botão inativo */
+  --modal-shadow-glow: 0 0 40px -10px rgba(130, 0, 255, 0.1);
   --subtle-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
   --amoled-black: #000000;
   --success-green: #38A169;
   --info-blue: #3182CE;
   --border-color: rgba(255, 255, 255, 0.1);
-}
-
-/* ==========================================================================
-   CLASSES UTILITÁRIAS
-   ========================================================================== */
-
-/* Superfície translúcida. Adicione esta classe aos elementos no HTML. */
-.translucent-surface {
-  background: var(--translucent-bg);
-  border: 1px solid var(--translucent-border);
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 /* ==========================================================================
@@ -64,7 +55,7 @@ body {
 
 header, main {
     position: relative;
-    z-index: 1; /* Apenas para garantir a ordem, se necessário */
+    z-index: 1;
 }
 
 /* ==========================================================================
@@ -83,7 +74,7 @@ header, main {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--on-primary-color);
-  background-color: rgba(30,30,40,0.7); /* Fundo simples */
+  background-color: rgba(30,30,40,0.7);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
@@ -93,7 +84,7 @@ header, main {
 .status-tag-futuro { background: rgba(255, 193, 7, 0.7); color: #111827; }
 .status-tag-atrasado { background: rgba(244, 67, 54, 0.7); }
 
-.button-blur { /* O nome da classe foi mantido por consistência */
+.button-blur {
   background: rgba(139, 92, 246, 0.12);
   border: 1px solid rgba(139, 92, 246, 0.15);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
@@ -186,21 +177,25 @@ input:-webkit-autofill {
     to { transform: rotate(360deg); }
 }
 
+/* Estilo geral do Popup */
 .swal2-popup {
     color: var(--text-primary) !important;
-    border-radius: 1.2rem !important;
+    border-radius: 1.25rem !important; /* 20px */
     border: 1px solid var(--modal-border-neutral) !important;
     max-width: 90vw !important;
     width: auto !important;
-    background: var(--modal-background-gradient) !important;
-    box-shadow: 0 6px 20px -3px rgba(0,0,0,0.8), var(--modal-shadow-glow) !important;
+    background: var(--modal-background-color) !important; /* Cor de fundo sólida */
+    box-shadow: 0 8px 30px -5px rgba(0,0,0,0.7), var(--modal-shadow-glow) !important;
+    padding: 1rem 1.5rem 1.5rem 1.5rem !important;
 }
 
 .swal2-title {
-    color: var(--purple-light) !important;
-    font-size: 1.6rem !important;
-    padding-top: 1.5rem !important;
-    margin-bottom: 0 !important;
+    color: var(--text-primary) !important; /* Título branco */
+    font-weight: 600 !important;
+    font-size: 1.75rem !important;
+    padding: 1rem 0 0 0 !important;
+    margin-bottom: 0.5rem !important;
+    text-align: left !important;
 }
 
 .swal2-html-container {
@@ -211,98 +206,88 @@ input:-webkit-autofill {
 }
 
 .swal2-close {
-    color: #FFFFFF !important;
-    font-size: 2.2em !important;
+    color: var(--on-surface-variant-color) !important;
+    font-size: 2.5em !important;
     position: absolute !important;
-    top: 15px !important;
-    right: 30px !important;
+    top: 1.25rem !important;
+    right: 1.5rem !important;
     z-index: 100;
-    width: 35px;
-    height: 35px;
-    line-height: 35px;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
     text-align: center;
     border-radius: 50%;
-    background-color: rgba(255,255,255,0.1);
-    transition: color 0.2s ease, transform 0.2s ease, background-color 0.2s ease !important;
-    will-change: color, transform, background-color;
+    background-color: transparent;
+    transition: color 0.2s ease, transform 0.2s ease !important;
+    will-change: color, transform;
 }
 
 .swal2-close:hover {
-    color: var(--purple-light) !important;
-    transform: scale(1.15) !important;
-    background-color: rgba(255,255,255,0.2);
+    color: var(--text-primary) !important;
+    transform: scale(1.1) !important;
 }
 
+/* --- INÍCIO: ESTILOS EXATOS PARA O FILTRO DE GÊNERO --- */
+
+/* Contêiner para os botões de tipo (Filmes, Séries, etc.) */
+.swal-genre-filter-type-selector {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem; /* Espaço entre os tipos e a caixa de gêneros */
+}
+
+/* Painel que envolve os botões de gênero */
+.swal-genre-buttons-panel {
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 0.75rem; /* Espaçamento entre os botões */
+    justify-content: center;
+    max-height: 220px; /* Altura ajustável conforme necessário */
+    overflow-y: auto;
+    padding: 1rem;
+    border-radius: 1rem; /* 16px */
+    margin: 0; /* Remove margens extras */
+    background-color: var(--filter-panel-bg); /* Fundo do painel de gêneros */
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Estilo base COMUM para todos os botões de filtro */
 .swal-genre-filter-type-selector button,
-.swal-genre-buttons-panel button,
-.swal-filter-actions button,
-.modal-favorite-button {
-    padding: 0.7rem 1.4rem;
-    border-radius: 0.8rem;
-    font-weight: 600;
-    font-size: 0.95rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: linear-gradient(135deg, rgba(40, 20, 80, 0.3), rgba(80, 0, 120, 0.3));
-    color: var(--text-primary);
-    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-    will-change: background, color, border-color, box-shadow;
-    margin: 0.3rem;
-    box-shadow: var(--subtle-shadow);
+.swal-genre-buttons-panel button {
+    padding: 0.7rem 1.5rem;
+    border-radius: 0.75rem; /* 12px */
+    font-weight: 500;
+    font-size: 0.9rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+    will-change: background-color, color, transform;
 }
 
-.swal-genre-filter-type-selector button:hover,
-.swal-genre-buttons-panel button:hover,
-.swal-filter-actions button:hover,
-.modal-favorite-button:hover {
-    background: linear-gradient(135deg, rgba(89, 59, 162, 0.7), rgba(162, 0, 255, 0.7));
-    color: var(--text-primary);
-    border-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 6px 20px rgba(130, 0, 255, 0.3), 0 2px 8px rgba(0,0,0,0.3);
+/* Estilo para botões de filtro INATIVOS */
+.swal-genre-filter-type-selector button:not(.active),
+.swal-genre-buttons-panel button:not(.active) {
+    background-color: var(--filter-button-inactive-bg);
+    color: var(--on-surface-variant-color);
 }
 
+/* Efeito Hover para botões de filtro INATIVOS */
+.swal-genre-filter-type-selector button:not(.active):hover,
+.swal-genre-buttons-panel button:not(.active):hover {
+    background-color: var(--filter-button-inactive-hover-bg);
+    color: var(--on-surface-color);
+    transform: translateY(-2px);
+}
+
+/* Estilo para botões de filtro ATIVOS */
 .swal-genre-filter-type-selector button.active,
 .swal-genre-buttons-panel button.active {
-    background: var(--purple-accent);
-    color: var(--amoled-black);
-    border-color: var(--purple-accent);
-    box-shadow: 0 0 15px rgba(89, 59, 162, 0.7);
+    background-color: var(--primary-color);
+    color: var(--on-primary-color);
+    font-weight: 600;
 }
 
-.swal-filter-actions .swal2-confirm {
-    background-color: var(--purple-accent) !important;
-    color: var(--amoled-black) !important;
-    border: 1px solid var(--purple-accent) !important;
-    box-shadow: 0 4px 15px rgba(89, 59, 162, 0.4) !important;
-}
-
-.swal-filter-actions .swal2-confirm:hover {
-    background-color: var(--purple-light) !important;
-    border-color: var(--purple-light) !important;
-    box-shadow: 0 6px 20px rgba(89, 59, 162, 0.6) !important;
-}
-
-.swal-filter-actions .swal2-deny {
-    background-color: var(--danger-red) !important;
-    color: var(--text-primary) !important;
-    border: 1px solid var(--danger-red) !important;
-    box-shadow: 0 4px 15px rgba(229, 62, 62, 0.3) !important;
-}
-
-.swal-filter-actions .swal2-deny:hover {
-    background-color: var(--danger-red-hover) !important;
-    border-color: var(--danger-red-hover) !important;
-    box-shadow: 0 6px 20px rgba(229, 62, 62, 0.5) !important;
-}
-
-.swal-genre-buttons-panel {
-    display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center;
-    max-height: 180px; overflow-y: auto;
-    padding: 0.8rem;
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 0.8rem;
-    margin: 1rem 0;
-    background-color: rgba(0,0,0,0.4);
-}
+/* --- FIM: ESTILOS EXATOS PARA O FILTRO DE GÊNERO --- */
 
 .swal-details-popup.swal2-popup,
 .swal-favorites-popup.swal2-popup {
@@ -320,6 +305,39 @@ input:-webkit-autofill {
     scrollbar-width: thin;
     scrollbar-color: var(--purple-accent) var(--border-color);
 }
+
+/* Estilos para os botões de Ação do modal (Aplicar, etc.) */
+.swal-filter-actions {
+    margin-top: 1.5rem !important; /* Espaço acima dos botões de ação */
+}
+
+.swal-filter-actions .swal2-confirm {
+    background-color: var(--purple-accent) !important;
+    color: var(--on-primary-color) !important;
+    border: none !important;
+    border-radius: 0.75rem !important;
+    box-shadow: 0 4px 15px rgba(89, 59, 162, 0.4) !important;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.swal-filter-actions .swal2-confirm:hover {
+    background-color: var(--purple-light) !important;
+    box-shadow: 0 6px 20px rgba(89, 59, 162, 0.6) !important;
+}
+
+.swal-filter-actions .swal2-deny {
+    background-color: var(--filter-button-inactive-bg) !important;
+    color: var(--on-surface-variant-color) !important;
+    border: none !important;
+    border-radius: 0.75rem !important;
+    transition: background-color 0.2s ease !important;
+}
+
+.swal-filter-actions .swal2-deny:hover {
+    background-color: var(--filter-button-inactive-hover-bg) !important;
+    color: var(--on-surface-color) !important;
+}
+
 
 /* ==========================================================================
    CONTEÚDO DO MODAL DE DETALHES
@@ -439,6 +457,27 @@ input:-webkit-autofill {
 /* ==========================================================================
    FAVORITOS
    ========================================================================== */
+
+.modal-favorite-button {
+    padding: 0.7rem 1.4rem;
+    border-radius: 0.8rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, rgba(40, 20, 80, 0.3), rgba(80, 0, 120, 0.3));
+    color: var(--text-primary);
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    will-change: background, color, border-color, box-shadow;
+    margin: 0.3rem;
+    box-shadow: var(--subtle-shadow);
+}
+
+.modal-favorite-button:hover {
+    background: linear-gradient(135deg, rgba(89, 59, 162, 0.7), rgba(162, 0, 255, 0.7));
+    color: var(--text-primary);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 6px 20px rgba(130, 0, 255, 0.3), 0 2px 8px rgba(0,0,0,0.3);
+}
 
 .content-card .favorite-button {
     position: absolute;
@@ -580,38 +619,33 @@ input:-webkit-autofill {
    ========================================================================== */
 
 #week-navigation::-webkit-scrollbar,
-.swal-scroll-container::-webkit-scrollbar,
 .swal-genre-buttons-panel::-webkit-scrollbar,
 .swal-details-popup .swal2-html-container::-webkit-scrollbar,
 .details-cast-scroller::-webkit-scrollbar {
-    height: 8px;
-    width: 8px;
+    height: 6px;
+    width: 6px;
 }
 
 #week-navigation::-webkit-scrollbar-track,
-.swal-scroll-container::-webkit-scrollbar-track,
 .swal-genre-buttons-panel::-webkit-scrollbar-track,
 .swal-details-popup .swal2-html-container::-webkit-scrollbar-track,
 .details-cast-scroller::-webkit-scrollbar-track {
-    background: rgba(0,0,0,0.1);
+    background: rgba(0,0,0,0.2);
     border-radius: 10px;
 }
 
 #week-navigation::-webkit-scrollbar-thumb,
-.swal-scroll-container::-webkit-scrollbar-thumb,
 .swal-genre-buttons-panel::-webkit-scrollbar-thumb,
 .swal-details-popup .swal2-html-container::-webkit-scrollbar-thumb,
 .details-cast-scroller::-webkit-scrollbar-thumb {
     background-color: var(--purple-accent);
     border-radius: 10px;
-    border: 2px solid transparent;
-    background-clip: content-box;
 }
 
 #week-navigation::-webkit-scrollbar-thumb:hover,
-.swal-scroll-container::-webkit-scrollbar-thumb:hover,
 .swal-genre-buttons-panel::-webkit-scrollbar-thumb:hover,
 .swal-details-popup .swal2-html-container::-webkit-scrollbar-thumb:hover,
 .details-cast-scroller::-webkit-scrollbar-thumb:hover {
     background-color: var(--purple-light);
 }
+
