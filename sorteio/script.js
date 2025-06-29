@@ -1,4 +1,3 @@
-
 // Referências dos elementos HTML
 const randomMovieButton = document.getElementById('randomMovieButton');
 const randomTvButton = document.getElementById('randomTvButton');
@@ -62,8 +61,11 @@ async function pickRandomMedia(type) {
         Swal.fire({ icon: 'error', title: 'Erro!', text: 'Funções essenciais não carregadas.' });
         return;
     }
+    
+    // CORREÇÃO: A linha abaixo foi removida. A visibilidade dos botões
+    // agora é controlada apenas pelo CSS, que é a abordagem correta.
+    // modalActionButtonsContainer.style.display = 'none';
 
-    modalActionButtonsContainer.style.display = 'none';
     lastPickedMediaType = null;
     currentModalItemId = null;
     currentModalItemType = null;
@@ -123,8 +125,19 @@ historyButton.addEventListener('click', () => {
 });
 
 pickAgainButton.addEventListener('click', () => {
-    if (Swal) Swal.close();
-    if (lastPickedMediaType) pickRandomMedia(lastPickedMediaType);
+    if (Swal.isVisible()) {
+        Swal.close();
+        // Pequeno timeout para permitir que a animação de fechar do Swal termine
+        setTimeout(() => {
+            if (lastPickedMediaType) {
+                pickRandomMedia(lastPickedMediaType);
+            }
+        }, 250);
+    } else {
+        if (lastPickedMediaType) {
+            pickRandomMedia(lastPickedMediaType);
+        }
+    }
 });
 
 externalCopyLinkButton.addEventListener('click', () => {
