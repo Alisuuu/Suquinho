@@ -1,7 +1,7 @@
 // =========================================================================
-// SCRIPT PRINCIPAL DO CATÁLOGO (ORIGINAL DO USUÁRIO, CORRIGIDO)
-// Versão completa, com todas as linhas, aplicando as correções para o painel
-// lateral deslizante e restaurando as funcionalidades originais.
+// SCRIPT PRINCIPAL DO CATÁLOGO (CORRIGIDO)
+// Versão corrigida para criar dinamicamente o wrapper do player,
+// garantindo que o modal funcione mesmo quando chamado de outros scripts.
 // =========================================================================
 
 // --- Funções da API, Lógica Principal, Filtros e Modal de Detalhes ---
@@ -272,6 +272,8 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
     stopMainPageBackdropSlideshow();
     updatePageBackground(backdropPath);
 
+    let mainPlayerUrl = ''; // Armazena a URL do player principal
+
     currentOpenSwalRef = Swal.fire({
         title: 'Carregando Detalhes...',
         html: '<div class="loader mx-auto my-10" style="width: 40px; height: 40px; border-width: 4px;"></div>',
@@ -279,8 +281,6 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
         customClass: { popup: 'swal2-popup swal-details-popup' },
         willClose: () => {
             updatePageBackground(null);
-            const iframe = document.getElementById('swal-details-iframe');
-            if (iframe) iframe.src = 'about:blank';
             currentOpenSwalRef = null;
             
             const urlParams = new URLSearchParams(window.location.search);
@@ -311,24 +311,22 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
     if (!backdropPath && details.backdrop_path) updatePageBackground(details.backdrop_path);
 
     const imdbId = details.external_ids?.imdb_id;
-    let superflixPlayerUrl = '';
-    if (mediaType === 'movie' && imdbId) superflixPlayerUrl = `${PLAYER_BASE_URL_MOVIE}${imdbId}`;
-    else if (mediaType === 'tv') superflixPlayerUrl = `${PLAYER_BASE_URL_SERIES}${itemId}/1/`;
+    if (mediaType === 'movie' && imdbId) mainPlayerUrl = `${PLAYER_BASE_URL_MOVIE}${imdbId}`;
+    else if (mediaType === 'tv') mainPlayerUrl = `${PLAYER_BASE_URL_SERIES}${itemId}/1/`;
     
-    // CORREÇÃO: Lógica do player e trailer foi alterada
-    const hasMainPlayer = !!superflixPlayerUrl;
     const shareUrl = `https://alisuuu.github.io/Suquinho/?pagina=Catalogo1%2Findex.html%3Ftype%3D${mediaType}%26id%3D${itemId}`;
     const titleText = details.title || details.name || "Título Indisponível";
+    const videos = details.videos?.results || [];
+    const trailer = videos.find(v => v.site === 'YouTube' && v.type === 'Trailer') || videos.find(v => v.site === 'YouTube');
     const coverImagePath = details.backdrop_path ? `${TMDB_IMAGE_BASE_URL}w1280${details.backdrop_path}` : (details.poster_path ? `${TMDB_IMAGE_BASE_URL}w780${details.poster_path}` : 'https://placehold.co/1280x720/0A0514/F0F0F0?text=Indispon%C3%ADvel');
 
-    // CORREÇÃO: O cabeçalho agora sempre mostra a capa com um ícone de play.
-    // O clique neste container tentará colocar o player principal em tela cheia.
     const headerContentHTML = `
         <div class="details-trailer-container" id="details-header-cover">
-            <img src="${coverImagePath}" alt="Capa de ${titleText}" class="trailer-cover-img" onerror="this.onerror=null; this.src='https://placehold.co/1280x720/0A0514/F0F0F0?text=Erro';">
-            <div class="play-icon-overlay">
-                <i class="fas fa-play"></i>
+            <div class="trailer-cover">
+                <img src="${coverImagePath}" alt="Capa de ${titleText}" class="trailer-cover-img" onerror="this.onerror=null; this.src='https://placehold.co/1280x720/0A0514/F0F0F0?text=Erro';">
+                <div class="play-icon-overlay"><i class="fas fa-play"></i></div>
             </div>
+            ${trailer && trailer.key ? `<iframe id="trailer-iframe" src="https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=1&controls=0&showinfo=0&loop=1&playlist=${trailer.key}" frameborder="0" allow="autoplay; encrypted-media" title="Trailer de ${titleText}"></iframe>` : ''}
         </div>`;
 
     const overview = details.overview || 'Sinopse não disponível.';
@@ -342,14 +340,9 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
         castSectionHTML = `<div class="details-cast-section"><h3 class="details-section-subtitle">Elenco Principal</h3><div class="details-cast-scroller">${details.credits.cast.slice(0, 15).map(person => `<div class="cast-member-card"><img src="${person.profile_path ? TMDB_IMAGE_BASE_URL + 'w185' + person.profile_path : PLACEHOLDER_PERSON_IMAGE}" alt="${person.name}" class="cast-member-photo" onerror="this.onerror=null; this.src='${PLACEHOLDER_PERSON_IMAGE}';"><p class="cast-member-name">${person.name}</p><p class="cast-member-character">${person.character}</p></div>`).join('')}</div></div>`;
     }
     
-    // CORREÇÃO: Player principal é criado com um ID específico.
-    let playerSectionHTML = hasMainPlayer 
-        ? `<div class="details-player-section"><h3 class="details-section-subtitle">Assistir Agora</h3><div class="details-iframe-container ${mediaType === 'tv' ? 'iframe-series-dimensions' : ''}"><iframe id="swal-details-iframe" src="${superflixPlayerUrl}" allowfullscreen title="Player de ${titleText}" sandbox="allow-scripts allow-same-origin"></iframe></div></div>` 
-        : `<div class="details-player-section"><p class="details-player-unavailable">Player não disponível para este título.</p></div>`;
-
     const isFav = isFavorite(itemId, mediaType);
-    const favoriteButtonHTML = `<button id="modalFavoriteButton" class="modal-favorite-button ${isFav ? 'active' : ''}" data-id="${itemId}" data-type="${mediaType}">${isFav ? '<i class="fas fa-heart"></i> Remover dos Favoritos' : '<i class="far fa-heart"></i> Adicionar aos Favoritos'}</button>`;
-    const copyLinkButtonHTML = `<button id="modalCopyLinkButton" class="modal-copy-link-button"><i class="fas fa-link"></i> Copiar Link</button>`;
+    const favoriteButtonHTML = `<button id="modalFavoriteButton" class="modal-favorite-button ${isFav ? 'active' : ''}" data-id="${itemId}" data-type="${mediaType}" title="${isFav ? 'Remover dos Favoritos' : 'Adicionar aos Favoritos'}">${isFav ? '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>'}</button>`;
+    const copyLinkButtonHTML = `<button id="modalCopyLinkButton" class="modal-copy-link-button" title="Copiar Link"><i class="fas fa-link"></i></button>`;
     
     const detailsHTML = `
         <div class="swal-details-content">
@@ -370,34 +363,55 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
                 <p class="details-overview">${overview}</p>
             </div>
             ${castSectionHTML}
-            ${playerSectionHTML}
         </div>`;
 
     Swal.update({ title: '', html: detailsHTML, showConfirmButton: false });
     
-    // CORREÇÃO: Novo listener para o clique na capa (cabeçalho).
+    // ======================= INÍCIO DA CORREÇÃO =======================
     document.getElementById('details-header-cover')?.addEventListener('click', () => {
-        const playerIframe = document.getElementById('swal-details-iframe');
-        if (playerIframe) {
-            // Rola a tela até o iframe para o usuário vê-lo antes do fullscreen
-            playerIframe.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (mainPlayerUrl) {
+            let wrapper = document.getElementById('player-fullscreen-wrapper');
+
+            // Se o wrapper não existir no DOM, o cria dinamicamente.
+            if (!wrapper) {
+                console.warn("Elemento #player-fullscreen-wrapper não encontrado. Criando dinamicamente. Recomenda-se adicioná-lo ao seu HTML.");
+                wrapper = document.createElement('div');
+                wrapper.id = 'player-fullscreen-wrapper';
+                // Adiciona estilos essenciais para o funcionamento
+                Object.assign(wrapper.style, {
+                    position: 'fixed',
+                    top: '0',
+                    left: '0',
+                    width: '100%',
+                    height: '100%',
+                    backgroundColor: 'black',
+                    display: 'none',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    zIndex: '9999'
+                });
+                document.body.appendChild(wrapper);
+            }
+
+            // Define o conteúdo e exibe o player
+            wrapper.innerHTML = `<iframe src="${mainPlayerUrl}" style="width:100%; height:100%; border:none;" allowfullscreen></iframe>`;
+            wrapper.style.display = 'flex';
             
-            // Pede para entrar em tela cheia após um pequeno atraso
-            setTimeout(() => {
-                if (playerIframe.requestFullscreen) {
-                    playerIframe.requestFullscreen();
-                } else if (playerIframe.mozRequestFullScreen) { /* Firefox */
-                    playerIframe.mozRequestFullScreen();
-                } else if (playerIframe.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
-                    playerIframe.webkitRequestFullscreen();
-                } else if (playerIframe.msRequestFullscreen) { /* IE/Edge */
-                    playerIframe.msRequestFullscreen();
-                }
-            }, 500); // Atraso de 500ms
+            // Tenta entrar em modo tela cheia
+            if (wrapper.requestFullscreen) {
+                wrapper.requestFullscreen().catch(err => {
+                    console.error(`Erro ao tentar ativar modo tela cheia: ${err.message} (${err.name})`);
+                });
+            } else if (wrapper.webkitRequestFullscreen) { // Safari
+                wrapper.webkitRequestFullscreen();
+            } else if (wrapper.msRequestFullscreen) { // IE11
+                wrapper.msRequestFullscreen();
+            }
         } else {
-            showCustomToast('Player principal não encontrado para tela cheia.', 'info');
+            showCustomToast('Player principal não disponível.', 'info');
         }
     });
+    // ======================= FIM DA CORREÇÃO =======================
 
     document.getElementById('modalFavoriteButton')?.addEventListener('click', () => toggleFavorite(details, mediaType));
     document.getElementById('modalCopyLinkButton')?.addEventListener('click', () => copyToClipboard(shareUrl));
@@ -535,7 +549,8 @@ function updateFavoriteButtonsState(id, type) {
     const modalBtn = document.getElementById('modalFavoriteButton');
     if (modalBtn && modalBtn.dataset.id == id && modalBtn.dataset.type == type) {
         modalBtn.classList.toggle('active', isFav);
-        modalBtn.innerHTML = isFav ? '<i class="fas fa-heart"></i> Remover dos Favoritos' : '<i class="far fa-heart"></i> Adicionar aos Favoritos';
+        modalBtn.title = isFav ? 'Remover dos Favoritos' : 'Adicionar aos Favoritos';
+        modalBtn.innerHTML = isFav ? '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>';
     }
 }
 
@@ -639,6 +654,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if(scrolledToEnd) loadMoreItems();
+    });
+
+    // Listener para limpar o wrapper do player ao sair da tela cheia
+    document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement) {
+            const wrapper = document.getElementById('player-fullscreen-wrapper');
+            if (wrapper) {
+                wrapper.style.display = 'none';
+                wrapper.innerHTML = '';
+            }
+        }
     });
 
     const urlParams = new URLSearchParams(window.location.search);
