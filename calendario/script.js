@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const apiURL = 'https://superflixapi.pw/calendario.php';
+    const apiURL = 'https://superflixapi.blog/calendario.php';
     let data = [];
     let periodo = 'semana';
     let itemsByDay = {};
