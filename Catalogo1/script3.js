@@ -311,15 +311,26 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
             }
         }
     });
-
-    let details = await getItemDetails(itemId, mediaType);
-
-    if (!Swal.isVisible()) return;
-
-    if (!details || details.error) {
-        Swal.update({ title: 'Erro', html: `<p class="text-red-400 text-center py-10">Não foi possível carregar os detalhes.</p>`, showConfirmButton: true, confirmButtonText: 'Fechar' });
+    
+    // --- CORREÇÃO INÍCIO: Tratamento de erro robusto ---
+    // Adicionado bloco try...catch para capturar falhas na busca de detalhes (ex: problemas de rede),
+    // evitando que o modal fique "travado" em "Carregando...".
+    let details;
+    try {
+        details = await getItemDetails(itemId, mediaType);
+        if (!Swal.isVisible()) return; // Aborta se o modal foi fechado enquanto carregava
+        if (!details || details.error) {
+            // Lança um erro se a API retornar um erro explícito ou dados inválidos.
+            throw new Error(details?.message || 'Os dados recebidos da API são inválidos.');
+        }
+    } catch (error) {
+        console.error("Falha ao buscar detalhes do item:", error);
+        if (Swal.isVisible()) {
+            Swal.update({ title: 'Erro de Comunicação', html: `<p class="text-red-400 text-center py-10">Não foi possível carregar os detalhes. Verifique sua conexão ou tente novamente mais tarde.</p>`, showConfirmButton: true, confirmButtonText: 'Fechar' });
+        }
         return;
     }
+    // --- CORREÇÃO FIM ---
 
     if (!backdropPath && details.backdrop_path) updatePageBackground(details.backdrop_path);
 
@@ -411,8 +422,10 @@ let currentFitModeIndex = 0;
 
 function launchAdvancedPlayer(url, logoPath) {
     const wrapper = document.getElementById('player-fullscreen-wrapper');
+    // CORREÇÃO: Adicionado feedback visual para o usuário caso o elemento do player não exista.
     if (!wrapper) {
-        console.error("Elemento #player-fullscreen-wrapper não foi encontrado no HTML!");
+        console.error("Elemento #player-fullscreen-wrapper não foi encontrado no HTML! O player não pode ser iniciado.");
+        showCustomToast('Erro Crítico: Componente do player ausente.', 'info');
         return;
     }
 
@@ -693,7 +706,40 @@ function displayResults(items, defaultType, targetEl, replace) {
     targetEl.appendChild(fragment);
 }
 
-function copyToClipboard(text) { navigator.clipboard.writeText(text).then(() => showCustomToast('Link copiado!', 'success'), () => showCustomToast('Falha ao copiar.', 'info')); }
+// --- CORREÇÃO INÍCIO: Função de copiar para a área de transferência melhorada ---
+// A função foi reescrita para usar a API moderna `navigator.clipboard` (que é mais segura e recomendada),
+// mas mantém o método antigo `document.execCommand('copy')` como um "fallback".
+// Isso garante que a funcionalidade de copiar o link funcione na maioria dos navegadores,
+// incluindo os mais antigos ou quando a página não está em um contexto seguro (HTTPS).
+function copyToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+        // Usa a API moderna e segura
+        navigator.clipboard.writeText(text).then(() => {
+            showCustomToast('Link copiado com sucesso!', 'success');
+        }).catch(err => {
+            console.error('Falha ao copiar com a API Clipboard:', err);
+            showCustomToast('Erro ao copiar o link.', 'info');
+        });
+    } else {
+        // Usa o método antigo como fallback
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'absolute';
+        textArea.style.left = '-9999px';
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            showCustomToast('Link copiado para a área de transferência!', 'success');
+        } catch (err) {
+            console.error('Falha ao copiar com execCommand:', err);
+            showCustomToast('Não foi possível copiar o link automaticamente.', 'info');
+        } finally {
+            document.body.removeChild(textArea);
+        }
+    }
+}
+// --- CORREÇÃO FIM ---
 
 async function openFavoritesModal() {
     let favsHtml = '<p class="text-center text-gray-400 py-5">Você não tem nenhum favorito ainda.</p>';
@@ -791,4 +837,3 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeParam && idParam) openItemModal(idParam, typeParam);
     else loadMainPageContent();
 });
-
