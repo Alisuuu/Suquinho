@@ -414,7 +414,7 @@ body.swal2-shown #externalCopyButtonContainer {
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
-/* ========= Player Styles MODIFICADOS ========= */
+/* ========= Player Styles ========= */
 #player-fullscreen-wrapper {
     position: fixed;
     top: 0;
@@ -435,7 +435,7 @@ body.swal2-shown #externalCopyButtonContainer {
     border: none;
     position: absolute;
     transition: transform 0.3s ease-in-out;
-    object-fit: contain; /* Default fit mode */
+    object-fit: contain;
 }
 
 #player-fullscreen-wrapper.zoomed iframe {
@@ -464,13 +464,7 @@ body.swal2-shown #externalCopyButtonContainer {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease-in-out;
-}
-
-#player-close-btn:hover {
-    background-color: rgba(89, 59, 162, 0.8);
-    transform: scale(1.1);
-    box-shadow: 0 0 15px rgba(89, 59, 162, 0.5);
+    transition: all 0.2s ease-in-out, opacity 0.3s ease;
 }
 
 #player-controls {
@@ -478,20 +472,16 @@ body.swal2-shown #externalCopyButtonContainer {
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: rgba(30, 30, 30, 0.0);
-    backdrop-filter: blur(0px);
-    -webkit-backdrop-filter: blur(0px);
+    background-color: transparent; 
     padding: 10px 15px;
     border-radius: 50px;
-    border: 1px solid rgba(255, 255, 255, 0.0);
     display: flex;
-    flex-wrap: wrap; /* Allows groups to wrap to the next line */
+    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    gap: 1.5rem; /* Space between control groups */
+    gap: 1.5rem;
     z-index: 10001;
     transition: opacity 0.3s ease, visibility 0.3s ease;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.0);
 }
 
 #player-controls.hidden {
@@ -505,6 +495,7 @@ body.swal2-shown #externalCopyButtonContainer {
     max-width: 100px;
     object-fit: contain;
     opacity: 0.9;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
 }
 
 .player-control-group {
@@ -513,97 +504,39 @@ body.swal2-shown #externalCopyButtonContainer {
     gap: 10px;
 }
 
-#player-zoom-label {
-    font-size: 0.9rem;
-    color: white;
-    font-weight: 500;
-    min-width: 50px;
-    text-align: center;
-    background-color: rgba(0,0,0,0.3);
-    padding: 4px 8px;
-    border-radius: 8px;
-}
-
-input[type="range"]#player-zoom-slider {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 120px;
-    height: 6px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 5px;
-    outline: none;
-    transition: opacity 0.2s, background 0.2s;
-}
-
-input[type="range"]#player-zoom-slider:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
-
-input[type="range"]#player-zoom-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    background: var(--purple-light);
-    cursor: pointer;
-    border-radius: 50%;
-    border: 2px solid white;
-    transition: transform 0.2s ease;
-}
-input[type="range"]#player-zoom-slider::-webkit-slider-thumb:hover {
-    transform: scale(1.1);
-}
-
-input[type="range"]#player-zoom-slider::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
-    background: var(--purple-light);
-    cursor: pointer;
-    border-radius: 50%;
-    border: 2px solid white;
-}
-
-#player-zoom-in-btn,
-#player-zoom-out-btn,
+.player-zoom-preset-btn,
 .player-fit-btn {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(30, 30, 30, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
-    font-size: 1.1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
+    padding: 8px 16px;
+    border-radius: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
     line-height: 1;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
-#player-zoom-in-btn:hover,
-#player-zoom-out-btn:hover,
+.player-zoom-preset-btn:hover,
 .player-fit-btn:hover {
     background-color: var(--purple-accent);
     border-color: var(--purple-light);
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 
+.player-zoom-preset-btn.active,
 .player-fit-btn.active {
     background-color: var(--purple-light);
     color: white;
     border-color: var(--purple-accent);
     box-shadow: 0 0 10px var(--purple-light);
-    transform: scale(1.1);
-}
-
-#player-zoom-in-btn:disabled,
-#player-zoom-out-btn:disabled {
-    color: #666;
-    background-color: rgba(0,0,0,0.2);
-    border-color: rgba(255,255,255,0.1);
-    cursor: not-allowed;
-    transform: none;
+    transform: scale(1.05);
 }
 
 #show-controls-button {
@@ -619,15 +552,19 @@ input[type="range"]#player-zoom-slider::-moz-range-thumb {
     font-size: 1rem;
     cursor: pointer;
     z-index: 10000;
-    display: none;
+    display: flex;
     align-items: center;
     justify-content: center;
+    opacity: 0;
+    visibility: hidden;
     transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 #show-controls-button.visible {
-    display: flex;
+    opacity: 1;
+    visibility: visible;
 }
+
 
 .modal-actions-wrapper {
     display: flex;
