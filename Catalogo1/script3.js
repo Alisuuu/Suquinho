@@ -262,21 +262,54 @@ async function applyGenreFilterFromSA() {
 }
 
 async function getItemDetails(itemId, mediaType) {
-    const data = await fetchTMDB(`/${mediaType}/${itemId}`, { append_to_response: 'external_ids,credits,videos,images' });
+    const data = await fetchTMDB(`/${mediaType}/${itemId}`, { 
+        append_to_response: 'external_ids,credits,videos,images',
+        include_image_language: 'pt,en,null' // Otimiza a busca por logos nos idiomas corretos
+    });
     return data;
 }
 
+/**
+ * Seleciona o melhor logo de uma lista, usando um sistema de pontuação.
+ * Prioriza PNGs, depois SVGs, e logos no idioma correto.
+ * @param {Array<Object>} logos - O array de objetos de imagem de logo da API.
+ * @returns {string|null} O caminho do arquivo do melhor logo, ou null se nenhum for encontrado.
+ */
 function selectBestLogo(logos) {
-    if (!logos || logos.length === 0) return null;
+    if (!logos || logos.length === 0) {
+        console.warn("selectBestLogo: A API não retornou nenhum logo para este item.");
+        return null;
+    }
 
-    const preferredLogos = logos.filter(logo => logo.iso_639_1 === 'pt' || logo.iso_639_1 === 'en' || logo.iso_639_1 === null);
-    if (preferredLogos.length === 0) preferredLogos.push(...logos);
+    console.log(`selectBestLogo: Analisando ${logos.length} logos recebidos da API.`);
 
-    const svgLogo = preferredLogos.find(logo => logo.file_path.endsWith('.svg'));
-    if (svgLogo) return svgLogo.file_path;
+    const getScore = (logo) => {
+        let score = 0;
+        // Bônus por formato (prioridade máxima para PNG)
+        if (logo.file_path.endsWith('.png')) score += 100;
+        else if (logo.file_path.endsWith('.svg')) score += 90;
 
-    preferredLogos.sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0));
-    return preferredLogos[0]?.file_path || null;
+        // Bônus por idioma
+        if (logo.iso_639_1 === 'pt') score += 50;
+        else if (logo.iso_639_1 === 'en') score += 40;
+        else if (logo.iso_639_1 === null) score += 30; // Logos sem idioma definido
+        
+        // Usa a popularidade (vote_average) como critério de desempate
+        score += (logo.vote_average || 0);
+        
+        // Prefere logos mais largos (formato paisagem)
+        if (logo.aspect_ratio > 1) {
+            score += logo.aspect_ratio;
+        }
+
+        return score;
+    };
+
+    const scoredLogos = logos.map(logo => ({ ...logo, score: getScore(logo) }));
+    scoredLogos.sort((a, b) => b.score - a.score);
+
+    console.log("selectBestLogo: Logo com a maior pontuação escolhido:", scoredLogos[0]);
+    return scoredLogos[0].file_path;
 }
 
 
@@ -326,6 +359,9 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
         }
         return;
     }
+    
+    // Log crucial para depuração
+    console.log("Dados de imagens recebidos da API:", details.images);
 
     if (!backdropPath && details.backdrop_path) updatePageBackground(details.backdrop_path);
 
@@ -338,6 +374,7 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
     const coverImagePath = details.backdrop_path ? `${TMDB_IMAGE_BASE_URL}w1280${details.backdrop_path}` : (details.poster_path ? `${TMDB_IMAGE_BASE_URL}w780${details.poster_path}` : 'https://placehold.co/1280x720/0A0514/F0F0F0?text=Indispon%C3%ADvel');
 
     logoPathForPlayer = selectBestLogo(details.images?.logos);
+
     const logoHTML = logoPathForPlayer
         ? `<div class="details-logo-container"><img src="${TMDB_IMAGE_BASE_URL}w500${logoPathForPlayer}" class="details-logo-img" alt="${titleText} Logo"></div>`
         : '';
@@ -914,4 +951,3 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeParam && idParam) openItemModal(idParam, typeParam);
     else loadMainPageContent();
 });
-
