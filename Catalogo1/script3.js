@@ -264,17 +264,11 @@ async function applyGenreFilterFromSA() {
 async function getItemDetails(itemId, mediaType) {
     const data = await fetchTMDB(`/${mediaType}/${itemId}`, { 
         append_to_response: 'external_ids,credits,videos,images',
-        include_image_language: 'pt,en,null' // Otimiza a busca por logos nos idiomas corretos
+        include_image_language: 'pt,en,null' 
     });
     return data;
 }
 
-/**
- * Seleciona o melhor logo de uma lista, usando um sistema de pontuação.
- * Prioriza PNGs, depois SVGs, e logos no idioma correto.
- * @param {Array<Object>} logos - O array de objetos de imagem de logo da API.
- * @returns {string|null} O caminho do arquivo do melhor logo, ou null se nenhum for encontrado.
- */
 function selectBestLogo(logos) {
     if (!logos || logos.length === 0) {
         console.warn("selectBestLogo: A API não retornou nenhum logo para este item.");
@@ -285,19 +279,15 @@ function selectBestLogo(logos) {
 
     const getScore = (logo) => {
         let score = 0;
-        // Bônus por formato (prioridade máxima para PNG)
         if (logo.file_path.endsWith('.png')) score += 100;
         else if (logo.file_path.endsWith('.svg')) score += 90;
 
-        // Bônus por idioma
         if (logo.iso_639_1 === 'pt') score += 50;
         else if (logo.iso_639_1 === 'en') score += 40;
-        else if (logo.iso_639_1 === null) score += 30; // Logos sem idioma definido
+        else if (logo.iso_639_1 === null) score += 30; 
         
-        // Usa a popularidade (vote_average) como critério de desempate
         score += (logo.vote_average || 0);
         
-        // Prefere logos mais largos (formato paisagem)
         if (logo.aspect_ratio > 1) {
             score += logo.aspect_ratio;
         }
@@ -360,7 +350,6 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
         return;
     }
     
-    // Log crucial para depuração
     console.log("Dados de imagens recebidos da API:", details.images);
 
     if (!backdropPath && details.backdrop_path) updatePageBackground(details.backdrop_path);
@@ -379,13 +368,14 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
         ? `<div class="details-logo-container"><img src="${TMDB_IMAGE_BASE_URL}w500${logoPathForPlayer}" class="details-logo-img" alt="${titleText} Logo"></div>`
         : '';
 
+    // ALTERAÇÃO: ID adicionado ao play-icon-wrapper
     const headerContentHTML = `
-        <div class="details-trailer-container" id="details-header-cover">
+        <div class="details-trailer-container">
             <div class="trailer-cover">
                 <img src="${coverImagePath}" alt="Capa de ${titleText}" class="trailer-cover-img" onerror="this.onerror=null; this.src='https://placehold.co/1280x720/0A0514/F0F0F0?text=Erro';">
                 ${logoHTML}
                 <div class="cover-elements-overlay">
-                    <div class="play-icon-wrapper">
+                    <div id="modal-play-button" class="play-icon-wrapper">
                         <i class="fas fa-play"></i>
                     </div>
                 </div>
@@ -430,7 +420,9 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
 
     Swal.update({ title: '', html: detailsHTML, showConfirmButton: false });
 
-    document.getElementById('details-header-cover')?.addEventListener('click', () => {
+    // ALTERAÇÃO: O listener de clique agora está apenas no botão de play
+    document.getElementById('modal-play-button')?.addEventListener('click', (e) => {
+        e.stopPropagation(); // Impede que o clique se propague para outros elementos
         if (mainPlayerUrl) {
             launchAdvancedPlayer(mainPlayerUrl, logoPathForPlayer);
         } else {
@@ -443,7 +435,7 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
 }
 
 // =========================================================================
-// LÓGICA DO LEITOR DE VÍDEO AVANÇADO (CORRIGIDO)
+// LÓGICA DO LEITOR DE VÍDEO AVANÇADO
 // =========================================================================
 let controlsHideTimer = null;
 let zoomState = { level: 1, max: 3, x: 0, y: 0 };
@@ -490,10 +482,10 @@ function launchAdvancedPlayer(url, logoPath) {
             ${logoForPlayerHTML}
             
             <div id="player-zoom-controls" class="player-control-group">
-                <button id="player-zoom-out-btn" title="Diminuir Zoom"><i class="fas fa-search-minus"></i></button>
-                <input type="range" id="player-zoom-slider" min="100" max="300" value="100" step="10">
-                <button id="player-zoom-in-btn" title="Aumentar Zoom"><i class="fas fa-search-plus"></i></button>
-                <span id="player-zoom-label">100%</span>
+                <button class="player-zoom-preset-btn active" data-zoom="1">100%</button>
+                <button class="player-zoom-preset-btn" data-zoom="1.25">125%</button>
+                <button class="player-zoom-preset-btn" data-zoom="1.5">150%</button>
+                <button class="player-zoom-preset-btn" data-zoom="2">200%</button>
             </div>
 
             <div id="player-fit-controls" class="player-control-group">
@@ -516,7 +508,6 @@ function launchAdvancedPlayer(url, logoPath) {
     resetControlsTimer();
 }
 
-// CORREÇÃO: Lógica de enquadramento funcional
 function setPlayerFit(fitMode, showToast = true) {
     const wrapper = document.getElementById('player-fullscreen-wrapper');
     const iframe = wrapper?.querySelector('iframe');
@@ -524,37 +515,33 @@ function setPlayerFit(fitMode, showToast = true) {
 
     playerState.currentFitMode = fitMode;
 
-    // Reseta estilos inline para evitar conflitos entre modos
     iframe.style.width = '';
     iframe.style.height = '';
     iframe.style.top = '';
     iframe.style.left = '';
-    iframe.style.objectFit = 'initial'; // Usa object-fit apenas para o modo 'fill'
+    iframe.style.objectFit = 'initial';
 
     const containerWidth = wrapper.clientWidth;
     const containerHeight = wrapper.clientHeight;
     const containerRatio = containerWidth / containerHeight;
-    const videoRatio = 16 / 9; // Proporção padrão para vídeos
+    const videoRatio = 16 / 9;
 
     switch (fitMode) {
         case 'contain':
-            // O comportamento padrão do iframe dentro de um flex container já é 'contain'
             break;
         case 'cover':
             if (containerRatio > videoRatio) {
-                // O contêiner é mais largo que o vídeo
                 const newHeight = containerWidth / videoRatio;
                 iframe.style.height = `${newHeight}px`;
                 iframe.style.top = `${(containerHeight - newHeight) / 2}px`;
             } else {
-                // O contêiner é mais alto que o vídeo
                 const newWidth = containerHeight * videoRatio;
                 iframe.style.width = `${newWidth}px`;
                 iframe.style.left = `${(containerWidth - newWidth) / 2}px`;
             }
             break;
         case 'fill':
-            iframe.style.objectFit = 'fill'; // Estica para preencher
+            iframe.style.objectFit = 'fill';
             break;
     }
     
@@ -576,45 +563,35 @@ function updateFitButtonUI(activeMode) {
 function updatePlayerZoom() {
     const wrapper = document.getElementById('player-fullscreen-wrapper');
     const iframe = wrapper?.querySelector('iframe');
-    const zoomInBtn = document.getElementById('player-zoom-in-btn');
-    const zoomOutBtn = document.getElementById('player-zoom-out-btn');
-
     if (!iframe) return;
 
     iframe.style.transform = `translate(${zoomState.x}px, ${zoomState.y}px) scale(${zoomState.level})`;
     wrapper.classList.toggle('zoomed', zoomState.level > 1);
-
-    if (zoomInBtn) zoomInBtn.disabled = zoomState.level >= zoomState.max;
-    if (zoomOutBtn) zoomOutBtn.disabled = zoomState.level <= 1;
 }
 
 function setupPlayerEventListeners(wrapper) {
-    const zoomSlider = document.getElementById('player-zoom-slider');
-    const zoomLabel = document.getElementById('player-zoom-label');
-    const zoomInBtn = document.getElementById('player-zoom-in-btn');
-    const zoomOutBtn = document.getElementById('player-zoom-out-btn');
-
     document.getElementById('player-close-btn')?.addEventListener('click', (e) => {
         e.stopPropagation();
         closeAdvancedPlayer();
     });
 
-    const handleZoom = (newZoomLevel) => {
-        zoomState.level = Math.max(1, Math.min(newZoomLevel, zoomState.max));
-        if(zoomSlider) zoomSlider.value = zoomState.level * 100;
-        
-        if (zoomState.level === 1) {
-            zoomState.x = 0;
-            zoomState.y = 0;
-        }
-        updatePlayerZoom();
-        if (zoomLabel) zoomLabel.textContent = `${Math.round(zoomState.level * 100)}%`;
-        resetControlsTimer();
-    };
+    document.querySelectorAll('.player-zoom-preset-btn').forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const newZoomLevel = parseFloat(e.target.dataset.zoom);
+            
+            zoomState.level = newZoomLevel;
+            if (zoomState.level === 1) { 
+                zoomState.x = 0;
+                zoomState.y = 0;
+            }
+            updatePlayerZoom();
+            document.querySelectorAll('.player-zoom-preset-btn').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
 
-    zoomSlider?.addEventListener('input', (e) => handleZoom(parseFloat(e.target.value) / 100));
-    zoomInBtn?.addEventListener('click', (e) => { e.stopPropagation(); handleZoom(zoomState.level + 0.1); });
-    zoomOutBtn?.addEventListener('click', (e) => { e.stopPropagation(); handleZoom(zoomState.level - 0.1); });
+            resetControlsTimer();
+        });
+    });
     
     document.querySelectorAll('.player-fit-btn').forEach(button => {
         button.addEventListener('click', (e) => {
