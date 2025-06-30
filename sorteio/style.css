@@ -478,12 +478,12 @@ body.swal2-shown #externalCopyButtonContainer {
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: rgba(30, 30, 30, 0.7);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background-color: rgba(30, 30, 30, 0.0);
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
     padding: 10px 15px;
     border-radius: 50px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.0);
     display: flex;
     flex-wrap: wrap; /* Allows groups to wrap to the next line */
     justify-content: center;
@@ -491,7 +491,7 @@ body.swal2-shown #externalCopyButtonContainer {
     gap: 1.5rem; /* Space between control groups */
     z-index: 10001;
     transition: opacity 0.3s ease, visibility 0.3s ease;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.0);
 }
 
 #player-controls.hidden {
