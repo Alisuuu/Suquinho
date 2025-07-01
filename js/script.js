@@ -20,6 +20,7 @@ window.addEventListener('load', () => {
       child.classList.contains('icon-button') &&
       child.id !== 'sidebarToggleBtn' &&
       child.id !== 'iframeBackButton' &&
+      child.id !== 'openThemeModalBtn' && // Exclude the new theme button
       !['index', HOME_PAGE].includes(child.getAttribute('href'))
     );
 
@@ -184,8 +185,8 @@ window.addEventListener('load', () => {
         else if (docEl.msRequestFullscreen) docEl.msRequestFullscreen();
       } else {
         if (document.exitFullscreen) document.exitFullscreen();
-        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-        else if (document.msExitFullscreen) document.msExitFullscreen();
+        else if (document.webkitExitFullscreen) docEl.webkitExitFullscreen();
+        else if (document.msExitFullscreen) docEl.msExitFullscreen();
       }
     });
   
@@ -222,6 +223,53 @@ window.addEventListener('load', () => {
       if (event.target === donateModal) {
         donateModal.style.display = 'none';
       }
+    });
+  }
+
+  // Lógica do Modal de Seleção de Tema
+  const themeModal = document.getElementById('themeSelectionModal');
+  const openThemeModalBtn = document.getElementById('openThemeModalBtn');
+  const closeThemeModalBtn = themeModal ? themeModal.querySelector('.theme-modal-close') : null;
+  const themeButtons = themeModal ? themeModal.querySelectorAll('.theme-modal-button') : [];
+
+  if (openThemeModalBtn && themeModal && closeThemeModalBtn) {
+    openThemeModalBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      themeModal.style.display = 'flex';
+    });
+
+    closeThemeModalBtn.addEventListener('click', () => {
+      themeModal.style.display = 'none';
+    });
+
+    themeModal.addEventListener('click', (event) => {
+      if (event.target === themeModal) {
+        themeModal.style.display = 'none';
+      }
+    });
+
+    themeButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        const theme = e.target.dataset.theme;
+        localStorage.setItem('selectedTheme', theme);
+        // Call the function from index.html to reload CSS
+        // This function is now defined in the <head> of index.html
+        if (window.loadThemeCss) {
+            window.loadThemeCss(); 
+        } else {
+            console.error("loadThemeCss function not found.");
+        }
+        themeModal.style.display = 'none';
+        location.reload(); // Reload the page to apply the new theme
+      });
+    });
+  }
+
+  // Adiciona o event listener para o botão de tema
+  if (openThemeModalBtn) {
+    openThemeModalBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      themeModal.style.display = 'flex';
     });
   }
 });
