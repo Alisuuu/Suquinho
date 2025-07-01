@@ -10,10 +10,32 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     
-    <!-- CSS -->
-    <link rel="stylesheet" href="catálogo.css">
-    <link rel="stylesheet" href="integration.css">
-</head>
+    <!-- Folhas de Estilo - Carregamento Dinâmico -->
+    <script>
+      const loadThemeCss = () => {
+          const selectedTheme = localStorage.getItem('selectedTheme') || 'default'; // 'default' as fallback
+          const cssFiles = [
+              'Catalogo1/catálogo.css',
+              'Catalogo1/integration.css'
+          ];
+
+          // Remove existing theme stylesheets to prevent duplicates on theme change
+          document.querySelectorAll('link[data-theme-css]').forEach(link => link.remove());
+
+          cssFiles.forEach(file => {
+              const link = document.createElement('link');
+              link.rel = 'stylesheet';
+              link.href = `../themes/${selectedTheme}/${file}`; // Adjusted path
+              link.setAttribute('data-theme-css', ''); // Mark as theme CSS
+              document.head.appendChild(link);
+          });
+      };
+
+      // Load theme immediately
+      loadThemeCss();
+    </script>
+
+    </head>
 <body>
     <div id="pageBackdrop"></div>
     <div id="loader" class="loader-overlay" style="display: none;"><div class="loader"></div></div>
@@ -77,6 +99,7 @@
     <script src="script1.js"></script>
     <script src="script2.js"></script>
     <script src="script3.js"></script>
-</body>
-</html>
 
+    
+    </body>
+</html>
