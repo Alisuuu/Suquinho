@@ -12,30 +12,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- SweetAlert2 para modais -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    
-    <!-- Folhas de Estilo - Carregamento Dinâmico -->
-    <script>
-      const loadThemeCss = () => {
-          const selectedTheme = localStorage.getItem('selectedTheme') || 'default'; // 'default' as fallback
-          const cssFiles = [
-              'sorteio/sorteio.css'
-          ];
-
-          // Remove existing theme stylesheets to prevent duplicates on theme change
-          document.querySelectorAll('link[data-theme-css]').forEach(link => link.remove());
-
-          cssFiles.forEach(file => {
-              const link = document.createElement('link');
-              link.rel = 'stylesheet';
-              link.href = `../themes/${selectedTheme}/${file}`; // Adjusted path
-              link.setAttribute('data-theme-css', ''); // Mark as theme CSS
-              document.head.appendChild(link);
-          });
-      };
-
-      // Load theme immediately
-      loadThemeCss();
-    </script>
+    <!-- Link para o arquivo CSS externo -->
+    <link rel="stylesheet" href="sorteio.css">
 </head>
 <body>
     <div id="pageBackdrop"></div>

@@ -10,29 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,400;8..144,500;8..144,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
 
-    <!-- Folhas de Estilo - Carregamento Dinâmico -->
-    <script>
-      const loadThemeCss = () => {
-          const selectedTheme = localStorage.getItem('selectedTheme') || 'default'; // 'default' as fallback
-          const cssFiles = [
-              'update/update.css'
-          ];
-
-          // Remove existing theme stylesheets to prevent duplicates on theme change
-          document.querySelectorAll('link[data-theme-css]').forEach(link => link.remove());
-
-          cssFiles.forEach(file => {
-              const link = document.createElement('link');
-              link.rel = 'stylesheet';
-              link.href = `../themes/${selectedTheme}/${file}`; // Adjusted path
-              link.setAttribute('data-theme-css', ''); // Mark as theme CSS
-              document.head.appendChild(link);
-          });
-      };
-
-      // Load theme immediately
-      loadThemeCss();
-    </script>
+    <link rel="stylesheet" href="update.css">
 </head>
 <body>
 
