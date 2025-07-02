@@ -537,9 +537,12 @@ function launchAdvancedPlayer(url, logoPath) {
     `;
 
     wrapper.style.display = 'flex';
-    if (wrapper.requestFullscreen) {
-        wrapper.requestFullscreen().catch(err => console.error(`Erro ao ativar ecrã inteiro: ${err.message}`));
-    }
+    
+    // ALTERAÇÃO: A linha abaixo foi comentada para impedir a entrada automática em tela cheia.
+    // O wrapper CSS já está configurado para ocupar 100% da tela.
+    // if (wrapper.requestFullscreen) {
+    //     wrapper.requestFullscreen().catch(err => console.error(`Erro ao ativar ecrã inteiro: ${err.message}`));
+    // }
 
     setupPlayerEventListeners(wrapper);
     setPlayerFit(playerState.currentFitMode, false); 
