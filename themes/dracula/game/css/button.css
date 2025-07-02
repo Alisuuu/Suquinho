@@ -1,0 +1,87 @@
+/* buttons stylesheet */
+
+button, .button {
+    min-height: 1cm;
+    min-width: 1cm;
+    border-radius: 0.5ex;
+    font-weight: bold;
+    padding: 1ex;
+    box-shadow: inset 1px 1px 0 0 white;
+    background-color: #44475a;
+    border: 1px solid #6272a4;
+    color: #f8f8f2;
+}
+
+button, .button:active {
+    position:relative;
+    top:1px;
+}
+
+button, .shop {
+    box-shadow: inset 1px 1px 0 0 #bd93f9;
+    border: 1px solid #bd93f9;
+    background-color: #8be9fd;
+    color: #282a36;
+}
+
+button, .start {
+    box-shadow: inset 1px 1px 0 0 white;
+    background-color: #50fa7b;
+    border: 1px solid #50fa7b;
+    color: #282a36;
+}
+
+button, .red {
+    box-shadow: inset 1px 1px 0 0 white;
+    background-color: #ff5555;
+    border: 1px solid #ff5555;
+    color: #f8f8f2;
+}
+
+button, .feedback {
+    box-shadow: inset 1px 1px 0 0 #bd93f9;
+    border: 1px solid #50fa7b;
+    background-color: #8be9fd;
+    color: #282a36;
+}
+
+#gameshop {
+    position: fixed;
+    right: 1ex;
+    top: 1ex;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#fire {
+    position: fixed;
+    right: 1ex;
+    bottom: 1ex;
+    /* top: calc(50% - 1cm); */
+    z-index: 5;
+
+    height: 2cm;
+    width: 2cm;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    background: #ff5555;
+    color: #f8f8f2;
+    font-weight: bold;
+
+    border: 0;
+    border-radius: 2cm;
+    outline: 0;
+    margin: 0;
+    box-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+}
+
+#fire.active {
+    background-color: #ff6e6e;
+    color: #f1fa8c;
+}

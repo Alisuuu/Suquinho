@@ -4,6 +4,47 @@
 
 // --- Funções da API, Lógica Principal, Filtros e Modal de Detalhes ---
 
+// NOVO: Lógica de Lazy Loading com Intersection Observer
+// =========================================================================
+let lazyImageObserver;
+
+function setupLazyLoader() {
+    const options = {
+        root: null, // Observa em relação ao viewport principal
+        rootMargin: '0px 0px 200px 0px', // Começa a carregar imagens 200px antes de entrarem na tela
+        threshold: 0.01 // Inicia assim que 1% do item estiver visível
+    };
+
+    lazyImageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const lazyImage = entry.target;
+                console.log("LOG (LazyLoad): Carregando imagem:", lazyImage.dataset.src);
+                lazyImage.src = lazyImage.dataset.src; // Substitui o placeholder pela imagem real
+                lazyImage.classList.remove('lazy-image'); // Remove a classe para não observar novamente
+                
+                // Quando a imagem real carregar, removemos o fundo para garantir a transição
+                lazyImage.onload = () => {
+                    lazyImage.style.backgroundColor = 'transparent';
+                };
+
+                observer.unobserve(lazyImage); // Para de observar a imagem que já foi carregada
+            }
+        });
+    }, options);
+}
+
+// NOVO: Função para registrar novas imagens para o lazy loader
+function observeNewImages(container) {
+    if (!lazyImageObserver) return;
+    const imagesToLoad = container.querySelectorAll('img.lazy-image');
+    imagesToLoad.forEach(image => {
+        lazyImageObserver.observe(image);
+    });
+}
+// =========================================================================
+
+
 function getCompanyConfigForQuery(query) {
     const normalizedQuery = query.toLowerCase().trim();
     if (typeof companyKeywordMap === 'undefined') {
@@ -368,7 +409,6 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
         ? `<div class="details-logo-container"><img src="${TMDB_IMAGE_BASE_URL}w500${logoPathForPlayer}" class="details-logo-img" alt="${titleText} Logo"></div>`
         : '';
 
-    // ALTERAÇÃO: ID adicionado ao play-icon-wrapper
     const headerContentHTML = `
         <div class="details-trailer-container">
             <div class="trailer-cover">
@@ -420,9 +460,8 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
 
     Swal.update({ title: '', html: detailsHTML, showConfirmButton: false });
 
-    // ALTERAÇÃO: O listener de clique agora está apenas no botão de play
     document.getElementById('modal-play-button')?.addEventListener('click', (e) => {
-        e.stopPropagation(); // Impede que o clique se propague para outros elementos
+        e.stopPropagation(); 
         if (mainPlayerUrl) {
             launchAdvancedPlayer(mainPlayerUrl, logoPathForPlayer);
         } else {
@@ -789,23 +828,46 @@ function updateFavoriteButtonsState(id, type) {
     }
 }
 
+// ALTERADO: Função displayResults agora prepara as imagens para o lazy loading
 function displayResults(items, defaultType, targetEl, replace) {
     if (!targetEl) return;
     if (replace) targetEl.innerHTML = '';
     const fragment = document.createDocumentFragment();
     if (!items || items.length === 0) { if (replace) targetEl.innerHTML = `<p class="col-span-full text-center">Nenhum item para exibir.</p>`; return; }
+    
+    // ALTERADO: Placeholder é agora um GIF transparente em Base64. Custo de rede ZERO.
+    const placeholderSrc = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+
     items.forEach(item => {
         const mediaType = item.media_type || defaultType;
         if (!mediaType || !item.poster_path) return;
-        const card = document.createElement('div'); card.className = 'content-card';
+        
+        const card = document.createElement('div'); 
+        card.className = 'content-card';
         card.onclick = () => openItemModal(item.id, mediaType, item.backdrop_path);
+        
         const isFav = isFavorite(item.id, mediaType);
-        card.innerHTML = `<img src="${TMDB_IMAGE_BASE_URL}w780${item.poster_path}" alt="${item.title||item.name}" loading="lazy"><div class="title-overlay"><div class="title">${item.title||item.name}</div></div><button class="favorite-button ${isFav ? 'active' : ''}" data-id="${item.id}" data-type="${mediaType}"><i class="${isFav ? 'fas fa-heart' : 'far fa-heart'}"></i></button>`;
+        const imageUrl = `${TMDB_IMAGE_BASE_URL}w780${item.poster_path}`;
+
+        // Em vez de 'src', usamos 'data-src' para a imagem real.
+        // 'src' recebe o placeholder transparente. A classe 'lazy-image' marca a imagem para o observer.
+        card.innerHTML = `
+            <img src="${placeholderSrc}" data-src="${imageUrl}" alt="${item.title||item.name}" class="lazy-image">
+            <div class="title-overlay"><div class="title">${item.title||item.name}</div></div>
+            <button class="favorite-button ${isFav ? 'active' : ''}" data-id="${item.id}" data-type="${mediaType}">
+                <i class="${isFav ? 'fas fa-heart' : 'far fa-heart'}"></i>
+            </button>`;
+            
         card.querySelector('.favorite-button').onclick = (e) => { e.stopPropagation(); toggleFavorite(item, mediaType); };
         fragment.appendChild(card);
     });
+    
     targetEl.appendChild(fragment);
+    
+    // NOVO: Após adicionar os cards ao DOM, pedimos ao observer para vigiá-los.
+    observeNewImages(targetEl);
 }
+
 
 function copyToClipboard(text) {
     if (navigator.clipboard && window.isSecureContext) {
@@ -834,12 +896,15 @@ function copyToClipboard(text) {
     }
 }
 
+// ALTERADO: Modal de favoritos também usa o lazy loading otimizado
 async function openFavoritesModal() {
     let favsHtml = '<p class="text-center text-gray-400 py-5">Você não tem nenhum favorito ainda.</p>';
+    const placeholderSrc = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+
     if (favorites.length > 0) {
         favsHtml = `<div class="favorites-grid">${favorites.map(item => `
             <div class="content-card favorite-card" onclick="Swal.close(); openItemModal(${item.id}, '${item.media_type}', '${item.backdrop_path || ''}')">
-                <img src="${TMDB_IMAGE_BASE_URL}w342${item.poster_path}" alt="${item.title || ''}" loading="lazy">
+                <img src="${placeholderSrc}" data-src="${TMDB_IMAGE_BASE_URL}w342${item.poster_path}" alt="${item.title || ''}" class="lazy-image">
                 <div class="title-overlay"><div class="title">${item.title || ''}</div></div>
                 <button class="remove-favorite-button" data-id="${item.id}" data-type="${item.media_type}"><i class="fas fa-times-circle"></i></button>
             </div>`).join('')}</div>`;
@@ -847,7 +912,10 @@ async function openFavoritesModal() {
     Swal.fire({
         title: 'Os Meus Favoritos', html: favsHtml, showConfirmButton: false, showCloseButton: true,
         customClass: { popup: 'swal-favorites-popup' },
-        didOpen: () => {
+        didOpen: (modal) => {
+            // NOVO: Observa as imagens dentro do modal de favoritos
+            observeNewImages(modal);
+            
             document.querySelectorAll('.remove-favorite-button').forEach(button => {
                 button.addEventListener('click', e => {
                     e.stopPropagation();
@@ -871,6 +939,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.innerHTML = `<div style="color:red;padding:2rem;text-align:center;">Erro: Chave da API não configurada.</div>`;
         return;
     }
+
+    // NOVO: Inicializa o lazy loader
+    setupLazyLoader();
+
     favorites = getFavorites();
     if (searchInput) searchInput.addEventListener('input', () => { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => performSearch(searchInput.value), 500); });
     if (searchButton) searchButton.addEventListener('click', () => performSearch(searchInput.value));

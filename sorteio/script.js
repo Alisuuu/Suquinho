@@ -150,22 +150,26 @@ function showHistoryModal() {
     // Ordena o histórico do mais recente para o mais antigo
     const sorted = [...pickedMediaHistory].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
     
-    // Cria o HTML para a lista do histórico
-    let html = '<ul style="list-style: none; padding: 0; text-align: left;">';
+    // Cria o HTML para a lista do histórico dentro de um contêiner rolável
+    let html = '<div style="max-height: 300px; overflow-y: auto; padding-right: 10px;"><ul style="list-style: none; padding: 0; text-align: left;">';
     sorted.forEach(i => {
         html += `<li style="padding: 10px; border-bottom: 1px solid #333;" onclick="Swal.close(); openItemModal(${i.id}, '${i.type}', '${i.backdrop_path}')">
                     <strong>${i.title}</strong> (${i.type === 'movie' ? 'Filme' : 'Série'})<br>
                     <small style="color: #9CA3AF;">${new Date(i.timestamp).toLocaleString('pt-BR')}</small>
                  </li>`;
     });
-    html += '</ul>';
+    html += '</ul></div>';
 
     Swal.fire({ 
         title: 'Histórico', 
         html, 
         showCloseButton: true, 
         showConfirmButton: false,
+        width: '850px',
+        maxWidth: '95vw',
+        maxHeight: '90vh',
         customClass: {
+            popup: 'swal-history-popup',
             htmlContainer: 'swal2-html-container-history'
         }
     });

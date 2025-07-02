@@ -1,30 +1,61 @@
 document.addEventListener('DOMContentLoaded', () => {
     const apiURL = 'https://superflixapi.blog/calendario.php';
-    let data = [];
-    let periodo = 'semana';
-    let itemsByDay = {};
-    let selectedDateKey = null;
+    let data = []; // Armazena todos os dados da API
+    let periodo = 'semana'; // 'semana' ou 'mes'
+    let itemsByDay = {}; // Objeto para agrupar itens por data (chave: 'YYYY-MM-DD')
+    let selectedDateKey = null; // Data selecionada na vista de semana
 
-    // Estado dos filtros
+    // Estado inicial dos filtros
     let activeFilters = {
         type: 'all',
         status: ['Atualizado', 'Hoje', 'Futuro', 'Atrasado']
     };
 
+    // Elementos do DOM
     const contentArea = document.getElementById('content-area');
     const searchInput = document.getElementById('search');
     const weekNav = document.getElementById('week-navigation');
     
+    /**
+     * @desc Otimização: Busca dados da API ou do cache da sessão.
+     * A resposta da API é armazenada em `sessionStorage` por 10 minutos para evitar
+     * pedidos de rede desnecessários ao recarregar a página, melhorando a velocidade.
+     */
     async function fetchData() {
         contentArea.innerHTML = `<p class="text-center col-span-full p-10 text-[var(--on-surface-variant-color)]">A carregar lançamentos...</p>`;
+        
+        const cacheKey = 'calendarData';
+        const cached = sessionStorage.getItem(cacheKey);
+        const cacheDuration = 10 * 60 * 1000; // 10 minutos
+
+        if (cached) {
+            const { timestamp, payload } = JSON.parse(cached);
+            if (Date.now() - timestamp < cacheDuration) {
+                console.log("A carregar dados do cache da sessão.");
+                data = payload;
+                render();
+                return; // Interrompe a função se o cache for válido
+            }
+        }
+
         try {
             const response = await fetch(apiURL);
             if (!response.ok) throw new Error(`Erro na API: ${response.statusText}`);
-            data = await response.json();
-            if (!Array.isArray(data) || data.length === 0) {
+            const payload = await response.json();
+            if (!Array.isArray(payload) || payload.length === 0) {
                  throw new Error('API não retornou dados válidos.');
             }
-            // A chamada para setupBackdropSlideshow(data) foi removida daqui.
+            
+            data = payload;
+            
+            // Armazena os novos dados e o timestamp no cache
+            const cacheData = {
+                timestamp: Date.now(),
+                payload: data
+            };
+            sessionStorage.setItem(cacheKey, JSON.stringify(cacheData));
+            console.log("Dados da API obtidos e armazenados em cache.");
+
             render();
         } catch (error) {
             console.error('Erro ao buscar dados da API:', error);
@@ -32,10 +63,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // A função setupBackdropSlideshow foi completamente removida.
-
     // ========================================================================
-    // EVENT LISTENERS
+    // EVENT LISTENERS (OUVINTES DE EVENTOS)
     // ========================================================================
 
     document.getElementById('toggleFiltersBtn').addEventListener('click', showFilterSweetAlert);
@@ -50,12 +79,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Debounce para a pesquisa para evitar renderizações excessivas
     let searchTimeout;
     searchInput.addEventListener('input', () => {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(render, 300);
     });
 
+    // Delegação de eventos para a navegação da semana
     weekNav.addEventListener('click', (event) => {
         const dayButton = event.target.closest('.day-button');
         if (!dayButton) return;
@@ -63,6 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderContentForDay(selectedDateKey);
     });
 
+    // Delegação de eventos para a vista de mês
     contentArea.addEventListener('click', (event) => {
         if (event.target.closest('.swal2-container')) return;
         
@@ -73,13 +105,12 @@ document.addEventListener('DOMContentLoaded', () => {
         showMonthDetailModal(dateKey, itemsByDay[dateKey] || []);
     });
     
-    // Ouve por atualizações nos favoritos para manter a UI sincronizada
+    // Ouve por atualizações de favoritos da janela principal
     window.parent.addEventListener('favorites-updated', () => {
         console.log("Atualização de favoritos detetada no calendário.");
         document.querySelectorAll('.favorite-button-calendar').forEach(btn => {
             const mediaType = btn.dataset.type;
             const itemId = btn.dataset.id;
-            // Verifica se a função 'isFavorite' do script pai está disponível
             if (window.parent && typeof window.parent.isFavorite === 'function') {
                 const isFav = window.parent.isFavorite(itemId, mediaType);
                 btn.classList.toggle('active', isFav);
@@ -125,8 +156,8 @@ document.addEventListener('DOMContentLoaded', () => {
             showConfirmButton: true,
             confirmButtonText: 'Aplicar Filtros',
             showCloseButton: true,
-            background: 'var(--translucent-bg, rgba(30, 30, 40, 0.5))', // Fundo translúcido
-            customClass: { popup: 'translucent-surface' }, // Usa a classe para consistência
+            background: 'var(--translucent-bg, rgba(30, 30, 40, 0.5))',
+            customClass: { popup: 'translucent-surface' },
             didOpen: () => {
                 const popup = Swal.getPopup();
                 
@@ -183,6 +214,11 @@ document.addEventListener('DOMContentLoaded', () => {
             showCloseButton: true,
             background: 'var(--translucent-bg, rgba(30, 30, 40, 0.5))',
             customClass: { popup: 'translucent-surface' },
+            didOpen: () => {
+                contentContainer.querySelectorAll('.lazy-load').forEach(lazyImage => {
+                    lazyImageObserver.observe(lazyImage);
+                });
+            }
         });
     }
 
@@ -236,10 +272,9 @@ document.addEventListener('DOMContentLoaded', () => {
             ${statusTagHTML}
             ${favoriteButtonHTML}
             <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/80 via-black/50 to-transparent z-10"></div>
-            ${backdropURL ? `<img src="${backdropURL}" class="absolute top-0 left-0 w-full h-full object-cover opacity-20 z-0" loading="lazy">` : ''}
             <div class="relative z-20 p-4 flex flex-col justify-end flex-grow">
                 <div class="flex items-start gap-4">
-                    <img class="w-20 sm:w-24 h-auto object-cover flex-shrink-0 rounded-lg shadow-lg border border-white/10" src="${posterURL}" alt="Poster" loading="lazy" onerror="this.src='https://placehold.co/185x278/1f2937/FFFFFF?text=N/A'">
+                    <img class="w-20 sm:w-24 h-auto object-cover flex-shrink-0 rounded-lg shadow-lg border border-white/10 lazy-load" data-src="${posterURL}" src="https://placehold.co/185x278/1f2937/FFFFFF?text=Carregando..." alt="Poster" onerror="this.src='https://placehold.co/185x278/1f2937/FFFFFF?text=N/A'">
                     <div class="flex-grow pt-2 flex flex-col justify-between self-stretch">
                         <div>
                             <h3 class="font-bold text-base sm:text-lg text-[var(--on-surface-color)]">${item.title}</h3>
@@ -269,8 +304,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return itemEl;
     }
 
+    /**
+     * @desc Otimização: Renderiza o conteúdo de um dia específico.
+     * Usa um DocumentFragment para construir o conteúdo em memória antes de o adicionar ao DOM,
+     * o que resulta numa única operação de escrita no DOM, melhorando o desempenho.
+     */
     function renderContentForDay(dateKey) {
-        contentArea.innerHTML = '';
+        const fragment = document.createDocumentFragment();
         document.querySelectorAll('.day-button').forEach(btn => btn.classList.remove('active'));
         
         const activeButtons = document.querySelectorAll(`.day-button[data-datekey="${dateKey}"]`);
@@ -293,11 +333,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 contentWrapper.appendChild(createItemCard(item));
             }
         });
-        contentArea.appendChild(contentWrapper);
+        fragment.appendChild(contentWrapper);
+
+        // Limpa a área de conteúdo e adiciona o novo conteúdo de uma só vez
+        contentArea.innerHTML = '';
+        contentArea.appendChild(fragment);
+
+        contentArea.querySelectorAll('.lazy-load').forEach(lazyImage => {
+            lazyImageObserver.observe(lazyImage);
+        });
     }
 
+    /**
+     * @desc Otimização: Renderiza a barra de navegação da semana.
+     * Usa DocumentFragment para criar todos os botões antes de os adicionar ao DOM,
+     * evitando múltiplas manipulações do DOM e melhorando a performance.
+     */
     function renderWeekNavigation() {
-        weekNav.innerHTML = '';
+        const fragment = document.createDocumentFragment();
         const hoje = new Date();
         hoje.setHours(0, 0, 0, 0);
         const startOfWeek = new Date(hoje);
@@ -323,15 +376,23 @@ document.addEventListener('DOMContentLoaded', () => {
             dayButton.innerHTML = `
                 <p class="${dayLabelClass}">${day.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '').toUpperCase()}</p>
                 <p class="${dayNumberClass}">${day.getDate()}</p>
-                ${itemCount > 0 ? `<span class="absolute top-1 right-1 text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full bg-[var(--primary-color)] text-white shadow-lg">${itemCount}</span>` : ''}
+                ${itemCount > 0 ? `<span class="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">${itemCount}</span>` : ''}
             `;
             
-            weekNav.appendChild(dayButton);
+            fragment.appendChild(dayButton);
         }
+        
+        weekNav.innerHTML = '';
+        weekNav.appendChild(fragment);
     }
     
+    /**
+     * @desc Otimização: Renderiza a vista do calendário mensal.
+     * Usa DocumentFragment para construir toda a grelha do calendário em memória
+     * antes de a adicionar ao DOM, minimizando reflows.
+     */
     function renderMonthView() {
-        contentArea.innerHTML = '';
+        const fragment = document.createDocumentFragment();
         const hoje = new Date();
         hoje.setHours(0,0,0,0);
         const startOfMonth = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
@@ -345,7 +406,7 @@ document.addEventListener('DOMContentLoaded', () => {
         weekdays.forEach(day => {
             headerGrid.innerHTML += `<div class="text-xs font-bold text-[var(--on-surface-variant-color)]">${day.toUpperCase()}</div>`;
         });
-        contentArea.appendChild(headerGrid);
+        fragment.appendChild(headerGrid);
 
         const calendarGrid = document.createElement('div');
         calendarGrid.className = "grid grid-cols-7 gap-2";
@@ -367,7 +428,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (itemCount > 0) {
                 dayCell.classList.add('cursor-pointer', 'hover:bg-white/20');
                 dayCell.dataset.datekey = dateKey;
-                dayCell.innerHTML = `<span class="absolute top-1 right-2 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[var(--primary-color)] text-white">${itemCount}</span>`;
+                dayCell.innerHTML = `<span class="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">${itemCount}</span>`;
             }
 
             if (currentDate.toDateString() === hoje.toDateString()) {
@@ -382,9 +443,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
             calendarGrid.appendChild(dayCell);
         }
-        contentArea.appendChild(calendarGrid);
+        fragment.appendChild(calendarGrid);
+        
+        contentArea.innerHTML = '';
+        contentArea.appendChild(fragment);
     }
 
+    /**
+     * @desc Função principal que orquestra a renderização.
+     * Filtra os dados com base nos filtros ativos e na pesquisa,
+     * agrupa-os por dia e chama a função de renderização apropriada.
+     */
     function render() {
         const type = activeFilters.type;
         const activeStatuses = activeFilters.status;
@@ -425,5 +494,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Inicia o processo ao carregar a página
     fetchData();
 });

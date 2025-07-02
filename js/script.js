@@ -1,4 +1,9 @@
+// Adiciona a lógica do loader assim que a página carrega
 window.addEventListener('load', () => {
+  // O loader será escondido após o iframe carregar seu conteúdo.
+  const loader = document.getElementById('loader-overlay');
+
+  // O resto do seu código original que depende do 'load'
   const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
   const sidebarButtonsContainer = document.querySelector('.sidebar-buttons');
   const newsFrame = document.getElementById('newsFrame');
@@ -15,6 +20,7 @@ window.addEventListener('load', () => {
   if (!sidebarToggleBtn || !sidebarButtonsContainer || !newsFrame || !iframeBackButton) return;
 
   const toggleIconElement = sidebarToggleBtn.querySelector('i');
+  
   const buttonsToToggleVisibility = Array.from(sidebarButtonsContainer.children)
     .filter(child =>
       child.classList.contains('icon-button') &&
@@ -109,7 +115,8 @@ window.addEventListener('load', () => {
     updateIframeBackButtonVisibility();
   });
 
-  const iframeButtonLinks = sidebarButtonsContainer.querySelectorAll('a.icon-button:not(#sidebarToggleBtn):not(#iframeBackButton)');
+  const iframeButtonLinks = sidebarButtonsContainer.querySelectorAll('a.icon-button:not(#sidebarToggleBtn):not(#iframeBackButton):not(#openThemeModalBtn)');
+  
   iframeButtonLinks.forEach(button => {
     const href = button.getAttribute('href');
     if (href === 'index' || href === HOME_PAGE) {
@@ -119,6 +126,7 @@ window.addEventListener('load', () => {
 
     button.addEventListener('click', (e) => {
       e.preventDefault();
+      const href = button.getAttribute('href');
       iframeSrcHistory.push(href);
       history.pushState({ iframe: href }, '', '');
       newsFrame.src = href;
@@ -144,6 +152,10 @@ window.addEventListener('load', () => {
     updateIframeBackButtonVisibility();
     setupIframeContentListeners();
     setupIframeLinks();
+    const loader = document.getElementById('loader-overlay');
+    if (loader) {
+      loader.classList.add('hidden');
+    }
   });
 
   newsFrame.src = initialPage;
@@ -184,8 +196,8 @@ window.addEventListener('load', () => {
         else if (docEl.msRequestFullscreen) docEl.msRequestFullscreen();
       } else {
         if (document.exitFullscreen) document.exitFullscreen();
-        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-        else if (document.msExitFullscreen) document.msExitFullscreen();
+        else if (document.webkitExitFullscreen) docEl.webkitExitFullscreen();
+        else if (document.msExitFullscreen) docEl.msExitFullscreen();
       }
     });
   
@@ -202,34 +214,50 @@ window.addEventListener('load', () => {
       }
     });
   }
+});
 
-  // Lógica do Botão de Doação e Modal
-  const donateBtn = document.getElementById('donateBtn');
-  const donateModal = document.getElementById('donateModal');
-  const closeButton = donateModal ? donateModal.querySelector('.close-button') : null;
+// Seu código original para o modal de tema, com a adição da lógica do loader
+document.addEventListener('DOMContentLoaded', () => {
+  const themeModal = document.getElementById('themeSelectionModal');
+  const openThemeModalBtn = document.getElementById('openThemeModalBtn');
+  const closeThemeModalBtn = themeModal ? themeModal.querySelector('.theme-modal-close') : null;
+  const themeButtons = themeModal ? themeModal.querySelectorAll('.theme-modal-button') : [];
 
-  if (donateBtn && donateModal && closeButton) {
-    donateBtn.addEventListener('click', () => {
-      donateModal.style.display = 'flex';
+  if (openThemeModalBtn && themeModal && closeThemeModalBtn) {
+    openThemeModalBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      themeModal.style.display = 'flex';
     });
 
-    closeButton.addEventListener('click', () => {
-      donateModal.style.display = 'none';
+    closeThemeModalBtn.addEventListener('click', () => {
+      themeModal.style.display = 'none';
     });
 
-    donateModal.addEventListener('click', (event) => {
-      // Garante que o clique fora do modal-content feche o modal
-      if (event.target === donateModal) {
-        donateModal.style.display = 'none';
+    themeModal.addEventListener('click', (event) => {
+      if (event.target === themeModal) {
+        themeModal.style.display = 'none';
       }
     });
-  }
-});
-document.addEventListener('DOMContentLoaded', () => {
-  if (window.matchMedia('(display-mode: fullscreen)').matches) {
-    // Já está em fullscreen
-  } else {
-    // Tenta ativar fullscreen
-    document.documentElement.requestFullscreen().catch(console.error);
+
+    themeButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        const theme = e.target.dataset.theme;
+        const loader = document.getElementById('loader-overlay');
+        
+        // 1. Mostra o loader para cobrir a transição
+        if (loader) {
+            loader.classList.remove('hidden');
+        }
+
+        // 2. Salva o tema no localStorage
+        localStorage.setItem('selectedTheme', theme);
+        
+        // 3. Recarrega a página após um pequeno atraso para o loader aparecer
+        //    Isso acionará sua lógica original no <head>
+        setTimeout(() => {
+            location.reload();
+        }, 200); 
+      });
+    });
   }
 });
