@@ -761,7 +761,7 @@ function showCustomToast(message, type = 'info') {
 function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[array[i], array[j]] = [array[j], array[i]]; } }
 function showLoader() { if (loader) loader.style.display = 'flex'; }
 function hideLoader() { if (loader) loader.style.display = 'none'; }
-function updatePageBackground(path) { if (pageBackdrop) pageBackdrop.style.backgroundImage = path ? `url(${TMDB_IMAGE_BASE_URL}original${path})` : ''; }
+function updatePageBackground(path) { if (pageBackdrop) pageBackdrop.style.backgroundImage = path ? `url(${TMDB_IMAGE_BASE_URL}w1280${path})` : ''; }
 function getFavorites() { try { return JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY) || '[]'); } catch { return []; } }
 function saveFavorites(favs) { localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favs)); }
 function isFavorite(id, type) { return favorites.some(fav => fav.id.toString() === id.toString() && fav.media_type === type); }
