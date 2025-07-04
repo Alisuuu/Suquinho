@@ -73,7 +73,6 @@ function setupLazyLoader() {
     };
 
     lazyImageObserver = new IntersectionObserver((entries, observer) => {
-        if (!entries || entries.length === 0) return;
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 const lazyImage = entry.target;
@@ -420,10 +419,10 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
 
     const imdbId = details.external_ids?.imdb_id;
     const mainPlayerUrl = mediaType === 'movie' && imdbId ? `${PLAYER_BASE_URL_MOVIE}${imdbId}` : (mediaType === 'tv' ? `${PLAYER_BASE_URL_SERIES}${itemId}/1/` : '');
-    const catalogPagePath = 'Catalogo1/index.html';
-    const itemQueryParams = `type=${mediaType}&id=${itemId}`;
-    const encodedItemQueryParams = encodeURIComponent(`${catalogPagePath}?${itemQueryParams}`);
-    const shareUrl = `${window.location.origin}/index.html?pagina=${encodedItemQueryParams}`;
+    
+    // LÓGICA DE CÓPIA DE LINK
+    const shareUrl = `https://alisuuu.github.io/Suquinho/?pagina=Catalogo1%2Findex.html%3Ftype%3D${mediaType}%26id%3D${itemId}`;
+    
     const titleText = details.title || details.name || "N/A";
     const coverImagePath = details.backdrop_path ? `${TMDB_IMAGE_BASE_URL}w780${details.backdrop_path}` : (details.poster_path ? `${TMDB_IMAGE_BASE_URL}w780${details.poster_path}` : 'https://placehold.co/1280x720/0A0514/F0F0F0?text=Indispon%C3%ADvel');
     const logoPathForPlayer = selectBestLogo(details.images?.logos);
@@ -438,9 +437,10 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
     const runtime = details.runtime || details.episode_run_time?.[0] || null;
     const castSectionHTML = details.credits?.cast?.length > 0 ? `<div class="details-cast-section"><h3 class="details-section-subtitle">Elenco</h3><div class="details-cast-scroller">${details.credits.cast.slice(0, 15).map(p => `<div class="cast-member-card"><img src="${p.profile_path ? TMDB_IMAGE_BASE_URL + 'w185' + p.profile_path : PLACEHOLDER_PERSON_IMAGE}" alt="${p.name}" class="cast-member-photo"><p class="cast-member-name">${p.name}</p><p class="cast-member-character">${p.character}</p></div>`).join('')}</div></div>` : '';
     const isFav = isFavorite(itemId, mediaType);
+    
+    // BOTÕES DE AÇÃO
     const favoriteButtonHTML = `<button id="modalFavoriteButton" class="modal-favorite-button ${isFav ? 'active' : ''}" data-id="${itemId}" data-type="${mediaType}" title="Favoritos">${isFav ? '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>'}</button>`;
     const copyLinkButtonHTML = `<button id="modalCopyLinkButton" class="modal-copy-link-button" title="Copiar Link"><i class="fas fa-link"></i></button>`;
-    
     const trailerKey = findBestTrailer(details.videos);
     const trailerButtonHTML = trailerKey ? `<button id="modalTrailerButton" class="modal-trailer-button" title="Ver Trailer"><i class="fas fa-film"></i> Trailer</button>` : '';
 
@@ -465,6 +465,7 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
 
     Swal.update({ title: '', html: detailsHTML, showConfirmButton: false });
 
+    // EVENT LISTENERS DOS BOTÕES
     document.getElementById('modal-play-button')?.addEventListener('click', () => mainPlayerUrl ? launchAdvancedPlayer(mainPlayerUrl, logoPathForPlayer) : showCustomToast('Player não disponível.', 'info'));
     document.getElementById('modalFavoriteButton')?.addEventListener('click', () => toggleFavorite(details, mediaType));
     document.getElementById('modalCopyLinkButton')?.addEventListener('click', () => copyToClipboard(shareUrl));
@@ -716,10 +717,10 @@ async function loadMoreItems() {
     try {
         if (currentContentContext === 'search' && searchCurrentPage < totalPages.search) {
             searchCurrentPage++;
-            const data = await fetchTMDB('/search/multi', { query: searchInput.value, page: searchCurrentPage });
-            if (data && !data.error && data.results) {
-                totalPages.search = data.total_pages || totalPages.search;
-                displayResults(data.results.filter(item => item.poster_path), null, singleResultsGrid, false);
+            nextPageData = await fetchTMDB('/search/multi', { query: searchInput.value, page: searchCurrentPage });
+            if (nextPageData && !nextPageData.error && nextPageData.results) {
+                totalPages.search = nextPageData.total_pages || totalPages.search;
+                displayResults(nextPageData.results.filter(item => item.poster_path), null, singleResultsGrid, false);
             } else { searchCurrentPage--; }
         } else if (currentContentContext === 'filter' && filterCurrentPage < totalPages.filter) {
             filterCurrentPage++;
@@ -730,10 +731,10 @@ async function loadMoreItems() {
                 params.with_origin_country = TMDB_JAPAN_COUNTRY_CODE;
                 params.with_keywords = TMDB_ANIME_KEYWORD_ID;
             }
-            const data = await fetchTMDB(`/discover/${endpointType}`, params);
-            if (data && !data.error && data.results) {
-                totalPages.filter = data.total_pages || totalPages.filter;
-                displayResults(data.results, activeAppliedGenre.type, singleResultsGrid, false);
+            nextPageData = await fetchTMDB(`/discover/${endpointType}`, params);
+            if (nextPageData && !nextPageData.error && nextPageData.results) {
+                totalPages.filter = nextPageData.total_pages || totalPages.filter;
+                displayResults(nextPageData.results, activeAppliedGenre.type, singleResultsGrid, false);
             } else { filterCurrentPage--; }
         }
     } catch (error) {
@@ -865,7 +866,7 @@ async function openFavoritesModal() {
                     e.stopPropagation();
                     const itemToRemove = favorites.find(fav => fav.id.toString() === button.dataset.id && fav.media_type === button.dataset.type);
                     if (itemToRemove) {
-                        toggleFavorite(itemToRemove, itemToRemove.id, itemToRemove.media_type);
+                        toggleFavorite(itemToRemove, itemToRemove.media_type);
                         const card = button.closest('.favorite-card');
                         card.style.transition = 'opacity 0.3s';
                         card.style.opacity = '0';
@@ -949,11 +950,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const typeParam = urlParams.get('type');
     const idParam = urlParams.get('id');
-    console.log('Initial URL Params - type:', typeParam, 'id:', idParam);
-
-    if (typeParam && idParam) {
-        openItemModal(idParam, typeParam);
-    } else {
-        loadMainPageContent();
-    }
+    if (typeParam && idParam) openItemModal(idParam, typeParam);
+    else loadMainPageContent();
 });
