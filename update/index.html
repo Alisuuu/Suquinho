@@ -15,7 +15,7 @@
       const loadThemeCss = () => {
           const selectedTheme = localStorage.getItem('selectedTheme') || 'default'; // 'default' as fallback
           const cssFiles = [
-              'update/update.css'
+              'update.css'
           ];
 
           // Remove existing theme stylesheets to prevent duplicates on theme change
@@ -33,6 +33,13 @@
       // Load theme immediately
       loadThemeCss();
     </script>
+    <style>
+      body {
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+      }
+    </style>
 </head>
 <body>
 
@@ -145,6 +152,11 @@
         refreshButton.addEventListener('click', checkForUpdates);
         document.addEventListener('DOMContentLoaded', checkForUpdates);
     </script>
-
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        document.body.style.visibility = 'visible';
+        document.body.style.opacity = '1';
+      });
+    </script>
 </body>
 </html>
