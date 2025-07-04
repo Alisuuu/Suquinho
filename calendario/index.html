@@ -16,7 +16,7 @@
     const loadThemeCss = () => {
         const selectedTheme = localStorage.getItem('selectedTheme') || 'default'; // 'default' as fallback
         const cssFiles = [
-            'calendario/calendario.css'
+            'calendario.css'
         ];
 
         // Remove existing theme stylesheets to prevent duplicates on theme change
@@ -34,6 +34,13 @@
     // Load theme immediately
     loadThemeCss();
   </script>
+  <style>
+    body {
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+    }
+  </style>
 </head>
 <body class="min-h-screen flex flex-col font-sans text-gray-200">
 
@@ -74,10 +81,14 @@
 
 <!-- Script do Projeto -->
 
-<script src="../Catalogo1/script1.js"></script>
-<script src="../Catalogo1/script3.js"></script>
+<script src="../Catalogo1/catalogo.js"></script>
 <script src="./script.js"></script>
 
-
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.body.style.visibility = 'visible';
+      document.body.style.opacity = '1';
+    });
+  </script>
 </body>
 </html>
