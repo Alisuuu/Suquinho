@@ -78,6 +78,15 @@ window.addEventListener('load', () => {
     }
   };
 
+  const debounce = (func, delay) => {
+    let timeout;
+    return function(...args) {
+      const context = this;
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(context, args), delay);
+    };
+  };
+
   const setupIframeContentListeners = () => {
     if (newsFrame.contentWindow) {
       const handleFrameInteraction = () => {
@@ -86,7 +95,7 @@ window.addEventListener('load', () => {
         }
       };
 
-      newsFrame.contentWindow.addEventListener('scroll', handleFrameInteraction);
+      newsFrame.contentWindow.addEventListener('scroll', debounce(handleFrameInteraction, 200));
       newsFrame.contentWindow.addEventListener('click', handleFrameInteraction);
       newsFrame.contentWindow.addEventListener('touchstart', handleFrameInteraction, { passive: true });
     }
