@@ -11,7 +11,7 @@
       const loadThemeCss = () => {
           const selectedTheme = localStorage.getItem('selectedTheme') || 'default'; // 'default' as fallback
           const cssFiles = [
-              'Styles/ocultos.css'
+              'ocultos.css'
           ];
 
           // Remove existing theme stylesheets to prevent duplicates on theme change
@@ -30,6 +30,13 @@
       loadThemeCss();
     </script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+      body {
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+      }
+    </style>
 </head>
 <body>
 
@@ -113,6 +120,12 @@
         } else {
             console.warn('Um dos elementos (exclamationButton ou notificationMessageBox) não foi encontrado no DOM.');
         }
+    </script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        document.body.style.visibility = 'visible';
+        document.body.style.opacity = '1';
+      });
     </script>
 </body>
 </html>
