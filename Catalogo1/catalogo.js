@@ -73,6 +73,7 @@ function setupLazyLoader() {
     };
 
     lazyImageObserver = new IntersectionObserver((entries, observer) => {
+        if (!entries || entries.length === 0) return;
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 const lazyImage = entry.target;
@@ -419,7 +420,10 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
 
     const imdbId = details.external_ids?.imdb_id;
     const mainPlayerUrl = mediaType === 'movie' && imdbId ? `${PLAYER_BASE_URL_MOVIE}${imdbId}` : (mediaType === 'tv' ? `${PLAYER_BASE_URL_SERIES}${itemId}/1/` : '');
-    const shareUrl = `${window.location.origin}${window.location.pathname}?type=${mediaType}&id=${itemId}`;
+    const catalogPagePath = 'Catalogo1/index.html';
+    const itemQueryParams = `type=${mediaType}&id=${itemId}`;
+    const encodedItemQueryParams = encodeURIComponent(`${catalogPagePath}?${itemQueryParams}`);
+    const shareUrl = `${window.location.origin}/index.html?pagina=${encodedItemQueryParams}`;
     const titleText = details.title || details.name || "N/A";
     const coverImagePath = details.backdrop_path ? `${TMDB_IMAGE_BASE_URL}w780${details.backdrop_path}` : (details.poster_path ? `${TMDB_IMAGE_BASE_URL}w780${details.poster_path}` : 'https://placehold.co/1280x720/0A0514/F0F0F0?text=Indispon%C3%ADvel');
     const logoPathForPlayer = selectBestLogo(details.images?.logos);
@@ -712,10 +716,10 @@ async function loadMoreItems() {
     try {
         if (currentContentContext === 'search' && searchCurrentPage < totalPages.search) {
             searchCurrentPage++;
-            nextPageData = await fetchTMDB('/search/multi', { query: searchInput.value, page: searchCurrentPage });
-            if (nextPageData && !nextPageData.error && nextPageData.results) {
-                totalPages.search = nextPageData.total_pages || totalPages.search;
-                displayResults(nextPageData.results.filter(item => item.poster_path), null, singleResultsGrid, false);
+            const data = await fetchTMDB('/search/multi', { query: searchInput.value, page: searchCurrentPage });
+            if (data && !data.error && data.results) {
+                totalPages.search = data.total_pages || totalPages.search;
+                displayResults(data.results.filter(item => item.poster_path), null, singleResultsGrid, false);
             } else { searchCurrentPage--; }
         } else if (currentContentContext === 'filter' && filterCurrentPage < totalPages.filter) {
             filterCurrentPage++;
@@ -726,10 +730,10 @@ async function loadMoreItems() {
                 params.with_origin_country = TMDB_JAPAN_COUNTRY_CODE;
                 params.with_keywords = TMDB_ANIME_KEYWORD_ID;
             }
-            nextPageData = await fetchTMDB(`/discover/${endpointType}`, params);
-            if (nextPageData && !nextPageData.error && nextPageData.results) {
-                totalPages.filter = nextPageData.total_pages || totalPages.filter;
-                displayResults(nextPageData.results, activeAppliedGenre.type, singleResultsGrid, false);
+            const data = await fetchTMDB(`/discover/${endpointType}`, params);
+            if (data && !data.error && data.results) {
+                totalPages.filter = data.total_pages || totalPages.filter;
+                displayResults(data.results, activeAppliedGenre.type, singleResultsGrid, false);
             } else { filterCurrentPage--; }
         }
     } catch (error) {
@@ -861,7 +865,7 @@ async function openFavoritesModal() {
                     e.stopPropagation();
                     const itemToRemove = favorites.find(fav => fav.id.toString() === button.dataset.id && fav.media_type === button.dataset.type);
                     if (itemToRemove) {
-                        toggleFavorite(itemToRemove, itemToRemove.media_type);
+                        toggleFavorite(itemToRemove, itemToRemove.id, itemToRemove.media_type);
                         const card = button.closest('.favorite-card');
                         card.style.transition = 'opacity 0.3s';
                         card.style.opacity = '0';
@@ -945,6 +949,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const typeParam = urlParams.get('type');
     const idParam = urlParams.get('id');
-    if (typeParam && idParam) openItemModal(idParam, typeParam);
-    else loadMainPageContent();
+    console.log('Initial URL Params - type:', typeParam, 'id:', idParam);
+
+    if (typeParam && idParam) {
+        openItemModal(idParam, typeParam);
+    } else {
+        loadMainPageContent();
+    }
 });
