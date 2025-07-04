@@ -18,7 +18,7 @@
       const loadThemeCss = () => {
           const selectedTheme = localStorage.getItem('selectedTheme') || 'default'; // 'default' as fallback
           const cssFiles = [
-              'sorteio/sorteio.css'
+              'sorteio.css'
           ];
 
           // Remove existing theme stylesheets to prevent duplicates on theme change
@@ -36,6 +36,13 @@
       // Load theme immediately
       loadThemeCss();
     </script>
+    <style>
+      body {
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+      }
+    </style>
 </head>
 <body>
     <div id="pageBackdrop"></div>
@@ -82,11 +89,14 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <!-- Seus scripts do catálogo. Verifique se os caminhos estão corretos. -->
-    <script src="../Catalogo1/script1.js"></script>
-    <script src="../Catalogo1/script2.js"></script>
-    <script src="../Catalogo1/script3.js"></script>
-
+    <script src="../Catalogo1/catalogo.js"></script>
     <!-- Link para o arquivo JavaScript principal da página -->
     <script src="./script.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        document.body.style.visibility = 'visible';
+        document.body.style.opacity = '1';
+      });
+    </script>
 </body>
 </html>
