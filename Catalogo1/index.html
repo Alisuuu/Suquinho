@@ -15,8 +15,8 @@
       const loadThemeCss = () => {
           const selectedTheme = localStorage.getItem('selectedTheme') || 'default'; // 'default' as fallback
           const cssFiles = [
-              'Catalogo1/catálogo.css',
-              'Catalogo1/integration.css'
+              'catálogo.css',
+              'integration.css'
           ];
 
           // Remove existing theme stylesheets to prevent duplicates on theme change
@@ -35,7 +35,66 @@
       loadThemeCss();
     </script>
 
-    </head>
+    <!-- Estilos para os Loaders -->
+    <style>
+        .horizontal-loader {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(to left, rgba(10, 5, 20, 0.8), rgba(10, 5, 20, 0));
+            pointer-events: none;
+            
+            /* CORREÇÃO: Usar visibility e opacity para a transição funcionar */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0s linear 0.3s;
+        }
+
+        .horizontal-loader.loading {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .loader-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            border-top-color: #FFF;
+            width: 36px;
+            height: 36px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        img.lazy-image {
+            background-color: #1f1f32;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            50% {
+                opacity: .5;
+            }
+        }
+    </style>
+    <style>
+      body {
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+      }
+    </style>
+</head>
 <body>
     <div id="pageBackdrop"></div>
     <div id="loader" class="loader-overlay" style="display: none;"><div class="loader"></div></div>
@@ -62,11 +121,21 @@
             <div id="defaultContentSections">
                 <div class="content-section">
                     <h2 class="section-title">Filmes Populares</h2>
-                    <div id="moviesResultsGrid" class="horizontal-scroll-grid"></div>
+                    <div class="relative">
+                        <div id="moviesResultsGrid" class="horizontal-scroll-grid"></div>
+                        <div id="popularMoviesLoader" class="horizontal-loader">
+                            <div class="loader-spinner"></div>
+                        </div>
+                    </div>
                 </div>
                 <div class="content-section">
                     <h2 class="section-title">Séries em Alta</h2>
-                    <div id="tvShowsResultsGrid" class="horizontal-scroll-grid"></div>
+                     <div class="relative">
+                        <div id="tvShowsResultsGrid" class="horizontal-scroll-grid"></div>
+                        <div id="topRatedTvShowsLoader" class="horizontal-loader">
+                            <div class="loader-spinner"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div id="singleResultsSection" style="display: none;">
@@ -96,10 +165,13 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="script1.js"></script>
-    <script src="script2.js"></script>
-    <script src="script3.js"></script>
-
+    <script src="catalogo.js"></script>
     
-    </body>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        document.body.style.visibility = 'visible';
+        document.body.style.opacity = '1';
+      });
+    </script>
+</body>
 </html>
