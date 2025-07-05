@@ -178,7 +178,7 @@ window.addEventListener('load', () => {
   const checkScreen = () => {
     if(fullscreenBtn){
       if (window.innerWidth > 768) {
-        fullscreenBtn.style.display = 'flex';
+        fullscreenBtn.style.display = 'none';
       } else {
         fullscreenBtn.style.display = 'none';
       }
