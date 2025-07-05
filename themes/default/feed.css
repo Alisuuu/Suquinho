@@ -1,11 +1,11 @@
-/* Default Theme for Feed */
+/* Dracula Theme for Feed */
 :root {
-    --feed-background: #000000; /* Amoled black */
-    --feed-text-color: #F3F4F6;
-    --feed-link-color: #8c70c8; /* Purple light */
-    --feed-item-bg: #121212; /* Card background */
-    --feed-border-color: #251A3D;
-    --feed-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --feed-background: #121212; /* Dark background */
+    --feed-text-color: #EAEAEA;
+    --feed-link-color: #FFFFFF; /* White for links */
+    --feed-item-bg: #1E1E1E; /* Card background */
+    --feed-border-color: rgba(255, 255, 255, 0.1);
+    --feed-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 body {
@@ -75,7 +75,7 @@ body {
 }
 
 .news-content p:last-child {
-    color: var(--text-secondary); /* Using text-secondary for meta info */
+    color: var(--twitch-gray); /* Using a gray for meta info */
     font-size: 0.8rem;
 }
 
