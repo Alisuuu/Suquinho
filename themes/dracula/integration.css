@@ -53,26 +53,21 @@ body.calendar-open #calendar-panel {
 
 /* Botão de fechar posicionado DENTRO do painel, à esquerda */
 #close-calendar-btn {
-    position: absolute;
-    bottom: 3%;
-    left: 86%;
-    z-index: 3000; /* Garante que fique acima do iframe */
-    
-    /* Estilo do botão */
-    background-color: rgba(12, 12, 12, 0.5);
-    color: white;
-    width: 2.75rem;
-    height: 2.75rem;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 20%;
     display: flex;
     align-items: center;
     justify-content: center;
-    
+    font-size: 1.3rem;
+    background: linear-gradient(135deg, #000000, #000000);
+    color: var(--purple-accent: #593BA2;);
+    border: 1px solid rgba(fff, fff, fff, 0.25);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 0 10px rgba(189, 147, 249, 0.2);
+    transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;
-    
-    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
 }
 
 #close-calendar-btn:hover {
