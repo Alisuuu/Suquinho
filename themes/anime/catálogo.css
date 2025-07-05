@@ -297,7 +297,6 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     width: 60%;
     max-width: 350px;
     pointer-events: none;
-    /* CORREÇÃO: z-index para ficar abaixo da sobreposição */
     z-index: 2; 
 }
 
@@ -319,7 +318,6 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     align-items: center;
     background-color: rgba(0, 0, 0, 0.4);
     transition: background-color 0.3s ease;
-    /* CORREÇÃO: z-index para ficar acima do logo e abaixo do play */
     z-index: 3; 
 }
 
@@ -328,9 +326,8 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 }
 
 .play-icon-wrapper {
-    /* CORREÇÃO: z-index para garantir que o play fique no topo */
     z-index: 4; 
-    position: relative; /* Necessário para o z-index funcionar neste contexto */
+    position: relative;
 }
 
 .play-icon-wrapper .fa-play {
@@ -398,7 +395,6 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     -webkit-tap-highlight-color: transparent;
     user-select: none;
 }
-    background: linear-gradient(135deg, #bd93f9, #ff79c6);
 #filterToggleButton.active {
     box-shadow: 0 0 15px rgba(255, 121, 198, 0.7);
     border-color: var(--dracula-pink);
@@ -901,7 +897,7 @@ button,
     font-weight: 600;
     border-radius: 0.65rem;
     border: 1px solid rgba(255, 121, 198, 0.2);
-    background: linear-gradient(135deg, #bd93f9, #ff79c6); /* Increased opacity */
+    background: linear-gradient(135deg, #bd93f9, #ff79c6);
     color: var(--dracula-foreground);
     transition: background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
     box-shadow: none;
@@ -942,11 +938,10 @@ button:disabled {
     width: 3.5rem;
     height: 3.5rem;
     border-radius: 20%;
-    display: flex;4
+    display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.3rem;
-    
     background: linear-gradient(135deg, #bd93f9, #ff79c6);
     color: var(--dracula-foreground);
     border: 1px solid rgba(255, 121, 198, 0.25);
@@ -957,24 +952,42 @@ button:disabled {
     z-index: 1;
 }
 
-    background: linear-gradient(135deg, #bd93f9, #ff79c6);
-/* --- Base do Botão e Container do Trailer --- */
+/* --- [ATUALIZADO] Estilo do Botão do Trailer e Container --- */
 .modal-trailer-button {
-    padding: 8px 16px;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 600;
+    flex-grow: 1; /* Faz o botão crescer para preencher o espaço */
+    padding: 0.6rem 1.2rem; /* Reduzido para um botão menor */
+    border-radius: 50px; /* Bordas bem arredondadas para um look de "pílula" */
+    font-size: 0.9rem; /* Fonte menor */
+    font-weight: 700;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    transition: all 0.3s ease;
-    border: 1px solid transparent;
-    
+    justify-content: center; /* Centraliza o conteúdo */
+    gap: 0.5rem; /* Espaçamento menor entre ícone e texto */
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Transição suave */
+    border: 2px solid var(--dracula-pink);
+    background: transparent; /* Fundo transparente por padrão */
+    color: var(--dracula-pink);
+    text-transform: uppercase;
+    letter-spacing: 0.5px; /* Espaçamento entre letras menor */
+    box-shadow: 0 4px 15px -5px rgba(0, 0, 0, 0.3);
+    -webkit-tap-highlight-color: transparent; /* Remove o highlight azul no mobile */
 }
 
 .modal-trailer-button:hover {
-    transform: scale(1.05);
+    transform: translateY(-3px);
+    background: var(--dracula-pink);
+    color: var(--dracula-background);
+    box-shadow: 0 8px 25px -8px var(--dracula-pink);
+}
+
+.modal-trailer-button:active {
+    transform: translateY(-1px);
+    filter: brightness(0.95);
+}
+
+.modal-trailer-button .fas {
+    font-size: 1rem; /* Ajusta o tamanho do ícone de play para combinar */
 }
 
 #trailer-container {
@@ -1011,15 +1024,6 @@ button:disabled {
     }
 }
 
-/* --- Estilo Específico do Tema Anime --- */
-.theme-anime .modal-trailer-button {
-    background-color: #ff1493;
-    border-color: rgba(255, 105, 180, 0.5);
-    color: #ffffff;
-}
-    background-color: #ff1493;
-
-
 /* --- Anime Theme Filter and Floating Button Styles --- */
 
 /* Filter Toggle Button */
@@ -1027,8 +1031,6 @@ button:disabled {
     background-color: #ff69b4;
     border-color: rgba(255, 182, 193, 0.8);
 }
-
-    background-color: #ff1493;
 
 /* SweetAlert Filter Buttons */
 .swal2-popup .swal2-confirm {
@@ -1038,8 +1040,6 @@ button:disabled {
 .swal2-popup .swal2-deny {
     background-color: var(--dracula-red) !important;
 }
-
-
 
 /* Rounded Filter Buttons */
 .swal2-popup .swal2-confirm,
