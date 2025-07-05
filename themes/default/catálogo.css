@@ -969,22 +969,40 @@ button:disabled {
 }
 /* --- Base do Botão de Trailer --- */
 .modal-trailer-button {
-    padding: 10px 20px;
-    border-radius: 15px;
-    font-size: 16px;
+    flex-grow: 1; /* Faz o botão crescer para preencher o espaço */
+    padding: 0.6rem 1.2rem; /* Reduzido para um botão menor */
+    border-radius: 50px; /* Bordas bem arredondadas para um look de "pílula" */
+    font-size: 0.9rem; /* Fonte menor */
     font-weight: 700;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    justify-content: center; /* Centraliza o conteúdo */
+    gap: 0.5rem; /* Espaçamento menor entre ícone e texto */
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Transição suave */
+    border: 2px solid var(--purple-accent);
+    background: transparent; /* Fundo transparente por padrão */
+    color: var(--purple-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.5px; /* Espaçamento entre letras menor */
+    box-shadow: 0 4px 15px -5px rgba(0, 0, 0, 0.3);
+    -webkit-tap-highlight-color: transparent; /* Remove o highlight azul no mobile */
 }
 
 .modal-trailer-button:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    transform: translateY(-3px);
+    background: var(--dracula-pink);
+    color: var(--dracula-background);
+    box-shadow: 0 8px 25px -8px var(--dracula-pink);
+}
+
+.modal-trailer-button:active {
+    transform: translateY(-1px);
+    filter: brightness(0.95);
+}
+
+.modal-trailer-button .fas {
+    font-size: 1rem; /* Ajusta o tamanho do ícone de play para combinar */
 }
 
 #trailer-container {
