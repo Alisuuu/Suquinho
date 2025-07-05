@@ -42,8 +42,8 @@ const closeCalendarBtn = document.getElementById('close-calendar-btn');
 
 // --- State Variables ---
 let activeAppliedGenre = { id: null, name: null, type: null };
-let currentFilterTypeSA = 'movie'; 
-let selectedGenreSA = { id: null, name: null, type: null }; 
+let currentFilterTypeSA = 'movie';
+let selectedGenreSA = { id: null, name: null, type: null };
 let searchTimeout = null;
 let searchCurrentPage = 1;
 let filterCurrentPage = 1;
@@ -63,38 +63,6 @@ let topRatedTvShowsTotalPages = 1;
 let isLoadingMoreTopRatedTvShows = false;
 
 // --- Main Logic ---
-let lazyImageObserver;
-
-function setupLazyLoader() {
-    const options = {
-        root: null,
-        rootMargin: '0px 0px 500px 0px',
-        threshold: 0.01
-    };
-
-    lazyImageObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const lazyImage = entry.target;
-                lazyImage.src = lazyImage.dataset.src;
-                lazyImage.classList.remove('lazy-image');
-                lazyImage.onload = () => {
-                    lazyImage.style.backgroundColor = 'transparent';
-                };
-                observer.unobserve(lazyImage);
-            }
-        });
-    }, options);
-}
-
-function observeNewImages(container) {
-    if (!lazyImageObserver) return;
-    const imagesToLoad = container.querySelectorAll('img.lazy-image');
-    imagesToLoad.forEach(image => {
-        lazyImageObserver.observe(image);
-    });
-}
-
 function getCompanyConfigForQuery(query) {
     const normalizedQuery = query.toLowerCase().trim();
     if (typeof companyKeywordMap === 'undefined') {
@@ -791,8 +759,6 @@ function displayResults(items, defaultType, targetEl, replace) {
     const fragment = document.createDocumentFragment();
     if (!items || items.length === 0) { if (replace) targetEl.innerHTML = `<p class="col-span-full text-center">Nenhum item para exibir.</p>`; return; }
     
-    const placeholderSrc = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-
     items.forEach(item => {
         const mediaType = item.media_type || defaultType;
         if (!mediaType || !item.poster_path) return;
@@ -805,7 +771,7 @@ function displayResults(items, defaultType, targetEl, replace) {
         const imageUrl = `${TMDB_IMAGE_BASE_URL}w400${item.poster_path}`;
 
         card.innerHTML = `
-            <img src="${placeholderSrc}" data-src="${imageUrl}" alt="${item.title||item.name}" class="lazy-image">
+            <img src="${imageUrl}" alt="${item.title||item.name}">
             <div class="title-overlay"><div class="title">${item.title||item.name}</div></div>
             <button class="favorite-button ${isFav ? 'active' : ''}" data-id="${item.id}" data-type="${mediaType}">
                 <i class="${isFav ? 'fas fa-heart' : 'far fa-heart'}"></i>
@@ -816,7 +782,6 @@ function displayResults(items, defaultType, targetEl, replace) {
     });
     
     targetEl.appendChild(fragment);
-    observeNewImages(targetEl);
 }
 
 function copyToClipboard(text) {
@@ -846,12 +811,11 @@ function copyToClipboard(text) {
 
 async function openFavoritesModal() {
     let favsHtml = '<p class="text-center text-gray-400 py-5">Você não tem favoritos.</p>';
-    const placeholderSrc = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-
+    
     if (favorites.length > 0) {
         favsHtml = `<div class="favorites-grid">${favorites.map(item => `
             <div class="content-card favorite-card" onclick="Swal.close(); openItemModal(${item.id}, '${item.media_type}', '${item.backdrop_path || ''}')">
-                <img src="${placeholderSrc}" data-src="${TMDB_IMAGE_BASE_URL}w342${item.poster_path}" alt="${item.title || ''}" class="lazy-image">
+                <img src="${TMDB_IMAGE_BASE_URL}w342${item.poster_path}" alt="${item.title || ''}">
                 <div class="title-overlay"><div class="title">${item.title || ''}</div></div>
                 <button class="remove-favorite-button" data-id="${item.id}" data-type="${item.media_type}"><i class="fas fa-times-circle"></i></button>
             </div>`).join('')}</div>`;
@@ -860,7 +824,6 @@ async function openFavoritesModal() {
         title: 'Meus Favoritos', html: favsHtml, showConfirmButton: false, showCloseButton: true,
         customClass: { popup: 'swal-favorites-popup' },
         didOpen: (modal) => {
-            observeNewImages(modal);
             document.querySelectorAll('.remove-favorite-button').forEach(button => {
                 button.addEventListener('click', e => {
                     e.stopPropagation();
@@ -893,9 +856,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.innerHTML = `<div style="color:red;padding:2rem;text-align:center;">Erro: Chave da API não configurada.</div>`;
         return;
     }
-
-    setupLazyLoader();
-
+    
     favorites = getFavorites();
     if (searchInput) searchInput.addEventListener('input', debounce(() => performSearch(searchInput.value), 500));
     if (searchButton) searchButton.addEventListener('click', () => performSearch(searchInput.value));
