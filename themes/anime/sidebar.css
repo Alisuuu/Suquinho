@@ -57,7 +57,7 @@ body {
 
 /* Individual Icon Buttons */
 .icon-button {
-  background: linear-gradient(135deg, rgba(255, 121, 198, 0.5) 0%, rgba(189, 147, 249, 0.5) 100%);
+  background: linear-gradient(135deg, #ff79c6 0%, #bd93f9 100%);
   border: 1px solid rgba(255, 255, 255, 0.1); 
   border-radius: 20%; /* Changed to match floating buttons */
   width: 3.5rem; /* Changed to match floating buttons */
@@ -115,7 +115,7 @@ body {
 .icon-button:hover {
   transform: scale(1.1) translateY(-3px) rotate(2deg); /* Slightly less pronounced hover */
   /* Updated: Slightly brighter background on hover, still subtle */
-  background: linear-gradient(135deg, rgba(255, 121, 198, 0.65) 0%, rgba(189, 147, 249, 0.65) 100%);
+  background: linear-gradient(135deg, #ff79c6 0%, #bd93f9 100%);
   border-color: rgba(255, 255, 255, 0.2); /* Slightly more visible border on hover */
   /* Updated: Softer box-shadow on hover */
   box-shadow: 0 6px 20px rgba(189, 147, 249, 0.3), /* Slightly stronger glowing shadow */

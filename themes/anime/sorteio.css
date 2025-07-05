@@ -99,7 +99,7 @@ h1 {
 }
 
 .random-button {
-  background-color: rgba(255, 121, 198, 0.5);
+  background-color: #ff79c6;
   border: 1px solid rgba(255, 121, 198, 0.6);
   border-radius: 24px;
   display: flex;
@@ -123,7 +123,7 @@ h1 {
 }
 
 .random-button:hover {
-    background-color: rgba(255, 121, 198, 0.7);
+    background-color: #ff79c6;
     transform: translateY(-3px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
 }
@@ -176,12 +176,12 @@ h1 {
     line-height: 35px;
     text-align: center;
     border-radius: 50%;
-    background-color: rgba(255,255,255,0.1);
+    background-color: #282a36;
 }
 .swal2-close:hover {
     color: var(--dracula-pink) !important;
     transform: scale(1.15) !important;
-    background-color: rgba(255,255,255,0.2);
+    background-color: #282a36;
 }
 .swal-genre-filter-type-selector button,
 .swal-genre-buttons-panel button,
@@ -191,7 +191,7 @@ h1 {
     font-weight: 600;
     font-size: 0.95rem;
     border: 1px solid rgba(255, 121, 198, 0.2);
-    background: linear-gradient(135deg, rgba(189, 147, 249, 0.3), rgba(255, 121, 198, 0.3));
+    background: linear-gradient(135deg, #bd93f9, #ff79c6);
     color: var(--dracula-foreground);
     transition: all 0.2s ease;
     margin: 0.3rem;
@@ -200,7 +200,7 @@ h1 {
 .swal-genre-filter-type-selector button:hover,
 .swal-genre-buttons-panel button:hover,
 .swal-filter-actions button:hover {
-    background: linear-gradient(135deg, rgba(189, 147, 249, 0.7), rgba(255, 121, 198, 0.7));
+    background: linear-gradient(135deg, #bd93f9, #ff79c6);
     color: var(--dracula-foreground);
     border-color: rgba(255, 121, 198, 0.3);
     box-shadow: 0 6px 20px rgba(189, 147, 249, 0.3), 0 2px 8px rgba(0,0,0,0.3);
@@ -321,7 +321,7 @@ h1 {
 }
 
 .trailer-cover:hover .cover-elements-overlay {
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: #000000;
 }
 
 .play-icon-wrapper {
@@ -394,7 +394,7 @@ body.swal2-shown #externalCopyButtonContainer {
     transform: translateX(-50%);
 }
 #pickAgainButton {
-  background-color: rgba(255, 121, 198, 0.5);
+  background-color: #ff79c6;
   
   border: 1px solid rgba(255, 121, 198, 0.8);
   color: var(--dracula-foreground);
@@ -408,7 +408,7 @@ body.swal2-shown #externalCopyButtonContainer {
   text-transform: uppercase;
 }
 #pickAgainButton:hover {
-    background-color: rgba(255, 121, 198, 0.7);
+    background-color: #ff79c6;
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
@@ -451,7 +451,7 @@ body.swal2-shown #externalCopyButtonContainer {
     left: 20px;
     width: 45px;
     height: 45px;
-    background-color: rgba(30, 30, 30, 0.7);
+    background-color: #1e1e1e;
 
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 50%;
@@ -504,7 +504,7 @@ body.swal2-shown #externalCopyButtonContainer {
 
 .player-zoom-preset-btn,
 .player-fit-btn {
-    background: rgba(30, 30, 30, 0.7);
+    background: #1e1e1e;
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
     font-size: 0.9rem;
@@ -542,7 +542,7 @@ body.swal2-shown #externalCopyButtonContainer {
     right: 15px;
     width: 40px;
     height: 40px;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: #000000;
     border: none;
     border-radius: 50%;
     color: white;
@@ -582,7 +582,7 @@ body.swal2-shown #externalCopyButtonContainer {
     align-items: center;
     justify-content: center;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(30, 30, 30, 0.5);
+    background: #1e1e1e;
     color: var(--dracula-foreground);
     transition: all 0.2s ease;
     cursor: pointer;
@@ -723,14 +723,14 @@ body.swal2-shown #externalCopyButtonContainer {
 
 /* --- Estilo Específico do Tema Anime --- */
 .theme-anime .modal-trailer-button {
-    background-color: rgba(255, 20, 147, 0.4); /* Stronger background */
-    border-color: rgba(255, 105, 180, 0.7); /* Stronger border */
+    background-color: #ff1493; /* Stronger background */
+    border-color: #ff69b4; /* Stronger border */
     color: #ffffff;
     box-shadow: 0 4px 15px rgba(255, 20, 147, 0.3); /* Add shadow */
 }
 .theme-anime .modal-trailer-button:hover {
-    background-color: rgba(255, 20, 147, 0.6); /* Even stronger on hover */
-    border-color: rgba(255, 105, 180, 1); /* Solid border on hover */
+    background-color: #ff1493; /* Even stronger on hover */
+    border-color: #ff69b4; /* Solid border on hover */
     box-shadow: 0 6px 20px rgba(255, 20, 147, 0.5); /* More prominent shadow on hover */
     transform: translateY(-2px); /* Slight lift on hover */
 }
@@ -789,14 +789,14 @@ body.swal2-shown #externalCopyButtonContainer {
 
 /* --- Estilo Específico do Tema Anime --- */
 .theme-anime .modal-trailer-button {
-    background-color: rgba(255, 20, 147, 0.4); /* Stronger background */
-    border-color: rgba(255, 105, 180, 0.7); /* Stronger border */
+    background-color: #ff1493; /* Stronger background */
+    border-color: #ff69b4; /* Stronger border */
     color: #ffffff;
     box-shadow: 0 4px 15px rgba(255, 20, 147, 0.3); /* Add shadow */
 }
 .theme-anime .modal-trailer-button:hover {
-    background-color: rgba(255, 20, 147, 0.6); /* Even stronger on hover */
-    border-color: rgba(255, 105, 180, 1); /* Solid border on hover */
+    background-color: #ff1493; /* Even stronger on hover */
+    border-color: #ff69b4; /* Solid border on hover */
     box-shadow: 0 6px 20px rgba(255, 20, 147, 0.5); /* More prominent shadow on hover */
     transform: translateY(-2px); /* Slight lift on hover */
 }
