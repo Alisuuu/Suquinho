@@ -1,28 +1,9 @@
-document.addEventListener('DOMContentLoaded', () => {
+// Adiciona a lógica do loader assim que a página carrega
+window.addEventListener('load', () => {
+  // O loader será escondido após o iframe carregar seu conteúdo.
   const loader = document.getElementById('loader-overlay');
-  const lazyIframes = document.querySelectorAll('iframe[data-src]');
-  
-  if (lazyIframes.length > 0) {
-    const observer = new IntersectionObserver((entries, observerInstance) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const iframe = entry.target;
-          if (iframe.dataset.src) {
-            iframe.src = iframe.dataset.src;
-            iframe.removeAttribute('data-src');
-          }
-          observerInstance.unobserve(iframe);
-        }
-      });
-    }, { 
-      rootMargin: '50px' 
-    });
 
-    lazyIframes.forEach(iframe => {
-      observer.observe(iframe);
-    });
-  }
-
+  // O resto do seu código original que depende do 'load'
   const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
   const sidebarButtonsContainer = document.querySelector('.sidebar-buttons');
   const newsFrame = document.getElementById('newsFrame');
@@ -38,10 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (!sidebarToggleBtn || !sidebarButtonsContainer || !newsFrame || !iframeBackButton) return;
 
-  if (!newsFrame.src) {
-      newsFrame.dataset.src = initialPage;
-  }
-
   const toggleIconElement = sidebarToggleBtn.querySelector('i');
   
   const buttonsToToggleVisibility = Array.from(sidebarButtonsContainer.children)
@@ -52,10 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
       !['index', HOME_PAGE].includes(child.getAttribute('href'))
     );
 
-  const isIframeHome = () => {
-    const currentSrc = newsFrame.src || (newsFrame.dataset && newsFrame.dataset.src);
-    return currentSrc && currentSrc.endsWith(HOME_PAGE);
-  };
+  const isIframeHome = () => newsFrame.src.endsWith(HOME_PAGE);
 
   const updateIframeBackButtonVisibility = () => {
     const isHome = isIframeHome();
@@ -189,11 +163,13 @@ document.addEventListener('DOMContentLoaded', () => {
     setupIframeLinks();
     const loader = document.getElementById('loader-overlay');
     if (loader) {
-      setTimeout(() => loader.classList.add('hidden'), 100);
+      loader.classList.add('hidden');
     }
   });
-  
+
+  newsFrame.src = initialPage;
   history.replaceState({ iframe: initialPage }, '', '');
+
   updateSidebarState(false);
   updateIframeBackButtonVisibility();
 
@@ -247,7 +223,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+});
 
+// Seu código original para o modal de tema, com a adição da lógica do loader
+document.addEventListener('DOMContentLoaded', () => {
   const themeModal = document.getElementById('themeSelectionModal');
   const openThemeModalBtn = document.getElementById('openThemeModalBtn');
   const closeThemeModalBtn = themeModal ? themeModal.querySelector('.theme-modal-close') : null;
@@ -274,12 +253,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const theme = e.target.dataset.theme;
         const loader = document.getElementById('loader-overlay');
         
+        // 1. Mostra o loader para cobrir a transição
         if (loader) {
             loader.classList.remove('hidden');
         }
 
+        // 2. Salva o tema no localStorage
         localStorage.setItem('selectedTheme', theme);
         
+        // 3. Recarrega a página após um pequeno atraso para o loader aparecer
+        //    Isso acionará sua lógica original no <head>
         setTimeout(() => {
             location.reload();
         }, 200); 
