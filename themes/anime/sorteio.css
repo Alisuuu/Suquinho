@@ -800,3 +800,260 @@ body.swal2-shown #externalCopyButtonContainer {
     box-shadow: 0 6px 20px rgba(255, 20, 147, 0.5); /* More prominent shadow on hover */
     transform: translateY(-2px); /* Slight lift on hover */
 }
+.swal-history-popup.swal2-popup {
+    width: 900px !important;
+    max-width: 95vw !important;
+    max-height: 90vh !important;
+}
+
+.history-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.history-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: rgba(255,255,255,0.05);
+    padding: 0.75rem;
+    border-radius: 0.6rem;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.history-card:hover {
+    background-color: rgba(255,255,255,0.1);
+    border-color: var(--primary-color);
+}
+
+.history-card-poster {
+    width: 60px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 0.4rem;
+    flex-shrink: 0;
+}
+
+.history-card-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    overflow: hidden;
+}
+
+.history-card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.history-card-details {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.history-card-actions {
+    flex-shrink: 0;
+}
+
+.remove-history-button {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: color 0.2s;
+    padding: 0.5rem;
+}
+
+.remove-history-button:hover {
+    color: var(--danger-red);
+}
+
+.swal-history-popup.swal2-popup {
+    width: 900px !important;
+    max-width: 95vw !important;
+    max-height: 90vh !important;
+}
+
+.history-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.history-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: rgba(192, 202, 245, 0.05);
+    padding: 0.75rem;
+    border-radius: 0.6rem;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.history-card:hover {
+    background-color: rgba(192, 202, 245, 0.1);
+    border-color: var(--primary-color);
+}
+
+.history-card-poster {
+    width: 60px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 0.4rem;
+    flex-shrink: 0;
+}
+
+.history-card-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    overflow: hidden;
+}
+
+.history-card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.history-card-details {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.history-card-actions {
+    flex-shrink: 0;
+}
+
+.remove-history-button {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: color 0.2s;
+    padding: 0.5rem;
+}
+
+.remove-history-button:hover {
+    color: var(--danger-red);
+}
+
+.details-seasons-section {
+    padding: 0 1rem;
+    margin-top: 1.5rem;
+}
+
+.season-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+.season-tab {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.season-tab:hover {
+    background: var(--surface-color);
+    color: var(--text-primary);
+}
+
+.season-tab.active {
+    background: var(--primary-color);
+    color: var(--on-primary-color);
+    border-color: var(--primary-color);
+}
+
+.episodes-list {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.episodes-list::-webkit-scrollbar { width: 6px; }
+.episodes-list::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 0.6rem; }
+.episodes-list::-webkit-scrollbar-thumb { background-color: var(--primary-color); border-radius: 8px; }
+
+.episode-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s;
+}
+
+.episode-item:not(:last-child) {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.episode-item:hover {
+    background-color: rgba(192, 202, 245, 0.05);
+}
+
+.episode-number {
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.episode-info {
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.episode-title {
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.episode-play-button {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: var(--icon-color);
+    border: 1px solid var(--primary-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.episode-play-button:hover {
+    background: var(--primary-hover-color);
+    border-color: var(--primary-hover-color);
+    transform: scale(1.1);
+}
+
