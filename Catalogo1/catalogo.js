@@ -84,9 +84,7 @@ let isLoadingMoreTopRatedTvShows = false;
 function signInWithGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider).catch(error => {
-        // O pop-up pode ser bloqueado. O Firebase tentará o redirecionamento.
-        console.error("Erro no Popup, tentando redirecionar...", error);
-        // A função getRedirectResult() cuidará do resto.
+        console.error("Erro no Popup, a tentar redirecionar...", error);
     });
 }
 
@@ -94,19 +92,14 @@ function signOut() {
     auth.signOut();
 }
 
-// ÚNICA ALTERAÇÃO: Adicionado para lidar com o login por redirecionamento
 auth.getRedirectResult()
     .then((result) => {
         if (result.user) {
-            // Login por redirecionamento bem-sucedido.
-            // O onAuthStateChanged vai lidar com a atualização do usuário e da UI.
-            console.log("Usuário logado via redirecionamento:", result.user.displayName);
+            console.log("Utilizador com sessão iniciada via redirecionamento:", result.user.displayName);
         }
     }).catch((error) => {
-        // Lidar com erros aqui.
         console.error("Erro no getRedirectResult:", error);
     });
-// FIM DA ALTERAÇÃO
 
 auth.onAuthStateChanged(async user => {
     currentUser = user;
@@ -127,7 +120,6 @@ auth.onAuthStateChanged(async user => {
     } else {
         loginBtn.style.display = "block";
         avatar.style.display = "none";
-        // Load from local storage if not logged in
         favorites = JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY)) || [];
         watchHistory = JSON.parse(localStorage.getItem(WATCH_HISTORY_STORAGE_KEY)) || [];
     }
@@ -214,14 +206,14 @@ async function loadMainPageContent() {
             popularMoviesTotalPages = moviesData.total_pages || 1;
             displayResults(moviesData.results, 'movie', moviesResultsGrid, true);
             moviesData.results.forEach(movie => { if (movie.backdrop_path) mainPageBackdropPaths.push(movie.backdrop_path); });
-        } else { moviesResultsGrid.innerHTML = `<p class="text-center col-span-full text-[var(--text-secondary)] py-5">Não foi possível carregar filmes populares. ${moviesData?.message || ''}</p>`; }
+        } else { moviesResultsGrid.innerHTML = `<p class="text-center col-span-full text-[var(--text-secondary)] py-5">Não foi possível carregar os filmes populares. ${moviesData?.message || ''}</p>`; }
     }
     if (tvShowsResultsGrid) {
         if (tvShowsData && !tvShowsData.error && tvShowsData.results) {
             topRatedTvShowsTotalPages = tvShowsData.total_pages || 1;
             displayResults(tvShowsData.results, 'tv', tvShowsResultsGrid, true);
             tvShowsData.results.forEach(show => { if (show.backdrop_path) mainPageBackdropPaths.push(show.backdrop_path); });
-        } else { tvShowsResultsGrid.innerHTML = `<p class="text-center col-span-full text-[var(--text-secondary)] py-5">Não foi possível carregar séries populares. ${tvShowsData?.message || ''}</p>`; }
+        } else { tvShowsResultsGrid.innerHTML = `<p class="text-center col-span-full text-[var(--text-secondary)] py-5">Não foi possível carregar as séries populares. ${tvShowsData?.message || ''}</p>`; }
     }
     if (typeof shuffleArray === "function") shuffleArray(mainPageBackdropPaths);
     startMainPageBackdropSlideshow();
@@ -376,14 +368,14 @@ async function applyGenreFilterFromSA() {
         params.with_keywords = TMDB_ANIME_KEYWORD_ID;
     }
     
-    if (singleSectionTitleEl) singleSectionTitleEl.textContent = `${titlePrefix} do Gênero: ${activeAppliedGenre.name || 'Todos'}`;
+    if (singleSectionTitleEl) singleSectionTitleEl.textContent = `${titlePrefix} do Género: ${activeAppliedGenre.name || 'Todos'}`;
     
     const data = await fetchTMDB(`/discover/${endpointType}`, params);
 
     if (singleResultsGrid) {
         displayResults(data.results, activeAppliedGenre.type, singleResultsGrid, true);
         if (!data.results || data.results.length === 0) {
-            singleResultsGrid.innerHTML = `<p class="text-center col-span-full">Nenhum item encontrado para o gênero ${activeAppliedGenre.name || 'selecionado'}.</p>`;
+            singleResultsGrid.innerHTML = `<p class="text-center col-span-full">Nenhum item encontrado para o género ${activeAppliedGenre.name || 'selecionado'}.</p>`;
         } else {
             totalPages.filter = data.total_pages || 1;
         }
@@ -473,7 +465,7 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
     updatePageBackground(backdropPath);
 
     currentOpenSwalRef = Swal.fire({
-        title: 'Carregando Detalhes...',
+        title: 'A carregar detalhes...',
         html: '<div class="loader mx-auto my-10" style="width: 40px; height: 40px; border-width: 4px;"></div>',
         showConfirmButton: false, showCloseButton: true, allowOutsideClick: true,
         customClass: { popup: 'swal2-popup swal-details-popup' },
@@ -511,7 +503,8 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
     const imdbId = details.external_ids?.imdb_id;
     const mainPlayerUrl = !isTV && imdbId ? `${PLAYER_BASE_URL_MOVIE}${imdbId}` : null;
     
-    const shareUrl = `${window.location.origin}${window.location.pathname}?type=${mediaType}&id=${itemId}`;
+    // *** LÓGICA DE LINK CORRIGIDA ***
+    const shareUrl = `https://alisuuu.github.io/Suquinho/?pagina=Catalogo1%2Findex.html%3Ftype%3D${mediaType}%26id%3D${itemId}`;
     
     const titleText = details.title || details.name || "N/A";
     const coverImagePath = details.backdrop_path ? `${TMDB_IMAGE_BASE_URL}w780${details.backdrop_path}` : (details.poster_path ? `${TMDB_IMAGE_BASE_URL}w780${details.poster_path}` : 'https://placehold.co/1280x720/0A0514/F0F0F0?text=Indispon%C3%ADvel');
@@ -563,7 +556,7 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
                     ${rating !== 'N/A' ? `<span><i class="fas fa-star"></i> ${rating}/10</span>` : ''}
                     ${runtime ? `<span><i class="fas fa-clock"></i> ${runtime} min</span>` : ''}
                 </div>
-                <p class="details-genres"><strong>Gêneros:</strong> ${genres}</p>
+                <p class="details-genres"><strong>Géneros:</strong> ${genres}</p>
                 <div class="modal-actions-wrapper">${favoriteButtonHTML}${copyLinkButtonHTML}${trailerButtonHTML}</div>
                 <div id="trailer-container"></div>
                 <h3 class="details-section-subtitle" style="padding-left:0; margin-top: 16px;">Sinopse</h3>
@@ -630,7 +623,7 @@ function closeAdvancedPlayer() {
 
     const swalContainer = Swal.getContainer();
     if (swalContainer) {
-        swalContainer.style.display = ''; // Mostra o modal do SweetAlert2 novamente
+        swalContainer.style.display = '';
     }
 }
 
@@ -639,7 +632,7 @@ function launchAdvancedPlayer(url, logoPath, itemData, mediaType, seasonInfo = n
 
     const wrapper = document.getElementById('player-fullscreen-wrapper');
     if (!wrapper) {
-        showCustomToast('Erro Crítico: Componente do player ausente.', 'info');
+        showCustomToast('Erro Crítico: Componente do leitor ausente.', 'info');
         return;
     }
 
@@ -654,11 +647,11 @@ function launchAdvancedPlayer(url, logoPath, itemData, mediaType, seasonInfo = n
 
     const swalContainer = Swal.getContainer();
     if (swalContainer) {
-        swalContainer.style.display = 'none'; // Esconde o modal do SweetAlert2
+        swalContainer.style.display = 'none';
     }
 
     wrapper.style.display = 'flex';
-    wrapper.style.zIndex = '9999'; // Garante que o player fique acima de outros elementos, incluindo modais
+    wrapper.style.zIndex = '9999';
 
     document.getElementById('player-close-btn')?.addEventListener('click', e => {
         e.stopPropagation();
@@ -668,9 +661,9 @@ function launchAdvancedPlayer(url, logoPath, itemData, mediaType, seasonInfo = n
 
 
 async function openFilterSweetAlert() {
-    const swalHTML = `<div class="swal-genre-filter-type-selector mb-4"><button id="swalMovieGenreTypeButton" data-type="movie" class="${currentFilterTypeSA === 'movie' ? 'active' : ''}">Filmes</button><button id="swalTvGenreTypeButton" data-type="tv" class="${currentFilterTypeSA === 'tv' ? 'active' : ''}">Séries</button><button id="swalAnimeGenreTypeButton" data-type="anime" class="${currentFilterTypeSA === 'anime' ? 'active' : ''}">Animes</button></div><div id="swalGenreButtonsPanel" class="swal-genre-buttons-panel my-4">Carregando...</div>`;
+    const swalHTML = `<div class="swal-genre-filter-type-selector mb-4"><button id="swalMovieGenreTypeButton" data-type="movie" class="${currentFilterTypeSA === 'movie' ? 'active' : ''}">Filmes</button><button id="swalTvGenreTypeButton" data-type="tv" class="${currentFilterTypeSA === 'tv' ? 'active' : ''}">Séries</button><button id="swalAnimeGenreTypeButton" data-type="anime" class="${currentFilterTypeSA === 'anime' ? 'active' : ''}">Animes</button></div><div id="swalGenreButtonsPanel" class="swal-genre-buttons-panel my-4">A carregar...</div>`;
     Swal.fire({
-        title: 'Filtrar por Gênero', html: swalHTML, showCloseButton: true, showDenyButton: true,
+        title: 'Filtrar por Género', html: swalHTML, showCloseButton: true, showDenyButton: true,
         denyButtonText: 'Limpar Filtro', confirmButtonText: 'Aplicar Filtro',
         customClass: { popup: 'swal2-popup' },
         didOpen: () => {
@@ -909,7 +902,7 @@ function openCombinedModal() {
     `;
 
     Swal.fire({
-        title: 'Meus Salvos',
+        title: 'Os Meus Guardados',
         html: modalHTML,
         showConfirmButton: false,
         showCloseButton: true,
@@ -923,7 +916,7 @@ function openCombinedModal() {
                 document.querySelector(`.swal-tab-button[data-tab="${tab}"]`).classList.add('active');
 
                 if (tab === 'favorites') {
-                    let favsHtml = '<p class="text-center text-gray-400 py-5">Você não tem favoritos.</p>';
+                    let favsHtml = '<p class="text-center text-gray-400 py-5">Não tem favoritos.</p>';
                     if (favorites.length > 0) {
                         favsHtml = `<div class="favorites-grid">${favorites.map(item => `
                             <div class="content-card favorite-card" onclick="Swal.close(); openItemModal(${item.id}, '${item.media_type}', '${item.backdrop_path || ''}')">
@@ -947,12 +940,12 @@ function openCombinedModal() {
                         });
                     });
                 } else if (tab === 'history') {
-                    let historyItemsHTML = '<p class="text-center text-gray-400 py-5">Seu histórico está vazio.</p>';
+                    let historyItemsHTML = '<p class="text-center text-gray-400 py-5">O seu histórico está vazio.</p>';
                     if (watchHistory.length > 0) {
                         historyItemsHTML = watchHistory.map(item => {
                             const detailText = item.media_type === 'tv' && item.season && item.episode
                                 ? `T${item.season} E${item.episode}`
-                                : `Assistido em ${new Date(item.date).toLocaleDateString('pt-BR')}`;
+                                : `Visto em ${new Date(item.date).toLocaleDateString('pt-BR')}`;
 
                             return `
                                 <div class="history-list-item" data-id="${item.id}" data-type="${item.media_type}">
@@ -990,7 +983,7 @@ function openCombinedModal() {
                                 itemEl.remove();
                                 removeFromWatchHistory(itemId);
                                 if (document.querySelector('.history-list').children.length === 0) {
-                                    document.querySelector('.history-list').innerHTML = '<p class="text-center text-gray-400 py-5">Seu histórico está vazio.</p>';
+                                    document.querySelector('.history-list').innerHTML = '<p class="text-center text-gray-400 py-5">O seu histórico está vazio.</p>';
                                 }
                             }, 300);
                         });
@@ -1030,40 +1023,38 @@ document.addEventListener('DOMContentLoaded', () => {
     if (filterToggleButton) filterToggleButton.addEventListener('click', openFilterSweetAlert);
     if (floatingCombinedButton) floatingCombinedButton.addEventListener('click', openCombinedModal);
 
-    
-    
     const mainContent = document.getElementById('main-content');
     const toggleCalendarBtn = document.getElementById('toggle-calendar-btn');
 
-if (toggleCalendarBtn) {
-    toggleCalendarBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        document.body.classList.toggle('calendar-open');
+    if (toggleCalendarBtn) {
+        toggleCalendarBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.body.classList.toggle('calendar-open');
 
-        const isCalendarOpen = document.body.classList.contains('calendar-open');
-        const icon = toggleCalendarBtn.querySelector('i');
+            const isCalendarOpen = document.body.classList.contains('calendar-open');
+            const icon = toggleCalendarBtn.querySelector('i');
 
-        if (isCalendarOpen) {
-            icon.classList.remove('fa-calendar-alt');
-            icon.classList.add('fa-times');
-            toggleCalendarBtn.setAttribute('aria-label', 'Fechar Calendário');
-        } else {
+            if (isCalendarOpen) {
+                icon.classList.remove('fa-calendar-alt');
+                icon.classList.add('fa-times');
+                toggleCalendarBtn.setAttribute('aria-label', 'Fechar Calendário');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-calendar-alt');
+                toggleCalendarBtn.setAttribute('aria-label', 'Abrir Calendário');
+            }
+        });
+    }
+
+    if (mainContent) mainContent.addEventListener('click', () => { 
+        if (document.body.classList.contains('calendar-open')) {
+            document.body.classList.remove('calendar-open');
+            const icon = toggleCalendarBtn.querySelector('i');
             icon.classList.remove('fa-times');
             icon.classList.add('fa-calendar-alt');
             toggleCalendarBtn.setAttribute('aria-label', 'Abrir Calendário');
         }
     });
-}
-
-if (mainContent) mainContent.addEventListener('click', () => { 
-    if (document.body.classList.contains('calendar-open')) {
-        document.body.classList.remove('calendar-open');
-        const icon = toggleCalendarBtn.querySelector('i');
-        icon.classList.remove('fa-times');
-        icon.classList.add('fa-calendar-alt');
-        toggleCalendarBtn.setAttribute('aria-label', 'Abrir Calendário');
-    }
-});
 
     const debouncedLoadMoreMovies = debounce(loadMorePopularMovies, 300);
     const debouncedLoadMoreShows = debounce(loadMoreTopRatedTvShows, 300);
