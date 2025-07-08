@@ -83,12 +83,30 @@ let isLoadingMoreTopRatedTvShows = false;
 // --- Firebase Functions ---
 function signInWithGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider).catch(console.error);
+    auth.signInWithPopup(provider).catch(error => {
+        // O pop-up pode ser bloqueado. O Firebase tentará o redirecionamento.
+        console.error("Erro no Popup, tentando redirecionar...", error);
+        // A função getRedirectResult() cuidará do resto.
+    });
 }
 
 function signOut() {
     auth.signOut();
 }
+
+// ÚNICA ALTERAÇÃO: Adicionado para lidar com o login por redirecionamento
+auth.getRedirectResult()
+    .then((result) => {
+        if (result.user) {
+            // Login por redirecionamento bem-sucedido.
+            // O onAuthStateChanged vai lidar com a atualização do usuário e da UI.
+            console.log("Usuário logado via redirecionamento:", result.user.displayName);
+        }
+    }).catch((error) => {
+        // Lidar com erros aqui.
+        console.error("Erro no getRedirectResult:", error);
+    });
+// FIM DA ALTERAÇÃO
 
 auth.onAuthStateChanged(async user => {
     currentUser = user;
@@ -493,7 +511,7 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
     const imdbId = details.external_ids?.imdb_id;
     const mainPlayerUrl = !isTV && imdbId ? `${PLAYER_BASE_URL_MOVIE}${imdbId}` : null;
     
-    const shareUrl = `https://alisuuu.github.io/Suquinho/?pagina=Catalogo1%2Findex.html%3Ftype%3D${mediaType}%26id%3D${itemId}`;
+    const shareUrl = `${window.location.origin}${window.location.pathname}?type=${mediaType}&id=${itemId}`;
     
     const titleText = details.title || details.name || "N/A";
     const coverImagePath = details.backdrop_path ? `${TMDB_IMAGE_BASE_URL}w780${details.backdrop_path}` : (details.poster_path ? `${TMDB_IMAGE_BASE_URL}w780${details.poster_path}` : 'https://placehold.co/1280x720/0A0514/F0F0F0?text=Indispon%C3%ADvel');
