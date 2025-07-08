@@ -868,7 +868,7 @@ header h1 .fa-film { color: var(--primary-color); margin-right: 0.5rem; }
     width: 40px; /* Slightly larger button */
     height: 40px; /* Slightly larger button */
     border-radius: 50%;
-    background: var(--primary-color); /* Primary color for play button */
+    background: var(); /* Primary color for play button */
     color: var(--on-primary-color);
     border: 1px solid var(--primary-color);
     cursor: pointer;
