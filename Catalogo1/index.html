@@ -1,17 +1,17 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suquinho Play</title>
-    <!-- Fontes e Ícones -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    
-    <!-- Folhas de Estilo - Carregamento Dinâmico -->
-    <script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Suquinho Play</title>
+<!-- Fontes e Ícones -->
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet"/>
+<!-- Folhas de Estilo - Carregamento Dinâmico -->
+<script>
       const loadThemeCss = () => {
           const selectedTheme = localStorage.getItem('selectedTheme') || 'default'; // 'default' as fallback
           const cssFiles = [
@@ -34,9 +34,17 @@
       // Load theme immediately
       loadThemeCss();
     </script>
-
-    <!-- Estilos para os Loaders -->
-    <style>
+<style>
+  #player-fullscreen-wrapper {
+    z-index: 99999; /* Garante que o player esteja sempre no topo */
+  }
+  #calendar-panel {
+    z-index: 99; /* Garante que o painel do calendário fique abaixo do player */
+    height: calc(100% - 60px); /* Deixa espaço para os botões flutuantes */
+  }
+</style>
+<!-- Estilos para os Loaders -->
+<style>
         .horizontal-loader {
             position: absolute;
             top: 0;
@@ -87,92 +95,154 @@
             }
         }
     </style>
-    <style>
+<style>
       body {
         visibility: hidden;
         opacity: 0;
         transition: opacity 0.5s ease-in-out;
       }
     </style>
+<style>
+      .swal-combined-popup #swal-tab-content {
+        max-height: 60vh; 
+        overflow-y: auto;
+        overflow-x: hidden; 
+      }
+      .favorites-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+        padding: 1rem;
+      }
+      .history-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 1rem;
+      }
+      .history-list-item {
+        display: flex;
+        align-items: center;
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        padding: 0.5rem;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+      .history-list-item:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+      .history-list-poster {
+        width: 60px;
+        height: 90px;
+        border-radius: 4px;
+        margin-right: 0.75rem;
+        object-fit: cover;
+      }
+      .history-list-info {
+        flex-grow: 1;
+      }
+      .history-list-title {
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.95rem;
+      }
+      .history-list-details {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+      }
+      .history-list-actions {
+        margin-left: 0.75rem;
+      }
+      .remove-history-button {
+        background: none;
+        border: none;
+        color: var(--text-secondary);
+        cursor: pointer;
+        font-size: 1.1rem;
+        transition: color 0.2s ease;
+      }
+      .remove-history-button:hover {
+        color: var(--accent-color);
+      }
+</style>
 </head>
 <body>
-    <div id="pageBackdrop"></div>
-    <div id="loader" class="loader-overlay" style="display: none;"><div class="loader"></div></div>
-
-    <!-- Conteúdo Principal do Catálogo -->
-    <div id="main-content">
-        <header>
-            <div class="container mx-auto flex flex-col lg:flex-row justify-between items-center space-y-4 lg:space-y-0 p-4">
-                <div class="header-controls-wrapper w-full lg:w-auto">
-                    <div class="header-controls w-full lg:w-auto flex items-center justify-center lg:justify-end">
-                        <div class="input-search-wrapper relative">
-                            <input id="searchInput" class="input-search" type="text" placeholder="Buscar filmes ou séries...">
-                            <button id="searchButton" aria-label="Buscar"><i class="fas fa-search"></i></button>
-                        </div>
-                        <button id="filterToggleButton" aria-label="Filtrar por gênero">
+<div id="pageBackdrop"></div>
+<div class="loader-overlay" id="loader" style="display: none;"><div class="loader"></div></div>
+<!-- Conteúdo Principal do Catálogo -->
+<div id="main-content">
+<header>
+<div class="container mx-auto flex flex-col lg:flex-row justify-between items-center space-y-4 lg:space-y-0 p-4">
+<div class="header-controls-wrapper w-full lg:w-auto">
+<div class="header-controls w-full lg:w-auto flex items-center justify-center lg:justify-end">
+<div class="input-search-wrapper relative">
+<input class="input-search" id="searchInput" placeholder="Buscar filmes ou séries..." type="text"/>
+<button aria-label="Buscar" id="searchButton"><i class="fas fa-search"></i></button>
+</div>
+<button aria-label="Filtrar por gênero" id="filterToggleButton">
                         Filtro
                         </button>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <main id="contentArea" class="container mx-auto p-4 lg:p-6">
-            <div id="defaultContentSections">
-                <div class="content-section">
-                    <h2 class="section-title">Filmes Populares</h2>
-                    <div class="relative">
-                        <div id="moviesResultsGrid" class="horizontal-scroll-grid"></div>
-                        <div id="popularMoviesLoader" class="horizontal-loader">
-                            <div class="loader-spinner"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="content-section">
-                    <h2 class="section-title">Séries em Alta</h2>
-                     <div class="relative">
-                        <div id="tvShowsResultsGrid" class="horizontal-scroll-grid"></div>
-                        <div id="topRatedTvShowsLoader" class="horizontal-loader">
-                            <div class="loader-spinner"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id="singleResultsSection" style="display: none;">
-                <h2 id="singleSectionTitle" class="section-title">Resultados</h2>
-                <div id="singleResultsGrid" class="main-results-grid"></div>
-                <div id="searchResultsLoader" class="w-full flex justify-center py-4" style="display: none;"><div class="loader-spinner"></div></div>
-            </div>
-        </main>
-    </div>
-    
-    <!-- Painel Lateral do Calendário (Agora com Iframe dentro) -->
-    <div id="calendar-panel">
-        <button id="close-calendar-btn" aria-label="Fechar Calendário">
-            <i class="fas fa-times"></i>
-        </button>
-        <iframe src="../calendario/index.html" style="width: 100%; height: 100%; border: none;"></iframe>
-    </div>
-
-    <!-- Botões Flutuantes -->
-    <div id="floatingButtonWrapper">
-        <button id="open-calendar-btn" aria-label="Abrir Calendário"><i class="fas fa-calendar-alt"></i></button>
-        <button id="floatingHistoryButton" aria-label="Ver Histórico" style="display: none;"><i class="fas fa-history"></i></button>
-        <button id="floatingFavoritesButton" aria-label="Ver Favoritos"><i class="fa-solid fa-heart"></i></button>
-    </div>
-
-    <!-- Container para o player em tela cheia -->
-    <div id="player-fullscreen-wrapper"></div>
-
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="catalogo.js"></script>
-    
-    <script>
+</div>
+</div>
+</div>
+</header>
+<main class="container mx-auto p-4 lg:p-6" id="contentArea">
+<div id="defaultContentSections">
+<div class="content-section">
+<h2 class="section-title">Filmes Populares</h2>
+<div class="relative">
+<div class="horizontal-scroll-grid" id="moviesResultsGrid"></div>
+<div class="horizontal-loader" id="popularMoviesLoader">
+<div class="loader-spinner"></div>
+</div>
+</div>
+</div>
+<div class="content-section">
+<h2 class="section-title">Séries em Alta</h2>
+<div class="relative">
+<div class="horizontal-scroll-grid" id="tvShowsResultsGrid"></div>
+<div class="horizontal-loader" id="topRatedTvShowsLoader">
+<div class="loader-spinner"></div>
+</div>
+</div>
+</div>
+</div>
+<div id="singleResultsSection" style="display: none;">
+<h2 class="section-title" id="singleSectionTitle">Resultados</h2>
+<div class="main-results-grid" id="singleResultsGrid"></div>
+<div class="w-full flex justify-center py-4" id="searchResultsLoader" style="display: none;"><div class="loader-spinner"></div></div>
+</div>
+</main>
+</div>
+<!-- Painel Lateral do Calendário (Agora com Iframe dentro) -->
+<div id="calendar-panel">
+<button aria-label="Fechar Calendário" id="close-calendar-btn" style="display: none;"><i class="fas fa-times"></i></button>
+<iframe src="../calendario/index.html" style="width: 100%; height: 100%; border: none;"></iframe>
+</div>
+<!-- Botões Flutuantes -->
+<div id="floatingButtonWrapper" style="z-index: 100;">
+<button aria-label="Abrir Calendário" id="toggle-calendar-btn"><i class="fas fa-calendar-alt"></i></button>
+<button aria-label="Meus Salvos" id="floatingCombinedButton"><i class="fas fa-list-alt"></i></button>
+<button id="floatingLoginButton" aria-label="Login com Google" onclick="signInWithGoogle()">
+    <i class="fab fa-google"></i>
+</button>
+<img id="userAvatar" src="" onclick="signOut()" title="Clique para sair"/>
+<!-- Container para o player em tela cheia -->
+<div id="player-fullscreen-wrapper"></div>
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+<script src="catalogo.js"></script>
+<script>
       document.addEventListener('DOMContentLoaded', () => {
         document.body.style.visibility = 'visible';
         document.body.style.opacity = '1';
       });
     </script>
+
+
 </body>
 </html>

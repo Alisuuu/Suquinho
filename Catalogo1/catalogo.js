@@ -22,6 +22,22 @@ const companyKeywordMap = {
     'paramount': { name: 'Paramount', ids: [4] }
 };
 
+// --- Firebase Configuration ---
+const firebaseConfig = {
+    apiKey: "AIzaSyC-D6au6ILZlfQ2hE7oOqnADDwp7BDUrAA",
+    authDomain: "suquin-c6eb8.firebaseapp.com",
+    projectId: "suquin-c6eb8",
+    storageBucket: "suquin-c6eb8.firebasestorage.app",
+    messagingSenderId: "464208391390",
+    appId: "1:464208391390:web:73711a5a98e6447ccc264f"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+let currentUser = null;
+
 // --- DOM Element References ---
 const pageBackdrop = document.getElementById('pageBackdrop');
 const searchInput = document.getElementById('searchInput');
@@ -34,8 +50,7 @@ const singleResultsSection = document.getElementById('singleResultsSection');
 const singleSectionTitleEl = document.getElementById('singleSectionTitle');
 const singleResultsGrid = document.getElementById('singleResultsGrid');
 const loader = document.getElementById('loader');
-const floatingFavoritesButton = document.getElementById('floatingFavoritesButton');
-const floatingHistoryButton = document.getElementById('floatingHistoryButton');
+const floatingCombinedButton = document.getElementById('floatingCombinedButton');
 const searchResultsLoader = document.getElementById('searchResultsLoader');
 const popularMoviesLoader = document.getElementById('popularMoviesLoader');
 const topRatedTvShowsLoader = document.getElementById('topRatedTvShowsLoader');
@@ -64,6 +79,50 @@ let isLoadingMorePopularMovies = false;
 let topRatedTvShowsCurrentPage = 1;
 let topRatedTvShowsTotalPages = 1;
 let isLoadingMoreTopRatedTvShows = false;
+
+// --- Firebase Functions ---
+function signInWithGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider).catch(console.error);
+}
+
+function signOut() {
+    auth.signOut();
+}
+
+auth.onAuthStateChanged(async user => {
+    currentUser = user;
+    const loginBtn = document.getElementById("floatingLoginButton");
+    const avatar = document.getElementById("userAvatar");
+
+    if (user) {
+        loginBtn.style.display = "none";
+        avatar.src = user.photoURL || "";
+        avatar.style.display = "block";
+
+        const doc = await db.collection("users").doc(user.uid).get();
+        if (doc.exists) {
+            const data = doc.data();
+            favorites = Array.isArray(data.favorites) ? data.favorites : [];
+            watchHistory = Array.isArray(data.watchHistory) ? data.watchHistory : [];
+        }
+    } else {
+        loginBtn.style.display = "block";
+        avatar.style.display = "none";
+        // Load from local storage if not logged in
+        favorites = JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY)) || [];
+        watchHistory = JSON.parse(localStorage.getItem(WATCH_HISTORY_STORAGE_KEY)) || [];
+    }
+    updateHistoryButtonVisibility();
+});
+
+function saveToFirestore() {
+    if (!currentUser) return;
+    db.collection("users").doc(currentUser.uid).set({
+        favorites,
+        watchHistory
+    }, { merge: true });
+}
 
 // --- Main Logic ---
 function getCompanyConfigForQuery(query) {
@@ -542,22 +601,18 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
     }
 }
 
-
-let controlsHideTimer = null;
-let zoomState = { level: 1, max: 3, x: 0, y: 0 };
-let isPanning = false;
-let panStart = { x: 0, y: 0 };
-let playerState = { currentFitMode: 'contain' };
+// --- Player Functions ---
 
 function closeAdvancedPlayer() {
     const wrapper = document.getElementById('player-fullscreen-wrapper');
-    if (document.fullscreenElement) {
-        document.exitFullscreen().catch(err => console.error(`Error attempting to exit fullscreen: ${err.message}`));
-    }
     if (wrapper) {
         wrapper.style.display = 'none';
-        wrapper.innerHTML = '';
-        if(controlsHideTimer) clearTimeout(controlsHideTimer);
+        wrapper.innerHTML = ''; 
+    }
+
+    const swalContainer = Swal.getContainer();
+    if (swalContainer) {
+        swalContainer.style.display = ''; // Mostra o modal do SweetAlert2 novamente
     }
 }
 
@@ -570,139 +625,29 @@ function launchAdvancedPlayer(url, logoPath, itemData, mediaType, seasonInfo = n
         return;
     }
 
-    zoomState = { level: 1, max: 3, x: 0, y: 0 };
-    playerState.currentFitMode = 'contain';
-
-    const logoForPlayerHTML = logoPath ? `<img src="${TMDB_IMAGE_BASE_URL}w300${logoPath}" id="player-logo" alt="logo">` : '';
+    const logoForPlayerHTML = logoPath 
+        ? `<img src="${TMDB_IMAGE_BASE_URL}w300${logoPath}" id="player-logo" alt="logo" style="position: absolute; bottom: 10px; left: 10px; z-index: 101;">`
+        : '';
 
     wrapper.innerHTML = `
-        <iframe src="${url}" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation"></iframe>
-        <button id="player-close-btn" title="Voltar"><i class="fas fa-arrow-left"></i></button>
-        <div id="player-controls">
-            ${logoForPlayerHTML}
-            <div class="player-control-group">
-                <button class="player-zoom-preset-btn active" data-zoom="1">100%</button>
-                <button class="player-zoom-preset-btn" data-zoom="1.25">125%</button>
-                <button class="player-zoom-preset-btn" data-zoom="1.5">150%</button>
-                <button class="player-zoom-preset-btn" data-zoom="2">200%</button>
-            </div>
-            <div class="player-control-group">
-                <button class="player-fit-btn" data-mode="contain" title="Conter"><i class="fas fa-compress-arrows-alt"></i></button>
-                <button class="player-fit-btn" data-mode="cover" title="Preencher"><i class="fas fa-expand-arrows-alt"></i></button>
-                <button class="player-fit-btn" data-mode="fill" title="Esticar"><i class="fas fa-expand"></i></button>
-            </div>
-        </div>
-        <button id="show-controls-button"><i class="fas fa-eye"></i></button>`;
+        <iframe src="${url}" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"></iframe>
+        <button id="player-close-btn" title="Voltar" style="position: absolute; top: 10px; right: 10px; z-index: 100;"><i class="fas fa-arrow-left"></i></button>
+        ${logoForPlayerHTML}`;
+
+    const swalContainer = Swal.getContainer();
+    if (swalContainer) {
+        swalContainer.style.display = 'none'; // Esconde o modal do SweetAlert2
+    }
 
     wrapper.style.display = 'flex';
-    setupPlayerEventListeners(wrapper);
-    setPlayerFit(playerState.currentFitMode, false); 
-    updatePlayerZoom();
-    resetControlsTimer();
-}
+    wrapper.style.zIndex = '9999'; // Garante que o player fique acima de outros elementos, incluindo modais
 
-function setPlayerFit(fitMode, showToast = true) {
-    const wrapper = document.getElementById('player-fullscreen-wrapper');
-    const iframe = wrapper?.querySelector('iframe');
-    if (!iframe) return;
-    playerState.currentFitMode = fitMode;
-    iframe.style.width = '';
-    iframe.style.height = '';
-    iframe.style.top = '';
-    iframe.style.left = '';
-    iframe.style.objectFit = 'initial';
-    const containerWidth = wrapper.clientWidth;
-    const containerHeight = wrapper.clientHeight;
-    const containerRatio = containerWidth / containerHeight;
-    const videoRatio = 16 / 9;
-    if (fitMode === 'cover') {
-        if (containerRatio > videoRatio) {
-            const newHeight = containerWidth / videoRatio;
-            iframe.style.height = `${newHeight}px`;
-            iframe.style.top = `${(containerHeight - newHeight) / 2}px`;
-        } else {
-            const newWidth = containerHeight * videoRatio;
-            iframe.style.width = `${newWidth}px`;
-            iframe.style.left = `${(containerWidth - newWidth) / 2}px`;
-        }
-    } else if (fitMode === 'fill') {
-        iframe.style.objectFit = 'fill';
-    }
-    updateFitButtonUI(fitMode);
-    if (showToast) {
-        const modeNames = { contain: 'Conter', cover: 'Preencher', fill: 'Esticar' };
-        showCustomToast(`Modo: ${modeNames[fitMode]}`, 'info');
-    }
-    resetControlsTimer();
-}
-
-function updateFitButtonUI(activeMode) {
-    document.querySelectorAll('.player-fit-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.mode === activeMode));
-}
-
-function updatePlayerZoom() {
-    const wrapper = document.getElementById('player-fullscreen-wrapper');
-    const iframe = wrapper?.querySelector('iframe');
-    if (!iframe) return;
-    iframe.style.transform = `translate(${zoomState.x}px, ${zoomState.y}px) scale(${zoomState.level})`;
-    wrapper.classList.toggle('zoomed', zoomState.level > 1);
-}
-
-function setupPlayerEventListeners(wrapper) {
-    document.getElementById('player-close-btn')?.addEventListener('click', e => { e.stopPropagation(); closeAdvancedPlayer(); });
-    document.querySelectorAll('.player-zoom-preset-btn').forEach(button => {
-        button.addEventListener('click', e => {
-            e.stopPropagation();
-            zoomState.level = parseFloat(e.target.dataset.zoom);
-            if (zoomState.level === 1) { zoomState.x = 0; zoomState.y = 0; }
-            updatePlayerZoom();
-            document.querySelectorAll('.player-zoom-preset-btn').forEach(btn => btn.classList.remove('active'));
-            e.target.classList.add('active');
-            resetControlsTimer();
-        });
-    });
-    document.querySelectorAll('.player-fit-btn').forEach(button => button.addEventListener('click', e => { e.stopPropagation(); setPlayerFit(button.dataset.mode); }));
-    wrapper.addEventListener('mousedown', e => {
-        if (e.target.closest('button, input')) return;
-        if (zoomState.level > 1) {
-            isPanning = true;
-            panStart.x = e.clientX - zoomState.x;
-            panStart.y = e.clientY - zoomState.y;
-            wrapper.classList.add('grabbing');
-        }
-    });
-    wrapper.addEventListener('mouseup', () => { isPanning = false; wrapper.classList.remove('grabbing'); });
-    wrapper.addEventListener('mouseleave', () => { isPanning = false; wrapper.classList.remove('grabbing'); });
-    wrapper.addEventListener('mousemove', e => {
-        resetControlsTimer();
-        if (isPanning) {
-            zoomState.x = e.clientX - panStart.x;
-            zoomState.y = e.clientY - panStart.y;
-            updatePlayerZoom();
-        }
-    });
-    wrapper.querySelector('#show-controls-button')?.addEventListener('click', e => {
+    document.getElementById('player-close-btn')?.addEventListener('click', e => {
         e.stopPropagation();
-        wrapper.querySelector('#player-controls')?.classList.remove('hidden');
-        wrapper.querySelector('#show-controls-button')?.classList.remove('visible');
-        resetControlsTimer();
+        closeAdvancedPlayer();
     });
 }
 
-function resetControlsTimer() {
-    clearTimeout(controlsHideTimer);
-    const controls = document.getElementById('player-controls');
-    const showControlsBtn = document.getElementById('show-controls-button');
-    const closeBtn = document.getElementById('player-close-btn');
-    if(controls) controls.classList.remove('hidden');
-    if(showControlsBtn) showControlsBtn.classList.remove('visible');
-    if(closeBtn) closeBtn.style.opacity = '1';
-    controlsHideTimer = setTimeout(() => {
-        if(controls) controls.classList.add('hidden');
-        if(showControlsBtn) showControlsBtn.classList.add('visible');
-        if(closeBtn) closeBtn.style.opacity = '0';
-    }, 4000);
-}
 
 async function openFilterSweetAlert() {
     const swalHTML = `<div class="swal-genre-filter-type-selector mb-4"><button id="swalMovieGenreTypeButton" data-type="movie" class="${currentFilterTypeSA === 'movie' ? 'active' : ''}">Filmes</button><button id="swalTvGenreTypeButton" data-type="tv" class="${currentFilterTypeSA === 'tv' ? 'active' : ''}">Séries</button><button id="swalAnimeGenreTypeButton" data-type="anime" class="${currentFilterTypeSA === 'anime' ? 'active' : ''}">Animes</button></div><div id="swalGenreButtonsPanel" class="swal-genre-buttons-panel my-4">Carregando...</div>`;
@@ -814,16 +759,23 @@ function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { cons
 function showLoader() { if (loader) loader.style.display = 'flex'; }
 function hideLoader() { if (loader) loader.style.display = 'none'; }
 function updatePageBackground(path) { if (pageBackdrop) pageBackdrop.style.backgroundImage = path ? `url(${TMDB_IMAGE_BASE_URL}w1280${path})` : ''; }
-function getFavorites() { try { return JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY) || '[]'); } catch { return []; } }
-function saveFavorites(favs) { localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favs)); }
-function isFavorite(id, type) { return favorites.some(fav => fav.id.toString() === id.toString() && fav.media_type === type); }
+
+function isFavorite(id, type) {
+    return favorites.some(fav => fav.id.toString() === id.toString() && fav.media_type === type);
+}
 
 function toggleFavorite(item, type) {
     const itemId = item.id.toString();
     const index = favorites.findIndex(fav => fav.id.toString() === itemId && fav.media_type === type);
-    if (index > -1) { favorites.splice(index, 1); showCustomToast('Removido dos Favoritos', 'info');
-    } else { favorites.push({ id: item.id, media_type: type, title: item.title || item.name, poster_path: item.poster_path, backdrop_path: item.backdrop_path }); showCustomToast('Adicionado aos Favoritos', 'success'); }
-    saveFavorites(favorites);
+    if (index > -1) {
+        favorites.splice(index, 1);
+        showCustomToast('Removido dos Favoritos', 'info');
+    } else {
+        favorites.unshift({ id: item.id, media_type: type, title: item.title || item.name, poster_path: item.poster_path, backdrop_path: item.backdrop_path });
+        showCustomToast('Adicionado aos Favoritos', 'success');
+    }
+    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
+    saveToFirestore();
     updateFavoriteButtonsState(item.id, type);
 }
 
@@ -842,52 +794,34 @@ function updateFavoriteButtonsState(id, type) {
 }
 
 // --- Funções de Gerenciamento do Histórico de Exibição ---
-function getWatchHistory() {
-    try {
-        const historyData = JSON.parse(localStorage.getItem(WATCH_HISTORY_STORAGE_KEY) || '[]');
-        return Array.isArray(historyData) ? historyData : [];
-    } catch {
-        return [];
-    }
-}
-
-function saveWatchHistory(history) {
-    localStorage.setItem(WATCH_HISTORY_STORAGE_KEY, JSON.stringify(history));
-    updateHistoryButtonVisibility();
-}
-
 function addToWatchHistory(item, mediaType, seasonInfo = null, episodeInfo = null) {
-    watchHistory = watchHistory.filter(h => h.id.toString() !== item.id.toString());
-
-    const historyEntry = {
+    const entry = {
         id: item.id,
+        title: item.title || item.name || "",
+        poster_path: item.poster_path || "",
         media_type: mediaType,
-        title: item.title || item.name,
-        poster_path: item.poster_path,
-        backdrop_path: item.backdrop_path,
-        timestamp: new Date().toISOString(),
-        season: seasonInfo ? { number: seasonInfo.season_number, name: seasonInfo.name } : null,
-        episode: episodeInfo ? { number: episodeInfo.episode_number, name: episodeInfo.name } : null,
+        date: new Date().toISOString(),
+        season: seasonInfo?.season_number || null,
+        episode: episodeInfo?.episode_number || null
     };
-
-    watchHistory.unshift(historyEntry);
-
-    if (watchHistory.length > 50) {
-        watchHistory = watchHistory.slice(0, 50);
-    }
-
-    saveWatchHistory(watchHistory);
+    watchHistory = watchHistory.filter(h => !(h.id === entry.id && h.media_type === entry.media_type));
+    watchHistory.unshift(entry);
+    if (watchHistory.length > 100) watchHistory.pop();
+    localStorage.setItem(WATCH_HISTORY_STORAGE_KEY, JSON.stringify(watchHistory));
+    saveToFirestore();
+    updateHistoryButtonVisibility();
 }
 
 function removeFromWatchHistory(itemId) {
     watchHistory = watchHistory.filter(h => h.id.toString() !== itemId.toString());
-    saveWatchHistory(watchHistory);
+    localStorage.setItem(WATCH_HISTORY_STORAGE_KEY, JSON.stringify(watchHistory));
+    saveToFirestore();
     showCustomToast('Removido do histórico', 'info');
 }
 
 function updateHistoryButtonVisibility() {
-    if (floatingHistoryButton) {
-        floatingHistoryButton.style.display = watchHistory.length > 0 ? 'flex' : 'none';
+    if (floatingCombinedButton) {
+        floatingCombinedButton.style.display = (favorites.length > 0 || watchHistory.length > 0) ? 'flex' : 'none';
     }
 }
 
@@ -947,103 +881,115 @@ function copyToClipboard(text) {
     }
 }
 
-async function openFavoritesModal() {
-    let favsHtml = '<p class="text-center text-gray-400 py-5">Você não tem favoritos.</p>';
-    
-    if (favorites.length > 0) {
-        favsHtml = `<div class="favorites-grid">${favorites.map(item => `
-            <div class="content-card favorite-card" onclick="Swal.close(); openItemModal(${item.id}, '${item.media_type}', '${item.backdrop_path || ''}')">
-                <img src="${TMDB_IMAGE_BASE_URL}w342${item.poster_path}" alt="${item.title || ''}">
-                <div class="title-overlay"><div class="title">${item.title || ''}</div></div>
-                <button class="remove-favorite-button" data-id="${item.id}" data-type="${item.media_type}"><i class="fas fa-times-circle"></i></button>
-            </div>`).join('')}</div>`;
-    }
-    Swal.fire({
-        title: 'Meus Favoritos', html: favsHtml, showConfirmButton: false, showCloseButton: true,
-        customClass: { popup: 'swal-favorites-popup' },
-        didOpen: (modal) => {
-            document.querySelectorAll('.remove-favorite-button').forEach(button => {
-                button.addEventListener('click', e => {
-                    e.stopPropagation();
-                    const itemToRemove = favorites.find(fav => fav.id.toString() === button.dataset.id && fav.media_type === button.dataset.type);
-                    if (itemToRemove) {
-                        toggleFavorite(itemToRemove, itemToRemove.media_type);
-                        const card = button.closest('.favorite-card');
-                        card.style.transition = 'opacity 0.3s';
-                        card.style.opacity = '0';
-                        setTimeout(() => card.remove(), 300);
-                    }
-                });
-            });
-        }
-    });
-}
-
-function openWatchHistoryModal() {
-    if (watchHistory.length === 0) {
-        showCustomToast('Seu histórico de exibição está vazio.', 'info');
-        return;
-    }
-
-    const historyItemsHTML = watchHistory.map(item => {
-        const detailText = item.media_type === 'tv' && item.season && item.episode
-            ? `${item.season.name}: Ep. ${item.episode.number} - ${item.episode.name}`
-            : `Assistido em ${new Date(item.timestamp).toLocaleDateString('pt-BR')}`;
-
-        return `
-            <div class="history-card" data-id="${item.id}" data-type="${item.media_type}">
-                <img src="${item.poster_path ? TMDB_IMAGE_BASE_URL + 'w92' + item.poster_path : 'https://placehold.co/92x138/1a1a2a/FFF?text=Capa'}" alt="Poster" class="history-card-poster">
-                <div class="history-card-info">
-                    <div class="history-card-title">${item.title}</div>
-                    <div class="history-card-details">${detailText}</div>
-                </div>
-                <div class="history-card-actions">
-                    <button class="remove-history-button" data-id="${item.id}" title="Remover do histórico">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            </div>
-        `;
-    }).join('');
+function openCombinedModal() {
+    const modalHTML = `
+        <div class="swal-tabs">
+            <button class="swal-tab-button active" data-tab="favorites">Favoritos</button>
+            <button class="swal-tab-button" data-tab="history">Histórico</button>
+        </div>
+        <div id="swal-tab-content"></div>
+    `;
 
     Swal.fire({
-        title: 'Histórico de Exibição',
-        html: `<div class="history-grid">${historyItemsHTML}</div>`,
+        title: 'Meus Salvos',
+        html: modalHTML,
         showConfirmButton: false,
         showCloseButton: true,
-        customClass: {
-            popup: 'swal-history-popup swal-favorites-popup',
-        },
+        customClass: { popup: 'swal-combined-popup' },
         didOpen: () => {
-            document.querySelectorAll('.history-card').forEach(card => {
-                card.addEventListener('click', (e) => {
-                    if (e.target.closest('.remove-history-button')) return;
-                    Swal.close();
-                    openItemModal(card.dataset.id, card.dataset.type);
+            const tabButtons = document.querySelectorAll('.swal-tab-button');
+            const tabContent = document.getElementById('swal-tab-content');
+
+            const showTab = (tab) => {
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                document.querySelector(`.swal-tab-button[data-tab="${tab}"]`).classList.add('active');
+
+                if (tab === 'favorites') {
+                    let favsHtml = '<p class="text-center text-gray-400 py-5">Você não tem favoritos.</p>';
+                    if (favorites.length > 0) {
+                        favsHtml = `<div class="favorites-grid">${favorites.map(item => `
+                            <div class="content-card favorite-card" onclick="Swal.close(); openItemModal(${item.id}, '${item.media_type}', '${item.backdrop_path || ''}')">
+                                <img src="${TMDB_IMAGE_BASE_URL}w342${item.poster_path}" alt="${item.title || ''}">
+                                <div class="title-overlay"><div class="title">${item.title || ''}</div></div>
+                                <button class="remove-favorite-button" data-id="${item.id}" data-type="${item.media_type}"><i class="fas fa-times-circle"></i></button>
+                            </div>`).join('')}</div>`;
+                    }
+                    tabContent.innerHTML = favsHtml;
+                    document.querySelectorAll('.remove-favorite-button').forEach(button => {
+                        button.addEventListener('click', e => {
+                            e.stopPropagation();
+                            const itemToRemove = favorites.find(fav => fav.id.toString() === button.dataset.id && fav.media_type === button.dataset.type);
+                            if (itemToRemove) {
+                                toggleFavorite(itemToRemove, itemToRemove.media_type);
+                                const card = button.closest('.favorite-card');
+                                card.style.transition = 'opacity 0.3s';
+                                card.style.opacity = '0';
+                                setTimeout(() => card.remove(), 300);
+                            }
+                        });
+                    });
+                } else if (tab === 'history') {
+                    let historyItemsHTML = '<p class="text-center text-gray-400 py-5">Seu histórico está vazio.</p>';
+                    if (watchHistory.length > 0) {
+                        historyItemsHTML = watchHistory.map(item => {
+                            const detailText = item.media_type === 'tv' && item.season && item.episode
+                                ? `T${item.season} E${item.episode}`
+                                : `Assistido em ${new Date(item.date).toLocaleDateString('pt-BR')}`;
+
+                            return `
+                                <div class="history-list-item" data-id="${item.id}" data-type="${item.media_type}">
+                                    <img src="${item.poster_path ? TMDB_IMAGE_BASE_URL + 'w92' + item.poster_path : 'https://placehold.co/92x138/1a1a2a/FFF?text=Capa'}" alt="Poster" class="history-list-poster">
+                                    <div class="history-list-info">
+                                        <div class="history-list-title">${item.title}</div>
+                                        <div class="history-list-details">${detailText}</div>
+                                    </div>
+                                    <div class="history-list-actions">
+                                        <button class="remove-history-button" data-id="${item.id}" title="Remover do histórico">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                    }
+                    tabContent.innerHTML = `<div class="history-list">${historyItemsHTML}</div>`;
+                    document.querySelectorAll('.history-list-item').forEach(itemEl => {
+                        itemEl.addEventListener('click', (e) => {
+                            if (e.target.closest('.remove-history-button')) return;
+                            Swal.close();
+                            openItemModal(itemEl.dataset.id, itemEl.dataset.type);
+                        });
+                    });
+                    document.querySelectorAll('.remove-history-button').forEach(button => {
+                        button.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            const itemId = button.dataset.id;
+                            const itemEl = button.closest('.history-list-item');
+                            itemEl.style.transition = 'opacity 0.3s, transform 0.3s';
+                            itemEl.style.opacity = '0';
+                            itemEl.style.transform = 'translateX(-20px)';
+                            setTimeout(() => {
+                                itemEl.remove();
+                                removeFromWatchHistory(itemId);
+                                if (document.querySelector('.history-list').children.length === 0) {
+                                    document.querySelector('.history-list').innerHTML = '<p class="text-center text-gray-400 py-5">Seu histórico está vazio.</p>';
+                                }
+                            }, 300);
+                        });
+                    });
+                }
+            };
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    showTab(button.dataset.tab);
                 });
             });
 
-            document.querySelectorAll('.remove-history-button').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const itemId = button.dataset.id;
-                    const card = button.closest('.history-card');
-                    card.style.transition = 'opacity 0.3s, transform 0.3s';
-                    card.style.opacity = '0';
-                    card.style.transform = 'translateX(-20px)';
-                    setTimeout(() => {
-                        card.remove();
-                        removeFromWatchHistory(itemId);
-                        if (document.querySelector('.history-grid').children.length === 0) {
-                            document.querySelector('.history-grid').innerHTML = '<p class="text-center text-gray-400 py-5">Seu histórico está vazio.</p>';
-                        }
-                    }, 300);
-                });
-            });
+            showTab('favorites');
         }
     });
 }
-
 
 function debounce(func, delay) {
     let timeout;
@@ -1061,21 +1007,45 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
     
-    favorites = getFavorites();
-    watchHistory = getWatchHistory();
-    updateHistoryButtonVisibility();
-
     if (searchInput) searchInput.addEventListener('input', debounce(() => performSearch(searchInput.value), 500));
     if (searchButton) searchButton.addEventListener('click', () => performSearch(searchInput.value));
     if (filterToggleButton) filterToggleButton.addEventListener('click', openFilterSweetAlert);
-    if (floatingFavoritesButton) floatingFavoritesButton.addEventListener('click', openFavoritesModal);
-    if (floatingHistoryButton) floatingHistoryButton.addEventListener('click', openWatchHistoryModal);
+    if (floatingCombinedButton) floatingCombinedButton.addEventListener('click', openCombinedModal);
 
-    if (openCalendarBtn) openCalendarBtn.addEventListener('click', (e) => { e.stopPropagation(); document.body.classList.add('calendar-open'); });
-    if (closeCalendarBtn) closeCalendarBtn.addEventListener('click', () => document.body.classList.remove('calendar-open'));
+    
     
     const mainContent = document.getElementById('main-content');
-    if (mainContent) mainContent.addEventListener('click', () => { if (document.body.classList.contains('calendar-open')) document.body.classList.remove('calendar-open'); });
+    const toggleCalendarBtn = document.getElementById('toggle-calendar-btn');
+
+if (toggleCalendarBtn) {
+    toggleCalendarBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.body.classList.toggle('calendar-open');
+
+        const isCalendarOpen = document.body.classList.contains('calendar-open');
+        const icon = toggleCalendarBtn.querySelector('i');
+
+        if (isCalendarOpen) {
+            icon.classList.remove('fa-calendar-alt');
+            icon.classList.add('fa-times');
+            toggleCalendarBtn.setAttribute('aria-label', 'Fechar Calendário');
+        } else {
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-calendar-alt');
+            toggleCalendarBtn.setAttribute('aria-label', 'Abrir Calendário');
+        }
+    });
+}
+
+if (mainContent) mainContent.addEventListener('click', () => { 
+    if (document.body.classList.contains('calendar-open')) {
+        document.body.classList.remove('calendar-open');
+        const icon = toggleCalendarBtn.querySelector('i');
+        icon.classList.remove('fa-times');
+        icon.classList.add('fa-calendar-alt');
+        toggleCalendarBtn.setAttribute('aria-label', 'Abrir Calendário');
+    }
+});
 
     const debouncedLoadMoreMovies = debounce(loadMorePopularMovies, 300);
     const debouncedLoadMoreShows = debounce(loadMoreTopRatedTvShows, 300);
@@ -1109,10 +1079,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('fullscreenchange', () => {
         if (!document.fullscreenElement) {
-            const wrapper = document.getElementById('player-fullscreen-wrapper');
-            if (wrapper && wrapper.style.display !== 'none') {
-                closeAdvancedPlayer();
-            }
+            closeAdvancedPlayer();
         }
     });
 

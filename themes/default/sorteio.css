@@ -450,8 +450,9 @@ body.swal2-shown #externalCopyButtonContainer {
 
 #player-close-btn {
     position: absolute;
-    top: 20px;
-    left: 20px;
+    bottom: 40px !important;
+    right: 20px !important;
+    left: auto !important;
     width: 45px;
     height: 45px;
     background-color: #1E1E1E; /* Alterado de rgba para cor sólida */

@@ -458,7 +458,7 @@ header {
     padding: 1rem;
     position: sticky;
     top: 0;
-    z-index: 900;
+    z-index: 99;
     width: 100%;
     box-sizing: border-box;
     height: var(--header-height-mobile);
@@ -670,131 +670,31 @@ header h1 .fa-film { color: var(--primary-color); margin-right: 0.5rem; }
     object-fit: contain;
 }
 
-#player-fullscreen-wrapper.zoomed iframe {
-    cursor: grab;
-}
-
-#player-fullscreen-wrapper.zoomed.grabbing iframe {
-    cursor: grabbing;
-}
-
-#player-close-btn {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    width: 45px;
-    height: 45px;
-    background-color: var(--surface-color);
-    border: 1px solid var(--border-color);
-    border-radius: 50%;
-    color: var(--icon-color);
-    font-size: 1.2rem;
-    cursor: pointer;
-    z-index: 10002;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease-in-out, opacity 0.3s ease;
-}
-
-#player-controls {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: transparent; 
-    padding: 10px 15px;
-    border-radius: 50px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 1.5rem;
-    z-index: 10001;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-}
-
-#player-controls.hidden {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-}
-
 #player-logo {
-    height: 30px;
-    max-width: 100px;
-    object-fit: contain;
+    /* Posicionamento fixo sobre o player */
+    position: fixed !important;
+    bottom: 40px !important;
+    right: 20px !important;
+    left: auto !important;
+    z-index: 10001 !important;
+
+    /* Reset de aparência para garantir que não pareça um botão */
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important; /* Remove qualquer sombra de botão */
+
+    /* Estilos de dimensionamento e visuais da logo */
+    height: auto !important;
+    max-height: 50px !important;
+    width: auto !important;
+    max-width: 150px !important;
+    object-fit: contain !important;
     opacity: 0.9;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+    filter: drop-shadow(0 0 8px rgba(0,0,0,0.8)); /* Sombra para destacar */
+    pointer-events: none; /* Impede que a logo intercepte cliques */
 }
-
-.player-control-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.player-zoom-preset-btn,
-.player-fit-btn {
-    background: var(--surface-color);
-    border: 1px solid var(--border-color);
-    color: var(--text-primary);
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-    padding: 8px 16px;
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-
-}
-
-.player-zoom-preset-btn:hover,
-.player-fit-btn:hover {
-    background-color: var(--primary-color);
-    color: var(--on-primary-color);
-    border-color: var(--primary-color);
-    transform: scale(1.05);
-}
-
-.player-zoom-preset-btn.active,
-.player-fit-btn.active {
-    background-color: var(--primary-color);
-    color: var(--on-primary-color);
-    border-color: var(--primary-color);
-    box-shadow: 0 0 10px rgba(167, 139, 250, 0.3);
-    transform: scale(1.05);
-}
-
-#show-controls-button {
-    position: absolute;
-    bottom: 15px;
-    right: 15px;
-    width: 40px;
-    height: 40px;
-    background-color: var(--surface-color);
-    border: none;
-    border-radius: 50%;
-    color: var(--icon-color);
-    font-size: 1rem;
-    cursor: pointer;
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-}
-
-#show-controls-button.visible {
-    opacity: 1;
-    visibility: visible;
-}
-
 /* History & Seasons/Episodes Styles */
 .swal-history-popup.swal2-popup {
     width: 900px !important;
@@ -1245,4 +1145,60 @@ button:disabled {
         margin-left: -0.5rem;
         margin-right: -0.5rem;
     }
+}
+
+/* Estilos para o modal combinado */
+.swal-combined-popup .swal-tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.swal-combined-popup .swal-tab-button {
+    background-color: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    transition: color 0.3s;
+}
+
+.swal-combined-popup .swal-tab-button.active {
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--primary-color);
+}
+
+/* Estilos para os botões flutuantes */
+#floatingButtonWrapper button,
+#floatingButtonWrapper img {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 20%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    background: var(--surface-color); /* Fundo escuro */
+    color: var(--icon-color); /* Ícone branco */
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 0 10px rgba(255, 255, 255, 0.05);
+    transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+}
+
+#floatingButtonWrapper img {
+    object-fit: cover;
+    cursor: pointer;
+}
+
+#floatingButtonWrapper button:hover,
+#floatingButtonWrapper img:hover {
+    background: var(--primary-color); /* Fundo branco no hover */
+    color: var(--on-primary-color); /* Ícone preto no hover */
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2), 0 0 16px rgba(255, 255, 255, 0.15);
 }

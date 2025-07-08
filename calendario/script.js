@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     setupLazyLoader(); // <-- LINHA ADICIONADA PARA INICIAR O LAZY LOADER
 
-    const searchInput = document.getElementById('search');
+    
     const weekNav = document.getElementById('week-navigation');
     
     /**
@@ -109,12 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Debounce para a pesquisa para evitar renderizações excessivas
-    let searchTimeout;
-    searchInput.addEventListener('input', () => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(render, 300);
-    });
+    
 
     // Delegação de eventos para a navegação da semana
     weekNav.addEventListener('click', (event) => {
@@ -487,7 +482,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function render() {
         const type = activeFilters.type;
         const activeStatuses = activeFilters.status;
-        const search = searchInput.value.toLowerCase();
 
         itemsByDay = {};
         
@@ -496,8 +490,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const matchType = type === 'all' || (item.type && item.type.toString() === type);
             const matchStatus = activeStatuses.length === 0 || activeStatuses.includes(item.status);
-            const matchSearch = !search || (item.title && item.title.toLowerCase().includes(search)) || (item.episode && item.episode.toLowerCase().includes(search));
-            return matchType && matchStatus && matchSearch;
+            return matchType && matchStatus;
         }).forEach(item => {
             const dateKey = item.air_date.split(' ')[0];
             if (!itemsByDay[dateKey]) itemsByDay[dateKey] = [];
