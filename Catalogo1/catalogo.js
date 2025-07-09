@@ -56,6 +56,8 @@ const popularMoviesLoader = document.getElementById('popularMoviesLoader');
 const topRatedTvShowsLoader = document.getElementById('topRatedTvShowsLoader');
 const openCalendarBtn = document.getElementById('open-calendar-btn');
 const closeCalendarBtn = document.getElementById('close-calendar-btn');
+const continueWatchingSection = document.getElementById('continueWatchingSection'); // NEW
+const continueWatchingGrid = document.getElementById('continueWatchingGrid');     // NEW
 
 // --- State Variables ---
 let activeAppliedGenre = { id: null, name: null, type: null };
@@ -149,6 +151,7 @@ auth.onAuthStateChanged(async user => {
         console.log("Not logged in. Using local data. Current watchHistory:", watchHistory);
     }
     updateHistoryButtonVisibility();
+    displayContinueWatching(); // NEW: Initial display after history is loaded
 });
 
 // Need a helper function for merging arrays of objects
@@ -853,6 +856,49 @@ function updateFavoriteButtonsState(id, type) {
 }
 
 // --- Funções de Gerenciamento do Histórico de Exibição ---
+function displayContinueWatching() {
+    if (!continueWatchingSection || !continueWatchingGrid) return;
+
+    if (watchHistory.length > 0) {
+        continueWatchingSection.style.display = 'block';
+        continueWatchingGrid.innerHTML = ''; // Clear existing content
+
+        const fragment = document.createDocumentFragment();
+        watchHistory.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'content-card';
+            card.onclick = () => openItemModal(item.id, item.media_type, item.backdrop_path);
+
+            const imageUrl = `${TMDB_IMAGE_BASE_URL}w400${item.poster_path}`;
+            const detailText = item.media_type === 'tv' && item.season && item.episode
+                ? `T${item.season} E${item.episode}`
+                : `Visto em ${new Date(item.date).toLocaleDateString('pt-BR')}`;
+
+            card.innerHTML = `
+                <img src="${imageUrl}" alt="${item.title || item.name}">
+                <div class="title-overlay">
+                    <div class="title">${item.title || item.name}</div>
+                    <div class="subtitle">${detailText}</div>
+                </div>
+                <button class="remove-history-button" data-id="${item.id}" title="Remover do histórico">
+                    <i class="fas fa-times-circle"></i>
+                </button>`;
+
+            card.querySelector('.remove-history-button').onclick = (e) => {
+                e.stopPropagation();
+                removeFromWatchHistory(item.id);
+                // Re-render the section after removal
+                displayContinueWatching();
+            };
+            fragment.appendChild(card);
+        });
+        continueWatchingGrid.appendChild(fragment);
+    } else {
+        continueWatchingSection.style.display = 'none';
+        continueWatchingGrid.innerHTML = '';
+    }
+}
+
 function addToWatchHistory(item, mediaType, seasonInfo = null, episodeInfo = null) {
     const entry = {
         id: item.id,
@@ -869,6 +915,7 @@ function addToWatchHistory(item, mediaType, seasonInfo = null, episodeInfo = nul
     localStorage.setItem(WATCH_HISTORY_STORAGE_KEY, JSON.stringify(watchHistory));
     saveToFirestore();
     updateHistoryButtonVisibility();
+    displayContinueWatching(); // NEW: Update the UI
 }
 
 function removeFromWatchHistory(itemId) {
@@ -876,6 +923,7 @@ function removeFromWatchHistory(itemId) {
     localStorage.setItem(WATCH_HISTORY_STORAGE_KEY, JSON.stringify(watchHistory));
     saveToFirestore();
     showCustomToast('Removido do histórico', 'info');
+    displayContinueWatching(); // NEW: Update the UI
 }
 
 function updateHistoryButtonVisibility() {
@@ -1169,4 +1217,7 @@ function debounce(func, delay) {
     const idParam = urlParams.get('id');
     if (typeParam && idParam) openItemModal(idParam, typeParam);
     else loadMainPageContent();
+
+    // Initial display of continue watching section
+    displayContinueWatching(); // NEW: Ensure it's called on load
 });
