@@ -29,6 +29,10 @@
               link.setAttribute('data-theme-css', ''); // Mark as theme CSS
               document.head.appendChild(link);
           });
+          // Call updateHistoryButtonVisibility after theme CSS is loaded
+          if (typeof updateHistoryButtonVisibility === 'function') {
+              updateHistoryButtonVisibility();
+          }
       };
 
       // Load theme immediately
@@ -103,10 +107,38 @@
       }
     </style>
 <style>
+  #floatingCombinedButton {
+    display: flex !important; /* Ensure button is always visible */
+  }
+</style>
+<style>
       .swal-combined-popup #swal-tab-content {
-        max-height: 60vh; 
         overflow-y: auto;
         overflow-x: hidden; 
+      }
+      .swal-combined-popup .swal2-html-container {
+        padding: 0 !important; /* Remove default padding */
+        display: flex; /* Use flexbox for internal layout */
+        flex-direction: column;
+        overflow-y: auto; /* Make the html container itself scrollable */
+        overflow-x: hidden;
+      }
+      .swal-combined-popup .swal-tabs {
+        flex-shrink: 0; /* Prevent tabs from shrinking */
+      }
+      .user-profile-section {
+        flex-shrink: 0; /* Prevent user section from shrinking */
+      }
+      .swal-combined-popup {
+        max-height: 90vh; /* Set a max height for the entire popup */
+        display: flex !important;
+        flex-direction: column;
+      }
+      .swal-combined-popup .swal2-title {
+        flex-shrink: 0; /* Prevent title from shrinking */
+      }
+      .swal-combined-popup .swal2-actions {
+        flex-shrink: 0; /* Prevent actions from shrinking */
       }
       .favorites-grid {
         display: grid;
@@ -161,10 +193,71 @@
         cursor: pointer;
         font-size: 1.1rem;
         transition: color 0.2s ease;
+        width: 28px; /* Make it circular */
+        height: 28px; /* Make it circular */
+        border-radius: 50%; /* Make it circular */
+        display: flex; /* Center the icon */
+        align-items: center;
+        justify-content: center;
       }
       .remove-history-button:hover {
         color: var(--accent-color);
       }
+</style>
+<style>
+    .user-profile-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1.5rem 1rem 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 1rem;
+    }
+    .user-profile-section.no-user {
+        padding: 1.5rem 1rem;
+    }
+    .user-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 0.75rem;
+        border: 3px solid var(--primary-color);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+    }
+    .user-name {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+    }
+    .modal-action-button {
+        padding: 0.7rem 1.5rem;
+        border-radius: 0.8rem;
+        font-weight: 700;
+        font-size: 0.95rem;
+        border: 1px solid var(--primary-color);
+        background: var(--primary-color);
+        color: var(--on-primary-color);
+        transition: all 0.2s ease;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .modal-action-button:hover {
+        background: var(--primary-hover-color);
+        border-color: var(--primary-hover-color);
+        box-shadow: 0 4px 15px rgba(255, 255, 255, 0.15);
+    }
+    .modal-action-button .fab, .modal-action-button .fas {
+        font-size: 1.1em;
+    }
+</style>
+<style>
+    .custom-toast {
+        z-index: 100000 !important;
+    }
 </style>
 </head>
 <body>
@@ -223,11 +316,7 @@
 <!-- Botões Flutuantes -->
 <div id="floatingButtonWrapper" style="z-index: 100;">
 <button aria-label="Abrir Calendário" id="toggle-calendar-btn"><i class="fas fa-calendar-alt"></i></button>
-<button aria-label="Meus Salvos" id="floatingCombinedButton"><i class="fas fa-list-alt"></i></button>
-<button id="floatingLoginButton" aria-label="Login com Google" onclick="signInWithGoogle()">
-    <i class="fab fa-google"></i>
-</button>
-<img id="userAvatar" src="" onclick="signOut()" title="Clique para sair"/>
+<button aria-label="Meus Salvos" id="floatingCombinedButton" style="display: flex !important; visibility: visible !important; opacity: 1 !important;"><i class="fas fa-list-alt"></i></button>
 <!-- Container para o player em tela cheia -->
 <div id="player-fullscreen-wrapper"></div>
 <!-- Scripts -->

@@ -103,28 +103,76 @@ auth.getRedirectResult()
 
 auth.onAuthStateChanged(async user => {
     currentUser = user;
-    const loginBtn = document.getElementById("floatingLoginButton");
-    const avatar = document.getElementById("userAvatar");
+    const floatingCombinedButton = document.getElementById("floatingCombinedButton");
 
     if (user) {
-        loginBtn.style.display = "none";
-        avatar.src = user.photoURL || "";
-        avatar.style.display = "block";
+        if (floatingCombinedButton) {
+            floatingCombinedButton.innerHTML = `<img src="${user.photoURL || ''}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block;">`;
+            floatingCombinedButton.title = user.displayName || user.email;
+        }
 
+        // 1. Always load from local storage first
+        let localFavorites = JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY)) || [];
+        let localWatchHistory = JSON.parse(localStorage.getItem(WATCH_HISTORY_STORAGE_KEY)) || [];
+
+        // 2. Load from Firebase
         const doc = await db.collection("users").doc(user.uid).get();
         if (doc.exists) {
-            const data = doc.data();
-            favorites = Array.isArray(data.favorites) ? data.favorites : [];
-            watchHistory = Array.isArray(data.watchHistory) ? data.watchHistory : [];
+            const firebaseData = doc.data();
+            const firebaseFavorites = Array.isArray(firebaseData.favorites) ? firebaseData.favorites : [];
+            const firebaseWatchHistory = Array.isArray(firebaseData.watchHistory) ? firebaseData.watchHistory : [];
+
+            // 3. Merge data: Firebase data takes precedence, but local data is added
+            favorites = mergeArrays(localFavorites, firebaseFavorites);
+            watchHistory = mergeArrays(localWatchHistory, firebaseWatchHistory);
+
+            // 4. Save merged data back to Firebase
+            saveToFirestore(); // This will save the now merged 'favorites' and 'watchHistory'
+            console.log("Firebase data loaded and merged. Current favorites:", favorites);
+            console.log("Firebase data loaded and merged. Current watchHistory:", watchHistory);
+        } else {
+            // If no Firebase data, just use local data and save it to Firebase for the first time
+            favorites = localFavorites;
+            watchHistory = localWatchHistory;
+            saveToFirestore();
+            console.log("No Firebase data found. Using local data and saving to Firebase. Current favorites:", favorites);
+            console.log("No Firebase data found. Using local data and saving to Firebase. Current watchHistory:", watchHistory);
         }
     } else {
-        loginBtn.style.display = "block";
-        avatar.style.display = "none";
+        if (floatingCombinedButton) {
+            floatingCombinedButton.innerHTML = `<i class="fas fa-list-alt"></i>`;
+            floatingCombinedButton.title = "Meus Salvos";
+        }
         favorites = JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY)) || [];
         watchHistory = JSON.parse(localStorage.getItem(WATCH_HISTORY_STORAGE_KEY)) || [];
+        console.log("Not logged in. Using local data. Current favorites:", favorites);
+        console.log("Not logged in. Using local data. Current watchHistory:", watchHistory);
     }
     updateHistoryButtonVisibility();
 });
+
+// Need a helper function for merging arrays of objects
+function mergeArrays(localArr, firebaseArr) {
+    const mergedMap = new Map();
+
+    // Add Firebase items, they take precedence
+    firebaseArr.forEach(item => {
+        mergedMap.set(`${item.id}-${item.media_type}`, item);
+    });
+
+    // Add local items if they don't already exist (Firebase items took precedence)
+    localArr.forEach(item => {
+        const key = `${item.id}-${item.media_type}`;
+        if (!mergedMap.has(key)) {
+            mergedMap.set(key, item);
+        }
+    });
+
+    // Convert map back to array, maintaining original order as much as possible (Firebase first, then local)
+    // This simple conversion will lose original order, but for favorites/history, order might not be critical during merge.
+    // If order is critical, a more complex merge logic is needed. For now, new items are added.
+    return Array.from(mergedMap.values());
+}
 
 function saveToFirestore() {
     if (!currentUser) return;
@@ -832,7 +880,7 @@ function removeFromWatchHistory(itemId) {
 
 function updateHistoryButtonVisibility() {
     if (floatingCombinedButton) {
-        floatingCombinedButton.style.display = (favorites.length > 0 || watchHistory.length > 0) ? 'flex' : 'none';
+        floatingCombinedButton.style.display = 'flex'; // Always display the button
     }
 }
 
@@ -893,7 +941,21 @@ function copyToClipboard(text) {
 }
 
 function openCombinedModal() {
+    const userSectionHTML = currentUser ? `
+        <div class="user-profile-section">
+            <img src="${currentUser.photoURL || ''}" alt="User Avatar" class="user-avatar"/>
+            <span class="user-name">${currentUser.displayName || currentUser.email}</span>
+            <button id="modalSignOutButton" class="modal-action-button"><i class="fas fa-sign-out-alt"></i> Sair</button>
+        </div>
+    ` : `
+        <div class="user-profile-section no-user">
+            <p>Faça login para sincronizar seus dados!</p>
+            <button id="modalLoginButton" class="modal-action-button"><i class="fab fa-google"></i> Login com Google</button>
+        </div>
+    `;
+
     const modalHTML = `
+        ${userSectionHTML}
         <div class="swal-tabs">
             <button class="swal-tab-button active" data-tab="favorites">Favoritos</button>
             <button class="swal-tab-button" data-tab="history">Histórico</button>
@@ -910,6 +972,13 @@ function openCombinedModal() {
         didOpen: () => {
             const tabButtons = document.querySelectorAll('.swal-tab-button');
             const tabContent = document.getElementById('swal-tab-content');
+
+            // Add event listeners for login/logout buttons
+            if (currentUser) {
+                document.getElementById('modalSignOutButton')?.addEventListener('click', signOut);
+            } else {
+                document.getElementById('modalLoginButton')?.addEventListener('click', signInWithGoogle);
+            }
 
             const showTab = (tab) => {
                 tabButtons.forEach(btn => btn.classList.remove('active'));
@@ -1011,7 +1080,7 @@ function debounce(func, delay) {
     };
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', () => {
     const apiKeyIsValid = typeof TMDB_API_KEY !== 'undefined' && TMDB_API_KEY.length > 10;
     if (!apiKeyIsValid) {
         document.body.innerHTML = `<div style="color:red;padding:2rem;text-align:center;">Erro: Chave da API não configurada.</div>`;
@@ -1022,6 +1091,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (searchButton) searchButton.addEventListener('click', () => performSearch(searchInput.value));
     if (filterToggleButton) filterToggleButton.addEventListener('click', openFilterSweetAlert);
     if (floatingCombinedButton) floatingCombinedButton.addEventListener('click', openCombinedModal);
+
+    // Ensure button visibility is updated after DOM is loaded
+    updateHistoryButtonVisibility();
 
     const mainContent = document.getElementById('main-content');
     const toggleCalendarBtn = document.getElementById('toggle-calendar-btn');
