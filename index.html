@@ -157,6 +157,20 @@
         from { opacity: 0; transform: scale(0.8); }
         to { opacity: 1; transform: scale(1); }
     }
+
+    /* --- CSS ADICIONADO PARA O BOTÃO DE TEXTO --- */
+    .icon-button.text-button-mode {
+        width: auto; /* Largura automática para caber o texto */
+        padding: 10px 20px; /* Mais preenchimento horizontal */
+        border-radius: 25px; /* Manter arredondado */
+    }
+    .icon-button .button-text {
+        display: none; /* Escondido por padrão */
+        font-size: 16px;
+        font-weight: bold;
+        font-family: sans-serif;
+    }
+    /* --- FIM DO CSS ADICIONADO --- */
   </style>
 
   <!-- Registro do Service Worker -->
@@ -189,9 +203,12 @@
     <a href="#" class="icon-button" id="sidebarToggleBtn" title="Mostrar Menu">
       <i class="fas fa-bars"></i>
     </a>
+    <!-- BOTÃO MODIFICADO -->
     <a href="#" class="icon-button" id="iframeBackButton" title="Voltar" style="display: none;">
       <i class="fas fa-arrow-left"></i>
+      <span class="button-text"></span>
     </a>
+    <!-- FIM DA MODIFICAÇÃO -->
     <a href="https://feed-pearl.vercel.app/" class="icon-button" title="Notícias">
       <i class="fas fa-newspaper"></i>
     </a>
