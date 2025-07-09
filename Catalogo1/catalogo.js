@@ -964,7 +964,7 @@ function openCombinedModal() {
     `;
 
     Swal.fire({
-        title: 'Os Meus Guardados',
+        title: 'Perfil',
         html: modalHTML,
         showConfirmButton: false,
         showCloseButton: true,
