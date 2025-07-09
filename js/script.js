@@ -9,6 +9,11 @@ window.addEventListener('load', () => {
   const newsFrame = document.getElementById('newsFrame');
   const iframeBackButton = document.getElementById('iframeBackButton');
 
+  // --- MODIFICAÇÃO: Pega os elementos de ícone e texto separadamente ---
+  const backButtonIcon = iframeBackButton.querySelector('i');
+  const backButtonText = iframeBackButton.querySelector('.button-text');
+  // --- FIM DA MODIFICAÇÃO ---
+
   const HOME_PAGE = 'Catalogo1/index.html';
   
   const urlParams = new URLSearchParams(window.location.search);
@@ -38,6 +43,23 @@ window.addEventListener('load', () => {
     buttonsToToggleVisibility.forEach(btn => {
       btn.style.display = isHome ? 'flex' : 'none';
     });
+
+    // --- LÓGICA ATUALIZADA PARA MOSTRAR TEXTO ---
+    const isSorteioPage = newsFrame.src.includes('sorteio/index.html');
+
+    if (isSorteioPage) {
+        iframeBackButton.title = 'Fechar'; // Muda o texto de ajuda (tooltip)
+        backButtonIcon.style.display = 'none'; // Esconde o ícone
+        backButtonText.style.display = 'inline'; // Mostra o elemento de texto
+        backButtonText.textContent = 'Fechar'; // Define o texto
+        iframeBackButton.classList.add('text-button-mode'); // Adiciona classe para estilização
+    } else {
+        iframeBackButton.title = 'Voltar'; // Volta para o padrão
+        backButtonIcon.style.display = 'inline-block'; // Mostra o ícone
+        backButtonText.style.display = 'none'; // Esconde o elemento de texto
+        iframeBackButton.classList.remove('text-button-mode'); // Remove a classe
+    }
+    // --- FIM DA LÓGICA ATUALIZADA ---
   };
   
   const updateSidebarState = (expand) => {
