@@ -321,6 +321,17 @@ async function loadMoreTopRatedTvShows() {
 
 async function performSearch(query) {
     const trimmedQuery = query ? query.trim().toLowerCase() : '';
+
+    // MODIFICAÇÃO: Oculta ou mostra a seção 'Continuar Assistindo' com base na pesquisa
+    if (continueWatchingSection) {
+        if (trimmedQuery) {
+            continueWatchingSection.style.display = 'none';
+        } else {
+            // Re-avalia a exibição da seção quando a pesquisa é limpa
+            displayContinueWatching();
+        }
+    }
+
     if (trimmedQuery === 'sq') { window.location.href = '../Hyper/hyper.html'; return; }
     if (trimmedQuery === 'yt') { window.location.href = '../Yt/yt.html'; return; }
     if (trimmedQuery === 'suquin') { window.location.href = '../game/index.html'; return; }
