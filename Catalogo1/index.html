@@ -16,7 +16,8 @@
           const selectedTheme = localStorage.getItem('selectedTheme') || 'default'; // 'default' as fallback
           const cssFiles = [
               'catálogo.css',
-              'integration.css'
+              'integration.css',
+              'profile.css'
           ];
 
           // Remove existing theme stylesheets to prevent duplicates on theme change
@@ -204,56 +205,7 @@
         color: var(--accent-color);
       }
 </style>
-<style>
-    .user-profile-section {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 1.5rem 1rem 1rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        margin-bottom: 1rem;
-    }
-    .user-profile-section.no-user {
-        padding: 1.5rem 1rem;
-    }
-    .user-avatar {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        object-fit: cover;
-        margin-bottom: 0.75rem;
-        border: 3px solid var(--primary-color);
-        box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-    }
-    .user-name {
-        font-size: 1.2rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: 1rem;
-    }
-    .modal-action-button {
-        padding: 0.7rem 1.5rem;
-        border-radius: 0.8rem;
-        font-weight: 700;
-        font-size: 0.95rem;
-        border: 1px solid var(--primary-color);
-        background: var(--primary-color);
-        color: var(--on-primary-color);
-        transition: all 0.2s ease;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    .modal-action-button:hover {
-        background: var(--primary-hover-color);
-        border-color: var(--primary-hover-color);
-        box-shadow: 0 4px 15px rgba(255, 255, 255, 0.15);
-    }
-    .modal-action-button .fab, .modal-action-button .fas {
-        font-size: 1.1em;
-    }
-</style>
+
 <style>
     .custom-toast {
         z-index: 100000 !important;

@@ -1005,8 +1005,8 @@ function openCombinedModal() {
     const modalHTML = `
         ${userSectionHTML}
         <div class="swal-tabs">
-            <button class="swal-tab-button active" data-tab="favorites">Favoritos</button>
-            <button class="swal-tab-button" data-tab="history">Histórico</button>
+            <button class="swal-tab-button active" data-tab="favorites"><i class="fas fa-heart"></i> Favoritos</button>
+            <button class="swal-tab-button" data-tab="history"><i class="fas fa-history"></i> Histórico</button>
         </div>
         <div id="swal-tab-content"></div>
     `;
