@@ -1,0 +1,105 @@
+.user-profile-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 1rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--anime-primary-color-dark), var(--anime-primary-color-light)); /* Subtle gradient */
+    position: relative;
+    overflow: hidden;
+}
+.user-profile-section.no-user {
+    padding: 1.5rem 1rem;
+}
+.user-avatar {
+    width: 90px; /* Slightly larger */
+    height: 90px; /* Slightly larger */
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 0.75rem;
+    border: 4px solid var(--anime-accent-color); /* More prominent border */
+    box-shadow: 0 0 20px rgba(var(--anime-primary-color-rgb), 0.5); /* Stronger shadow */
+    transition: transform 0.3s ease-in-out;
+}
+.user-avatar:hover {
+    transform: scale(1.05); /* Subtle hover effect */
+}
+.user-name {
+    font-size: 1.4rem; /* Larger font */
+    font-weight: 700; /* Bolder */
+    color: var(--anime-text-primary);
+    margin-bottom: 1rem;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3); /* Text shadow for readability */
+}
+.modal-action-button {
+    padding: 0.8rem 1.8rem; /* More padding */
+    border-radius: 2rem; /* More rounded */
+    font-weight: 700;
+    font-size: 1rem; /* Slightly larger font */
+    border: none; /* Remove border */
+    background: var(--anime-accent-color); /* Use accent color */
+    color: var(--anime-on-accent-color);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem; /* More space */
+    box-shadow: 0 4px 10px rgba(var(--anime-accent-color-rgb), 0.3); /* Add shadow */
+}
+.modal-action-button:hover {
+    background: var(--anime-accent-hover-color); /* Darker accent on hover */
+    box-shadow: 0 6px 15px rgba(var(--anime-accent-color-rgb), 0.4); /* Stronger shadow on hover */
+    transform: translateY(-2px); /* Lift effect */
+}
+.modal-action-button .fab, .modal-action-button .fas {
+    font-size: 1.2em; /* Larger icons */
+}
+
+/* New styles for tabs */
+.swal-tabs {
+    display: flex;
+    justify-content: center;
+    border-bottom: 2px solid var(--anime-border-color);
+    margin-bottom: 1rem;
+    padding-top: 0.5rem;
+}
+
+.swal-tab-button {
+    background: none;
+    border: none;
+    padding: 0.8rem 1.2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--anime-text-secondary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.swal-tab-button.active {
+    color: var(--anime-accent-color);
+}
+
+.swal-tab-button::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    height: 2px;
+    background: var(--anime-accent-color);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.swal-tab-button.active::after {
+    transform: scaleX(1);
+}
+
+.swal-tab-button:hover {
+    color: var(--anime-text-primary);
+}
