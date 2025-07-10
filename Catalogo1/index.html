@@ -17,7 +17,8 @@
           const cssFiles = [
               'catálogo.css',
               'integration.css',
-              'profile.css'
+              'profile.css',
+              'sorteio.css'
           ];
 
           // Remove existing theme stylesheets to prevent duplicates on theme change
@@ -275,14 +276,28 @@
 <div id="floatingButtonWrapper" style="z-index: 100;">
 <button aria-label="Abrir Calendário" id="toggle-calendar-btn"><i class="fas fa-calendar-alt"></i></button>
 <button aria-label="Meus Salvos" id="floatingCombinedButton" style="display: flex !important; visibility: visible !important; opacity: 1 !important;"><i class="fas fa-list-alt"></i></button>
+<button aria-label="Abrir Sorteio" id="toggleSorteioButtons"><i class="fas fa-dice"></i></button>
 <!-- Container para o player em tela cheia -->
 <div id="player-fullscreen-wrapper"></div>
+<!-- Container para os botões de sorteio (inicialmente oculto) -->
+<div id="sorteioButtonsContainer" style="display: none; position: absolute; bottom: 100%; right: 0; background-color: var(--bg-dark); padding: 10px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); flex-direction: column; gap: 10px;">
+    <button id="randomMovieButton" class="random-button">
+        <i class="fas fa-film"></i> Filme
+    </button>
+    <button id="randomTvButton" class="random-button">
+        <i class="fas fa-tv"></i> Série
+    </button>
+    <button id="historyButton" class="random-button">
+        <i class="fas fa-history"></i> Histórico
+    </button>
+</div>
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 <script src="catalogo.js"></script>
+<script src="../sorteio/script.js"></script>
 <script>
       document.addEventListener('DOMContentLoaded', () => {
         document.body.style.visibility = 'visible';

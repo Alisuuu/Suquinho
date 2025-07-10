@@ -149,6 +149,7 @@ auth.onAuthStateChanged(async user => {
         watchHistory = JSON.parse(localStorage.getItem(WATCH_HISTORY_STORAGE_KEY)) || [];
         console.log("Not logged in. Using local data. Current favorites:", favorites);
         console.log("Not logged in. Using local data. Current watchHistory:", watchHistory);
+        console.log("Watch history (not logged in):", watchHistory);
     }
     updateHistoryButtonVisibility();
     displayContinueWatching(); // NEW: Initial display after history is loaded
@@ -1150,6 +1151,25 @@ function debounce(func, delay) {
     if (searchButton) searchButton.addEventListener('click', () => performSearch(searchInput.value));
     if (filterToggleButton) filterToggleButton.addEventListener('click', openFilterSweetAlert);
     if (floatingCombinedButton) floatingCombinedButton.addEventListener('click', openCombinedModal);
+
+    // Sorteio button functionality
+    const toggleSorteioButtons = document.getElementById('toggleSorteioButtons');
+    const sorteioButtonsContainer = document.getElementById('sorteioButtonsContainer');
+
+    if (toggleSorteioButtons && sorteioButtonsContainer) {
+        toggleSorteioButtons.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isVisible = sorteioButtonsContainer.style.display === 'flex';
+            sorteioButtonsContainer.style.display = isVisible ? 'none' : 'flex';
+        });
+
+        // Close sorteio buttons if clicked outside
+        document.addEventListener('click', (e) => {
+            if (!sorteioButtonsContainer.contains(e.target) && !toggleSorteioButtons.contains(e.target)) {
+                sorteioButtonsContainer.style.display = 'none';
+            }
+        });
+    }
 
     // Ensure button visibility is updated after DOM is loaded
     updateHistoryButtonVisibility();
