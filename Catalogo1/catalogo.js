@@ -523,7 +523,7 @@ async function fetchAndDisplayEpisodes(tvId, seasonNumber, container) {
     });
 }
 
-async function openItemModal(itemId, mediaType, backdropPath = null) {
+async function openItemModal(itemId, mediaType, backdropPath = null, fromSorteio = false) {
     stopMainPageBackdropSlideshow();
     updatePageBackground(backdropPath);
 
@@ -631,6 +631,21 @@ async function openItemModal(itemId, mediaType, backdropPath = null) {
 
     Swal.update({ title: '', html: detailsHTML, showConfirmButton: false });
 
+    if (fromSorteio && typeof lastPickedMediaType !== 'undefined' && lastPickedMediaType !== null) {
+        const swalPopup = Swal.getPopup();
+        if (swalPopup) {
+            const sortAgainButton = document.createElement('button');
+            sortAgainButton.id = 'modalSortAgainButton';
+            sortAgainButton.className = 'modal-action-button swal-sort-again-button'; // Adiciona uma nova classe para estilização
+            sortAgainButton.innerHTML = '<i class="fas fa-redo"></i> Sortear Novamente';
+            sortAgainButton.addEventListener('click', () => {
+                Swal.close();
+                pickRandomMedia(lastPickedMediaType);
+            });
+            swalPopup.appendChild(sortAgainButton);
+        }
+    }
+
     const playButton = document.getElementById('modal-play-button');
     if (playButton && mainPlayerUrl) {
          playButton.addEventListener('click', () => {
@@ -688,6 +703,7 @@ function closeAdvancedPlayer() {
     if (swalContainer) {
         swalContainer.style.display = '';
     }
+    document.body.classList.remove('player-active');
 }
 
 function launchAdvancedPlayer(url, logoPath, itemData, mediaType, seasonInfo = null, episodeInfo = null) {
@@ -700,12 +716,12 @@ function launchAdvancedPlayer(url, logoPath, itemData, mediaType, seasonInfo = n
     }
 
     const logoForPlayerHTML = logoPath 
-        ? `<img src="${TMDB_IMAGE_BASE_URL}w300${logoPath}" id="player-logo" alt="logo" style="position: absolute; bottom: 10px; left: 10px; z-index: 101;">`
+        ? `<img src="${TMDB_IMAGE_BASE_URL}w300${logoPath}" id="player-logo" alt="logo">`
         : '';
 
     wrapper.innerHTML = `
         <iframe src="${url}" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"></iframe>
-        <button id="player-close-btn" title="Voltar" style="position: absolute; top: 10px; right: 10px; z-index: 100;"><i class="fas fa-arrow-left"></i></button>
+        <button id="player-close-btn" title="Voltar"><i class="fas fa-arrow-left"></i></button>
         ${logoForPlayerHTML}`;
 
     const swalContainer = Swal.getContainer();
@@ -715,6 +731,7 @@ function launchAdvancedPlayer(url, logoPath, itemData, mediaType, seasonInfo = n
 
     wrapper.style.display = 'flex';
     wrapper.style.zIndex = '9999';
+    document.body.classList.add('player-active');
 
     document.getElementById('player-close-btn')?.addEventListener('click', e => {
         e.stopPropagation();
