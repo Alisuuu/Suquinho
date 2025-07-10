@@ -101,7 +101,7 @@ h1 {
 .random-button {
   background-color: #ff79c6;
   border: 1px solid rgba(255, 121, 198, 0.6);
-  border-radius: 24px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -130,6 +130,19 @@ h1 {
 
 .random-button .fas {
     font-size: 1.2rem;
+}
+
+/* Styles for sorteio buttons within the catalog's dropdown */
+#sorteioButtonsContainer .random-button {
+  padding: 10px 15px; /* Smaller padding */
+  font-size: 1rem; /* Smaller font size */
+  min-width: 120px; /* Smaller min-width */
+  border-radius: 8px; /* Rounded corners */
+  margin-bottom: 5px; /* Adjust margin for vertical stacking */
+}
+
+#sorteioButtonsContainer .random-button:hover {
+    transform: translateY(-2px); /* Adjust hover effect */
 }
 
 .loader {
