@@ -116,7 +116,7 @@ async function pickRandomMedia(type) {
             addToPickedHistory(randomItem);
             // Abre o modal do catálogo, mas NÃO adiciona ao histórico de exibição ainda.
             // O histórico de exibição só é atualizado quando o usuário clica em "play".
-            openItemModal(randomItem.id, type, randomItem.backdrop_path);
+            openItemModal(randomItem.id, type, randomItem.backdrop_path, true);
         } else {
             Swal.fire({ 
                 icon: 'warning', 
