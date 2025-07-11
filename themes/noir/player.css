@@ -1,0 +1,105 @@
+/* ========= Player Styles ========= */
+#player-fullscreen-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    z-index: 9999;
+    display: none;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+#player-fullscreen-wrapper iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    position: absolute;
+    transition: transform 0.3s ease-in-out;
+    object-fit: contain;
+    top: 0;
+    left: 0;
+}
+
+#player-logo {
+    position: fixed !important;
+    top: calc(0px + env(safe-area-inset-top)) !important;
+    right: calc(0px + env(safe-area-inset-right)) !important;
+    z-index: 10000 !important;
+    
+    /* Fundo sólido adicionado para destacar o logo */
+    background-color: #121212 !important; /* Cor sólida e escura */
+    padding: 8px !important;
+    border-radius: 10px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-sizing: border-box;
+
+    /* Estilos de tamanho e imagem */
+    height: auto !important;
+    max-height: 60px !important; /* Ajustado para o novo padding */
+    width: auto !important;
+    max-width: 160px !important; /* Ajustado para o novo padding */
+    object-fit: contain !important;
+    pointer-events: none;
+    
+    /* Remove estilos antigos desnecessários */
+    box-shadow: none !important;
+    filter: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+/* Estilo base para o botão de fechar */
+#player-close-btn {
+    position: fixed !important;
+    z-index: 10000 !important;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: none;
+    border-radius: 0; /* Removida a borda arredondada para grudar melhor no canto */
+    width: 44px; /* Ajuste de tamanho para melhor toque */
+    height: 44px;
+    font-size: 1.2em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+    /* O posicionamento é removido do estilo base e tratado pelas classes abaixo */
+}
+
+#player-close-btn:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+
+/* --- Posições do Botão de Fechar --- */
+/* Adicione uma das classes a seguir ao seu elemento de botão de fechar no HTML */
+/* Exemplo: <button id="player-close-btn" class="player-close-btn-top-left">X</button> */
+
+
+/* Posição: Topo Esquerdo (Grudado) */
+.player-close-btn-top-left {
+    top: 0 !important;
+    left: 0 !important;
+}
+
+/* Posição: Topo Central */
+.player-close-btn-top-center {
+    top: calc(20px + env(safe-area-inset-top)) !important;
+    left: 50% !important;
+    transform: translateX(-50%);
+}
+
+/* Posição: Topo Direito */
+.player-close-btn-top-right {
+    top: calc(20px + env(safe-area-inset-top)) !important;
+    right: calc(20px + env(safe-area-inset-right)) !important;
+    left: auto !important; /* remove a propriedade left */
+}
