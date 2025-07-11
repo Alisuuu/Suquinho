@@ -33,18 +33,17 @@
     right: calc(0px + env(safe-area-inset-right)) !important;
     z-index: 10000 !important;
     
-    /* Fundo sólido adicionado para destacar o logo */
-    background-color: #121212 !important; /* Cor sólida e escura */
+    background-color: #000000 !important; /* Cor sólida e escura */
     padding: 8px !important;
-    border-radius: 10px !important;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px !important;
+    border: 0px solid rgba(255, 255, 255, 0);
     box-sizing: border-box;
 
     /* Estilos de tamanho e imagem */
     height: auto !important;
-    max-height: 60px !important; /* Ajustado para o novo padding */
+    max-height: 70px !important; /* Ajustado para o novo padding */
     width: auto !important;
-    max-width: 160px !important; /* Ajustado para o novo padding */
+    max-width: 200px !important; /* Ajustado para o novo padding */
     object-fit: contain !important;
     pointer-events: none;
     
