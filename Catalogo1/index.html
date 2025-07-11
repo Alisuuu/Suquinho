@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8"/>
@@ -39,7 +38,7 @@
 
       // Load theme immediately
       loadThemeCss();
-    </script>
+</script>
 <style>
   #player-fullscreen-wrapper {
     z-index: 99999; /* Garante que o player esteja sempre no topo */
@@ -89,25 +88,16 @@
                 transform: rotate(360deg);
             }
         }
-
-        img.lazy-image {
-            background-color: #1f1f32;
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-
-        @keyframes pulse {
-            50% {
-                opacity: .5;
-            }
-        }
-    </style>
+        
+        /* O BLOCO DE ANIMAÇÃO 'PULSE' FOI REMOVIDO DAQUI */
+</style>
 <style>
       body {
         visibility: hidden;
         opacity: 0;
         transition: opacity 0.5s ease-in-out;
       }
-    </style>
+</style>
 <style>
   #floatingCombinedButton {
     display: flex !important; /* Ensure button is always visible */
@@ -331,7 +321,7 @@
         document.body.style.visibility = 'visible';
         document.body.style.opacity = '1';
       });
-    </script>
+</script>
 
 
 </body>
