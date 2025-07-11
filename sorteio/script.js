@@ -4,38 +4,9 @@ const randomTvButton = document.getElementById('randomTvButton');
 const historyButton = document.getElementById('historyButton');
 const pickAgainButton = document.getElementById('pickAgainButton');
 
-// Variáveis de estado para o histórico de SORTEIO
-let pickedMediaHistory = [];
-const MAX_HISTORY_SIZE = 40;
+// Variáveis de estado
+// A variável 'pickedMediaHistory' agora é GLOBAL e gerenciada por 'catalogo.js'
 let lastPickedMediaType = null;
-
-/**
- * Salva o histórico de mídias sorteadas no LocalStorage.
- */
-function savePickedHistoryToLocalStorage() {
-    try {
-        // Usando uma chave diferente para não conflitar com o histórico de exibição
-        localStorage.setItem('pickedMediaHistory_v2', JSON.stringify(pickedMediaHistory));
-    } catch (e) {
-        console.error('Erro ao salvar histórico de sorteio:', e);
-    }
-}
-
-/**
- * Carrega o histórico de mídias sorteadas do LocalStorage ao iniciar.
- */
-function loadPickedHistoryFromLocalStorage() {
-    try {
-        const stored = localStorage.getItem('pickedMediaHistory_v2');
-        if (stored) {
-            pickedMediaHistory = JSON.parse(stored).slice(-MAX_HISTORY_SIZE);
-        }
-    } catch (e) {
-        console.error('Erro ao carregar histórico de sorteio:', e);
-        localStorage.removeItem('pickedMediaHistory_v2');
-        pickedMediaHistory = [];
-    }
-}
 
 /**
  * Verifica se um item já está no histórico de sorteio.
@@ -43,15 +14,27 @@ function loadPickedHistoryFromLocalStorage() {
  * @returns {boolean} - True se o item estiver no histórico.
  */
 function isItemInPickedHistory(item) {
+    // Garante que a variável global 'pickedMediaHistory' exista
+    if (typeof pickedMediaHistory === 'undefined') {
+        console.warn("A variável 'pickedMediaHistory' ainda não foi definida.");
+        return false;
+    }
     const itemType = item.media_type || lastPickedMediaType;
     return pickedMediaHistory.some(h => h.id === item.id && h.type === itemType);
 }
 
 /**
- * Adiciona um item sorteado ao histórico de sorteio.
+ * Adiciona um item sorteado ao histórico de sorteio (agora usando o sistema centralizado).
  * @param {object} item - O objeto de mídia do TMDB.
  */
 function addToPickedHistory(item) {
+    // Verifica se as variáveis e funções globais de 'catalogo.js' estão disponíveis
+    if (typeof pickedMediaHistory === 'undefined' || typeof MAX_RAFFLE_HISTORY_SIZE === 'undefined') {
+        console.error("O estado do histórico de sorteio não foi inicializado a partir de catalogo.js");
+        Swal.fire({ icon: 'error', title: 'Erro de Script', text: 'Não foi possível salvar o histórico.' });
+        return;
+    }
+
     const historyItem = {
         id: item.id,
         type: item.media_type || lastPickedMediaType,
@@ -60,13 +43,23 @@ function addToPickedHistory(item) {
         timestamp: new Date().toISOString()
     };
     
+    // Filtra o item se ele já existir para movê-lo para o topo
     pickedMediaHistory = pickedMediaHistory.filter(h => h.id !== historyItem.id || h.type !== historyItem.type);
-    pickedMediaHistory.push(historyItem);
+    
+    // Adiciona o novo item no início
+    pickedMediaHistory.unshift(historyItem);
 
-    if (pickedMediaHistory.length > MAX_HISTORY_SIZE) {
-        pickedMediaHistory.shift();
+    // Garante que o histórico não exceda o tamanho máximo
+    if (pickedMediaHistory.length > MAX_RAFFLE_HISTORY_SIZE) {
+        pickedMediaHistory.pop(); // Remove o item mais antigo do final
     }
-    savePickedHistoryToLocalStorage();
+    
+    // Usa a função centralizada de 'catalogo.js' para salvar tudo
+    if (typeof saveAllUserData === 'function') {
+        saveAllUserData();
+    } else {
+        console.error("A função saveAllUserData não foi encontrada. O histórico de sorteio não pôde ser salvo no Firebase.");
+    }
 }
 
 /**
@@ -98,13 +91,14 @@ async function pickRandomMedia(type) {
                 "sort_by": "popularity.desc"
             };
             if (type === 'tv') {
-                params.without_genres = '10764,10767';
+                params.without_genres = '10764,10767'; // Excluir Reality e Talk Show
             }
 
             const data = await fetchTMDB(endpoint, params);
 
             if (data && data.results?.length > 0) {
-                const availableItems = data.results.filter(i => !isItemInPickedHistory(i) && i.overview);
+                // Filtra itens sem sinopse ou que já estão no histórico
+                const availableItems = data.results.filter(i => i.overview && !isItemInPickedHistory(i));
                 if (availableItems.length > 0) {
                     randomItem = availableItems[Math.floor(Math.random() * availableItems.length)];
                 }
@@ -114,8 +108,7 @@ async function pickRandomMedia(type) {
 
         if (randomItem) {
             addToPickedHistory(randomItem);
-            // Abre o modal do catálogo, mas NÃO adiciona ao histórico de exibição ainda.
-            // O histórico de exibição só é atualizado quando o usuário clica em "play".
+            // O terceiro argumento 'true' indica que a chamada vem do sorteio
             openItemModal(randomItem.id, type, randomItem.backdrop_path, true);
         } else {
             Swal.fire({ 
@@ -136,17 +129,21 @@ async function pickRandomMedia(type) {
  * Exibe o histórico de mídias SORTEADAS.
  */
 function showPickedHistoryModal() {
-    if (pickedMediaHistory.length === 0) {
+    if (typeof pickedMediaHistory === 'undefined' || pickedMediaHistory.length === 0) {
         Swal.fire({ title: 'Histórico de Sorteio', text: 'Você ainda não sorteou nenhuma mídia.', showCloseButton: true, showConfirmButton: false });
         return;
     }
-    const sorted = [...pickedMediaHistory].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    // O histórico já é mantido ordenado pelo 'catalogo.js'
+    const sorted = pickedMediaHistory;
     
-    let html = '<div style="max-height: 300px; overflow-y: auto; padding-right: 10px;"><ul style="list-style: none; padding: 0; text-align: left;">';
+    let html = '<div style="max-height: 400px; overflow-y: auto; padding-right: 10px;"><ul style="list-style: none; padding: 0; text-align: left;">';
     sorted.forEach(i => {
-        html += `<li style="padding: 10px; border-bottom: 1px solid #333; cursor: pointer;" onclick="Swal.close(); openItemModal(${i.id}, '${i.type}', '${i.backdrop_path}')">
-                    <strong>${i.title}</strong> (${i.type === 'movie' ? 'Filme' : 'Série'})<br>
-                    <small style="color: #9CA3AF;">Sorteado em: ${new Date(i.timestamp).toLocaleString('pt-BR')}</small>
+        html += `<li style="padding: 10px; border-bottom: 1px solid #333; cursor: pointer; display: flex; align-items: center; gap: 10px;" onclick="Swal.close(); openItemModal(${i.id}, '${i.type}', '${i.backdrop_path}')">
+                    <img src="${i.backdrop_path ? TMDB_IMAGE_BASE_URL + 'w92' + i.backdrop_path : 'https://placehold.co/92x52/1a1a2a/FFF?text=Capa'}" style="width: 92px; height: 52px; object-fit: cover; border-radius: 4px;" alt="Poster">
+                    <div>
+                        <strong>${i.title}</strong> (${i.type === 'movie' ? 'Filme' : 'Série'})<br>
+                        <small style="color: #9CA3AF;">Sorteado em: ${new Date(i.timestamp).toLocaleString('pt-BR')}</small>
+                    </div>
                  </li>`;
     });
     html += '</ul></div>';
@@ -156,30 +153,38 @@ function showPickedHistoryModal() {
         html, 
         showCloseButton: true, 
         showConfirmButton: false,
-        width: '850px',
+        width: '500px',
         customClass: { popup: 'swal-history-popup' }
     });
 }
 
 // --- Event Listeners ---
-randomMovieButton.addEventListener('click', () => pickRandomMedia('movie'));
-randomTvButton.addEventListener('click', () => pickRandomMedia('tv'));
-historyButton.addEventListener('click', showPickedHistoryModal);
-
-pickAgainButton.addEventListener('click', () => {
-    if (Swal.isVisible()) {
-        Swal.close();
-        setTimeout(() => {
-            if (lastPickedMediaType) {
+// Adiciona os listeners apenas se os botões existirem no DOM
+if (randomMovieButton) {
+    randomMovieButton.addEventListener('click', () => pickRandomMedia('movie'));
+}
+if (randomTvButton) {
+    randomTvButton.addEventListener('click', () => pickRandomMedia('tv'));
+}
+if (historyButton) {
+    historyButton.addEventListener('click', showPickedHistoryModal);
+}
+if (pickAgainButton) {
+    pickAgainButton.addEventListener('click', () => {
+        if (Swal.isVisible()) {
+            Swal.close();
+            setTimeout(() => {
+                if (lastPickedMediaType) {
+                    pickRandomMedia(lastPickedMediaType);
+                }
+            }, 250); 
+        } else {
+             if (lastPickedMediaType) {
                 pickRandomMedia(lastPickedMediaType);
             }
-        }, 250); 
-    } else {
-         if (lastPickedMediaType) {
-            pickRandomMedia(lastPickedMediaType);
         }
-    }
-});
+    });
+}
 
-// Carrega o histórico de SORTEIO quando a página é carregada
-document.addEventListener('DOMContentLoaded', loadPickedHistoryFromLocalStorage);
+// A função 'loadPickedHistoryFromLocalStorage' e o seu event listener 'DOMContentLoaded' foram removidos.
+// O carregamento agora é feito automaticamente pelo 'onAuthStateChanged' em 'catalogo.js'.
