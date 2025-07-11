@@ -3,13 +3,14 @@ const TMDB_API_KEY = '5e5da432e96174227b25086fe8637985';
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/';
 const LANGUAGE = 'pt-BR';
-const PLACEHOLDER_PERSON_IMAGE = 'https://placehold.co/185x278/0F071A/F3F4F6?text=Sem+Foto&font=inter';
+// MODIFICAÇÃO: Alterado o placeholder para a imagem local p2.png
+const PLACEHOLDER_PERSON_IMAGE = 'p2.png';
 const PLAYER_BASE_URL_MOVIE = 'https://playerflixapi.com/filme/';
 const PLAYER_BASE_URL_SERIES = 'https://playerflixapi.com/serie/';
 const FAVORITES_STORAGE_KEY = 'suquin_favorites_v2';
 const WATCH_HISTORY_STORAGE_KEY = 'suquin_watch_history_v1';
-const RAFFLE_HISTORY_STORAGE_KEY = 'pickedMediaHistory_v2'; // Chave para o histórico de sorteio
-const MAX_RAFFLE_HISTORY_SIZE = 40; // Limite do histórico de sorteio
+const RAFFLE_HISTORY_STORAGE_KEY = 'pickedMediaHistory_v2';
+const MAX_RAFFLE_HISTORY_SIZE = 40;
 const TMDB_ANIME_KEYWORD_ID = '210024';
 const TMDB_JAPAN_COUNTRY_CODE = 'JP';
 const companyKeywordMap = {
@@ -76,7 +77,7 @@ let currentMainPageBackdropIndex = 0;
 let mainPageBackdropPaths = [];
 let favorites = [];
 let watchHistory = [];
-let pickedMediaHistory = []; // Estado para o histórico de sorteio
+let pickedMediaHistory = [];
 let currentOpenSwalRef = null;
 let popularMoviesCurrentPage = 1;
 let popularMoviesTotalPages = 1;
@@ -86,9 +87,6 @@ let topRatedTvShowsTotalPages = 1;
 let isLoadingMoreTopRatedTvShows = false;
 
 // --- Helper Functions ---
-/**
- * Salva todos os dados do usuário (favoritos, histórico, etc.) no localStorage e no Firebase.
- */
 function saveAllUserData() {
     localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
     localStorage.setItem(WATCH_HISTORY_STORAGE_KEY, JSON.stringify(watchHistory));
@@ -98,24 +96,19 @@ function saveAllUserData() {
         db.collection("users").doc(currentUser.uid).set({
             favorites,
             watchHistory,
-            pickedMediaHistory // Adicionado para salvar no Firebase
+            pickedMediaHistory
         }, { merge: true }).catch(error => {
             console.error("Erro ao salvar dados no Firestore:", error);
         });
     }
 }
 
-/**
- * Mescla arrays de dados de favoritos, dando preferência aos itens do Firebase.
- */
 function mergeArrays(localArr, firebaseArr) {
     const mergedMap = new Map();
-    // Firebase items have precedence
     (firebaseArr || []).forEach(item => {
         const key = `${item.id}-${item.media_type}`;
         mergedMap.set(key, item);
     });
-    // Add local items if they don't exist
     (localArr || []).forEach(item => {
         const key = `${item.id}-${item.media_type}`;
         if (!mergedMap.has(key)) {
@@ -125,39 +118,29 @@ function mergeArrays(localArr, firebaseArr) {
     return Array.from(mergedMap.values());
 }
 
-
-/**
- * Mescla arrays de históricos (exibição ou sorteio) com base no timestamp.
- */
 function mergeHistoryArrays(localArr, firebaseArr, maxSize) {
     const mergedMap = new Map();
     const combined = [...(localArr || []), ...(firebaseArr || [])];
     
     combined.forEach(item => {
-        // Use a consistent key for both history types
         const key = `${item.id}-${item.type || item.media_type}`;
         const existing = mergedMap.get(key);
-        // Keep the item with the most recent timestamp
         if (!existing || new Date(item.timestamp || item.date) > new Date(existing.timestamp || existing.date)) {
             mergedMap.set(key, item);
         }
     });
     
     let merged = Array.from(mergedMap.values());
-    // Sort by timestamp, newest to oldest
     merged.sort((a, b) => new Date(b.timestamp || b.date) - new Date(a.timestamp || a.date));
     
-    // Enforce the maximum size
     return merged.length > maxSize ? merged.slice(0, maxSize) : merged;
 }
-
 
 // --- Firebase Functions ---
 function signInWithGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider).catch(error => {
         console.error("Erro no Popup, a tentar redirecionar...", error);
-        // Try redirect method as a fallback
         auth.signInWithRedirect(provider);
     });
 }
@@ -185,7 +168,6 @@ auth.onAuthStateChanged(async user => {
             floatingCombinedButton.title = user.displayName || user.email;
         }
 
-        // Load local data as an initial fallback
         let localFavorites = JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY)) || [];
         let localWatchHistory = JSON.parse(localStorage.getItem(WATCH_HISTORY_STORAGE_KEY)) || [];
         let localRaffleHistory = JSON.parse(localStorage.getItem(RAFFLE_HISTORY_STORAGE_KEY)) || [];
@@ -194,22 +176,18 @@ auth.onAuthStateChanged(async user => {
             const doc = await db.collection("users").doc(user.uid).get();
             if (doc.exists) {
                 const data = doc.data();
-                // Load Firebase data or use an empty array as fallback
                 const firebaseFavorites = data.favorites || [];
                 const firebaseWatchHistory = data.watchHistory || [];
                 const firebaseRaffleHistory = data.pickedMediaHistory || [];
 
-                // Merge local and Firebase data
                 favorites = mergeArrays(localFavorites, firebaseFavorites);
                 watchHistory = mergeHistoryArrays(localWatchHistory, firebaseWatchHistory, 100);
                 pickedMediaHistory = mergeHistoryArrays(localRaffleHistory, firebaseRaffleHistory, MAX_RAFFLE_HISTORY_SIZE);
             } else {
-                // If no Firebase document, use local data
                 favorites = localFavorites;
                 watchHistory = localWatchHistory;
                 pickedMediaHistory = localRaffleHistory;
             }
-            // Save the merged (or local) data back to ensure synchronization
             saveAllUserData();
         } catch (error) {
             console.error("Error loading Firebase data, using local data as fallback:", error);
@@ -223,7 +201,6 @@ auth.onAuthStateChanged(async user => {
             floatingCombinedButton.innerHTML = `<i class="fas fa-list-alt"></i>`;
             floatingCombinedButton.title = "Meus Salvos";
         }
-        // If logged out, load only local data
         favorites = JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY)) || [];
         watchHistory = JSON.parse(localStorage.getItem(WATCH_HISTORY_STORAGE_KEY)) || [];
         pickedMediaHistory = JSON.parse(localStorage.getItem(RAFFLE_HISTORY_STORAGE_KEY)) || [];
@@ -420,16 +397,16 @@ async function performSearch(query) {
         const [multiSearchData, companyMovieData, companyTvData] = await Promise.all(fetchPromises);
         
         if (multiSearchData && !multiSearchData.error && multiSearchData.results) {
-            finalDisplayResults.push(...multiSearchData.results.filter(item => (item.media_type === 'movie' || item.media_type === 'tv') && item.poster_path));
+            finalDisplayResults.push(...multiSearchData.results.filter(item => (item.media_type === 'movie' || item.media_type === 'tv')));
             totalPages.search = multiSearchData.total_pages || 1;
         }
 
         if (companyMovieData && !companyMovieData.error && companyMovieData.results) {
-            finalDisplayResults.push(...companyMovieData.results.filter(item => item.poster_path).map(item => ({ ...item, media_type: 'movie' })));
+            finalDisplayResults.push(...companyMovieData.results.map(item => ({ ...item, media_type: 'movie' })));
         }
 
         if (companyTvData && !companyTvData.error && companyTvData.results) {
-            finalDisplayResults.push(...companyTvData.results.filter(item => item.poster_path).map(item => ({ ...item, media_type: 'tv' })));
+            finalDisplayResults.push(...companyTvData.results.map(item => ({ ...item, media_type: 'tv' })));
         }
 
         const uniqueResults = Array.from(new Map(finalDisplayResults.map(item => [item.id + (item.media_type || ''), item])).values());
@@ -860,7 +837,7 @@ async function loadMoreItems() {
             nextPageData = await fetchTMDB('/search/multi', { query: searchInput.value, page: searchCurrentPage });
             if (nextPageData && !nextPageData.error && nextPageData.results) {
                 totalPages.search = nextPageData.total_pages || totalPages.search;
-                displayResults(nextPageData.results.filter(item => item.poster_path), null, singleResultsGrid, false);
+                displayResults(nextPageData.results, null, singleResultsGrid, false);
             } else { searchCurrentPage--; }
         } else if (currentContentContext === 'filter' && filterCurrentPage < totalPages.filter) {
             filterCurrentPage++;
@@ -945,15 +922,19 @@ function displayContinueWatching() {
             card.className = 'content-card';
             card.onclick = () => openItemModal(item.id, item.media_type, item.backdrop_path);
 
-            const imageUrl = `${TMDB_IMAGE_BASE_URL}w400${item.poster_path}`;
+            const title = item.title || item.name || 'Título';
+            const imageUrl = item.poster_path
+                ? `${TMDB_IMAGE_BASE_URL}w400${item.poster_path}`
+                : `https://placehold.co/400x600/0F071A/F3F4F6?text=${encodeURIComponent(title)}&font=inter`;
+
             const detailText = item.media_type === 'tv' && item.season && item.episode
                 ? `T${item.season} E${item.episode}`
                 : `Visto em ${new Date(item.date).toLocaleDateString('pt-BR')}`;
 
             card.innerHTML = `
-                <img src="${imageUrl}" alt="${item.title || item.name}" class="lazy-image">
+                <img src="${imageUrl}" alt="${title}">
                 <div class="title-overlay">
-                    <div class="title">${item.title || item.name}</div>
+                    <div class="title">${title}</div>
                     <div class="subtitle">${detailText}</div>
                 </div>
                 <button class="remove-history-button" data-id="${item.id}" title="Remover do histórico">
@@ -1013,18 +994,21 @@ function displayResults(items, defaultType, targetEl, replace) {
     
     items.forEach(item => {
         const mediaType = item.media_type || defaultType;
-        if (!mediaType || !item.poster_path) return;
+        if (!mediaType) return;
         
         const card = document.createElement('div'); 
         card.className = 'content-card';
         card.onclick = () => openItemModal(item.id, mediaType, item.backdrop_path);
         
         const isFav = isFavorite(item.id, mediaType);
-        const imageUrl = `${TMDB_IMAGE_BASE_URL}w400${item.poster_path}`;
+        const title = item.title || item.name || 'Título';
+        const imageUrl = item.poster_path
+            ? `${TMDB_IMAGE_BASE_URL}w400${item.poster_path}`
+            : `https://placehold.co/400x600/0F071A/F3F4F6?text=${encodeURIComponent(title)}&font=inter`;
 
         card.innerHTML = `
-            <img src="${imageUrl}" alt="${item.title||item.name}" class="lazy-image">
-            <div class="title-overlay"><div class="title">${item.title||item.name}</div></div>
+            <img src="${imageUrl}" alt="${title}">
+            <div class="title-overlay"><div class="title">${title}</div></div>
             <button class="favorite-button ${isFav ? 'active' : ''}" data-id="${item.id}" data-type="${mediaType}">
                 <i class="${isFav ? 'fas fa-heart' : 'far fa-heart'}"></i>
             </button>`;
@@ -1107,12 +1091,17 @@ function openCombinedModal() {
                 if (tab === 'favorites') {
                     let favsHtml = '<p class="text-center text-gray-400 py-5">Não tem favoritos.</p>';
                     if (favorites && favorites.length > 0) {
-                        favsHtml = `<div class="favorites-grid">${favorites.map(item => `
+                        favsHtml = `<div class="favorites-grid">${favorites.map(item => {
+                            const title = item.title || '';
+                            const imageUrl = item.poster_path 
+                                ? `${TMDB_IMAGE_BASE_URL}w342${item.poster_path}`
+                                : `https://placehold.co/342x513/0F071A/F3F4F6?text=${encodeURIComponent(title)}&font=inter`;
+                            return `
                             <div class="content-card favorite-card" onclick="Swal.close(); openItemModal(${item.id}, '${item.media_type}', '${item.backdrop_path || ''}')">
-                                <img src="${TMDB_IMAGE_BASE_URL}w342${item.poster_path}" alt="${item.title || ''}" class="lazy-image">
-                                <div class="title-overlay"><div class="title">${item.title || ''}</div></div>
+                                <img src="${imageUrl}" alt="${title}">
+                                <div class="title-overlay"><div class="title">${title}</div></div>
                                 <button class="remove-favorite-button" data-id="${item.id}" data-type="${item.media_type}"><i class="fas fa-times-circle"></i></button>
-                            </div>`).join('')}</div>`;
+                            </div>`}).join('')}</div>`;
                     }
                     tabContent.innerHTML = favsHtml;
                     document.querySelectorAll('.remove-favorite-button').forEach(button => {
@@ -1132,15 +1121,19 @@ function openCombinedModal() {
                     let historyItemsHTML = '<p class="text-center text-gray-400 py-5">O seu histórico está vazio.</p>';
                     if (watchHistory && watchHistory.length > 0) {
                         historyItemsHTML = watchHistory.map(item => {
+                            const title = item.title || 'Título';
+                            const imageUrl = item.poster_path 
+                                ? `${TMDB_IMAGE_BASE_URL}w92${item.poster_path}`
+                                : `https://placehold.co/92x138/0F071A/F3F4F6?text=${encodeURIComponent(title)}&font=inter`;
                             const detailText = item.media_type === 'tv' && item.season && item.episode
                                 ? `T${item.season} E${item.episode}`
                                 : `Visto em ${new Date(item.date).toLocaleDateString('pt-BR')}`;
 
                             return `
                                 <div class="history-list-item" data-id="${item.id}" data-type="${item.media_type}">
-                                    <img src="${item.poster_path ? TMDB_IMAGE_BASE_URL + 'w92' + item.poster_path : 'https://placehold.co/92x138/1a1a2a/FFF?text=Capa'}" alt="Poster" class="history-list-poster lazy-image">
+                                    <img src="${imageUrl}" alt="Poster" class="history-list-poster">
                                     <div class="history-list-info">
-                                        <div class="history-list-title">${item.title}</div>
+                                        <div class="history-list-title">${title}</div>
                                         <div class="history-list-details">${detailText}</div>
                                     </div>
                                     <div class="history-list-actions">
