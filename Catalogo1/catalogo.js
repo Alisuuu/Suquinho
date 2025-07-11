@@ -7,7 +7,9 @@ const PLACEHOLDER_PERSON_IMAGE = 'https://placehold.co/185x278/0F071A/F3F4F6?tex
 const PLAYER_BASE_URL_MOVIE = 'https://playerflixapi.com/filme/';
 const PLAYER_BASE_URL_SERIES = 'https://playerflixapi.com/serie/';
 const FAVORITES_STORAGE_KEY = 'suquin_favorites_v2';
-const WATCH_HISTORY_STORAGE_KEY = 'suquin_watch_history_v1'; // Chave para o histórico de exibição
+const WATCH_HISTORY_STORAGE_KEY = 'suquin_watch_history_v1';
+const RAFFLE_HISTORY_STORAGE_KEY = 'pickedMediaHistory_v2'; // Chave para o histórico de sorteio
+const MAX_RAFFLE_HISTORY_SIZE = 40; // Limite do histórico de sorteio
 const TMDB_ANIME_KEYWORD_ID = '210024';
 const TMDB_JAPAN_COUNTRY_CODE = 'JP';
 const companyKeywordMap = {
@@ -56,8 +58,8 @@ const popularMoviesLoader = document.getElementById('popularMoviesLoader');
 const topRatedTvShowsLoader = document.getElementById('topRatedTvShowsLoader');
 const openCalendarBtn = document.getElementById('open-calendar-btn');
 const closeCalendarBtn = document.getElementById('close-calendar-btn');
-const continueWatchingSection = document.getElementById('continueWatchingSection'); // NEW
-const continueWatchingGrid = document.getElementById('continueWatchingGrid');     // NEW
+const continueWatchingSection = document.getElementById('continueWatchingSection');
+const continueWatchingGrid = document.getElementById('continueWatchingGrid');
 
 // --- State Variables ---
 let activeAppliedGenre = { id: null, name: null, type: null };
@@ -73,7 +75,8 @@ let mainPageBackdropSlideshowInterval = null;
 let currentMainPageBackdropIndex = 0;
 let mainPageBackdropPaths = [];
 let favorites = [];
-let watchHistory = []; // Estado para o histórico de exibição
+let watchHistory = [];
+let pickedMediaHistory = []; // Estado para o histórico de sorteio
 let currentOpenSwalRef = null;
 let popularMoviesCurrentPage = 1;
 let popularMoviesTotalPages = 1;
@@ -82,11 +85,80 @@ let topRatedTvShowsCurrentPage = 1;
 let topRatedTvShowsTotalPages = 1;
 let isLoadingMoreTopRatedTvShows = false;
 
+// --- Helper Functions ---
+/**
+ * Salva todos os dados do usuário (favoritos, histórico, etc.) no localStorage e no Firebase.
+ */
+function saveAllUserData() {
+    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
+    localStorage.setItem(WATCH_HISTORY_STORAGE_KEY, JSON.stringify(watchHistory));
+    localStorage.setItem(RAFFLE_HISTORY_STORAGE_KEY, JSON.stringify(pickedMediaHistory));
+
+    if (currentUser) {
+        db.collection("users").doc(currentUser.uid).set({
+            favorites,
+            watchHistory,
+            pickedMediaHistory // Adicionado para salvar no Firebase
+        }, { merge: true }).catch(error => {
+            console.error("Erro ao salvar dados no Firestore:", error);
+        });
+    }
+}
+
+/**
+ * Mescla arrays de dados de favoritos, dando preferência aos itens do Firebase.
+ */
+function mergeArrays(localArr, firebaseArr) {
+    const mergedMap = new Map();
+    // Firebase items have precedence
+    (firebaseArr || []).forEach(item => {
+        const key = `${item.id}-${item.media_type}`;
+        mergedMap.set(key, item);
+    });
+    // Add local items if they don't exist
+    (localArr || []).forEach(item => {
+        const key = `${item.id}-${item.media_type}`;
+        if (!mergedMap.has(key)) {
+            mergedMap.set(key, item);
+        }
+    });
+    return Array.from(mergedMap.values());
+}
+
+
+/**
+ * Mescla arrays de históricos (exibição ou sorteio) com base no timestamp.
+ */
+function mergeHistoryArrays(localArr, firebaseArr, maxSize) {
+    const mergedMap = new Map();
+    const combined = [...(localArr || []), ...(firebaseArr || [])];
+    
+    combined.forEach(item => {
+        // Use a consistent key for both history types
+        const key = `${item.id}-${item.type || item.media_type}`;
+        const existing = mergedMap.get(key);
+        // Keep the item with the most recent timestamp
+        if (!existing || new Date(item.timestamp || item.date) > new Date(existing.timestamp || existing.date)) {
+            mergedMap.set(key, item);
+        }
+    });
+    
+    let merged = Array.from(mergedMap.values());
+    // Sort by timestamp, newest to oldest
+    merged.sort((a, b) => new Date(b.timestamp || b.date) - new Date(a.timestamp || a.date));
+    
+    // Enforce the maximum size
+    return merged.length > maxSize ? merged.slice(0, maxSize) : merged;
+}
+
+
 // --- Firebase Functions ---
 function signInWithGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider).catch(error => {
         console.error("Erro no Popup, a tentar redirecionar...", error);
+        // Try redirect method as a fallback
+        auth.signInWithRedirect(provider);
     });
 }
 
@@ -113,78 +185,53 @@ auth.onAuthStateChanged(async user => {
             floatingCombinedButton.title = user.displayName || user.email;
         }
 
-        // 1. Always load from local storage first
+        // Load local data as an initial fallback
         let localFavorites = JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY)) || [];
         let localWatchHistory = JSON.parse(localStorage.getItem(WATCH_HISTORY_STORAGE_KEY)) || [];
+        let localRaffleHistory = JSON.parse(localStorage.getItem(RAFFLE_HISTORY_STORAGE_KEY)) || [];
 
-        // 2. Load from Firebase
-        const doc = await db.collection("users").doc(user.uid).get();
-        if (doc.exists) {
-            const firebaseData = doc.data();
-            const firebaseFavorites = Array.isArray(firebaseData.favorites) ? firebaseData.favorites : [];
-            const firebaseWatchHistory = Array.isArray(firebaseData.watchHistory) ? firebaseData.watchHistory : [];
+        try {
+            const doc = await db.collection("users").doc(user.uid).get();
+            if (doc.exists) {
+                const data = doc.data();
+                // Load Firebase data or use an empty array as fallback
+                const firebaseFavorites = data.favorites || [];
+                const firebaseWatchHistory = data.watchHistory || [];
+                const firebaseRaffleHistory = data.pickedMediaHistory || [];
 
-            // 3. Merge data: Firebase data takes precedence, but local data is added
-            favorites = mergeArrays(localFavorites, firebaseFavorites);
-            watchHistory = mergeArrays(localWatchHistory, firebaseWatchHistory);
-
-            // 4. Save merged data back to Firebase
-            saveToFirestore(); // This will save the now merged 'favorites' and 'watchHistory'
-            console.log("Firebase data loaded and merged. Current favorites:", favorites);
-            console.log("Firebase data loaded and merged. Current watchHistory:", watchHistory);
-        } else {
-            // If no Firebase data, just use local data and save it to Firebase for the first time
+                // Merge local and Firebase data
+                favorites = mergeArrays(localFavorites, firebaseFavorites);
+                watchHistory = mergeHistoryArrays(localWatchHistory, firebaseWatchHistory, 100);
+                pickedMediaHistory = mergeHistoryArrays(localRaffleHistory, firebaseRaffleHistory, MAX_RAFFLE_HISTORY_SIZE);
+            } else {
+                // If no Firebase document, use local data
+                favorites = localFavorites;
+                watchHistory = localWatchHistory;
+                pickedMediaHistory = localRaffleHistory;
+            }
+            // Save the merged (or local) data back to ensure synchronization
+            saveAllUserData();
+        } catch (error) {
+            console.error("Error loading Firebase data, using local data as fallback:", error);
             favorites = localFavorites;
             watchHistory = localWatchHistory;
-            saveToFirestore();
-            console.log("No Firebase data found. Using local data and saving to Firebase. Current favorites:", favorites);
-            console.log("No Firebase data found. Using local data and saving to Firebase. Current watchHistory:", watchHistory);
+            pickedMediaHistory = localRaffleHistory;
         }
+
     } else {
         if (floatingCombinedButton) {
             floatingCombinedButton.innerHTML = `<i class="fas fa-list-alt"></i>`;
             floatingCombinedButton.title = "Meus Salvos";
         }
+        // If logged out, load only local data
         favorites = JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY)) || [];
         watchHistory = JSON.parse(localStorage.getItem(WATCH_HISTORY_STORAGE_KEY)) || [];
-        console.log("Not logged in. Using local data. Current favorites:", favorites);
-        console.log("Not logged in. Using local data. Current watchHistory:", watchHistory);
-        console.log("Watch history (not logged in):", watchHistory);
+        pickedMediaHistory = JSON.parse(localStorage.getItem(RAFFLE_HISTORY_STORAGE_KEY)) || [];
     }
     updateHistoryButtonVisibility();
-    displayContinueWatching(); // NEW: Initial display after history is loaded
+    displayContinueWatching();
 });
 
-// Need a helper function for merging arrays of objects
-function mergeArrays(localArr, firebaseArr) {
-    const mergedMap = new Map();
-
-    // Add Firebase items, they take precedence
-    firebaseArr.forEach(item => {
-        mergedMap.set(`${item.id}-${item.media_type}`, item);
-    });
-
-    // Add local items if they don't already exist (Firebase items took precedence)
-    localArr.forEach(item => {
-        const key = `${item.id}-${item.media_type}`;
-        if (!mergedMap.has(key)) {
-            mergedMap.set(key, item);
-        }
-    });
-
-    // Convert map back to array, maintaining original order as much as possible (Firebase first, then local)
-    // This simple conversion will lose original order, but for favorites/history, order might not be critical during merge.
-    // If order is critical, a more complex merge logic is needed. For now, new items are added.
-    return Array.from(mergedMap.values());
-}
-
-function saveToFirestore() {
-    if (!currentUser) return;
-    db.collection("users").doc(currentUser.uid).set({
-        favorites,
-        watchHistory
-    }, { merge: true });
-}
 
 // --- Main Logic ---
 function getCompanyConfigForQuery(query) {
@@ -323,12 +370,10 @@ async function loadMoreTopRatedTvShows() {
 async function performSearch(query) {
     const trimmedQuery = query ? query.trim().toLowerCase() : '';
 
-    // MODIFICAÇÃO: Oculta ou mostra a seção 'Continuar Assistindo' com base na pesquisa
     if (continueWatchingSection) {
         if (trimmedQuery) {
             continueWatchingSection.style.display = 'none';
         } else {
-            // Re-avalia a exibição da seção quando a pesquisa é limpa
             displayContinueWatching();
         }
     }
@@ -431,16 +476,20 @@ async function applyGenreFilterFromSA() {
         params.with_keywords = TMDB_ANIME_KEYWORD_ID;
     }
     
-    if (singleSectionTitleEl) singleSectionTitleEl.textContent = `${titlePrefix} do Género: ${activeAppliedGenre.name || 'Todos'}`;
+    if (singleSectionTitleEl) singleSectionTitleEl.textContent = `${titlePrefix} do Gênero: ${activeAppliedGenre.name || 'Todos'}`;
     
     const data = await fetchTMDB(`/discover/${endpointType}`, params);
 
     if (singleResultsGrid) {
-        displayResults(data.results, activeAppliedGenre.type, singleResultsGrid, true);
-        if (!data.results || data.results.length === 0) {
-            singleResultsGrid.innerHTML = `<p class="text-center col-span-full">Nenhum item encontrado para o género ${activeAppliedGenre.name || 'selecionado'}.</p>`;
+        if (data && data.results) {
+            displayResults(data.results, activeAppliedGenre.type, singleResultsGrid, true);
+            if (data.results.length === 0) {
+                singleResultsGrid.innerHTML = `<p class="text-center col-span-full">Nenhum item encontrado para o gênero ${activeAppliedGenre.name || 'selecionado'}.</p>`;
+            } else {
+                totalPages.filter = data.total_pages || 1;
+            }
         } else {
-            totalPages.filter = data.total_pages || 1;
+            singleResultsGrid.innerHTML = `<p class="text-center col-span-full">Erro ao carregar itens. ${data?.message || ''}</p>`;
         }
     }
     hideLoader();
@@ -566,7 +615,6 @@ async function openItemModal(itemId, mediaType, backdropPath = null, fromSorteio
     const imdbId = details.external_ids?.imdb_id;
     const mainPlayerUrl = !isTV && imdbId ? `${PLAYER_BASE_URL_MOVIE}${imdbId}` : null;
     
-    // *** LÓGICA DE LINK CORRIGIDA ***
     const shareUrl = `https://alisuuu.github.io/Suquinho/?pagina=Catalogo1%2Findex.html%3Ftype%3D${mediaType}%26id%3D${itemId}`;
     
     const titleText = details.title || details.name || "N/A";
@@ -619,7 +667,7 @@ async function openItemModal(itemId, mediaType, backdropPath = null, fromSorteio
                     ${rating !== 'N/A' ? `<span><i class="fas fa-star"></i> ${rating}/10</span>` : ''}
                     ${runtime ? `<span><i class="fas fa-clock"></i> ${runtime} min</span>` : ''}
                 </div>
-                <p class="details-genres"><strong>Géneros:</strong> ${genres}</p>
+                <p class="details-genres"><strong>Gêneros:</strong> ${genres}</p>
                 <div class="modal-actions-wrapper">${favoriteButtonHTML}${copyLinkButtonHTML}${trailerButtonHTML}</div>
                 <div id="trailer-container"></div>
                 <h3 class="details-section-subtitle" style="padding-left:0; margin-top: 16px;">Sinopse</h3>
@@ -636,7 +684,7 @@ async function openItemModal(itemId, mediaType, backdropPath = null, fromSorteio
         if (swalPopup) {
             const sortAgainButton = document.createElement('button');
             sortAgainButton.id = 'modalSortAgainButton';
-            sortAgainButton.className = 'modal-action-button swal-sort-again-button'; // Adiciona uma nova classe para estilização
+            sortAgainButton.className = 'modal-action-button swal-sort-again-button';
             sortAgainButton.innerHTML = '<i class="fas fa-redo"></i> Sortear Novamente';
             sortAgainButton.addEventListener('click', () => {
                 Swal.close();
@@ -743,7 +791,7 @@ function launchAdvancedPlayer(url, logoPath, itemData, mediaType, seasonInfo = n
 async function openFilterSweetAlert() {
     const swalHTML = `<div class="swal-genre-filter-type-selector mb-4"><button id="swalMovieGenreTypeButton" data-type="movie" class="${currentFilterTypeSA === 'movie' ? 'active' : ''}">Filmes</button><button id="swalTvGenreTypeButton" data-type="tv" class="${currentFilterTypeSA === 'tv' ? 'active' : ''}">Séries</button><button id="swalAnimeGenreTypeButton" data-type="anime" class="${currentFilterTypeSA === 'anime' ? 'active' : ''}">Animes</button></div><div id="swalGenreButtonsPanel" class="swal-genre-buttons-panel my-4">A carregar...</div>`;
     Swal.fire({
-        title: 'Filtrar por Género', html: swalHTML, showCloseButton: true, showDenyButton: true,
+        title: 'Filtrar por Gênero', html: swalHTML, showCloseButton: true, showDenyButton: true,
         denyButtonText: 'Limpar Filtro', confirmButtonText: 'Aplicar Filtro',
         customClass: { popup: 'swal2-popup' },
         didOpen: () => {
@@ -788,7 +836,7 @@ async function fetchAndDisplayGenresInSA(mediaType, genrePanelElement) {
         });
         updateGenreButtonsInSAUI(genrePanelElement);
     } else {
-        genrePanelElement.innerHTML = `<p class="text-xs text-center">Géneros não encontrados.</p>`;
+        genrePanelElement.innerHTML = `<p class="text-xs text-center">Gêneros não encontrados.</p>`;
     }
 }
 
@@ -865,8 +913,7 @@ function toggleFavorite(item, type) {
         favorites.unshift({ id: item.id, media_type: type, title: item.title || item.name, poster_path: item.poster_path, backdrop_path: item.backdrop_path });
         showCustomToast('Adicionado aos Favoritos', 'success');
     }
-    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
-    saveToFirestore();
+    saveAllUserData();
     updateFavoriteButtonsState(item.id, type);
 }
 
@@ -888,9 +935,9 @@ function updateFavoriteButtonsState(id, type) {
 function displayContinueWatching() {
     if (!continueWatchingSection || !continueWatchingGrid) return;
 
-    if (watchHistory.length > 0) {
+    if (watchHistory && watchHistory.length > 0) {
         continueWatchingSection.style.display = 'block';
-        continueWatchingGrid.innerHTML = ''; // Clear existing content
+        continueWatchingGrid.innerHTML = '';
 
         const fragment = document.createDocumentFragment();
         watchHistory.forEach(item => {
@@ -904,7 +951,7 @@ function displayContinueWatching() {
                 : `Visto em ${new Date(item.date).toLocaleDateString('pt-BR')}`;
 
             card.innerHTML = `
-                <img src="${imageUrl}" alt="${item.title || item.name}">
+                <img src="${imageUrl}" alt="${item.title || item.name}" class="lazy-image">
                 <div class="title-overlay">
                     <div class="title">${item.title || item.name}</div>
                     <div class="subtitle">${detailText}</div>
@@ -916,7 +963,6 @@ function displayContinueWatching() {
             card.querySelector('.remove-history-button').onclick = (e) => {
                 e.stopPropagation();
                 removeFromWatchHistory(item.id);
-                // Re-render the section after removal
                 displayContinueWatching();
             };
             fragment.appendChild(card);
@@ -941,23 +987,21 @@ function addToWatchHistory(item, mediaType, seasonInfo = null, episodeInfo = nul
     watchHistory = watchHistory.filter(h => !(h.id === entry.id && h.media_type === entry.media_type));
     watchHistory.unshift(entry);
     if (watchHistory.length > 100) watchHistory.pop();
-    localStorage.setItem(WATCH_HISTORY_STORAGE_KEY, JSON.stringify(watchHistory));
-    saveToFirestore();
+    saveAllUserData();
     updateHistoryButtonVisibility();
-    displayContinueWatching(); // NEW: Update the UI
+    displayContinueWatching();
 }
 
 function removeFromWatchHistory(itemId) {
     watchHistory = watchHistory.filter(h => h.id.toString() !== itemId.toString());
-    localStorage.setItem(WATCH_HISTORY_STORAGE_KEY, JSON.stringify(watchHistory));
-    saveToFirestore();
+    saveAllUserData();
     showCustomToast('Removido do histórico', 'info');
-    displayContinueWatching(); // NEW: Update the UI
+    displayContinueWatching();
 }
 
 function updateHistoryButtonVisibility() {
     if (floatingCombinedButton) {
-        floatingCombinedButton.style.display = 'flex'; // Always display the button
+        floatingCombinedButton.style.display = 'flex';
     }
 }
 
@@ -979,7 +1023,7 @@ function displayResults(items, defaultType, targetEl, replace) {
         const imageUrl = `${TMDB_IMAGE_BASE_URL}w400${item.poster_path}`;
 
         card.innerHTML = `
-            <img src="${imageUrl}" alt="${item.title||item.name}">
+            <img src="${imageUrl}" alt="${item.title||item.name}" class="lazy-image">
             <div class="title-overlay"><div class="title">${item.title||item.name}</div></div>
             <button class="favorite-button ${isFav ? 'active' : ''}" data-id="${item.id}" data-type="${mediaType}">
                 <i class="${isFav ? 'fas fa-heart' : 'far fa-heart'}"></i>
@@ -1050,7 +1094,6 @@ function openCombinedModal() {
             const tabButtons = document.querySelectorAll('.swal-tab-button');
             const tabContent = document.getElementById('swal-tab-content');
 
-            // Add event listeners for login/logout buttons
             if (currentUser) {
                 document.getElementById('modalSignOutButton')?.addEventListener('click', signOut);
             } else {
@@ -1063,10 +1106,10 @@ function openCombinedModal() {
 
                 if (tab === 'favorites') {
                     let favsHtml = '<p class="text-center text-gray-400 py-5">Não tem favoritos.</p>';
-                    if (favorites.length > 0) {
+                    if (favorites && favorites.length > 0) {
                         favsHtml = `<div class="favorites-grid">${favorites.map(item => `
                             <div class="content-card favorite-card" onclick="Swal.close(); openItemModal(${item.id}, '${item.media_type}', '${item.backdrop_path || ''}')">
-                                <img src="${TMDB_IMAGE_BASE_URL}w342${item.poster_path}" alt="${item.title || ''}">
+                                <img src="${TMDB_IMAGE_BASE_URL}w342${item.poster_path}" alt="${item.title || ''}" class="lazy-image">
                                 <div class="title-overlay"><div class="title">${item.title || ''}</div></div>
                                 <button class="remove-favorite-button" data-id="${item.id}" data-type="${item.media_type}"><i class="fas fa-times-circle"></i></button>
                             </div>`).join('')}</div>`;
@@ -1087,7 +1130,7 @@ function openCombinedModal() {
                     });
                 } else if (tab === 'history') {
                     let historyItemsHTML = '<p class="text-center text-gray-400 py-5">O seu histórico está vazio.</p>';
-                    if (watchHistory.length > 0) {
+                    if (watchHistory && watchHistory.length > 0) {
                         historyItemsHTML = watchHistory.map(item => {
                             const detailText = item.media_type === 'tv' && item.season && item.episode
                                 ? `T${item.season} E${item.episode}`
@@ -1095,7 +1138,7 @@ function openCombinedModal() {
 
                             return `
                                 <div class="history-list-item" data-id="${item.id}" data-type="${item.media_type}">
-                                    <img src="${item.poster_path ? TMDB_IMAGE_BASE_URL + 'w92' + item.poster_path : 'https://placehold.co/92x138/1a1a2a/FFF?text=Capa'}" alt="Poster" class="history-list-poster">
+                                    <img src="${item.poster_path ? TMDB_IMAGE_BASE_URL + 'w92' + item.poster_path : 'https://placehold.co/92x138/1a1a2a/FFF?text=Capa'}" alt="Poster" class="history-list-poster lazy-image">
                                     <div class="history-list-info">
                                         <div class="history-list-title">${item.title}</div>
                                         <div class="history-list-details">${detailText}</div>
@@ -1157,7 +1200,7 @@ function debounce(func, delay) {
     };
 }
 
-    document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     const apiKeyIsValid = typeof TMDB_API_KEY !== 'undefined' && TMDB_API_KEY.length > 10;
     if (!apiKeyIsValid) {
         document.body.innerHTML = `<div style="color:red;padding:2rem;text-align:center;">Erro: Chave da API não configurada.</div>`;
@@ -1169,7 +1212,6 @@ function debounce(func, delay) {
     if (filterToggleButton) filterToggleButton.addEventListener('click', openFilterSweetAlert);
     if (floatingCombinedButton) floatingCombinedButton.addEventListener('click', openCombinedModal);
 
-    // Sorteio button functionality
     const toggleSorteioButtons = document.getElementById('toggleSorteioButtons');
     const sorteioButtonsContainer = document.getElementById('sorteioButtonsContainer');
 
@@ -1180,7 +1222,6 @@ function debounce(func, delay) {
             sorteioButtonsContainer.style.display = isVisible ? 'none' : 'flex';
         });
 
-        // Close sorteio buttons if clicked outside
         document.addEventListener('click', (e) => {
             if (!sorteioButtonsContainer.contains(e.target) && !toggleSorteioButtons.contains(e.target)) {
                 sorteioButtonsContainer.style.display = 'none';
@@ -1188,7 +1229,6 @@ function debounce(func, delay) {
         });
     }
 
-    // Ensure button visibility is updated after DOM is loaded
     updateHistoryButtonVisibility();
 
     const mainContent = document.getElementById('main-content');
@@ -1266,6 +1306,5 @@ function debounce(func, delay) {
     if (typeParam && idParam) openItemModal(idParam, typeParam);
     else loadMainPageContent();
 
-    // Initial display of continue watching section
-    displayContinueWatching(); // NEW: Ensure it's called on load
+    displayContinueWatching();
 });
