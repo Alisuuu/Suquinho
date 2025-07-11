@@ -334,7 +334,7 @@ h1 {
 }
 
 .trailer-cover:hover .cover-elements-overlay {
-    background-color: #000000;
+    background-color: rgba(0, 0, 0, 0.7);
 }
 
 .play-icon-wrapper {
