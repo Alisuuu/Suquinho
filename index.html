@@ -22,7 +22,7 @@
   <!-- Folhas de Estilo - Carregamento Dinâmico (SUA LÓGICA ORIGINAL) -->
   <script>
     const loadThemeCss = () => {
-        const selectedTheme = localStorage.getItem('selectedTheme') || 'default'; // 'default' as fallback
+        const selectedTheme = localStorage.getItem('selectedTheme') || 'dracula'; // 'dracula' as fallback
         const cssFiles = [
             'sidebar.css',
             'ocultos.css',
@@ -232,8 +232,8 @@
       <span class="theme-modal-close">&times;</span>
       <h2>Escolha seu Tema</h2>
       <div class="theme-modal-buttons">
-        <button class="theme-modal-button default" data-theme="default">Padrão</button>
         <button class="theme-modal-button dracula" data-theme="dracula">Dracula</button>
+        <button class="theme-modal-button noir" data-theme="noir">Noir</button>
         <button class="theme-modal-button anime" data-theme="anime">Anime</button>
       </div>
     </div>
