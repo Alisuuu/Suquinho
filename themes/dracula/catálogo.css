@@ -1249,3 +1249,115 @@ body.swal2-shown header {
     color: #FFF;
     transform: scale(1.1);
 }
+/* Estilos para o Pop-up de Login com Email */
+
+/* Estilos para o Pop-up de Login com Email */
+
+.login-popup {
+    background-color: var(12,12,12 0.9) !important;
+    color: var(--text-primary) !important;
+    border-radius: 12px !important;
+    border: 1px solid var(--border-color);
+}
+
+.login-popup .swal2-title {
+    color: var(--text-primary) !important;
+}
+
+.login-popup .swal2-input {
+    background-color: var(--bg-light) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 8px !important;
+    margin-bottom: 1rem !important;
+}
+
+.login-popup .swal2-input:focus {
+    border-color: var(--accent-color) !important;
+    box-shadow: 0 0 0 3px rgba(var(--accent-color-rgb), 0.3) !important;
+}
+
+.login-popup .swal2-confirm {
+    background-color: var(--accent-color) !important;
+    color: var(--on-accent-color) !important;
+    border-radius: 8px !important;
+    transition: background-color 0.2s ease;
+}
+
+.login-popup .swal2-confirm:hover {
+    background-color: var(--accent-color-dark) !important;
+}
+
+.login-popup .swal2-cancel {
+    background-color: transparent !important;
+    color: var(--text-secondary) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 8px !important;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.login-popup .swal2-cancel:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: var(--text-primary) !important;
+}
+
+.login-popup .swal2-validation-message {
+    background-color: var(--bg-light) !important;
+    color: #f27474 !important;
+}
+
+/* NOVO: Estilo para o link "Esqueceu a senha?" */
+.forgot-password-link {
+    display: block;
+    text-align: right;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: -0.5rem; /* Puxa o link um pouco para cima */
+    margin-bottom: 1.25rem; /* Adiciona espaço antes do botão de criar conta */
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.forgot-password-link:hover {
+    color: var(--accent-color);
+    text-decoration: underline;
+}
+
+
+/* Estilos para o botão de criar conta */
+.swal-footer-actions {
+    margin-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 1rem;
+    text-align: center;
+}
+
+.swal-create-account-button {
+    background: none;
+    border: none;
+    padding: 10px 15px;
+    color: var(--text-primary);
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 8px;
+    width: 100%;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    background-color: rgba(var(--accent-color-rgb), 0.15);
+}
+
+.swal-create-account-button:hover {
+    background-color: rgba(var(--accent-color-rgb), 0.3);
+    color: var(--accent-color);
+}
+
+
+/* Estilo para o botão de login com email no modal principal */
+.modal-action-button.email-login {
+    background-color: #5865F2; /* Cor inspirada no Discord */
+    margin-top: 0.5rem; /* Espaçamento */
+}
+
+.modal-action-button.email-login:hover {
+    background-color: #4752C4;
+}
+
