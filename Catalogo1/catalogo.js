@@ -383,6 +383,7 @@ auth.onAuthStateChanged(async user => {
     }
     updateHistoryButtonVisibility();
     displayContinueWatching();
+    updateAllFavoriteButtonsUI();
 });
 
 
@@ -1082,6 +1083,18 @@ function updateFavoriteButtonsState(id, type) {
         modalBtn.title = isFav ? 'Remover dos Favoritos' : 'Adicionar aos Favoritos';
         modalBtn.innerHTML = isFav ? '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>';
     }
+}
+
+function updateAllFavoriteButtonsUI() {
+    document.querySelectorAll('.favorite-button').forEach(btn => {
+        const id = btn.dataset.id;
+        const type = btn.dataset.type;
+        if (id && type) {
+            const isFav = isFavorite(id, type);
+            btn.classList.toggle('active', isFav);
+            btn.innerHTML = isFav ? '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>';
+        }
+    });
 }
 
 // --- Funções de Gerenciamento do Histórico de Exibição ---
