@@ -3,7 +3,6 @@ const TMDB_API_KEY = '5e5da432e96174227b25086fe8637985';
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/';
 const LANGUAGE = 'pt-BR';
-// MODIFICAÇÃO: Alterado o placeholder para a imagem local p2.png
 const PLACEHOLDER_PERSON_IMAGE = 'p2.png';
 const PLAYER_BASE_URL_MOVIE = 'https://playerflixapi.com/filme/';
 const PLAYER_BASE_URL_SERIES = 'https://playerflixapi.com/serie/';
@@ -149,6 +148,180 @@ function signOut() {
     auth.signOut();
 }
 
+// --- NEW: Password Reset Function ---
+function sendPasswordResetEmail() {
+    Swal.fire({
+        title: 'Redefinir Senha',
+        html: 'Digite seu e-mail para receber o link de redefinição.',
+        input: 'email',
+        inputPlaceholder: 'seu@email.com',
+        confirmButtonText: 'Enviar',
+        showCancelButton: true,
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            popup: 'login-popup'
+        },
+        preConfirm: (email) => {
+            if (!email) {
+                Swal.showValidationMessage('Por favor, digite um e-mail válido.');
+                return false;
+            }
+            return email;
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const email = result.value;
+            auth.sendPasswordResetEmail(email)
+                .then(() => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'E-mail Enviado!',
+                        text: 'Verifique sua caixa de entrada (e a pasta de spam) para o link de redefinição.',
+                    });
+                })
+                .catch((error) => {
+                    let errorMessage = "Ocorreu um erro. Tente novamente.";
+                    if (error.code === 'auth/user-not-found') {
+                        errorMessage = 'Nenhuma conta encontrada com este e-mail.';
+                    } else if (error.code === 'auth/invalid-email') {
+                        errorMessage = 'O formato do e-mail é inválido.';
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro',
+                        text: errorMessage,
+                    });
+                });
+        }
+    });
+}
+
+
+// --- Email/Password Auth Functions ---
+function createAccountWithEmail() {
+    Swal.fire({
+        title: 'Criar Conta',
+        html: `
+            <input type="email" id="swal-email" class="swal2-input" placeholder="Email">
+            <input type="password" id="swal-password" class="swal2-input" placeholder="Senha (mín. 6 caracteres)">
+        `,
+        confirmButtonText: 'Criar',
+        focusConfirm: false,
+        showCancelButton: true,
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            popup: 'login-popup'
+        },
+        preConfirm: () => {
+            const email = Swal.getPopup().querySelector('#swal-email').value;
+            const password = Swal.getPopup().querySelector('#swal-password').value;
+            if (!email || !password) {
+                Swal.showValidationMessage(`Por favor, preencha todos os campos`);
+                return false;
+            }
+            if (password.length < 6) {
+                Swal.showValidationMessage(`A senha deve ter no mínimo 6 caracteres`);
+                return false;
+            }
+            return { email: email, password: password };
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const { email, password } = result.value;
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Conta Criada!',
+                        text: 'Login efetuado com sucesso.',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                })
+                .catch((error) => {
+                    let errorMessage = "Ocorreu um erro. Tente novamente.";
+                    if (error.code === 'auth/email-already-in-use') {
+                        errorMessage = 'Este e-mail já está em uso.';
+                    } else if (error.code === 'auth/invalid-email') {
+                        errorMessage = 'O formato do e-mail é inválido.';
+                    } else if (error.code === 'auth/weak-password') {
+                        errorMessage = 'A senha é muito fraca.';
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro ao Criar Conta',
+                        text: errorMessage,
+                    });
+                });
+        }
+    });
+}
+
+
+function signInWithEmail() {
+    Swal.fire({
+        title: 'Login com E-mail',
+        html: `
+            <input type="email" id="swal-email" class="swal2-input" placeholder="Email">
+            <input type="password" id="swal-password" class="swal2-input" placeholder="Senha">
+            <a href="#" id="forgot-password-link" class="forgot-password-link">Esqueceu a senha?</a>
+            <div class="swal-footer-actions">
+                <button id="create-account-button" class="swal-create-account-button">Não tem uma conta? Crie uma!</button>
+            </div>
+        `,
+        confirmButtonText: 'Entrar',
+        focusConfirm: false,
+        showCancelButton: true,
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            popup: 'login-popup'
+        },
+        didOpen: () => {
+            Swal.getPopup().querySelector('#create-account-button').addEventListener('click', (e) => {
+                e.preventDefault();
+                Swal.close(); // Fecha o modal de login
+                createAccountWithEmail(); // Abre o modal de criação de conta
+            });
+             Swal.getPopup().querySelector('#forgot-password-link').addEventListener('click', (e) => {
+                e.preventDefault();
+                Swal.close();
+                sendPasswordResetEmail();
+            });
+        },
+        preConfirm: () => {
+            const email = Swal.getPopup().querySelector('#swal-email').value;
+            const password = Swal.getPopup().querySelector('#swal-password').value;
+            if (!email || !password) {
+                Swal.showValidationMessage(`Por favor, preencha todos os campos`);
+            }
+            return { email: email, password: password };
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const { email, password } = result.value;
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    Swal.close();
+                     showCustomToast('Login efetuado com sucesso!', 'success');
+                })
+                .catch((error) => {
+                    let errorMessage = "Ocorreu um erro. Tente novamente.";
+                    if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                        errorMessage = 'E-mail ou senha incorretos.';
+                    } else if (error.code === 'auth/invalid-email') {
+                        errorMessage = 'O formato do e-mail é inválido.';
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro de Login',
+                        text: errorMessage,
+                    });
+                });
+        }
+    });
+}
+
+
 auth.getRedirectResult()
     .then((result) => {
         if (result.user) {
@@ -163,8 +336,10 @@ auth.onAuthStateChanged(async user => {
     const floatingCombinedButton = document.getElementById("floatingCombinedButton");
 
     if (user) {
+        // User is signed in.
+        const photoURL = user.photoURL || `https://ui-avatars.com/api/?name=${user.email.split('@')[0]}&background=random&color=fff`;
         if (floatingCombinedButton) {
-            floatingCombinedButton.innerHTML = `<img src="${user.photoURL || ''}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block;">`;
+            floatingCombinedButton.innerHTML = `<img src="${photoURL}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block;">`;
             floatingCombinedButton.title = user.displayName || user.email;
         }
 
@@ -197,6 +372,7 @@ auth.onAuthStateChanged(async user => {
         }
 
     } else {
+        // User is signed out.
         if (floatingCombinedButton) {
             floatingCombinedButton.innerHTML = `<i class="fas fa-list-alt"></i>`;
             floatingCombinedButton.title = "Meus Salvos";
@@ -1048,7 +1224,7 @@ function copyToClipboard(text) {
 function openCombinedModal() {
     const userSectionHTML = currentUser ? `
         <div class="user-profile-section">
-            <img src="${currentUser.photoURL || ''}" alt="User Avatar" class="user-avatar"/>
+            <img src="${currentUser.photoURL || `https://ui-avatars.com/api/?name=${currentUser.email.split('@')[0]}&background=random&color=fff`}" alt="User Avatar" class="user-avatar"/>
             <span class="user-name">${currentUser.displayName || currentUser.email}</span>
             <button id="modalSignOutButton" class="modal-action-button"><i class="fas fa-sign-out-alt"></i> Sair</button>
         </div>
@@ -1056,6 +1232,7 @@ function openCombinedModal() {
         <div class="user-profile-section no-user">
             <p>Faça login para sincronizar seus dados!</p>
             <button id="modalLoginButton" class="modal-action-button"><i class="fab fa-google"></i> Login com Google</button>
+            <button id="modalLoginEmailButton" class="modal-action-button email-login"><i class="fas fa-envelope"></i> Login com Email</button>
         </div>
     `;
 
@@ -1082,6 +1259,7 @@ function openCombinedModal() {
                 document.getElementById('modalSignOutButton')?.addEventListener('click', signOut);
             } else {
                 document.getElementById('modalLoginButton')?.addEventListener('click', signInWithGoogle);
+                document.getElementById('modalLoginEmailButton')?.addEventListener('click', signInWithEmail);
             }
 
             const showTab = (tab) => {
@@ -1301,3 +1479,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     displayContinueWatching();
 });
+
