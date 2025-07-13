@@ -1485,19 +1485,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    const scrollTargetForResults = window.innerWidth < 768 ? document.getElementById('contentArea') : window;
-    scrollTargetForResults?.addEventListener('scroll', () => {
-        const isSingleSectionVisible = singleResultsSection?.style.display === 'block';
-        if (!isSingleSectionVisible || isLoadingMore) return;
-        const offset = 200;
-        let scrolledToEnd = false;
-        if (scrollTargetForResults === window) {
-            scrolledToEnd = (window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - offset;
-        } else {
-            scrolledToEnd = (scrollTargetForResults.scrollTop + scrollTargetForResults.clientHeight) >= scrollTargetForResults.scrollHeight - offset;
-        }
-        if(scrolledToEnd) debouncedLoadMoreItems();
-    });
+    // --- CORREÇÃO: Lógica de Scroll Infinito para a página de resultados ---
+    const scrollContainer = document.getElementById('main-content');
+    if (scrollContainer) {
+        scrollContainer.addEventListener('scroll', () => {
+            // Verifica se a seção de resultados únicos está visível e se não há carregamento em andamento
+            const isSingleSectionVisible = singleResultsSection?.style.display === 'block';
+            if (!isSingleSectionVisible || isLoadingMore) return;
+    
+            const offset = 300; // Carrega mais itens quando faltarem 300px para o final
+            const scrolledToEnd = (scrollContainer.scrollTop + scrollContainer.clientHeight) >= scrollContainer.scrollHeight - offset;
+    
+            if (scrolledToEnd) {
+                debouncedLoadMoreItems();
+            }
+        });
+    }
+
 
     document.addEventListener('fullscreenchange', () => {
         if (!document.fullscreenElement) {
@@ -1513,4 +1517,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
     displayContinueWatching();
 });
-
