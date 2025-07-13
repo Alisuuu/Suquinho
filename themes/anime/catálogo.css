@@ -102,7 +102,8 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 .main-results-grid,
 #singleResultsGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    /* --- CORREÇÃO: Tamanho mínimo unificado em 120px para consistência --- */
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 1rem;
     padding-bottom: 1rem;
     width: 100%;
@@ -829,8 +830,10 @@ header h1 .fa-film { color: var(--primary-color); margin-right: 0.5rem; }
     transform: scale(1.1);
 }
 
-/* Media Queries */
-@media (max-width: 767px) { /* Mobile */
+/* --- ESTRUTURA DE MEDIA QUERIES OTIMIZADA --- */
+
+/* Mobile (Base) */
+@media (max-width: 767px) {
     body {
         overflow-y: hidden;
         height: 100vh;
@@ -854,13 +857,6 @@ header h1 .fa-film { color: var(--primary-color); margin-right: 0.5rem; }
     .section-title { font-size: 1.3rem; margin-bottom: 1rem; }
     .swal-details-content .details-content-title { font-size: 1.5rem; }
 
-    .horizontal-scroll-grid,
-    .main-results-grid,
-    #singleResultsGrid {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-        gap: 0.75rem;
-    }
-
     #floatingButtonWrapper {
         bottom: 1rem;
         right: 1rem;
@@ -870,7 +866,7 @@ header h1 .fa-film { color: var(--primary-color); margin-right: 0.5rem; }
         width: 95vw !important;
     }
     .favorites-grid {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
         gap: 0.75rem;
         padding: 0.5rem;
     }
@@ -888,16 +884,10 @@ header h1 .fa-film { color: var(--primary-color); margin-right: 0.5rem; }
     .details-trailer-container {
         margin: 0.5rem 0.5rem 1rem 0.5rem;
     }
-
-    #player-controls {
-        flex-direction: column;
-        gap: 1rem;
-        bottom: 10px;
-        border-radius: 20px;
-    }
 }
 
-@media (min-width: 768px) { /* Desktop and larger screens */
+/* Tablets e Telas Maiores */
+@media (min-width: 768px) {
     body {
         overflow-y: auto;
         height: auto;
@@ -906,37 +896,23 @@ header h1 .fa-film { color: var(--primary-color); margin-right: 0.5rem; }
         height: auto;
         padding: 1rem;
     }
-    header h1 { font-size: 1.75rem; }
-
-    main#contentArea {
-        padding: 0;
-    }
-
-    .horizontal-scroll-grid,
-    .main-results-grid,
-    #singleResultsGrid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 1.5rem;
-    }
+    /* --- CORREÇÃO: Removido o override para manter o tamanho base de 120px --- */
 }
 
-@media (min-width: 768px) and (max-width: 1023px) { /* Tablets */
-     .horizontal-scroll-grid, .main-results-grid, #singleResultsGrid {
-         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    }
+/* Laptops / Desktops Pequenos */
+@media (min-width: 1024px) {
+    /* --- CORREÇÃO: Removido o override para manter o tamanho base de 120px --- */
 }
 
-@media (min-width: 1024px) { /* Larger Screens */
-    .horizontal-scroll-grid, .main-results-grid, #singleResultsGrid {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    }
-}
-
-@media (min-width: 1200px) { /* Very Large Screens */
+/* Desktops Maiores */
+@media (min-width: 1280px) {
     header .container { max-width: 1400px; }
-    .horizontal-scroll-grid, .main-results-grid, #singleResultsGrid {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    }
+    /* --- CORREÇÃO: Removido o override para manter o tamanho base de 120px --- */
+}
+
+/* Desktops Extra Grandes */
+@media (min-width: 1536px) {
+    /* --- CORREÇÃO: Removido o override para manter o tamanho base de 120px --- */
 }
 
 
