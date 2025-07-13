@@ -1357,3 +1357,43 @@ body.swal2-shown header {
     background-color: #4752C4;
 }
 
+/* Estilos para os botões de ação no modal (Favoritos, Download, Copiar Link) */
+
+.modal-favorite-button,
+.modal-copy-link-button,
+.modal-download-button {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-color);
+    background: var(--surface-color);
+    color: var(--icon-color);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    box-shadow: var(--subtle-shadow);
+    flex-shrink: 0;
+    text-decoration: none; /* Garante que o link não tenha sublinhado */
+}
+
+/* Efeito ao passar o mouse por cima */
+.modal-favorite-button:hover,
+.modal-copy-link-button:hover,
+.modal-download-button:hover {
+    background: var(--primary-gradient);
+    color: var(--on-primary-color);
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 15px rgba(190, 147, 253, 0.25);
+    transform: scale(1.1);
+}
+
+/* Ajuste para os ícones dentro dos botões */
+.modal-favorite-button .fas, .modal-favorite-button .far,
+.modal-copy-link-button .fas,
+.modal-download-button .fas {
+    margin-right: 0;
+}
