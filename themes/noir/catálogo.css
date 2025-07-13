@@ -101,7 +101,8 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 .main-results-grid,
 #singleResultsGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    /* --- CORREÇÃO: Tamanho unificado e layout fluido --- */
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 1rem;
     padding-bottom: 1rem;
     width: 100%;
@@ -510,7 +511,8 @@ header h1 .fa-film { color: var(--secondary-accent); margin-right: 0.5rem; }
 }
 
 .modal-favorite-button,
-.modal-copy-link-button {
+.modal-copy-link-button,
+.modal-download-button {
     width: 44px;
     height: 44px;
     padding: 0;
@@ -526,10 +528,12 @@ header h1 .fa-film { color: var(--secondary-accent); margin-right: 0.5rem; }
     cursor: pointer;
     box-shadow: var(--subtle-shadow);
     flex-shrink: 0;
+    text-decoration: none;
 }
 
 .modal-favorite-button:hover,
-.modal-copy-link-button:hover {
+.modal-copy-link-button:hover,
+.modal-download-button:hover {
     background: var(--secondary-accent);
     color: var(--on-primary-color);
     border-color: var(--secondary-accent);
@@ -550,7 +554,8 @@ header h1 .fa-film { color: var(--secondary-accent); margin-right: 0.5rem; }
 }
 
 .modal-favorite-button .fas, .modal-favorite-button .far,
-.modal-copy-link-button .fas {
+.modal-copy-link-button .fas,
+.modal-download-button .fas {
     margin-right: 0;
 }
 
@@ -859,13 +864,6 @@ header h1 .fa-film { color: var(--secondary-accent); margin-right: 0.5rem; }
     .section-title { font-size: 1.3rem; margin-bottom: 1rem; }
     .swal-details-content .details-content-title { font-size: 1.5rem; }
 
-    .horizontal-scroll-grid,
-    .main-results-grid,
-    #singleResultsGrid {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-        gap: 0.75rem;
-    }
-
     #floatingButtonWrapper {
         bottom: 1rem;
         right: 1rem;
@@ -875,7 +873,7 @@ header h1 .fa-film { color: var(--secondary-accent); margin-right: 0.5rem; }
         width: 95vw !important;
     }
     .favorites-grid {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
         gap: 0.75rem;
         padding: 0.5rem;
     }
@@ -914,36 +912,9 @@ header h1 .fa-film { color: var(--secondary-accent); margin-right: 0.5rem; }
     header h1 { font-size: 1.75rem; }
 
     main#contentArea {
-        padding: 0;
-    }
-
-    .horizontal-scroll-grid,
-    .main-results-grid,
-    #singleResultsGrid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 1.5rem;
+        padding: 1.5rem;
     }
 }
-
-@media (min-width: 768px) and (max-width: 1023px) { /* Tablets */
-     .horizontal-scroll-grid, .main-results-grid, #singleResultsGrid {
-         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    }
-}
-
-@media (min-width: 1024px) { /* Larger Screens */
-    .horizontal-scroll-grid, .main-results-grid, #singleResultsGrid {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    }
-}
-
-@media (min-width: 1200px) { /* Very Large Screens */
-    header .container { max-width: 1400px; }
-    .horizontal-scroll-grid, .main-results-grid, #singleResultsGrid {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    }
-}
-
 
 /* === UX/UI Final — Botões Compactos, Naturais e Sem Distorção === */
 button {
