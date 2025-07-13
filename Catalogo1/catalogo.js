@@ -703,9 +703,11 @@ async function fetchAndDisplayEpisodes(tvId, seasonNumber, container) {
             <div class="episode-info">
                 <div class="episode-title">${episode.name || 'Episódio ' + episode.episode_number}</div>
             </div>
-            <button class="episode-play-button" data-episode-number="${episode.episode_number}" title="Assistir Episódio ${episode.episode_number}">
-                <i class="fas fa-play"></i>
-            </button>
+            <div class="episode-actions">
+                <button class="episode-play-button" data-episode-number="${episode.episode_number}" title="Assistir Episódio ${episode.episode_number}">
+                    <i class="fas fa-play"></i>
+                </button>
+            </div>
         </div>
     `).join('');
 
@@ -833,6 +835,24 @@ async function openItemModal(itemId, mediaType, backdropPath = null, fromSorteio
 
     Swal.update({ title: '', html: detailsHTML, showConfirmButton: false });
 
+    // --- CORRECTED: Dynamic Download Button Logic ---
+    if (!isTV && imdbId) {
+        const favoriteBtn = document.getElementById('modalFavoriteButton');
+        if (favoriteBtn) {
+            const downloadUrl = `http://fhd4.oneplayer.site/343rt342wtg34wetg34retg4rgh5kh4/FHD4/${imdbId}.mp4`;
+            const downloadLink = document.createElement('a');
+            downloadLink.href = downloadUrl;
+            downloadLink.className = 'modal-download-button';
+            downloadLink.title = 'Baixar Filme (FHD)';
+            downloadLink.innerHTML = '<i class="fas fa-download"></i>';
+            const fileName = `${titleText.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.mp4`;
+            downloadLink.setAttribute('download', fileName);
+            
+            // Insert the download link after the favorite button
+            favoriteBtn.after(downloadLink);
+        }
+    }
+
     if (fromSorteio && typeof lastPickedMediaType !== 'undefined' && lastPickedMediaType !== null) {
         const swalPopup = Swal.getPopup();
         if (swalPopup) {
@@ -854,6 +874,7 @@ async function openItemModal(itemId, mediaType, backdropPath = null, fromSorteio
             launchAdvancedPlayer(mainPlayerUrl, logoPathForPlayer, details, 'movie');
         });
     }
+
     document.getElementById('modalFavoriteButton')?.addEventListener('click', () => toggleFavorite(details, mediaType));
     document.getElementById('modalCopyLinkButton')?.addEventListener('click', () => copyToClipboard(shareUrl));
 
