@@ -103,7 +103,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 #singleResultsGrid {
     display: grid;
     /* --- CORREÇÃO: Tamanho mínimo unificado em 120px para consistência --- */
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
     gap: 1rem;
     padding-bottom: 1rem;
     width: 100%;
