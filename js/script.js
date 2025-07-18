@@ -34,7 +34,10 @@ window.addEventListener('load', () => {
       !['index', HOME_PAGE].includes(child.getAttribute('href'))
     );
 
-  const isIframeHome = () => newsFrame.src.endsWith(HOME_PAGE);
+  const isIframeHome = () => {
+    const iframeUrl = new URL(newsFrame.src);
+    return iframeUrl.pathname.endsWith(HOME_PAGE);
+  };
 
   const updateIframeBackButtonVisibility = () => {
     const isHome = isIframeHome();

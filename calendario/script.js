@@ -515,6 +515,14 @@ document.addEventListener('DOMContentLoaded', () => {
             weekNav.classList.add('hidden');
             renderMonthView();
         }
+
+        // Send today's event count to the parent window (catalog)
+        if (window.parent && window.parent.updateCalendarButtonCount) {
+            const today = new Date();
+            const todayString = today.toISOString().split('T')[0];
+            const todayEventsCount = itemsByDay[todayString]?.length || 0;
+            window.parent.updateCalendarButtonCount(todayEventsCount);
+        }
     }
 
     // Inicia o processo ao carregar a página

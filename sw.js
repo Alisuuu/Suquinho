@@ -1,4 +1,4 @@
-const CACHE_NAME = 'suquinho-cache-v2'; // Incremented version to force update
+const CACHE_NAME = 'suquinho-cache-v3'; // Incremented version to force update
 const OFFLINE_PAGE = '/index.html';
 
 const urlsToCache = [
@@ -26,6 +26,8 @@ const urlsToCache = [
   '/themes/anime/catálogo.css',
   '/themes/anime/integration.css',
   '/themes/anime/ocultos.css',
+  '/themes/anime/player.css',
+  '/themes/anime/profile.css',
   '/themes/anime/sidebar.css',
   '/themes/anime/sorteio.css',
   '/themes/anime/update.css',
@@ -33,6 +35,8 @@ const urlsToCache = [
   '/themes/noir/catálogo.css',
   '/themes/noir/integration.css',
   '/themes/noir/ocultos.css',
+  '/themes/noir/player.css',
+  '/themes/noir/profile.css',
   '/themes/noir/sidebar.css',
   '/themes/noir/sorteio.css',
   '/themes/noir/update.css',
@@ -40,6 +44,8 @@ const urlsToCache = [
   '/themes/dracula/catálogo.css',
   '/themes/dracula/integration.css',
   '/themes/dracula/ocultos.css',
+  '/themes/dracula/player.css',
+  '/themes/dracula/profile.css',
   '/themes/dracula/sidebar.css',
   '/themes/dracula/sorteio.css',
   '/themes/dracula/update.css',

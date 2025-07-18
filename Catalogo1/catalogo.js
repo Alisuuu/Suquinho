@@ -118,18 +118,40 @@ function mergeArrays(localArr, firebaseArr) {
 }
 
 function mergeHistoryArrays(localArr, firebaseArr, maxSize) {
-    const mergedMap = new Map();
-    const combined = [...(localArr || []), ...(firebaseArr || [])];
-    
-    combined.forEach(item => {
+    const finalMap = new Map();
+
+    // Prioritize local items, as they reflect recent user actions like deletions
+    (localArr || []).forEach(item => {
         const key = `${item.id}-${item.type || item.media_type}`;
-        const existing = mergedMap.get(key);
-        if (!existing || new Date(item.timestamp || item.date) > new Date(existing.timestamp || existing.date)) {
-            mergedMap.set(key, item);
+        finalMap.set(key, item);
+    });
+
+    // Merge with Firebase data, but respect local deletions
+    (firebaseArr || []).forEach(item => {
+        const key = `${item.id}-${item.type || item.media_type}`;
+        // If item exists in both, update if the Firebase one is newer
+        if (finalMap.has(key)) {
+            const localItem = finalMap.get(key);
+            if (new Date(item.timestamp || item.date) > new Date(localItem.timestamp || localItem.date)) {
+                finalMap.set(key, item);
+            }
+        } else {
+            // If item is only in Firebase, it might be from another device.
+            // For this fix, we add it, but the main issue of deletions is handled by prioritizing local.
+            // A more robust solution would need tombstones.
+            finalMap.set(key, item);
         }
     });
-    
-    let merged = Array.from(mergedMap.values());
+
+    // After merging, we must re-filter to ensure items deleted locally don't reappear from Firebase.
+    const localKeySet = new Set((localArr || []).map(item => `${item.id}-${item.type || item.media_type}`));
+    const filteredMerged = Array.from(finalMap.values()).filter(item => {
+        const key = `${item.id}-${item.type || item.media_type}`;
+        return localKeySet.has(key);
+    });
+
+
+    let merged = filteredMerged;
     merged.sort((a, b) => new Date(b.timestamp || b.date) - new Date(a.timestamp || a.date));
     
     return merged.length > maxSize ? merged.slice(0, maxSize) : merged;
