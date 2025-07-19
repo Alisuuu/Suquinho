@@ -377,7 +377,22 @@ auth.onAuthStateChanged(async user => {
                 const firebaseWatchHistory = data.watchHistory || [];
                 const firebaseRaffleHistory = data.pickedMediaHistory || [];
 
-                favorites = mergeArrays(localFavorites, firebaseFavorites);
+                // Priorize os favoritos locais para respeitar as remoções
+                const firebaseFavoritesSet = new Set(firebaseFavorites.map(fav => `${fav.id}-${fav.media_type}`));
+                const localFavoritesSet = new Set(localFavorites.map(fav => `${fav.id}-${fav.media_type}`));
+
+                // Itens do Firebase que não foram removidos localmente
+                const mergedFirebaseFavorites = firebaseFavorites.filter(fav => localFavoritesSet.has(`${fav.id}-${fav.media_type}`));
+
+                // Adiciona os favoritos locais que não estão no Firebase (novos favoritos adicionados localmente)
+                const finalFavorites = [...mergedFirebaseFavorites];
+                localFavorites.forEach(fav => {
+                    if (!firebaseFavoritesSet.has(`${fav.id}-${fav.media_type}`)) {
+                        finalFavorites.push(fav);
+                    }
+                });
+                favorites = finalFavorites;
+
                 watchHistory = mergeHistoryArrays(localWatchHistory, firebaseWatchHistory, 100);
                 pickedMediaHistory = mergeHistoryArrays(localRaffleHistory, firebaseRaffleHistory, MAX_RAFFLE_HISTORY_SIZE);
             } else {
