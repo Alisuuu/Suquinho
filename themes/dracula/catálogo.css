@@ -467,6 +467,36 @@ header h1 .fa-film { color: var(--primary-color); margin-right: 0.5rem; }
 .header-controls-wrapper { display: flex; align-items: center; gap: 0.75rem; }
 .header-controls { display: flex; align-items: center; gap: 0.75rem; }
 
+.home-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.7rem 1.4rem;
+    border-radius: 0.8rem;
+    font-weight: 700;
+    font-size: 0.95rem;
+    border: 1px solid var(--primary-color);
+    background: var(--primary-gradient);
+    color: var(--on-primary-color);
+    transition: all 0.2s ease;
+    margin-left: 0.5rem;
+    flex-shrink: 0;
+    box-shadow: var(--subtle-shadow);
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    text-decoration: none;
+}
+
+.home-button:hover {
+    filter: brightness(1.1);
+    border-color: var(--primary-hover-color);
+    box-shadow: 0 6px 20px rgba(190, 147, 253, 0.2), 0 2px 8px rgba(0,0,0,0.5);
+}
+
+.home-button .fas {
+    margin-right: 0.5rem;
+}
+
 /* Favorites Button on Content Cards */
 .content-card .favorite-button {
     position: absolute;
@@ -868,6 +898,24 @@ header h1 .fa-film { color: var(--primary-color); margin-right: 0.5rem; }
 }
 
 /* Media Queries */
+.desktop-only {
+    display: none !important;
+}
+
+.mobile-only {
+    display: flex !important; /* Default for mobile */
+}
+
+@media (min-width: 768px) {
+    .desktop-only {
+        display: flex !important;
+    }
+
+    .mobile-only {
+        display: none !important;
+    }
+}
+
 @media (max-width: 767px) { /* Mobile */
     body {
         overflow-y: hidden;
