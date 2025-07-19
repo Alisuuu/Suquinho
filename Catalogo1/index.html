@@ -248,6 +248,9 @@
 <button aria-label="Filtrar por gênero" id="filterToggleButton">
                         Filtro
                         </button>
+<button aria-label="Página Inicial" class="home-button desktop-only" onclick="window.parent.location.href = '../index.html';">
+    <i class="fas fa-home"></i> Início
+</button>
 </div>
 </div>
 </div>
@@ -293,6 +296,7 @@
 </div>
 <!-- Botões Flutuantes -->
 <div id="floatingButtonWrapper" style="z-index: 100;">
+<button aria-label="Página Inicial" id="homeFloatingButton" class="mobile-only"><i class="fas fa-home"></i></button>
 <button aria-label="Abrir Calendário" id="toggle-calendar-btn"><i class="fas fa-calendar-alt"></i></button>
 <button aria-label="Meus Salvos" id="floatingCombinedButton" style="display: flex !important; visibility: visible !important; opacity: 1 !important;"><i class="fas fa-list-alt"></i></button>
 <button aria-label="Abrir Sorteio" id="toggleSorteioButtons"><i class="fas fa-dice"></i></button>

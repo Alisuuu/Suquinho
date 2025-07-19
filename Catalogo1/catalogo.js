@@ -1453,6 +1453,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (searchButton) searchButton.addEventListener('click', () => performSearch(searchInput.value));
     if (filterToggleButton) filterToggleButton.addEventListener('click', openFilterSweetAlert);
     if (floatingCombinedButton) floatingCombinedButton.addEventListener('click', openCombinedModal);
+    const homeFloatingButton = document.getElementById('homeFloatingButton');
+    if (homeFloatingButton) {
+        homeFloatingButton.addEventListener('click', () => {
+            window.parent.location.href = '../index.html'; // Redireciona para o index.html pai
+        });
+    }
 
     const toggleSorteioButtons = document.getElementById('toggleSorteioButtons');
     const sorteioButtonsContainer = document.getElementById('sorteioButtonsContainer');
