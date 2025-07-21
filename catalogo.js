@@ -1,3 +1,4 @@
+// --- Constants and Configuration ---
 const TMDB_API_KEY = '5e5da432e96174227b25086fe8637985';
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/';
@@ -23,6 +24,7 @@ const companyKeywordMap = {
     'paramount': { name: 'Paramount', ids: [4] }
 };
 
+// --- Firebase Configuration ---
 const firebaseConfig = {
     apiKey: "AIzaSyC-D6au6ILZlfQ2hE7oOqnADDwp7BDUrAA",
     authDomain: "suquin-c6eb8.firebaseapp.com",
@@ -32,18 +34,16 @@ const firebaseConfig = {
     appId: "1:464208391390:web:73711a5a98e6447ccc264f"
 };
 
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
-
 let currentUser = null;
-let firestoreListener = null; 
-let isInitialSyncDone = false; 
 
+// --- DOM Element References ---
 const pageBackdrop = document.getElementById('pageBackdrop');
 const searchInput = document.getElementById('searchInput');
 const searchButton = document.getElementById('searchButton');
-const clearSearchButton = document.getElementById('clearSearchButton');
 const filterToggleButton = document.getElementById('filterToggleButton');
 const defaultContentSections = document.getElementById('defaultContentSections');
 const moviesResultsGrid = document.getElementById('moviesResultsGrid');
@@ -61,6 +61,7 @@ const closeCalendarBtn = document.getElementById('close-calendar-btn');
 const continueWatchingSection = document.getElementById('continueWatchingSection');
 const continueWatchingGrid = document.getElementById('continueWatchingGrid');
 
+// --- State Variables ---
 let activeAppliedGenre = { id: null, name: null, type: null };
 let currentFilterTypeSA = 'movie';
 let selectedGenreSA = { id: null, name: null, type: null };
@@ -84,31 +85,79 @@ let topRatedTvShowsCurrentPage = 1;
 let topRatedTvShowsTotalPages = 1;
 let isLoadingMoreTopRatedTvShows = false;
 
-function mergeUnique(local, remote, key = 'id') {
-    const map = new Map();
-    (remote || []).forEach(item => {
-        const itemKey = `${item[key]}-${item.media_type || item.type}`;
-        map.set(itemKey, item);
-    });
-    (local || []).forEach(item => {
-        const itemKey = `${item[key]}-${item.media_type || item.type}`;
-        if (!map.has(itemKey)) {
-            map.set(itemKey, item);
-        }
-    });
-    return Array.from(map.values());
-}
+// --- Helper Functions ---
+function saveAllUserData() {
+    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
+    localStorage.setItem(WATCH_HISTORY_STORAGE_KEY, JSON.stringify(watchHistory));
+    localStorage.setItem(RAFFLE_HISTORY_STORAGE_KEY, JSON.stringify(pickedMediaHistory));
 
-function syncToFirebase(dataToSync) {
     if (currentUser) {
-        db.collection("users").doc(currentUser.uid).update(dataToSync)
-            .catch(error => {
-                console.error("Erro ao atualizar o Firestore:", error);
-                showCustomToast('Falha ao salvar na nuvem.', 'info');
-            });
+        db.collection("users").doc(currentUser.uid).set({
+            favorites,
+            watchHistory,
+            pickedMediaHistory
+        }, { merge: true }).catch(error => {
+            console.error("Erro ao salvar dados no Firestore:", error);
+        });
     }
 }
 
+function mergeArrays(localArr, firebaseArr) {
+    const mergedMap = new Map();
+    (firebaseArr || []).forEach(item => {
+        const key = `${item.id}-${item.media_type}`;
+        mergedMap.set(key, item);
+    });
+    (localArr || []).forEach(item => {
+        const key = `${item.id}-${item.media_type}`;
+        if (!mergedMap.has(key)) {
+            mergedMap.set(key, item);
+        }
+    });
+    return Array.from(mergedMap.values());
+}
+
+function mergeHistoryArrays(localArr, firebaseArr, maxSize) {
+    const finalMap = new Map();
+
+    // Prioritize local items, as they reflect recent user actions like deletions
+    (localArr || []).forEach(item => {
+        const key = `${item.id}-${item.type || item.media_type}`;
+        finalMap.set(key, item);
+    });
+
+    // Merge with Firebase data, but respect local deletions
+    (firebaseArr || []).forEach(item => {
+        const key = `${item.id}-${item.type || item.media_type}`;
+        // If item exists in both, update if the Firebase one is newer
+        if (finalMap.has(key)) {
+            const localItem = finalMap.get(key);
+            if (new Date(item.timestamp || item.date) > new Date(localItem.timestamp || localItem.date)) {
+                finalMap.set(key, item);
+            }
+        } else {
+            // If item is only in Firebase, it might be from another device.
+            // For this fix, we add it, but the main issue of deletions is handled by prioritizing local.
+            // A more robust solution would need tombstones.
+            finalMap.set(key, item);
+        }
+    });
+
+    // After merging, we must re-filter to ensure items deleted locally don't reappear from Firebase.
+    const localKeySet = new Set((localArr || []).map(item => `${item.id}-${item.type || item.media_type}`));
+    const filteredMerged = Array.from(finalMap.values()).filter(item => {
+        const key = `${item.id}-${item.type || item.media_type}`;
+        return localKeySet.has(key);
+    });
+
+
+    let merged = filteredMerged;
+    merged.sort((a, b) => new Date(b.timestamp || b.date) - new Date(a.timestamp || a.date));
+    
+    return merged.length > maxSize ? merged.slice(0, maxSize) : merged;
+}
+
+// --- Firebase Functions ---
 function signInWithGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider).catch(error => {
@@ -121,6 +170,7 @@ function signOut() {
     auth.signOut();
 }
 
+// --- NEW: Password Reset Function ---
 function sendPasswordResetEmail() {
     Swal.fire({
         title: 'Redefinir Senha',
@@ -130,7 +180,9 @@ function sendPasswordResetEmail() {
         confirmButtonText: 'Enviar',
         showCancelButton: true,
         cancelButtonText: 'Cancelar',
-        customClass: { popup: 'login-popup' },
+        customClass: {
+            popup: 'login-popup'
+        },
         preConfirm: (email) => {
             if (!email) {
                 Swal.showValidationMessage('Por favor, digite um e-mail válido.');
@@ -156,12 +208,18 @@ function sendPasswordResetEmail() {
                     } else if (error.code === 'auth/invalid-email') {
                         errorMessage = 'O formato do e-mail é inválido.';
                     }
-                    Swal.fire({ icon: 'error', title: 'Erro', text: errorMessage });
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro',
+                        text: errorMessage,
+                    });
                 });
         }
     });
 }
 
+
+// --- Email/Password Auth Functions ---
 function createAccountWithEmail() {
     Swal.fire({
         title: 'Criar Conta',
@@ -173,7 +231,9 @@ function createAccountWithEmail() {
         focusConfirm: false,
         showCancelButton: true,
         cancelButtonText: 'Cancelar',
-        customClass: { popup: 'login-popup' },
+        customClass: {
+            popup: 'login-popup'
+        },
         preConfirm: () => {
             const email = Swal.getPopup().querySelector('#swal-email').value;
             const password = Swal.getPopup().querySelector('#swal-password').value;
@@ -191,7 +251,7 @@ function createAccountWithEmail() {
         if (result.isConfirmed) {
             const { email, password } = result.value;
             auth.createUserWithEmailAndPassword(email, password)
-                .then(() => {
+                .then((userCredential) => {
                     Swal.fire({
                         icon: 'success',
                         title: 'Conta Criada!',
@@ -209,11 +269,16 @@ function createAccountWithEmail() {
                     } else if (error.code === 'auth/weak-password') {
                         errorMessage = 'A senha é muito fraca.';
                     }
-                    Swal.fire({ icon: 'error', title: 'Erro ao Criar Conta', text: errorMessage });
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro ao Criar Conta',
+                        text: errorMessage,
+                    });
                 });
         }
     });
 }
+
 
 function signInWithEmail() {
     Swal.fire({
@@ -230,14 +295,16 @@ function signInWithEmail() {
         focusConfirm: false,
         showCancelButton: true,
         cancelButtonText: 'Cancelar',
-        customClass: { popup: 'login-popup' },
+        customClass: {
+            popup: 'login-popup'
+        },
         didOpen: () => {
             Swal.getPopup().querySelector('#create-account-button').addEventListener('click', (e) => {
                 e.preventDefault();
-                Swal.close();
-                createAccountWithEmail();
+                Swal.close(); // Fecha o modal de login
+                createAccountWithEmail(); // Abre o modal de criação de conta
             });
-            Swal.getPopup().querySelector('#forgot-password-link').addEventListener('click', (e) => {
+             Swal.getPopup().querySelector('#forgot-password-link').addEventListener('click', (e) => {
                 e.preventDefault();
                 Swal.close();
                 sendPasswordResetEmail();
@@ -255,9 +322,9 @@ function signInWithEmail() {
         if (result.isConfirmed) {
             const { email, password } = result.value;
             auth.signInWithEmailAndPassword(email, password)
-                .then(() => {
+                .then((userCredential) => {
                     Swal.close();
-                    showCustomToast('Login efetuado com sucesso!', 'success');
+                     showCustomToast('Login efetuado com sucesso!', 'success');
                 })
                 .catch((error) => {
                     let errorMessage = "Ocorreu um erro. Tente novamente.";
@@ -266,77 +333,83 @@ function signInWithEmail() {
                     } else if (error.code === 'auth/invalid-email') {
                         errorMessage = 'O formato do e-mail é inválido.';
                     }
-                    Swal.fire({ icon: 'error', title: 'Erro de Login', text: errorMessage });
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro de Login',
+                        text: errorMessage,
+                    });
                 });
         }
     });
 }
 
-auth.getRedirectResult().catch((error) => console.error("Erro no getRedirectResult:", error));
 
-auth.onAuthStateChanged(user => {
-    if (firestoreListener) {
-        firestoreListener();
-        firestoreListener = null;
-    }
+auth.getRedirectResult()
+    .then((result) => {
+        if (result.user) {
+            console.log("Utilizador com sessão iniciada via redirecionamento:", result.user.displayName);
+        }
+    }).catch((error) => {
+        console.error("Erro no getRedirectResult:", error);
+    });
 
+auth.onAuthStateChanged(async user => {
     currentUser = user;
+    const floatingCombinedButton = document.getElementById("floatingCombinedButton");
 
     if (user) {
+        // User is signed in.
         const photoURL = user.photoURL || `https://ui-avatars.com/api/?name=${user.email.split('@')[0]}&background=random&color=fff`;
         if (floatingCombinedButton) {
             floatingCombinedButton.innerHTML = `<img src="${photoURL}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block;">`;
             floatingCombinedButton.title = user.displayName || user.email;
         }
 
-        isInitialSyncDone = false; 
-        
         let localFavorites = JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY)) || [];
         let localWatchHistory = JSON.parse(localStorage.getItem(WATCH_HISTORY_STORAGE_KEY)) || [];
         let localRaffleHistory = JSON.parse(localStorage.getItem(RAFFLE_HISTORY_STORAGE_KEY)) || [];
 
-        firestoreListener = db.collection("users").doc(user.uid).onSnapshot(doc => {
-            const firebaseData = doc.data() || {};
-            
-            if (!isInitialSyncDone) {
-                const mergedFavorites = mergeUnique(localFavorites, firebaseData.favorites, 'id');
-                const mergedWatchHistory = mergeUnique(localWatchHistory, firebaseData.watchHistory, 'id');
-                const mergedRaffleHistory = mergeUnique(localRaffleHistory, firebaseData.pickedMediaHistory, 'id');
+        try {
+            const doc = await db.collection("users").doc(user.uid).get();
+            if (doc.exists) {
+                const data = doc.data();
+                const firebaseFavorites = data.favorites || [];
+                const firebaseWatchHistory = data.watchHistory || [];
+                const firebaseRaffleHistory = data.pickedMediaHistory || [];
 
-                mergedWatchHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
-                mergedRaffleHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+                // Priorize os favoritos locais para respeitar as remoções
+                const firebaseFavoritesSet = new Set(firebaseFavorites.map(fav => `${fav.id}-${fav.media_type}`));
+                const localFavoritesSet = new Set(localFavorites.map(fav => `${fav.id}-${fav.media_type}`));
 
-                favorites = mergedFavorites;
-                watchHistory = mergedWatchHistory.slice(0, 100);
-                pickedMediaHistory = mergedRaffleHistory.slice(0, MAX_RAFFLE_HISTORY_SIZE);
+                // Itens do Firebase que não foram removidos localmente
+                const mergedFirebaseFavorites = firebaseFavorites.filter(fav => localFavoritesSet.has(`${fav.id}-${fav.media_type}`));
 
-                db.collection("users").doc(user.uid).set({
-                    favorites: favorites,
-                    watchHistory: watchHistory,
-                    pickedMediaHistory: pickedMediaHistory
-                }, { merge: true });
+                // Adiciona os favoritos locais que não estão no Firebase (novos favoritos adicionados localmente)
+                const finalFavorites = [...mergedFirebaseFavorites];
+                localFavorites.forEach(fav => {
+                    if (!firebaseFavoritesSet.has(`${fav.id}-${fav.media_type}`)) {
+                        finalFavorites.push(fav);
+                    }
+                });
+                favorites = finalFavorites;
 
-                isInitialSyncDone = true;
+                watchHistory = mergeHistoryArrays(localWatchHistory, firebaseWatchHistory, 100);
+                pickedMediaHistory = mergeHistoryArrays(localRaffleHistory, firebaseRaffleHistory, MAX_RAFFLE_HISTORY_SIZE);
             } else {
-                favorites = firebaseData.favorites || [];
-                watchHistory = (firebaseData.watchHistory || []).slice(0, 100);
-                pickedMediaHistory = (firebaseData.pickedMediaHistory || []).slice(0, MAX_RAFFLE_HISTORY_SIZE);
+                favorites = localFavorites;
+                watchHistory = localWatchHistory;
+                pickedMediaHistory = localRaffleHistory;
             }
-
-            localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
-            localStorage.setItem(WATCH_HISTORY_STORAGE_KEY, JSON.stringify(watchHistory));
-            localStorage.setItem(RAFFLE_HISTORY_STORAGE_KEY, JSON.stringify(pickedMediaHistory));
-            
-            updateHistoryButtonVisibility();
-            displayContinueWatching();
-            updateAllFavoriteButtonsUI();
-
-        }, error => {
-            console.error("Erro no ouvinte do Firestore:", error);
-            showCustomToast('Erro de conexão com a nuvem.', 'info');
-        });
+            saveAllUserData();
+        } catch (error) {
+            console.error("Error loading Firebase data, using local data as fallback:", error);
+            favorites = localFavorites;
+            watchHistory = localWatchHistory;
+            pickedMediaHistory = localRaffleHistory;
+        }
 
     } else {
+        // User is signed out.
         if (floatingCombinedButton) {
             floatingCombinedButton.innerHTML = `<i class="fas fa-list-alt"></i>`;
             floatingCombinedButton.title = "Meus Salvos";
@@ -344,13 +417,14 @@ auth.onAuthStateChanged(user => {
         favorites = JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY)) || [];
         watchHistory = JSON.parse(localStorage.getItem(WATCH_HISTORY_STORAGE_KEY)) || [];
         pickedMediaHistory = JSON.parse(localStorage.getItem(RAFFLE_HISTORY_STORAGE_KEY)) || [];
-        
-        updateHistoryButtonVisibility();
-        displayContinueWatching();
-        updateAllFavoriteButtonsUI();
     }
+    updateHistoryButtonVisibility();
+    displayContinueWatching();
+    updateAllFavoriteButtonsUI();
 });
 
+
+// --- Main Logic ---
 function getCompanyConfigForQuery(query) {
     const normalizedQuery = query.toLowerCase().trim();
     if (typeof companyKeywordMap === 'undefined') {
@@ -798,6 +872,24 @@ async function openItemModal(itemId, mediaType, backdropPath = null, fromSorteio
 
     Swal.update({ title: '', html: detailsHTML, showConfirmButton: false });
 
+    // --- CORRECTED: Dynamic Download Button Logic ---
+    if (!isTV && imdbId) {
+        const favoriteBtn = document.getElementById('modalFavoriteButton');
+        if (favoriteBtn) {
+            const downloadUrl = `http://fhd4.oneplayer.site/343rt342wtg34wetg34retg4rgh5kh4/FHD4/${imdbId}.mp4`;
+            const downloadLink = document.createElement('a');
+            downloadLink.href = downloadUrl;
+            downloadLink.className = 'modal-download-button';
+            downloadLink.title = 'Baixar Filme (FHD)';
+            downloadLink.innerHTML = '<i class="fas fa-download"></i>';
+            const fileName = `${titleText.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.mp4`;
+            downloadLink.setAttribute('download', fileName);
+            
+            // Insert the download link after the favorite button
+            favoriteBtn.after(downloadLink);
+        }
+    }
+
     if (fromSorteio && typeof lastPickedMediaType !== 'undefined' && lastPickedMediaType !== null) {
         const swalPopup = Swal.getPopup();
         if (swalPopup) {
@@ -857,6 +949,8 @@ async function openItemModal(itemId, mediaType, backdropPath = null, fromSorteio
         }
     }
 }
+
+// --- Player Functions ---
 
 function closeAdvancedPlayer() {
     const wrapper = document.getElementById('player-fullscreen-wrapper');
@@ -1024,7 +1118,6 @@ function isFavorite(id, type) {
 function toggleFavorite(item, type) {
     const itemId = item.id.toString();
     const index = favorites.findIndex(fav => fav.id.toString() === itemId && fav.media_type === type);
-    
     if (index > -1) {
         favorites.splice(index, 1);
         showCustomToast('Removido dos Favoritos', 'info');
@@ -1032,9 +1125,7 @@ function toggleFavorite(item, type) {
         favorites.unshift({ id: item.id, media_type: type, title: item.title || item.name, poster_path: item.poster_path, backdrop_path: item.backdrop_path });
         showCustomToast('Adicionado aos Favoritos', 'success');
     }
-    
-    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
-    syncToFirebase({ favorites: favorites });
+    saveAllUserData();
     updateFavoriteButtonsState(item.id, type);
 }
 
@@ -1064,6 +1155,7 @@ function updateAllFavoriteButtonsUI() {
     });
 }
 
+// --- Funções de Gerenciamento do Histórico de Exibição ---
 function displayContinueWatching() {
     if (!continueWatchingSection || !continueWatchingGrid) return;
 
@@ -1099,6 +1191,7 @@ function displayContinueWatching() {
             card.querySelector('.remove-history-button').onclick = (e) => {
                 e.stopPropagation();
                 removeFromWatchHistory(item.id);
+                displayContinueWatching();
             };
             fragment.appendChild(card);
         });
@@ -1114,7 +1207,6 @@ function addToWatchHistory(item, mediaType, seasonInfo = null, episodeInfo = nul
         id: item.id,
         title: item.title || item.name || "",
         poster_path: item.poster_path || "",
-        backdrop_path: item.backdrop_path || "",
         media_type: mediaType,
         date: new Date().toISOString(),
         season: seasonInfo?.season_number || null,
@@ -1123,20 +1215,14 @@ function addToWatchHistory(item, mediaType, seasonInfo = null, episodeInfo = nul
     watchHistory = watchHistory.filter(h => !(h.id === entry.id && h.media_type === entry.media_type));
     watchHistory.unshift(entry);
     if (watchHistory.length > 100) watchHistory.pop();
-    
-    localStorage.setItem(WATCH_HISTORY_STORAGE_KEY, JSON.stringify(watchHistory));
-    syncToFirebase({ watchHistory: watchHistory });
-    
+    saveAllUserData();
     updateHistoryButtonVisibility();
     displayContinueWatching();
 }
 
 function removeFromWatchHistory(itemId) {
     watchHistory = watchHistory.filter(h => h.id.toString() !== itemId.toString());
-    
-    localStorage.setItem(WATCH_HISTORY_STORAGE_KEY, JSON.stringify(watchHistory));
-    syncToFirebase({ watchHistory: watchHistory });
-
+    saveAllUserData();
     showCustomToast('Removido do histórico', 'info');
     displayContinueWatching();
 }
@@ -1208,13 +1294,13 @@ function copyToClipboard(text) {
 
 function openCombinedModal() {
     const userSectionHTML = currentUser ? `
-        <div class="user-profile-section" style="background: var(--modal-background-color);">
+        <div class="user-profile-section">
             <img src="${currentUser.photoURL || `https://ui-avatars.com/api/?name=${currentUser.email.split('@')[0]}&background=random&color=fff`}" alt="User Avatar" class="user-avatar"/>
             <span class="user-name">${currentUser.displayName || currentUser.email}</span>
             <button id="modalSignOutButton" class="modal-action-button"><i class="fas fa-sign-out-alt"></i> Sair</button>
         </div>
     ` : `
-        <div class="user-profile-section no-user" style="background: var(--modal-background-color);">
+        <div class="user-profile-section no-user">
             <p>Faça login para sincronizar seus dados!</p>
             <button id="modalLoginButton" class="modal-action-button"><i class="fab fa-google"></i> Login com Google</button>
             <button id="modalLoginEmailButton" class="modal-action-button email-login"><i class="fas fa-envelope"></i> Login com Email</button>
@@ -1254,7 +1340,7 @@ function openCombinedModal() {
                 if (tab === 'favorites') {
                     let favsHtml = '<p class="text-center text-gray-400 py-5">Não tem favoritos.</p>';
                     if (favorites && favorites.length > 0) {
-                        favsHtml = `<div class="favorites-grid" style="grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));">${favorites.map(item => {
+                        favsHtml = `<div class="favorites-grid">${favorites.map(item => {
                             const title = item.title || '';
                             const imageUrl = item.poster_path 
                                 ? `${TMDB_IMAGE_BASE_URL}w342${item.poster_path}`
@@ -1273,6 +1359,10 @@ function openCombinedModal() {
                             const itemToRemove = favorites.find(fav => fav.id.toString() === button.dataset.id && fav.media_type === button.dataset.type);
                             if (itemToRemove) {
                                 toggleFavorite(itemToRemove, itemToRemove.media_type);
+                                const card = button.closest('.favorite-card');
+                                card.style.transition = 'opacity 0.3s';
+                                card.style.opacity = '0';
+                                setTimeout(() => card.remove(), 300);
                             }
                         });
                     });
@@ -1316,7 +1406,17 @@ function openCombinedModal() {
                         button.addEventListener('click', (e) => {
                             e.stopPropagation();
                             const itemId = button.dataset.id;
-                            removeFromWatchHistory(itemId);
+                            const itemEl = button.closest('.history-list-item');
+                            itemEl.style.transition = 'opacity 0.3s, transform 0.3s';
+                            itemEl.style.opacity = '0';
+                            itemEl.style.transform = 'translateX(-20px)';
+                            setTimeout(() => {
+                                itemEl.remove();
+                                removeFromWatchHistory(itemId);
+                                if (document.querySelector('.history-list').children.length === 0) {
+                                    document.querySelector('.history-list').innerHTML = '<p class="text-center text-gray-400 py-5">O seu histórico está vazio.</p>';
+                                }
+                            }, 300);
                         });
                     });
                 }
@@ -1349,28 +1449,14 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
     
-    let originalSearchInputListener = debounce(() => performSearch(searchInput.value), 500);
-    if (searchInput) {
-        searchInput.addEventListener('input', () => {
-            clearSearchButton.style.display = searchInput.value.length > 0 ? 'block' : 'none';
-            originalSearchInputListener();
-        });
-    }
+    if (searchInput) searchInput.addEventListener('input', debounce(() => performSearch(searchInput.value), 500));
     if (searchButton) searchButton.addEventListener('click', () => performSearch(searchInput.value));
-    if (clearSearchButton) {
-        clearSearchButton.addEventListener('click', () => {
-            searchInput.value = '';
-            clearSearchButton.style.display = 'none';
-            performSearch('');
-        });
-    }
     if (filterToggleButton) filterToggleButton.addEventListener('click', openFilterSweetAlert);
     if (floatingCombinedButton) floatingCombinedButton.addEventListener('click', openCombinedModal);
-    
     const homeFloatingButton = document.getElementById('homeFloatingButton');
     if (homeFloatingButton) {
         homeFloatingButton.addEventListener('click', () => {
-            window.parent.location.href = '../index.html';
+            window.parent.location.href = '../index.html'; // Redireciona para o index.html pai
         });
     }
 
@@ -1391,6 +1477,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    updateHistoryButtonVisibility();
+
     const mainContent = document.getElementById('main-content');
     const toggleCalendarBtn = document.getElementById('toggle-calendar-btn');
 
@@ -1398,10 +1486,19 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleCalendarBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             document.body.classList.toggle('calendar-open');
+
             const isCalendarOpen = document.body.classList.contains('calendar-open');
             const icon = toggleCalendarBtn.querySelector('i');
-            icon.className = isCalendarOpen ? 'fas fa-times' : 'fas fa-calendar-alt';
-            toggleCalendarBtn.setAttribute('aria-label', isCalendarOpen ? 'Fechar Calendário' : 'Abrir Calendário');
+
+            if (isCalendarOpen) {
+                icon.classList.remove('fa-calendar-alt');
+                icon.classList.add('fa-times');
+                toggleCalendarBtn.setAttribute('aria-label', 'Fechar Calendário');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-calendar-alt');
+                toggleCalendarBtn.setAttribute('aria-label', 'Abrir Calendário');
+            }
         });
     }
 
@@ -1409,7 +1506,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (document.body.classList.contains('calendar-open')) {
             document.body.classList.remove('calendar-open');
             const icon = toggleCalendarBtn.querySelector('i');
-            icon.className = 'fas fa-calendar-alt';
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-calendar-alt');
             toggleCalendarBtn.setAttribute('aria-label', 'Abrir Calendário');
         }
     });
@@ -1430,13 +1528,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // --- CORREÇÃO: Lógica de Scroll Infinito para a página de resultados ---
     const scrollContainer = document.getElementById('main-content');
     if (scrollContainer) {
         scrollContainer.addEventListener('scroll', () => {
+            // Verifica se a seção de resultados únicos está visível e se não há carregamento em andamento
             const isSingleSectionVisible = singleResultsSection?.style.display === 'block';
             if (!isSingleSectionVisible || isLoadingMore) return;
     
-            const offset = 300;
+            const offset = 300; // Carrega mais itens quando faltarem 300px para o final
             const scrolledToEnd = (scrollContainer.scrollTop + scrollContainer.clientHeight) >= scrollContainer.scrollHeight - offset;
     
             if (scrolledToEnd) {
@@ -1444,6 +1544,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
 
     document.addEventListener('fullscreenchange', () => {
         if (!document.fullscreenElement) {
@@ -1454,9 +1555,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const typeParam = urlParams.get('type');
     const idParam = urlParams.get('id');
-    if (typeParam && idParam) {
-        openItemModal(idParam, typeParam);
-    } else {
-        loadMainPageContent();
-    }
+    if (typeParam && idParam) openItemModal(idParam, typeParam);
+    else loadMainPageContent();
+
+    displayContinueWatching();
 });

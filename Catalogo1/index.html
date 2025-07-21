@@ -92,13 +92,7 @@
         
         /* O BLOCO DE ANIMAÇÃO 'PULSE' FOI REMOVIDO DAQUI */
 </style>
-<style>
-      body {
-        visibility: hidden;
-        opacity: 0;
-        transition: opacity 0.5s ease-in-out;
-      }
-</style>
+
 <style>
   #floatingCombinedButton {
     display: flex !important; /* Ensure button is always visible */
@@ -135,7 +129,7 @@
       }
       .favorites-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
         gap: 1rem;
         padding: 1rem;
       }
@@ -237,12 +231,12 @@
 <div class="loader-overlay" id="loader" style="display: none;"><div class="loader"></div></div>
 <!-- Conteúdo Principal do Catálogo -->
 <div id="main-content">
-<header>
-<div class="container mx-auto flex flex-col lg:flex-row justify-between items-center space-y-4 lg:space-y-0 p-4">
+<div id="floating-header-controls" class="container mx-auto flex flex-col lg:flex-row justify-between items-center space-y-4 lg:space-y-0 py-2 px-4">
 <div class="header-controls-wrapper w-full lg:w-auto">
 <div class="header-controls w-full lg:w-auto flex items-center justify-center lg:justify-end">
 <div class="input-search-wrapper relative">
 <input class="input-search" id="searchInput" placeholder="Buscar filmes ou séries..." type="text"/>
+<button aria-label="Limpar busca" id="clearSearchButton"><i class="fas fa-times-circle"></i></button>
 <button aria-label="Buscar" id="searchButton"><i class="fas fa-search"></i></button>
 </div>
 <button aria-label="Filtrar por gênero" id="filterToggleButton">
@@ -254,7 +248,6 @@
 </div>
 </div>
 </div>
-</header>
 <main class="container mx-auto p-4 lg:p-6" id="contentArea">
 <div id="continueWatchingSection" class="container mx-auto p-4 lg:p-6" style="display: none;">
     <h2 class="section-title">Continuar Assistindo</h2>
@@ -321,12 +314,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 <script src="catalogo.js"></script>
 <script src="../sorteio/script.js"></script>
-<script>
-      document.addEventListener('DOMContentLoaded', () => {
-        document.body.style.visibility = 'visible';
-        document.body.style.opacity = '1';
-      });
-</script>
+
 
 <!-- SCRIPT DE INTEGRAÇÃO DO CALENDÁRIO -->
 <script>

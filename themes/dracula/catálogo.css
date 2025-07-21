@@ -8,17 +8,17 @@
 }
 
 /* =================================================
-  === TEMA FANTASIA LILÁS ===
+  === SONHO DE SAKURA THEME (Rosa Claro e Gradiente) ===
   =================================================
-  Um tema vibrante e mágico, dominado por tons de roxo e lilás.
+  Um tema suave e sonhador com tons de rosa claro e lavanda.
 */
 :root {
     --background-color: #2C2A4A; /* Índigo profundo */
     --surface-color: #4F4C7A;    /* Roxo suave */
     --card-bg: #3E3C61;          /* Fundo do card roxo escuro */
     
-    --primary-color: #BE93FD;    /* Lilás vibrante */
-    --primary-hover-color: #D0AFFF; /* Lilás mais claro para hover */
+    --primary-color: #bd93f9;    /* Lilac */
+    --primary-hover-color: #d8bcfc; /* Lilac mais claro para hover */
     --on-primary-color: #2C2A4A;  /* Cor do texto sobre o primário (escuro) */
     --icon-color: #A6D9F7;       /* Azul céu suave para ícones */
 
@@ -27,7 +27,7 @@
     --text-primary: #F3F3FF;     /* Branco lavanda */
     --text-secondary: #A4A1CC;   /* Lavanda suave */
     
-    --border-color: rgba(190, 147, 253, 0.2); /* Borda lilás sutil */
+    --border-color: rgba(189, 147, 249, 0.2); /* Borda lilás sutil */
     --border-highlight: var(--primary-color); /* Borda destacada em lilás */
 
     --danger-red: #ff5555;
@@ -36,7 +36,7 @@
     --info-blue: #8be9fd;
 
     /* Gradientes */
-    --primary-gradient: linear-gradient(45deg, #BE93FD, #9370DB);
+    --primary-gradient: linear-gradient(45deg, rgba(189, 147, 249, 0.7), rgba(160, 110, 200, 0.7));
     --header-gradient: linear-gradient(160deg, var(--background-color), var(--surface-color));
 
     --header-height-mobile: 5rem;
@@ -44,7 +44,7 @@
     /* Sombras e Brilhos */
     --expressive-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
     --subtle-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-    --modal-shadow-neutral-glow: 0 0 40px rgba(190, 147, 253, 0.25); /* Brilho lilás */
+    --modal-shadow-neutral-glow: 0 0 40px rgba(189, 147, 249, 0.25); /* Brilho lilás */
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
@@ -102,7 +102,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 .main-results-grid,
 #singleResultsGrid {
     display: grid;
-    /* --- CORREÇÃO: Tamanho unificado e layout fluido --- */
+    /* --- CORREÇÃO: Tamanho mínimo unificado em 120px para consistência --- */
     grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
     gap: 1rem;
     padding-bottom: 1rem;
@@ -128,7 +128,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 }
 .content-card:hover {
     transform: translateY(-8px) scale(1.05);
-    box-shadow: 0 0 20px rgba(190, 147, 253, 0.2), 0 4px 15px rgba(0,0,0,0.5);
+        box-shadow: 0 0 20px rgba(189, 147, 249, 0.2), 0 4px 15px rgba(0,0,0,0.5);
     border-color: var(--border-highlight);
 }
 .content-card img {
@@ -137,8 +137,6 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     aspect-ratio: 2/3;
     object-fit: cover;
     display: block;
-    filter: none; /* Remove qualquer filtro da imagem */
-    transition: filter 0.3s ease;
 }
 .content-card .title-overlay {
     position: absolute;
@@ -187,7 +185,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     border: 1px solid var(--border-color) !important;
     max-width: 90vw !important;
     width: auto !important;
-    background: rgba(44, 42, 74, 0.95) !important; /* --- CORREÇÃO: Transparência do Modal Ajustada --- */
+    background: rgba(0, 0, 0, 0.9) !important; /* Black background for modal */
     box-shadow: var(--expressive-shadow), var(--modal-shadow-neutral-glow) !important;
     z-index: 2001;
 }
@@ -216,7 +214,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     background: var(--primary-gradient);
     border-color: var(--primary-color);
     color: var(--on-primary-color);
-    box-shadow: 0 6px 20px rgba(190, 147, 253, 0.2), 0 2px 8px rgba(0,0,0,0.5);
+    box-shadow: 0 6px 20px rgba(189, 147, 249, 0.2), 0 2px 8px rgba(0,0,0,0.5);
 }
 
 .swal-genre-filter-type-selector button.active,
@@ -224,7 +222,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     background: var(--primary-gradient);
     color: var(--on-primary-color);
     border-color: var(--primary-color);
-    box-shadow: 0 0 20px rgba(190, 147, 253, 0.3);
+    box-shadow: 0 0 20px rgba(189, 147, 249, 0.3);
     transform: scale(1.02);
 }
 
@@ -232,13 +230,13 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     background: var(--primary-gradient) !important;
     color: var(--on-primary-color) !important;
     border: 1px solid var(--primary-color) !important;
-    box-shadow: 0 4px 15px rgba(190, 147, 253, 0.25) !important;
+    box-shadow: 0 4px 15px rgba(189, 147, 249, 0.25) !important;
 }
 .swal-filter-actions .swal2-confirm:hover {
     background: var(--primary-gradient) !important;
     filter: brightness(1.1);
     border-color: var(--primary-hover-color) !important;
-    box-shadow: 0 6px 20px rgba(190, 147, 253, 0.35) !important;
+    box-shadow: 0 6px 20px rgba(189, 147, 249, 0.35) !important;
 }
 .swal-filter-actions .swal2-deny {
     background-color: var(--danger-red) !important;
@@ -346,7 +344,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 .play-icon-wrapper .fa-play {
     font-size: 4.5rem;
     color: rgba(255, 255, 255, 0.9);
-    text-shadow: 0 0 25px rgba(190, 147, 253, 0.5);
+    text-shadow: 0 0 25px rgba(189, 147, 249, 0.5);
     transition: transform 0.3s ease, color 0.3s ease;
 }
 
@@ -393,6 +391,21 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 .cast-member-name { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); line-height: 1.2; height: 2.4em; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.25rem; }
 .cast-member-character { font-size: 0.75rem; color: var(--text-secondary); line-height: 1.2; height: 2.4em; overflow: hidden; text-overflow: ellipsis; }
 
+#floating-header-controls {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    padding: 1rem;
+    background-color: transparent;
+    box-shadow: none;
+}
+
+#main-content {
+    padding-top: 80px; /* Adjust this value based on the height of your floating header */
+}
+
 /* Filter Toggle Button & Search Input & Header */
 #filterToggleButton {
     padding: 0.7rem 1.4rem;
@@ -408,14 +421,16 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     box-shadow: var(--subtle-shadow);
     -webkit-tap-highlight-color: transparent;
     user-select: none;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
 }
 #filterToggleButton:hover {
     filter: brightness(1.1);
     border-color: var(--primary-hover-color);
-    box-shadow: 0 6px 20px rgba(190, 147, 253, 0.2), 0 2px 8px rgba(0,0,0,0.5);
+    box-shadow: 0 6px 20px rgba(189, 147, 249, 0.2), 0 2px 8px rgba(0,0,0,0.5);
 }
 #filterToggleButton.active {
-    box-shadow: 0 0 20px rgba(190, 147, 253, 0.3);
+    box-shadow: 0 0 20px rgba(189, 147, 249, 0.3);
     border-color: var(--secondary-accent);
     background: var(--secondary-accent);
     color: #000;
@@ -437,35 +452,33 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     border: 1px solid var(--border-color);
     width: 100%;
     padding: 0.75rem 1.1rem;
-    padding-right: 3.2rem;
+    padding-right: 5.5rem; /* Make space for both buttons */
     border-radius: 0.8rem;
     font-size: 0.95rem;
     transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
 }
-.input-search:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(190, 147, 253, 0.2); }
+.input-search:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(189, 147, 249, 0.2); }
 .input-search::placeholder { color: var(--text-secondary); }
 .input-search:disabled { background-color: var(--border-color); cursor: not-allowed; }
 #searchButton { position: absolute; right: 0; top: 0; height: 100%; padding: 0 1.1rem; color: var(--text-secondary); background-color: transparent; border: none; cursor: pointer; transition: color 0.2s; }
 #searchButton:hover:not(:disabled) { color: var(--primary-color); }
 #searchButton:disabled { color: var(--text-secondary); cursor: not-allowed; }
-header {
-    background-color: rgba(44, 42, 74, 0.85);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 4px 15px -3px rgba(0,0,0,0.8);
-    padding: 1rem;
-    position: sticky;
+#clearSearchButton {
+    position: absolute;
+    right: 3.5rem; /* Position to the left of the search button */
     top: 0;
-    z-index: 99;
-    width: 100%;
-    box-sizing: border-box;
-    height: var(--header-height-mobile);
+    height: 100%;
+    padding: 0 0.5rem;
+    color: var(--text-secondary);
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s;
+    font-size: 1.1rem;
+    display: none;
 }
-header .container { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 1200px; margin: 0 auto; gap: 1rem; height: 100%; }
-header h1 { color: var(--text-primary); font-weight: 700; font-size: 1.75rem; margin: 0; }
-header h1 .fa-film { color: var(--primary-color); margin-right: 0.5rem; }
-.header-controls-wrapper { display: flex; align-items: center; gap: 0.75rem; }
-.header-controls { display: flex; align-items: center; gap: 0.75rem; }
+#clearSearchButton:hover { color: var(--danger-red); }
+
 
 .home-button {
     display: flex;
@@ -490,7 +503,7 @@ header h1 .fa-film { color: var(--primary-color); margin-right: 0.5rem; }
 .home-button:hover {
     filter: brightness(1.1);
     border-color: var(--primary-hover-color);
-    box-shadow: 0 6px 20px rgba(190, 147, 253, 0.2), 0 2px 8px rgba(0,0,0,0.5);
+    box-shadow: 0 6px 20px rgba(189, 147, 249, 0.2), 0 2px 8px rgba(0,0,0,0.5);
 }
 
 .home-button .fas {
@@ -540,8 +553,7 @@ header h1 .fa-film { color: var(--primary-color); margin-right: 0.5rem; }
 }
 
 .modal-favorite-button,
-.modal-copy-link-button,
-.modal-download-button {
+.modal-copy-link-button {
     width: 44px;
     height: 44px;
     padding: 0;
@@ -557,16 +569,14 @@ header h1 .fa-film { color: var(--primary-color); margin-right: 0.5rem; }
     cursor: pointer;
     box-shadow: var(--subtle-shadow);
     flex-shrink: 0;
-    text-decoration: none;
 }
 
 .modal-favorite-button:hover,
-.modal-copy-link-button:hover,
-.modal-download-button:hover {
+.modal-copy-link-button:hover {
     background: var(--primary-gradient);
     color: var(--on-primary-color);
     border-color: var(--primary-color);
-    box-shadow: 0 4px 15px rgba(190, 147, 253, 0.25);
+    box-shadow: 0 4px 15px rgba(189, 147, 249, 0.25);
     transform: scale(1.1);
 }
 
@@ -583,8 +593,7 @@ header h1 .fa-film { color: var(--primary-color); margin-right: 0.5rem; }
 }
 
 .modal-favorite-button .fas, .modal-favorite-button .far,
-.modal-copy-link-button .fas,
-.modal-download-button .fas {
+.modal-copy-link-button .fas {
     margin-right: 0;
 }
 
@@ -604,7 +613,7 @@ header h1 .fa-film { color: var(--primary-color); margin-right: 0.5rem; }
 }
 .favorites-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
     gap: 1rem;
     padding: 1rem;
 }
@@ -616,7 +625,7 @@ header h1 .fa-film { color: var(--primary-color); margin-right: 0.5rem; }
     top: 0.2rem;
     right: 0.2rem;
     background-color: rgba(44, 42, 74, 0.7);
-    border: 1px solid rgba(190, 147, 253, 0.2);
+    border: 1px solid rgba(189, 147, 249, 0.2);
     color: var(--icon-color);
     border-radius: 50%;
     width: 28px;
@@ -795,7 +804,7 @@ header h1 .fa-film { color: var(--primary-color); margin-right: 0.5rem; }
     background: var(--primary-gradient);
     color: var(--on-primary-color);
     border-color: var(--primary-color);
-    box-shadow: 0 0 10px rgba(190, 147, 253, 0.3);
+    box-shadow: 0 0 10px rgba(189, 147, 249, 0.3);
     transform: translateY(-2px);
 }
 
@@ -847,35 +856,6 @@ header h1 .fa-film { color: var(--primary-color); margin-right: 0.5rem; }
     color: var(--text-primary);
 }
 
-.episode-actions {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex-shrink: 0;
-}
-
-.episode-download-button {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--surface-color);
-    color: var(--icon-color);
-    border: 1px solid var(--border-color);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-}
-
-.episode-download-button:hover {
-    background: var(--primary-gradient);
-    color: var(--on-primary-color);
-    border-color: var(--primary-hover-color);
-    transform: scale(1.1);
-}
-
 .episode-play-button {
     width: 40px;
     height: 40px;
@@ -897,7 +877,8 @@ header h1 .fa-film { color: var(--primary-color); margin-right: 0.5rem; }
     transform: scale(1.1);
 }
 
-/* Media Queries */
+/* --- ESTRUTURA DE MEDIA QUERIES OTIMIZADA --- */
+
 .desktop-only {
     display: none !important;
 }
@@ -916,7 +897,8 @@ header h1 .fa-film { color: var(--primary-color); margin-right: 0.5rem; }
     }
 }
 
-@media (max-width: 767px) { /* Mobile */
+/* Mobile (Base) */
+@media (max-width: 767px) {
     body {
         overflow-y: hidden;
         height: 100vh;
@@ -933,8 +915,8 @@ header h1 .fa-film { color: var(--primary-color); margin-right: 0.5rem; }
     main#contentArea {
         padding: 0;
         -webkit-overflow-scrolling: touch;
-        background-color: rgba(44, 42, 74, 0.3);
-        box-shadow: 0 4px 10px -3px rgba(0,0,0,0.3);
+        background-color: transparent;
+        box-shadow: none;
     }
 
     .section-title { font-size: 1.3rem; margin-bottom: 1rem; }
@@ -967,16 +949,10 @@ header h1 .fa-film { color: var(--primary-color); margin-right: 0.5rem; }
     .details-trailer-container {
         margin: 0.5rem 0.5rem 1rem 0.5rem;
     }
-
-    #player-controls {
-        flex-direction: column;
-        gap: 1rem;
-        bottom: 10px;
-        border-radius: 20px;
-    }
 }
 
-@media (min-width: 768px) { /* Desktop and larger screens */
+/* Tablets e Telas Maiores */
+@media (min-width: 768px) {
     body {
         overflow-y: auto;
         height: auto;
@@ -985,11 +961,23 @@ header h1 .fa-film { color: var(--primary-color); margin-right: 0.5rem; }
         height: auto;
         padding: 1rem;
     }
-    header h1 { font-size: 1.75rem; }
+    /* --- CORREÇÃO: Removido o override para manter o tamanho base de 120px --- */
+}
 
-    main#contentArea {
-        padding: 1.5rem;
-    }
+/* Laptops / Desktops Pequenos */
+@media (min-width: 1024px) {
+    /* --- CORREÇÃO: Removido o override para manter o tamanho base de 120px --- */
+}
+
+/* Desktops Maiores */
+@media (min-width: 1280px) {
+    header .container { max-width: 1400px; }
+    /* --- CORREÇÃO: Removido o override para manter o tamanho base de 120px --- */
+}
+
+/* Desktops Extra Grandes */
+@media (min-width: 1536px) {
+    /* --- CORREÇÃO: Removido o override para manter o tamanho base de 120px --- */
 }
 
 
@@ -1021,7 +1009,7 @@ button:hover {
     background: var(--primary-gradient);
     border-color: var(--primary-color);
     color: var(--on-primary-color);
-    box-shadow: 0 3px 10px rgba(190, 147, 253, 0.2);
+    box-shadow: 0 3px 10px rgba(189, 147, 249, 0.2);
 }
 
 button:hover .fas, button:hover .far {
@@ -1062,7 +1050,9 @@ button:disabled {
     align-items: center;
     justify-content: center;
     font-size: 1.3rem;
-    background: var(--surface-color);
+    background: rgba(44, 42, 74, 0.7); /* Semi-transparent background */
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
     color: var(--icon-color);
     border: 1px solid var(--border-color);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 0 10px rgba(166, 217, 247, 0.1);
@@ -1079,7 +1069,7 @@ button:disabled {
     color: var(--on-primary-color);
     border-color: var(--primary-color);
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(190, 147, 253, 0.3), 0 0 16px rgba(190, 147, 253, 0.2);
+    box-shadow: 0 6px 16px rgba(189, 147, 249, 0.3), 0 0 16px rgba(189, 147, 249, 0.2);
 }
 
 /* --- Base do Botão e Container do Trailer --- */
@@ -1180,7 +1170,9 @@ button:disabled {
     align-items: center;
     justify-content: center;
     font-size: 1.3rem;
-    background: var(--surface-color);
+    background: rgba(44, 42, 74, 0.7); /* Semi-transparent background */
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
     color: var(--icon-color);
     border: 1px solid var(--border-color);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 0 10px rgba(166, 217, 247, 0.1);
@@ -1201,7 +1193,7 @@ button:disabled {
     color: var(--on-primary-color);
     border-color: var(--primary-color);
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(190, 147, 253, 0.3), 0 0 16px rgba(190, 147, 253, 0.2);
+    box-shadow: 0 6px 16px rgba(189, 147, 249, 0.3), 0 0 16px rgba(189, 147, 249, 0.2);
 }
 
 .swal2-container {
@@ -1281,7 +1273,7 @@ body.swal2-shown header {
     top: 5px;
     right: 5px;
     background-color: rgba(0, 0, 0, 0.6);
-    border: 1px solid rgba(190, 147, 253, 0.2);
+    border: 1px solid rgba(189, 147, 249, 0.2);
     color: #FFF;
     border-radius: 50%;
     width: 24px;
@@ -1300,8 +1292,6 @@ body.swal2-shown header {
     color: #FFF;
     transform: scale(1.1);
 }
-/* Estilos para o Pop-up de Login com Email */
-
 /* Estilos para o Pop-up de Login com Email */
 
 .login-popup {
@@ -1411,6 +1401,7 @@ body.swal2-shown header {
 .modal-action-button.email-login:hover {
     background-color: #4752C4;
 }
+
 /* Estilos para os botões de ação no modal (Favoritos, Download, Copiar Link) */
 
 .modal-favorite-button,
@@ -1441,7 +1432,7 @@ body.swal2-shown header {
     background: var(--primary-gradient);
     color: var(--on-primary-color);
     border-color: var(--primary-color);
-    box-shadow: 0 4px 15px rgba(190, 147, 253, 0.25);
+    box-shadow: 0 4px 15px rgba(189, 147, 249, 0.25);
     transform: scale(1.1);
 }
 

@@ -33,7 +33,6 @@
     right: calc(0px + env(safe-area-inset-right)) !important;
     z-index: 10000 !important;
     
-    /* Fundo sólido adicionado para destacar o logo */
     background-color: #000000 !important; /* Cor sólida e escura */
     padding: 8px !important;
     border-radius: 20px !important;

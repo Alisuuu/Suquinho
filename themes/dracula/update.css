@@ -1,13 +1,13 @@
 /* Definição das variáveis de cor com o novo tema roxo */
 :root {
-    --amoled-black: #000000;
-    --vibrant-accent: #593BA2;
-    --vibrant-accent-hover: #7957D3;
-    --subtle-text: #a0a0a0;
-    --bright-text: #ffffff;
-    --card-background: rgba(28, 28, 28, 0.75);
-    --card-border: rgba(89, 59, 162, 0.4);
-    --button-disabled: #505050;
+    --amoled-black: #282a36;
+    --vibrant-accent: #bd93f9; /* <<< SUA COR APLICADA AQUI */
+    --vibrant-accent-hover: #d8bcfc; /* Um tom mais claro para o efeito hover */
+    --subtle-text: #6272a4;
+    --bright-text: #f8f8f2;
+    --card-background: rgba(40, 42, 54, 0.75);
+    --card-border: rgba(189, 147, 249, 0.4); /* Borda sutil usando a nova cor */
+    --button-disabled: #44475a;
 }
 
 /* Reset e configurações globais */
@@ -43,7 +43,9 @@ html, body {
     width: clamp(320px, 90vw, 380px);
     height: clamp(450px, 80vh, 550px);
     
-    background-color: var(--card-background);
+    /* Efeito Glassmorphism */
+    background: rgba(0, 0, 0, 0.9) !important;
+    
     border: 1px solid var(--card-border);
 
     border-radius: 28px;
@@ -63,7 +65,7 @@ html, body {
     font-size: 24px;
     font-weight: 500;
     color: var(--bright-text);
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    text-shadow: 0 0 5px rgba(189, 147, 249, 0.5);
 }
 
 .repo-subtitle {
@@ -187,4 +189,4 @@ html, body {
 
 .fab:disabled .material-symbols-outlined {
     transform: rotate(180deg);
-}
+}}

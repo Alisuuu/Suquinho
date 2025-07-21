@@ -5,6 +5,12 @@
   box-sizing: border-box;
 }
 
+:root {
+  --primary-gradient: linear-gradient(135deg, #303030, #121212);
+  --on-primary-color: #EAEAEA;
+  --primary-color: #EAEAEA;
+}
+
 body {
   background: #121212;
   color: #EAEAEA;
@@ -54,15 +60,17 @@ body {
 
 /* Individual Icon Buttons */
 .icon-button {
-  background: #1E1E1E; /* Alterado de linear-gradient/rgba para cor sólida */
+  background: rgba(30, 30, 30, 0.7); /* Semi-transparent background */
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
   border: 1px solid rgba(255, 255, 255, 0.1); 
-  border-radius: 20%; /* Changed to match floating buttons */
-  width: 3.5rem; /* Changed to match floating buttons */
-  height: 3.5rem; /* Changed to match floating buttons */
+  border-radius: 20%;
+  width: 3.5rem;
+  height: 3.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.3rem; /* Changed to match floating buttons */
+  font-size: 1.3rem;
   color: white;
   cursor: pointer;
   text-decoration: none; 
@@ -85,7 +93,6 @@ body {
               padding-top 0.35s ease-out,
               padding-bottom 0.35s ease-out,
               border-width 0.35s ease-out;
-  box-shadow: 0 4px 10px -3px rgba(0,0,0,0.3);
 }
 
 #toggleSidebarBtn.toggle-btn-shrunk {
@@ -109,10 +116,12 @@ body {
 
 .icon-button:hover {
   transform: scale(1.1) translateY(-3px) rotate(2deg);
-  background: #3a3a3a; /* Alterado de linear-gradient para cor sólida */
-  border-color: rgba(255, 255, 255, 0.2);
+  background: var(--primary-color);
+  filter: brightness(0.9);
+  border-color: var(--primary-color);
   box-shadow: 0 6px 20px rgba(255, 255, 255, 0.1),
               0 2px 8px rgba(0, 0, 0, 0.3);
+  color: var(--on-primary-color);
 }
 
 #toggleSidebarBtn.toggle-btn-shrunk:hover {
@@ -294,7 +303,7 @@ body {
   z-index: 9999;
   cursor: pointer;
   color: #EAEAEA;
-  
+
   transition: background 0.2s;
 }
 
@@ -319,7 +328,7 @@ body {
   z-index: 9999;
   cursor: pointer;
   color: #EAEAEA;
-  
+
   transition: background 0.2s;
   display: flex;
   align-items: center;

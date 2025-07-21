@@ -36,7 +36,7 @@
     --info-blue: #8be9fd;
 
     /* Gradientes */
-    --primary-gradient: linear-gradient(45deg, #F7A8B8, #E06C9F);
+    --primary-gradient: linear-gradient(45deg, rgba(247, 168, 184, 0.7), rgba(224, 108, 159, 0.7));
     --header-gradient: linear-gradient(160deg, var(--background-color), var(--surface-color));
 
     --header-height-mobile: 5rem;
@@ -391,6 +391,21 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 .cast-member-name { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); line-height: 1.2; height: 2.4em; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.25rem; }
 .cast-member-character { font-size: 0.75rem; color: var(--text-secondary); line-height: 1.2; height: 2.4em; overflow: hidden; text-overflow: ellipsis; }
 
+#floating-header-controls {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    padding: 1rem;
+    background-color: transparent;
+    box-shadow: none;
+}
+
+#main-content {
+    padding-top: 80px; /* Adjust this value based on the height of your floating header */
+}
+
 /* Filter Toggle Button & Search Input & Header */
 #filterToggleButton {
     padding: 0.7rem 1.4rem;
@@ -406,6 +421,8 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     box-shadow: var(--subtle-shadow);
     -webkit-tap-highlight-color: transparent;
     user-select: none;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
 }
 #filterToggleButton:hover {
     filter: brightness(1.1);
@@ -435,7 +452,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     border: 1px solid var(--border-color);
     width: 100%;
     padding: 0.75rem 1.1rem;
-    padding-right: 3.2rem;
+    padding-right: 5.5rem; /* Make space for both buttons */
     border-radius: 0.8rem;
     font-size: 0.95rem;
     transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
@@ -446,24 +463,22 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 #searchButton { position: absolute; right: 0; top: 0; height: 100%; padding: 0 1.1rem; color: var(--text-secondary); background-color: transparent; border: none; cursor: pointer; transition: color 0.2s; }
 #searchButton:hover:not(:disabled) { color: var(--primary-color); }
 #searchButton:disabled { color: var(--text-secondary); cursor: not-allowed; }
-header {
-    background-color: rgba(44, 42, 74, 0.85);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 4px 15px -3px rgba(0,0,0,0.8), 0 0 30px rgba(166, 217, 247, 0.1);
-    padding: 1rem;
-    position: sticky;
+#clearSearchButton {
+    position: absolute;
+    right: 3.5rem; /* Position to the left of the search button */
     top: 0;
-    z-index: 99;
-    width: 100%;
-    box-sizing: border-box;
-    height: var(--header-height-mobile);
+    height: 100%;
+    padding: 0 0.5rem;
+    color: var(--text-secondary);
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s;
+    font-size: 1.1rem;
+    display: none;
 }
-header .container { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 1200px; margin: 0 auto; gap: 1rem; height: 100%; }
-header h1 { color: var(--text-primary); font-weight: 700; font-size: 1.75rem; margin: 0; }
-header h1 .fa-film { color: var(--primary-color); margin-right: 0.5rem; }
-.header-controls-wrapper { display: flex; align-items: center; gap: 0.75rem; }
-.header-controls { display: flex; align-items: center; gap: 0.75rem; }
+#clearSearchButton:hover { color: var(--danger-red); }
+
 
 .home-button {
     display: flex;
@@ -900,8 +915,8 @@ header h1 .fa-film { color: var(--primary-color); margin-right: 0.5rem; }
     main#contentArea {
         padding: 0;
         -webkit-overflow-scrolling: touch;
-        background-color: rgba(44, 42, 74, 0.3);
-        box-shadow: 0 4px 10px -3px rgba(0,0,0,0.3);
+        background-color: transparent;
+        box-shadow: none;
     }
 
     .section-title { font-size: 1.3rem; margin-bottom: 1rem; }
@@ -1035,7 +1050,9 @@ button:disabled {
     align-items: center;
     justify-content: center;
     font-size: 1.3rem;
-    background: var(--surface-color);
+    background: rgba(44, 42, 74, 0.7); /* Semi-transparent background */
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
     color: var(--icon-color);
     border: 1px solid var(--border-color);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 0 10px rgba(166, 217, 247, 0.1);
@@ -1153,7 +1170,9 @@ button:disabled {
     align-items: center;
     justify-content: center;
     font-size: 1.3rem;
-    background: var(--surface-color);
+    background: rgba(44, 42, 74, 0.7); /* Semi-transparent background */
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
     color: var(--icon-color);
     border: 1px solid var(--border-color);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 0 10px rgba(166, 217, 247, 0.1);

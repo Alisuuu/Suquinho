@@ -5,6 +5,13 @@
   box-sizing: border-box;
 }
 
+:root {
+  --primary-gradient: linear-gradient(135deg, #ff79c6, #bd93f9);
+  --on-primary-color: #f8f8f2;
+  --on-primary-color-rgb: 248, 248, 242;
+  --primary-color: #ff69b4;
+}
+
 body {
   background: #282a36; /* Dracula background */
   color: #f8f8f2;
@@ -57,7 +64,9 @@ body {
 
 /* Individual Icon Buttons */
 .icon-button {
-  background: linear-gradient(135deg, #ff79c6 0%, #bd93f9 100%);
+  background: var(--primary-gradient); /* Use theme's primary gradient */
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
   border: 1px solid rgba(255, 255, 255, 0.1); 
   border-radius: 20%; /* Changed to match floating buttons */
   width: 3.5rem; /* Changed to match floating buttons */
@@ -66,7 +75,7 @@ body {
   align-items: center;
   justify-content: center;
   font-size: 1.3rem; /* Changed to match floating buttons */
-  color: white;
+  color: var(--on-primary-color); /* Use theme's on-primary color */
   cursor: pointer;
   text-decoration: none; 
   box-shadow: 0 4px 15px rgba(189, 147, 249, 0.15), 
@@ -88,7 +97,6 @@ body {
               padding-top 0.35s ease-out,
               padding-bottom 0.35s ease-out,
               border-width 0.35s ease-out;
-              background-color: rgba(0,0,0,0.2);
 }
 
 /* Modifier for toggle button when sidebar is condensed */
@@ -103,8 +111,9 @@ body {
 .icon-button i {
   position: relative;
   z-index: 2; 
+  color: var(--on-primary-color); /* Explicitly set icon color */
   /* Updated: More subtle drop shadow for icons */
-  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.1));
+  filter: drop-shadow(0 0 2px rgba(var(--on-primary-color-rgb), 0.1));
 }
 
 .icon-button img {
@@ -114,12 +123,13 @@ body {
 
 .icon-button:hover {
   transform: scale(1.1) translateY(-3px) rotate(2deg); /* Slightly less pronounced hover */
-  /* Updated: Slightly brighter background on hover, still subtle */
-  background: linear-gradient(135deg, #ff79c6 0%, #bd93f9 100%);
-  border-color: rgba(255, 255, 255, 0.2); /* Slightly more visible border on hover */
+  background: var(--primary-gradient); /* Use theme's primary gradient */
+  filter: brightness(1.1); /* Make it brighter on hover */
+  border-color: var(--primary-color); /* Use theme's primary color for border */
   /* Updated: Softer box-shadow on hover */
-  box-shadow: 0 6px 20px rgba(189, 147, 249, 0.3), /* Slightly stronger glowing shadow */
+  box-shadow: 0 6px 20px rgba(247, 168, 184, 0.3), /* Slightly stronger glowing shadow */
               0 2px 8px rgba(0, 0, 0, 0.25); /* More defined base shadow */
+  color: var(--on-primary-color); /* Use theme's on-primary color */
 }
  /* Specific hover for shrunk toggle button to avoid translateY fighting with positioning */
 #toggleSidebarBtn.toggle-btn-shrunk:hover {
@@ -298,19 +308,49 @@ body {
   position: fixed;
   top: 10px;
   right: 10px;
-  background: rgba(0, 0, 0, 0.4);
-  border: none;
-  padding: 10px;
+  background: var(--primary-gradient);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 50%;
-  z-index: 9999;
+  width: 3.5rem;
+  height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  color: var(--on-primary-color);
   cursor: pointer;
-  color: #fff;
-
-  transition: background 0.2s;
+  text-decoration: none;
+  box-shadow: 0 4px 15px rgba(189, 147, 249, 0.15),
+              0 1px 5px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  opacity: 1;
+  transform: translateX(0) scale(1) rotate(0deg);
+  transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+              background 0.35s ease-out,
+              box-shadow 0.35s ease-out,
+              opacity 0.3s ease-out,
+              height 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+              width 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+              font-size 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+              margin-top 0.35s ease-out,
+              margin-bottom 0.35s ease-out,
+              padding-top 0.35s ease-out,
+              padding-bottom 0.35s ease-out,
+              border-width 0.35s ease-out;
 }
 
 .fullscreen-toggle:hover {
-  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.1) translateY(-3px) rotate(2deg);
+  background: var(--primary-gradient);
+  filter: brightness(1.1);
+  border-color: var(--primary-color);
+  box-shadow: 0 6px 20px rgba(247, 168, 184, 0.3),
+              0 2px 8px rgba(0, 0, 0, 0.25);
+  color: var(--on-primary-color);
 }
 
 @media (max-width: 768px) {
@@ -324,25 +364,49 @@ body {
   position: fixed;
   bottom: 15px; /* Position at the bottom */
   right: 10px;
-  background: rgba(0, 0, 0, 0.4);
-  border: none;
-  padding: 10px;
+  background: var(--primary-gradient);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 50%;
-  z-index: 9999; /* Ensure it's above other content */
-  cursor: pointer;
-  color: #fff;
-
-  transition: background 0.2s;
-  display: flex; /* To center the icon */
+  width: 3.5rem;
+  height: 3.5rem;
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px; /* Adjust icon size if needed */
+  font-size: 1.3rem;
+  color: var(--on-primary-color);
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 4px 15px rgba(189, 147, 249, 0.15),
+              0 1px 5px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
   -webkit-tap-highlight-color: transparent;
-user-select: none;
+  opacity: 1;
+  transform: translateX(0) scale(1) rotate(0deg);
+  transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+              background 0.35s ease-out,
+              box-shadow 0.35s ease-out,
+              opacity 0.3s ease-out,
+              height 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+              width 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+              font-size 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+              margin-top 0.35s ease-out,
+              margin-bottom 0.35s ease-out,
+              padding-top 0.35s ease-out,
+              padding-bottom 0.35s ease-out,
+              border-width 0.35s ease-out;
 }
 
 .donate-toggle:hover {
-  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.1) translateY(-3px) rotate(2deg);
+  background: var(--primary-gradient);
+  filter: brightness(1.1);
+  border-color: var(--primary-color);
+  box-shadow: 0 6px 20px rgba(247, 168, 184, 0.3),
+              0 2px 8px rgba(0, 0, 0, 0.25);
+  color: var(--on-primary-color);
 }
 
 /* Ensure donate button is visible on mobile */

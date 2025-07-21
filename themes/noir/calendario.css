@@ -131,6 +131,276 @@ input:-webkit-autofill {
   -webkit-text-fill-color: var(--on-surface-color) !important;
 }
 
+/* ==========================================================================
+   FLOATING SEARCH BAR FOR CALENDAR
+   ========================================================================== */
+#calendarFloatingSearchBar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 -4px 15px rgba(0,0,0,0.3);
+    z-index: 50;
+}
+
+#calendarFloatingSearchBar .input-search-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#calendarFloatingSearchBar .input-search {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    width: 100%;
+    padding: 0.75rem 1.1rem;
+    padding-right: 5.5rem; /* Space for both buttons */
+    border-radius: 0.8rem;
+    font-size: 0.95rem;
+    transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+
+#calendarFloatingSearchBar .input-search:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+}
+
+#calendarFloatingSearchBar .input-search::placeholder {
+    color: var(--on-surface-variant-color);
+}
+
+#calendarFloatingSearchBar .input-search:disabled {
+    background-color: rgba(255, 255, 255, 0.05);
+    cursor: not-allowed;
+}
+
+#calendarFloatingSearchBar #calendarSearchButton,
+#calendarFloatingSearchBar #calendarClearSearchButton {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    padding: 0 1.1rem;
+    color: var(--on-surface-variant-color);
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s;
+    font-size: 1.1rem;
+}
+
+#calendarFloatingSearchBar #calendarSearchButton {
+    right: 0;
+}
+
+#calendarFloatingSearchBar #calendarClearSearchButton {
+    right: 3.5rem; /* Position to the left of the search button */
+    padding: 0 0.5rem;
+}
+
+#calendarFloatingSearchBar #calendarSearchButton:hover,
+#calendarFloatingSearchBar #calendarClearSearchButton:hover {
+    color: var(--primary-color);
+}
+
+#calendarFloatingSearchBar #calendarClearSearchButton:hover {
+    color: var(--danger-red);
+}
+
+#calendarFloatingSearchBar #calendarSearchButton:disabled,
+#calendarFloatingSearchBar #calendarClearSearchButton:disabled {
+    color: var(--on-surface-variant-color);
+    cursor: not-allowed;
+}
+
+
+/* ==========================================================================
+   FLOATING SEARCH BAR FOR CALENDAR
+   ========================================================================== */
+#calendarFloatingSearchBar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 -4px 15px rgba(0,0,0,0.3);
+    z-index: 50;
+}
+
+#calendarFloatingSearchBar .input-search-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#calendarFloatingSearchBar .input-search {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    width: 100%;
+    padding: 0.75rem 1.1rem;
+    padding-right: 5.5rem; /* Space for both buttons */
+    border-radius: 0.8rem;
+    font-size: 0.95rem;
+    transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+
+#calendarFloatingSearchBar .input-search:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+}
+
+#calendarFloatingSearchBar .input-search::placeholder {
+    color: var(--on-surface-variant-color);
+}
+
+#calendarFloatingSearchBar .input-search:disabled {
+    background-color: rgba(255, 255, 255, 0.05);
+    cursor: not-allowed;
+}
+
+#calendarFloatingSearchBar #calendarSearchButton,
+#calendarFloatingSearchBar #calendarClearSearchButton {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    padding: 0 1.1rem;
+    color: var(--on-surface-variant-color);
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s;
+    font-size: 1.1rem;
+}
+
+#calendarFloatingSearchBar #calendarSearchButton {
+    right: 0;
+}
+
+#calendarFloatingSearchBar #calendarClearSearchButton {
+    right: 3.5rem; /* Position to the left of the search button */
+    padding: 0 0.5rem;
+}
+
+#calendarFloatingSearchBar #calendarSearchButton:hover,
+#calendarFloatingSearchBar #calendarClearSearchButton:hover {
+    color: var(--primary-color);
+}
+
+#calendarFloatingSearchBar #calendarClearSearchButton:hover {
+    color: var(--danger-red);
+}
+
+#calendarFloatingSearchBar #calendarSearchButton:disabled,
+#calendarFloatingSearchBar #calendarClearSearchButton:disabled {
+    color: var(--on-surface-variant-color);
+    cursor: not-allowed;
+}
+
+
+/* ==========================================================================
+   FLOATING SEARCH BAR FOR CALENDAR
+   ========================================================================== */
+#calendarFloatingSearchBar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 -4px 15px rgba(0,0,0,0.3);
+    z-index: 50;
+}
+
+#calendarFloatingSearchBar .input-search-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#calendarFloatingSearchBar .input-search {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    width: 100%;
+    padding: 0.75rem 1.1rem;
+    padding-right: 5.5rem; /* Space for both buttons */
+    border-radius: 0.8rem;
+    font-size: 0.95rem;
+    transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+
+#calendarFloatingSearchBar .input-search:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+}
+
+#calendarFloatingSearchBar .input-search::placeholder {
+    color: var(--on-surface-variant-color);
+}
+
+#calendarFloatingSearchBar .input-search:disabled {
+    background-color: rgba(255, 255, 255, 0.05);
+    cursor: not-allowed;
+}
+
+#calendarFloatingSearchBar #calendarSearchButton,
+#calendarFloatingSearchBar #calendarClearSearchButton {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    padding: 0 1.1rem;
+    color: var(--on-surface-variant-color);
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s;
+    font-size: 1.1rem;
+}
+
+#calendarFloatingSearchBar #calendarSearchButton {
+    right: 0;
+}
+
+#calendarFloatingSearchBar #calendarClearSearchButton {
+    right: 3.5rem; /* Position to the left of the search button */
+    padding: 0 0.5rem;
+}
+
+#calendarFloatingSearchBar #calendarSearchButton:hover,
+#calendarFloatingSearchBar #calendarClearSearchButton:hover {
+    color: var(--primary-color);
+}
+
+#calendarFloatingSearchBar #calendarClearSearchButton:hover {
+    color: var(--danger-red);
+}
+
+#calendarFloatingSearchBar #calendarSearchButton:disabled,
+#calendarFloatingSearchBar #calendarClearSearchButton:disabled {
+    color: var(--on-surface-variant-color);
+    cursor: not-allowed;
+}
+
+
 #search, #toggleFiltersBtn {
   transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   will-change: background, border-color, box-shadow;
