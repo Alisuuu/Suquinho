@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Notícias de Cinema, Filmes e Séries</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome (para ícones) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- CSS Personalizado -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Folhas de Estilo - Carregamento Dinâmico -->
+    <script>
+      const loadThemeCss = () => {
+          const selectedTheme = localStorage.getItem('selectedTheme') || 'default'; // 'default' as fallback
+          const cssFiles = [
+              `themes/${selectedTheme}/feed.css` // Adjusted path to new location
+          ];
+
+          // Remove existing theme stylesheets to prevent duplicates on theme change
+          document.querySelectorAll('link[data-theme-css]').forEach(link => link.remove());
+
+          cssFiles.forEach(file => {
+              const link = document.createElement('link');
+              link.rel = 'stylesheet';
+              link.href = file; // Path is now relative to feed-main/public/index.html
+              link.setAttribute('data-theme-css', ''); // Mark as theme CSS
+              document.head.appendChild(link);
+          });
+      };
+
+      // Load theme immediately
+      loadThemeCss();
+    </script>
+</head>
+<body>
+
+    <!-- Cabeçalho com efeito de vidro e busca -->
+    <header>
+        <div class="container">
+          <div class="header-controls">
+                <form id="search-form" class="input-search-wrapper">
+                    <input type="text" id="search-input" class="input-search" placeholder="Buscar notícias...">
+                    <button type="submit" id="searchButton" aria-label="Buscar"><i class="fas fa-search"></i></button>
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <!-- Área de conteúdo principal -->
+    <main id="contentArea">
+        <div id="news-grid" class="main-results-grid">
+            <!-- As notícias serão inseridas aqui pelo JavaScript -->
+            <div class="loader"></div>
+        </div>
+    </main>
+
+    <script>
+        const newsGrid = document.getElementById('news-grid');
+        const searchForm = document.getElementById('search-form');
+        const searchInput = document.getElementById('search-input');
+
+        /**
+         * Busca e exibe as notícias.
+         * @param {string} query - O termo de busca (opcional).
+         */
+        async function fetchNews(query = '') {
+            newsGrid.innerHTML = '<div class="loader"></div>';
+
+            try {
+                let apiUrl = '/api/news';
+                if (query) {
+                    apiUrl += `?q=${encodeURIComponent(query)}`;
+                }
+
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+
+                if (data.status === 'ok' && data.articles && data.articles.length > 0) {
+                    newsGrid.innerHTML = ''; // Limpa a mensagem de carregamento
+                    data.articles.forEach(article => {
+                        if (!article.title || !article.urlToImage || !article.url) {
+                            return;
+                        }
+
+                        // **INÍCIO: Lógica para criar os cards no estilo original**
+                        const articleElement = document.createElement('article');
+                        articleElement.classList.add('news-item');
+
+                        const img = document.createElement('img');
+                        img.src = article.urlToImage;
+                        img.alt = article.title;
+                        img.loading = 'lazy';
+                        img.onerror = function() {
+                            this.parentElement.style.display = 'none'; // Esconde o card se a imagem falhar
+                        };
+                        articleElement.appendChild(img);
+
+                        const contentDiv = document.createElement('div');
+                        contentDiv.classList.add('news-content');
+
+                        const title = document.createElement('h2');
+                        const link = document.createElement('a');
+                        link.href = article.url;
+                        link.target = "_blank";
+                        link.rel = "noopener noreferrer";
+                        link.textContent = article.title;
+                        title.appendChild(link);
+                        contentDiv.appendChild(title);
+
+                        // Descrição ou trecho do conteúdo
+                        if (article.description) {
+                            const description = document.createElement('p');
+                            description.textContent = article.description;
+                            contentDiv.appendChild(description);
+                        }
+
+                        const footer = document.createElement('p');
+                        const date = new Date(article.publishedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                        footer.textContent = `${article.source.name} - ${date}`;
+                        contentDiv.appendChild(footer);
+                        
+                        articleElement.appendChild(contentDiv);
+                        newsGrid.appendChild(articleElement);
+                        // **FIM: Lógica para criar os cards no estilo original**
+                    });
+                } else {
+                    let message = query 
+                        ? `Nenhum resultado para "${query}".`
+                        : "Nenhuma notícia encontrada no momento.";
+                    newsGrid.innerHTML = `<p class="error-message">${message}</p>`;
+                }
+
+            } catch (error) {
+                console.error('Erro ao buscar notícias:', error);
+                newsGrid.innerHTML = '<p class="error-message">Ops! Algo deu errado. Tente novamente mais tarde.</p>';
+            }
+        }
+
+        searchForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const searchTerm = searchInput.value.trim();
+            fetchNews(searchTerm);
+        });
+
+        window.onload = () => fetchNews();
+    </script>
+</body>
+</html>

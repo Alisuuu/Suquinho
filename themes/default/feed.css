@@ -1,0 +1,98 @@
+/* Default Theme for Feed */
+:root {
+    --amoled-black: #000000;
+    --purple-accent: #593BA2;
+    --purple-light: #8c70c8;
+    --text-primary: #F3F4F6;
+    --text-secondary: #9CA3AF;
+    --card-bg: #1c1c1c;
+    --border-color: #251A3D;
+}
+
+body {
+    background-color: var(--amoled-black);
+    color: var(--text-primary);
+}
+
+/* Override specific elements from style.css */
+header {
+    background: rgba(18, 18, 18, 0.6);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+header h1 {
+    color: var(--text-primary);
+}
+
+header h1 .fa-film {
+    color: var(--purple-accent);
+}
+
+.input-search {
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.input-search:focus {
+    border-color: var(--purple-accent);
+    box-shadow: 0 0 0 3px rgba(89, 59, 162, 0.5);
+}
+
+.input-search::placeholder {
+    color: var(--text-secondary);
+}
+
+#searchButton {
+    color: var(--text-secondary);
+}
+
+#searchButton:hover:not(:disabled) {
+    color: var(--purple-accent);
+}
+
+.news-item {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.news-item:hover {
+    box-shadow: 0 6px 15px rgba(89, 59, 162, 0.4);
+}
+
+.news-item img {
+    filter: brightness(0.4) grayscale(0.2);
+}
+
+.news-item:hover img {
+    filter: brightness(0.6);
+}
+
+.news-item::before {
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 10%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
+}
+
+.news-content h2 a {
+    color: var(--text-primary);
+}
+
+.news-content h2 a:hover {
+    color: var(--purple-light);
+}
+
+.news-content p {
+    color: var(--text-primary);
+}
+
+.news-content p:last-child {
+    color: var(--text-secondary);
+}
+
+.loader {
+    border-top: 5px solid var(--purple-accent);
+}
+
+.error-message {
+    color: var(--text-secondary);
+}
