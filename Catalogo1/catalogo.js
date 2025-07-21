@@ -741,7 +741,8 @@ async function openItemModal(itemId, mediaType, backdropPath = null, fromSorteio
     const logoPathForPlayer = selectBestLogo(details.images?.logos);
     const logoHTML = logoPathForPlayer ? `<div class="details-logo-container"><img src="${TMDB_IMAGE_BASE_URL}w500${logoPathForPlayer}" class="details-logo-img" alt="Logo"></div>` : '';
     
-    const headerContentHTML = `<div class="details-trailer-container"><div class="trailer-cover"><img src="${coverImagePath}" alt="Capa" class="trailer-cover-img">${logoHTML}<div class="cover-elements-overlay"><div id="modal-play-button" class="play-icon-wrapper" style="${isTV ? 'display: none;' : ''}"><i class="fas fa-play"></i></div></div></div></div>`;
+    // PERFORMANCE: Added loading="lazy" to the cover image
+    const headerContentHTML = `<div class="details-trailer-container"><div class="trailer-cover"><img src="${coverImagePath}" alt="Capa" class="trailer-cover-img" loading="lazy">${logoHTML}<div class="cover-elements-overlay"><div id="modal-play-button" class="play-icon-wrapper" style="${isTV ? 'display: none;' : ''}"><i class="fas fa-play"></i></div></div></div></div>`;
     
     const overview = details.overview || 'Sinopse não disponível.';
     const releaseDate = details.release_date || details.first_air_date;
@@ -1085,9 +1086,10 @@ function displayContinueWatching() {
             const detailText = item.media_type === 'tv' && item.season && item.episode
                 ? `T${item.season} E${item.episode}`
                 : `Visto em ${new Date(item.date).toLocaleDateString('pt-BR')}`;
-
+            
+            // PERFORMANCE: Added loading="lazy" and dimensions to history images
             card.innerHTML = `
-                <img src="${imageUrl}" alt="${title}">
+                <img src="${imageUrl}" alt="${title}" loading="lazy" width="120" height="180" style="aspect-ratio: 120/180;">
                 <div class="title-overlay">
                     <div class="title">${title}</div>
                     <div class="subtitle">${detailText}</div>
@@ -1167,8 +1169,9 @@ function displayResults(items, defaultType, targetEl, replace) {
             ? `${TMDB_IMAGE_BASE_URL}w400${item.poster_path}`
             : `https://placehold.co/400x600/0F071A/F3F4F6?text=${encodeURIComponent(title)}&font=inter`;
 
+        // PERFORMANCE: Added loading="lazy" and dimensions to prevent layout shift
         card.innerHTML = `
-            <img src="${imageUrl}" alt="${title}">
+            <img src="${imageUrl}" alt="${title}" loading="lazy" width="400" height="600" style="aspect-ratio: 2/3;">
             <div class="title-overlay"><div class="title">${title}</div></div>
             <button class="favorite-button ${isFav ? 'active' : ''}" data-id="${item.id}" data-type="${mediaType}">
                 <i class="${isFav ? 'fas fa-heart' : 'far fa-heart'}"></i>
@@ -1254,9 +1257,10 @@ function openCombinedModal() {
                             const imageUrl = item.poster_path 
                                 ? `${TMDB_IMAGE_BASE_URL}w342${item.poster_path}`
                                 : `https://placehold.co/342x513/0F071A/F3F4F6?text=${encodeURIComponent(title)}&font=inter`;
+                            // PERFORMANCE: Added loading="lazy" and dimensions to favorite images
                             return `
                             <div class="content-card favorite-card" data-id="${item.id}" data-type="${item.media_type}" data-backdrop="${item.backdrop_path || ''}">
-                                <img src="${imageUrl}" alt="${title}">
+                                <img src="${imageUrl}" alt="${title}" loading="lazy" width="342" height="513" style="aspect-ratio: 342/513;">
                                 <div class="title-overlay"><div class="title">${title}</div></div>
                                 <button class="remove-favorite-button" data-id="${item.id}" data-type="${item.media_type}"><i class="fas fa-times-circle"></i></button>
                             </div>`}).join('')}</div>`;
@@ -1293,9 +1297,10 @@ function openCombinedModal() {
                                 ? `T${item.season} E${item.episode}`
                                 : `Visto em ${new Date(item.date).toLocaleDateString('pt-BR')}`;
 
+                            // PERFORMANCE: Added loading="lazy" and dimensions to history list images
                             return `
                                 <div class="history-list-item" data-id="${item.id}" data-type="${item.media_type}">
-                                    <img src="${imageUrl}" alt="Poster" class="history-list-poster">
+                                    <img src="${imageUrl}" alt="Poster" class="history-list-poster" loading="lazy" width="92" height="138">
                                     <div class="history-list-info">
                                         <div class="history-list-title">${title}</div>
                                         <div class="history-list-details">${detailText}</div>
