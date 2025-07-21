@@ -1224,7 +1224,7 @@ function openCombinedModal() {
     const modalHTML = `
         ${userSectionHTML}
         <div class="swal-tabs">
-            <button class="swal-tab-button active" data-tab="favorites"><i class="fas fa-heart"></i> Favoritos</button>
+            <button class="swal-tab-button" data-tab="favorites"><i class="fas fa-heart"></i> Favoritos</button>
             <button class="swal-tab-button" data-tab="history"><i class="fas fa-history"></i> Histórico</button>
         </div>
         <div id="swal-tab-content"></div>
@@ -1239,17 +1239,12 @@ function openCombinedModal() {
         didOpen: () => {
             const tabButtons = document.querySelectorAll('.swal-tab-button');
             const tabContent = document.getElementById('swal-tab-content');
+            let activeTab = 'favorites';
 
-            if (currentUser) {
-                document.getElementById('modalSignOutButton')?.addEventListener('click', signOut);
-            } else {
-                document.getElementById('modalLoginButton')?.addEventListener('click', signInWithGoogle);
-                document.getElementById('modalLoginEmailButton')?.addEventListener('click', signInWithEmail);
-            }
-
-            const showTab = (tab) => {
-                tabButtons.forEach(btn => btn.classList.remove('active'));
-                document.querySelector(`.swal-tab-button[data-tab="${tab}"]`).classList.add('active');
+            const renderTabContent = (tab) => {
+                activeTab = tab;
+                tabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tab));
+                tabContent.innerHTML = '<div class="loader mx-auto my-5"></div>';
 
                 if (tab === 'favorites') {
                     let favsHtml = '<p class="text-center text-gray-400 py-5">Não tem favoritos.</p>';
@@ -1260,19 +1255,29 @@ function openCombinedModal() {
                                 ? `${TMDB_IMAGE_BASE_URL}w342${item.poster_path}`
                                 : `https://placehold.co/342x513/0F071A/F3F4F6?text=${encodeURIComponent(title)}&font=inter`;
                             return `
-                            <div class="content-card favorite-card" onclick="Swal.close(); openItemModal(${item.id}, '${item.media_type}', '${item.backdrop_path || ''}')">
+                            <div class="content-card favorite-card" data-id="${item.id}" data-type="${item.media_type}" data-backdrop="${item.backdrop_path || ''}">
                                 <img src="${imageUrl}" alt="${title}">
                                 <div class="title-overlay"><div class="title">${title}</div></div>
                                 <button class="remove-favorite-button" data-id="${item.id}" data-type="${item.media_type}"><i class="fas fa-times-circle"></i></button>
                             </div>`}).join('')}</div>`;
                     }
                     tabContent.innerHTML = favsHtml;
+                    
+                    document.querySelectorAll('.favorite-card').forEach(card => {
+                        card.addEventListener('click', (e) => {
+                            if (e.target.closest('.remove-favorite-button')) return;
+                            Swal.close();
+                            openItemModal(card.dataset.id, card.dataset.type, card.dataset.backdrop);
+                        });
+                    });
+
                     document.querySelectorAll('.remove-favorite-button').forEach(button => {
                         button.addEventListener('click', e => {
                             e.stopPropagation();
                             const itemToRemove = favorites.find(fav => fav.id.toString() === button.dataset.id && fav.media_type === button.dataset.type);
                             if (itemToRemove) {
                                 toggleFavorite(itemToRemove, itemToRemove.media_type);
+                                setTimeout(() => renderTabContent('favorites'), 50);
                             }
                         });
                     });
@@ -1305,6 +1310,7 @@ function openCombinedModal() {
                         }).join('');
                     }
                     tabContent.innerHTML = `<div class="history-list">${historyItemsHTML}</div>`;
+                    
                     document.querySelectorAll('.history-list-item').forEach(itemEl => {
                         itemEl.addEventListener('click', (e) => {
                             if (e.target.closest('.remove-history-button')) return;
@@ -1312,26 +1318,36 @@ function openCombinedModal() {
                             openItemModal(itemEl.dataset.id, itemEl.dataset.type);
                         });
                     });
+                    
                     document.querySelectorAll('.remove-history-button').forEach(button => {
                         button.addEventListener('click', (e) => {
                             e.stopPropagation();
                             const itemId = button.dataset.id;
                             removeFromWatchHistory(itemId);
+                            setTimeout(() => renderTabContent('history'), 50);
                         });
                     });
                 }
             };
 
+            if (currentUser) {
+                document.getElementById('modalSignOutButton')?.addEventListener('click', signOut);
+            } else {
+                document.getElementById('modalLoginButton')?.addEventListener('click', signInWithGoogle);
+                document.getElementById('modalLoginEmailButton')?.addEventListener('click', signInWithEmail);
+            }
+
             tabButtons.forEach(button => {
                 button.addEventListener('click', () => {
-                    showTab(button.dataset.tab);
+                    renderTabContent(button.dataset.tab);
                 });
             });
 
-            showTab('favorites');
+            renderTabContent(activeTab);
         }
     });
 }
+
 
 function debounce(func, delay) {
     let timeout;
