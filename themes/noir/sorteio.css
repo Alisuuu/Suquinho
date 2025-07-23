@@ -424,7 +424,7 @@ body.swal2-shown #externalCopyButtonContainer {
   text-transform: uppercase;
 }
 #pickAgainButton:hover {
-    background-color: #3a3a3a; /* Alterado de rgba para cor sólida */
+    background-color: #4a4a4a; /* Darker gray on hover */
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }

@@ -13,7 +13,7 @@
   Um tema de alto contraste, escuro e dramático, em preto e branco puro.
 */
 :root {
-    --background-color: #0a0a0a; /* Quase preto */
+    --background-color: #17181C; /* Quase preto */
     --surface-color: #1a1a1a;    /* Cinza muito escuro para superfícies */
     --card-bg: #222222;          /* Fundo do card */
     
@@ -189,7 +189,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     border: 1px solid var(--border-color) !important;
     max-width: 90vw !important;
     width: auto !important;
-    background: rgba(26, 26, 26, 0.95) !important; /* --- CORREÇÃO: Transparência do Modal Ajustada --- */
+    background: var(--background-color) !important; /* --- CORREÇÃO: Transparência do Modal Ajustada --- */
     backdrop-filter: blur(10px); /* --- Efeito de vidro --- */
     -webkit-backdrop-filter: blur(10px); /* --- Suporte para Safari --- */
     box-shadow: var(--expressive-shadow), var(--modal-shadow-neutral-glow) !important;
