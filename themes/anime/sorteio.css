@@ -421,7 +421,7 @@ body.swal2-shown #externalCopyButtonContainer {
   text-transform: uppercase;
 }
 #pickAgainButton:hover {
-    background-color: #ff79c6;
+    background-color: #e060a0; /* Darker pink on hover */
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }

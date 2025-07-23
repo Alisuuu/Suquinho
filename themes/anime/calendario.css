@@ -353,7 +353,7 @@ input:-webkit-autofill {
     border: 1px solid var(--modal-border-neutral) !important;
     max-width: 90vw !important;
     width: auto !important;
-    background: var(--modal-background-color) !important; /* Cor de fundo sólida */
+    background: #282A36 !important; /* Cor de fundo sólida */
     box-shadow: 0 8px 30px -5px rgba(0,0,0,0.7), var(--modal-shadow-glow) !important;
     padding: 1rem 1.5rem 1.5rem 1.5rem !important;
 }
