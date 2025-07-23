@@ -73,11 +73,11 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     left: 0;
     width: 100vw;
     height: 100vh;
-    z-index: -2;
+    z-index: 500;
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
-    transition: background-image 0.7s ease-in-out, opacity 0.7s ease-in-out;
+    transition: all 0.7s cubic-bezier(0.25, 0.8, 0.25, 1);
     background-color: var(--background-color);
     opacity: 1;
 }
@@ -120,7 +120,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     background-color: var(--card-bg);
     border-radius: 0.75rem;
     overflow: hidden;
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out, border-color 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     cursor: pointer;
     border: 1px solid var(--border-color);
     box-shadow: var(--subtle-shadow);
@@ -188,6 +188,8 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     background: #17181C !important;
     box-shadow: var(--expressive-shadow), var(--modal-shadow-neutral-glow) !important;
     z-index: 2001;
+    will-change: transform, opacity;
+    contain: layout paint;
 }
 .swal2-title { color: var(--text-primary) !important; font-size: 1.6rem !important; padding-top: 1.5rem !important; margin-bottom: 0 !important; }
 .swal2-html-container { color: var(--text-primary) !important; margin: 0 !important; padding: 0 !important; text-align: left !important; }
@@ -361,6 +363,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     object-fit: cover;
     object-position: top center;
     border-radius: 0.8rem;
+    aspect-ratio: 2/3;
 }
 
 
