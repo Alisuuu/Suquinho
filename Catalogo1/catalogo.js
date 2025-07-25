@@ -1169,10 +1169,16 @@ function displayResults(items, defaultType, targetEl, replace) {
             ? `${TMDB_IMAGE_BASE_URL}w400${item.poster_path}`
             : `https://placehold.co/400x600/0F071A/F3F4F6?text=${encodeURIComponent(title)}&font=inter`;
 
+        const tags = mediaType === 'movie' ? 'Filme' : 'Série';
+        const tagsHTML = `<div class="tags">${tags}</div>`;
+
         // PERFORMANCE: Added loading="lazy" and dimensions to prevent layout shift
         card.innerHTML = `
             <img src="${imageUrl}" alt="${title}" loading="lazy" width="400" height="600" style="aspect-ratio: 2/3;">
-            <div class="title-overlay"><div class="title">${title}</div></div>
+            <div class="title-overlay">
+                <div class="title">${title}</div>
+                ${tagsHTML}
+            </div>
             <button class="favorite-button ${isFav ? 'active' : ''}" data-id="${item.id}" data-type="${mediaType}">
                 <i class="${isFav ? 'fas fa-heart' : 'far fa-heart'}"></i>
             </button>`;
