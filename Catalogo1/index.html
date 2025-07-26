@@ -235,7 +235,7 @@
 <div class="header-controls-wrapper w-full lg:w-auto">
 <div class="header-controls w-full lg:w-auto flex items-center justify-center lg:justify-end">
 <div class="input-search-wrapper relative">
-<input class="input-search" id="searchInput" placeholder="Buscar filmes ou séries..." type="text"/>
+<input class="input-search" id="searchInput" placeholder="Buscar filmes, séries ou coleções..." type="text"/>
 <button aria-label="Limpar busca" id="clearSearchButton"><i class="fas fa-times-circle"></i></button>
 <button aria-label="Buscar" id="searchButton"><i class="fas fa-search"></i></button>
 </div>
@@ -249,12 +249,20 @@
 </div>
 </div>
 <main class="container mx-auto p-4 lg:p-6" id="contentArea">
-<div id="continueWatchingSection" class="container mx-auto p-4 lg:p-6" style="display: none;">
+<div id="continueWatchingSection" class="content-section" style="display: none;">
     <h2 class="section-title">Continuar Assistindo</h2>
     <div id="continueWatchingGrid" class="continue-watching-grid">
         <!-- History items will be injected here -->
     </div>
 </div>
+
+<div id="collectionsSection" class="content-section" style="display: none;">
+    <h2 class="section-title">Coleções Populares</h2>
+    <div class="horizontal-scroll-grid" id="collectionsGrid">
+        <!-- Collection cards will be injected here -->
+    </div>
+</div>
+
 <div id="defaultContentSections">
 <div class="content-section">
 <h2 class="section-title">Filmes Populares</h2>
@@ -276,9 +284,13 @@
 </div>
 </div>
 <div id="singleResultsSection" style="display: none;">
-<h2 class="section-title" id="singleSectionTitle">Resultados</h2>
-<div class="main-results-grid" id="singleResultsGrid"></div>
-<div class="w-full flex justify-center py-4" id="searchResultsLoader" style="display: none;"><div class="loader-spinner"></div></div>
+    <div id="collectionResultsSection" class="content-section" style="display: none;">
+        <h2 class="section-title">Franquias</h2>
+        <div class="horizontal-scroll-grid" id="collectionResultsGrid"></div>
+    </div>
+    <h2 class="section-title" id="singleSectionTitle">Resultados</h2>
+    <div class="main-results-grid" id="singleResultsGrid"></div>
+    <div class="w-full flex justify-center py-4" id="searchResultsLoader" style="display: none;"><div class="loader-spinner"></div></div>
 </div>
 </main>
 </div>

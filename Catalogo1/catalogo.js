@@ -38,7 +38,7 @@ const db = firebase.firestore();
 
 let currentUser = null;
 let firestoreListener = null; 
-let initialAuthCheckCompleted = false; // Flag to check if the initial auth state has been processed.
+let initialAuthCheckCompleted = false;
 
 const pageBackdrop = document.getElementById('pageBackdrop');
 const searchInput = document.getElementById('searchInput');
@@ -51,15 +51,17 @@ const tvShowsResultsGrid = document.getElementById('tvShowsResultsGrid');
 const singleResultsSection = document.getElementById('singleResultsSection');
 const singleSectionTitleEl = document.getElementById('singleSectionTitle');
 const singleResultsGrid = document.getElementById('singleResultsGrid');
+const collectionResultsSection = document.getElementById('collectionResultsSection');
+const collectionResultsGrid = document.getElementById('collectionResultsGrid');
 const loader = document.getElementById('loader');
 const floatingCombinedButton = document.getElementById('floatingCombinedButton');
 const searchResultsLoader = document.getElementById('searchResultsLoader');
 const popularMoviesLoader = document.getElementById('popularMoviesLoader');
 const topRatedTvShowsLoader = document.getElementById('topRatedTvShowsLoader');
-const openCalendarBtn = document.getElementById('open-calendar-btn');
-const closeCalendarBtn = document.getElementById('close-calendar-btn');
 const continueWatchingSection = document.getElementById('continueWatchingSection');
 const continueWatchingGrid = document.getElementById('continueWatchingGrid');
+const collectionsSection = document.getElementById('collectionsSection');
+const collectionsGrid = document.getElementById('collectionsGrid');
 
 let activeAppliedGenre = { id: null, name: null, type: null };
 let currentFilterTypeSA = 'movie';
@@ -390,6 +392,42 @@ async function fetchTMDB(endpoint, params = {}) {
     }
 }
 
+async function loadAndDisplayPopularCollections() {
+    if (!collectionsGrid) return;
+    collectionsGrid.innerHTML = '';
+    
+    try {
+        const popularMoviesData = await fetchTMDB('/movie/popular', { page: 1 });
+        if (!popularMoviesData || !popularMoviesData.results) {
+            throw new Error("Não foi possível buscar filmes populares.");
+        }
+
+        const collectionIds = new Set();
+        const collectionPromises = popularMoviesData.results
+            .filter(movie => movie.belongs_to_collection)
+            .map(movie => {
+                if (!collectionIds.has(movie.belongs_to_collection.id)) {
+                    collectionIds.add(movie.belongs_to_collection.id);
+                    return fetchTMDB(`/collection/${movie.belongs_to_collection.id}`);
+                }
+                return null;
+            }).filter(p => p !== null);
+
+        const collections = await Promise.all(collectionPromises);
+        const validCollections = collections.filter(c => c && !c.error && c.poster_path);
+
+        if (validCollections.length > 0) {
+            if (collectionsSection) collectionsSection.style.display = 'block';
+            displayResults(validCollections, 'collection', collectionsGrid, true, false);
+        } else {
+            if (collectionsSection) collectionsSection.style.display = 'none';
+        }
+    } catch (error) {
+        console.error("Erro ao carregar coleções populares dinamicamente:", error);
+        if (collectionsSection) collectionsSection.style.display = 'none';
+    }
+}
+
 async function loadMainPageContent() {
     showLoader();
     if (defaultContentSections) defaultContentSections.style.display = 'block';
@@ -407,19 +445,24 @@ async function loadMainPageContent() {
 
     const moviesPromise = fetchTMDB(`/movie/popular`, { page: popularMoviesCurrentPage });
     const tvShowsPromise = fetchTMDB(`/tv/top_rated`, { page: topRatedTvShowsCurrentPage });
-    const [moviesData, tvShowsData] = await Promise.all([moviesPromise, tvShowsPromise]);
+    
+    const [moviesData, tvShowsData, _] = await Promise.all([
+        moviesPromise, 
+        tvShowsPromise,
+        loadAndDisplayPopularCollections()
+    ]);
 
     if (moviesResultsGrid) {
         if (moviesData && !moviesData.error && moviesData.results) {
             popularMoviesTotalPages = moviesData.total_pages || 1;
-            displayResults(moviesData.results, 'movie', moviesResultsGrid, true, false); // showTags = false
+            displayResults(moviesData.results, 'movie', moviesResultsGrid, true, false);
             moviesData.results.forEach(movie => { if (movie.backdrop_path) mainPageBackdropPaths.push(movie.backdrop_path); });
         } else { moviesResultsGrid.innerHTML = `<p class="text-center col-span-full text-[var(--text-secondary)] py-5">Não foi possível carregar os filmes populares. ${moviesData?.message || ''}</p>`; }
     }
     if (tvShowsResultsGrid) {
         if (tvShowsData && !tvShowsData.error && tvShowsData.results) {
             topRatedTvShowsTotalPages = tvShowsData.total_pages || 1;
-            displayResults(tvShowsData.results, 'tv', tvShowsResultsGrid, true, false); // showTags = false
+            displayResults(tvShowsData.results, 'tv', tvShowsResultsGrid, true, false);
             tvShowsData.results.forEach(show => { if (show.backdrop_path) mainPageBackdropPaths.push(show.backdrop_path); });
         } else { tvShowsResultsGrid.innerHTML = `<p class="text-center col-span-full text-[var(--text-secondary)] py-5">Não foi possível carregar as séries populares. ${tvShowsData?.message || ''}</p>`; }
     }
@@ -510,13 +553,17 @@ async function performSearch(query) {
     }
 
     if (defaultContentSections) defaultContentSections.style.display = 'none';
+    if (collectionsSection) collectionsSection.style.display = 'none';
     if (singleResultsSection) singleResultsSection.style.display = 'block';
     if (singleResultsGrid) singleResultsGrid.innerHTML = '';
+    if (singleSectionTitleEl) singleSectionTitleEl.style.display = 'block';
 
-    let finalDisplayResults = [];
     let searchTitle = `Resultados para: "${query}"`;
     const companyConfig = getCompanyConfigForQuery(query);
-    const fetchPromises = [fetchTMDB('/search/multi', { query: query, page: searchCurrentPage })];
+    const fetchPromises = [
+        fetchTMDB('/search/multi', { query: query, page: searchCurrentPage }),
+    ];
+
     if (companyConfig) {
         searchTitle = `Conteúdo de ${companyConfig.name} (e mais resultados para "${query}")`;
         const companyIdsString = companyConfig.ids.join('|');
@@ -528,29 +575,29 @@ async function performSearch(query) {
     try {
         const [multiSearchData, companyMovieData, companyTvData] = await Promise.all(fetchPromises);
         
+        const allResults = [];
+
         if (multiSearchData && !multiSearchData.error && multiSearchData.results) {
-            finalDisplayResults.push(...multiSearchData.results.filter(item => (item.media_type === 'movie' || item.media_type === 'tv')));
+            allResults.push(...multiSearchData.results.filter(item => (item.media_type === 'movie' || item.media_type === 'tv')));
             totalPages.search = multiSearchData.total_pages || 1;
         }
-
         if (companyMovieData && !companyMovieData.error && companyMovieData.results) {
-            finalDisplayResults.push(...companyMovieData.results.map(item => ({ ...item, media_type: 'movie' })));
+            allResults.push(...companyMovieData.results.map(item => ({ ...item, media_type: 'movie' })));
         }
-
         if (companyTvData && !companyTvData.error && companyTvData.results) {
-            finalDisplayResults.push(...companyTvData.results.map(item => ({ ...item, media_type: 'tv' })));
+            allResults.push(...companyTvData.results.map(item => ({ ...item, media_type: 'tv' })));
+        }
+        
+        const uniqueResults = Array.from(new Map(allResults.map(item => [item.id + item.media_type, item])).values());
+        const sortedResults = uniqueResults.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+
+        if (sortedResults.length > 0) {
+            displayResults(sortedResults, null, singleResultsGrid, true, true);
+        } else {
+            const baseErrorMsg = companyConfig ? `Nenhum conteúdo de ${companyConfig.name} ou resultados diretos encontrados.` : `Nenhum filme ou série relevante encontrado.`;
+            singleResultsGrid.innerHTML = `<p class="text-center col-span-full">${multiSearchData?.error ? multiSearchData.message : baseErrorMsg}</p>`;
         }
 
-        const uniqueResults = Array.from(new Map(finalDisplayResults.map(item => [item.id + (item.media_type || ''), item])).values());
-        uniqueResults.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
-
-        if (singleResultsGrid) {
-            displayResults(uniqueResults, null, singleResultsGrid, true, true); // showTags = true
-            if (uniqueResults.length === 0) {
-                const baseErrorMsg = companyConfig ? `Nenhum conteúdo de ${companyConfig.name} ou resultados diretos encontrados.` : `Nenhum filme ou série relevante encontrado.`;
-                singleResultsGrid.innerHTML = `<p class="text-center col-span-full">${multiSearchData?.error ? multiSearchData.message : baseErrorMsg}</p>`;
-            }
-        }
     } catch (error) {
         if (singleResultsGrid) singleResultsGrid.innerHTML = `<p class="text-center col-span-full">Não foi possível realizar a busca. ${error.message || 'Tente novamente.'}</p>`;
     } finally {
@@ -568,10 +615,13 @@ async function applyGenreFilterFromSA() {
     }
     showLoader();
     activeAppliedGenre = { ...selectedGenreSA };
-    filterCurrentPage = 1; totalPages.filter = 1; currentContentContext = 'filter';
+    filterCurrentPage = 1; totalPages.filter = 1; 
+    currentContentContext = 'filter';
     isLoadingMore = false;
     if (defaultContentSections) defaultContentSections.style.display = 'none';
+    if (collectionsSection) collectionsSection.style.display = 'none';
     if (singleResultsSection) singleResultsSection.style.display = 'block';
+    if (singleSectionTitleEl) singleSectionTitleEl.style.display = 'block';
     if (singleResultsGrid) singleResultsGrid.innerHTML = '';
 
     let params = { sort_by: 'popularity.desc', page: filterCurrentPage };
@@ -591,7 +641,7 @@ async function applyGenreFilterFromSA() {
 
     if (singleResultsGrid) {
         if (data && data.results) {
-            displayResults(data.results, activeAppliedGenre.type, singleResultsGrid, true, true); // showTags = true
+            displayResults(data.results, activeAppliedGenre.type, singleResultsGrid, true, true);
             if (data.results.length === 0) {
                 singleResultsGrid.innerHTML = `<p class="text-center col-span-full">Nenhum item encontrado para o gênero ${activeAppliedGenre.name || 'selecionado'}.</p>`;
             } else {
@@ -607,7 +657,7 @@ async function applyGenreFilterFromSA() {
 
 async function getItemDetails(itemId, mediaType) {
     return await fetchTMDB(`/${mediaType}/${itemId}`, { 
-        append_to_response: 'external_ids,credits,videos,images',
+        append_to_response: 'external_ids,credits,videos,images,belongs_to_collection',
         include_image_language: 'pt,en,null' 
     });
 }
@@ -747,6 +797,10 @@ async function openItemModal(itemId, mediaType, backdropPath = null, fromSorteio
     const copyLinkButtonHTML = `<button id="modalCopyLinkButton" class="modal-copy-link-button" title="Copiar Link"><i class="fas fa-link"></i></button>`;
     const trailerKey = findBestTrailer(details.videos);
     const trailerButtonHTML = trailerKey ? `<button id="modalTrailerButton" class="modal-trailer-button" title="Ver Trailer"><i class="fas fa-film"></i> Trailer</button>` : '';
+    let collectionButtonHTML = '';
+    if (mediaType === 'movie' && details.belongs_to_collection) {
+        collectionButtonHTML = `<button id="modalCollectionButton" class="modal-collection-button" title="Ver Coleção: ${details.belongs_to_collection.name}"><i class="fas fa-layer-group"></i> Ver franquia</button>`;
+    }
 
     let seasonsSectionHTML = '';
     if (isTV && details.seasons && details.seasons.length > 0) {
@@ -781,6 +835,7 @@ async function openItemModal(itemId, mediaType, backdropPath = null, fromSorteio
                 <p class="details-genres"><strong>Gêneros:</strong> ${genres}</p>
                 <div class="modal-actions-wrapper">${favoriteButtonHTML}${copyLinkButtonHTML}${trailerButtonHTML}</div>
                 <div id="trailer-container"></div>
+                ${collectionButtonHTML ? `<div class="modal-collection-wrapper">${collectionButtonHTML}</div>` : ''}
                 <h3 class="details-section-subtitle" style="padding-left:0; margin-top: 16px;">Sinopse</h3>
                 <p class="details-overview">${overview}</p>
             </div>
@@ -814,6 +869,12 @@ async function openItemModal(itemId, mediaType, backdropPath = null, fromSorteio
 
     document.getElementById('modalFavoriteButton')?.addEventListener('click', () => toggleFavorite(details, mediaType));
     document.getElementById('modalCopyLinkButton')?.addEventListener('click', () => copyToClipboard(shareUrl));
+    if (collectionButtonHTML) {
+        document.getElementById('modalCollectionButton')?.addEventListener('click', () => {
+            Swal.close();
+            setTimeout(() => showCollectionDetails(details.belongs_to_collection), 200); // Delay to allow modal to close
+        });
+    }
 
     if (trailerKey) {
         document.getElementById('modalTrailerButton')?.addEventListener('click', () => {
@@ -1021,7 +1082,7 @@ function toggleFavorite(item, type) {
         favorites.splice(index, 1);
         showCustomToast('Removido dos Favoritos', 'info');
     } else {
-        favorites.unshift({ id: item.id, media_type: type, title: item.title || item.name, poster_path: item.poster_path, backdrop_path: item.backdrop_path });
+        favorites.unshift({ id: item.id, media_type: type, title: item.title || item.name, name: item.name || item.title, poster_path: item.poster_path, backdrop_path: item.backdrop_path });
         showCustomToast('Adicionado aos Favoritos', 'success');
     }
     
@@ -1044,6 +1105,12 @@ function updateFavoriteButtonsState(id, type) {
         modalBtn.classList.toggle('active', isFav);
         modalBtn.title = isFav ? 'Remover dos Favoritos' : 'Adicionar aos Favoritos';
         modalBtn.innerHTML = isFav ? '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>';
+    }
+    const collectionBtn = document.getElementById(`collectionFavoriteButton-${id}`);
+    if (collectionBtn && type === 'collection') {
+        collectionBtn.classList.toggle('active', isFav);
+        collectionBtn.title = isFav ? 'Remover Coleção dos Favoritos' : 'Adicionar Coleção aos Favoritos';
+        collectionBtn.innerHTML = isFav ? '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>';
     }
 }
 
@@ -1147,21 +1214,78 @@ function updateHistoryButtonVisibility() {
     }
 }
 
-function displayResults(items, defaultType, targetEl, replace, showTags = false) {
+async function showCollectionDetails(collection) {
+    const collectionData = await fetchTMDB(`/collection/${collection.id}`);
+    if (!collectionData || collectionData.error) {
+        Swal.fire('Erro', `Não foi possível carregar os detalhes da coleção: ${collectionData?.message || 'Tente novamente.'}`, 'error');
+        return;
+    }
+
+    const sortedParts = (collectionData.parts || []).sort((a, b) => {
+        const dateA = a.release_date ? new Date(a.release_date) : 0;
+        const dateB = b.release_date ? new Date(b.release_date) : 0;
+        return dateA - dateB;
+    });
+
+    const isFav = isFavorite(collection.id, 'collection');
+    const favButtonHTML = `<button id="collectionFavoriteButton-${collection.id}" class="collection-favorite-button favorite-button ${isFav ? 'active' : ''}" data-id="${collection.id}" data-type="collection" title="${isFav ? 'Remover dos Favoritos' : 'Adicionar aos Favoritos'}"><i class="${isFav ? 'fas fa-heart' : 'far fa-heart'}"></i></button>`;
+
+    const collectionMoviesHTML = `<div class="collection-modal-grid">${sortedParts.map(movie => {
+        const isWatched = watchHistory.some(h => h.id.toString() === movie.id.toString());
+        const watchedOverlayHTML = isWatched ? `<div class="watched-overlay" title="Visto"><i class="fas fa-eye"></i></div>` : '';
+        const imageUrl = movie.poster_path ? `${TMDB_IMAGE_BASE_URL}w400${movie.poster_path}` : `https://placehold.co/400x600/0F071A/F3F4F6?text=${encodeURIComponent(movie.title)}&font=inter`;
+        return `
+            <div class="content-card" onclick="Swal.close(); openItemModal(${movie.id}, 'movie', '${movie.backdrop_path || ''}')">
+                ${watchedOverlayHTML}
+                <img src="${imageUrl}" alt="${movie.title}" loading="lazy" width="400" height="600" style="aspect-ratio: 2/3;">
+                <div class="title-overlay"><div class="title">${movie.title}</div></div>
+            </div>
+        `;
+    }).join('')}</div>`;
+
+    const modalHTML = `
+        <div class="collection-modal-header" style="background-image: linear-gradient(to top, rgba(23, 24, 28, 1) 10%, rgba(23, 24, 28, 0.7) 50%, rgba(23, 24, 28, 0.4) 100%), url(${collectionData.backdrop_path ? TMDB_IMAGE_BASE_URL + 'w1280' + collectionData.backdrop_path : ''});">
+            <div class="collection-modal-title-wrapper">
+                 <h2 class="collection-modal-title">${collection.name}</h2>
+                 ${favButtonHTML}
+            </div>
+        </div>
+        <div class="collection-modal-body">${collectionMoviesHTML}</div>
+    `;
+
+    Swal.fire({
+        html: modalHTML,
+        showCloseButton: true,
+        showConfirmButton: false,
+        customClass: {
+            popup: 'swal-collection-popup',
+            htmlContainer: 'swal-collection-container',
+            closeButton: 'swal-collection-close-button'
+        },
+        didOpen: () => {
+            document.getElementById(`collectionFavoriteButton-${collection.id}`).addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleFavorite(collection, 'collection');
+            });
+        }
+    });
+}
+
+function displayResults(items, defaultType, targetEl, replace, showTags = false, checkWatched = false) {
     if (!targetEl) return;
     if (replace) targetEl.innerHTML = '';
     const fragment = document.createDocumentFragment();
     if (!items || items.length === 0) { if (replace) targetEl.innerHTML = `<p class="col-span-full text-center">Nenhum item para exibir.</p>`; return; }
     
     items.forEach(item => {
-        const mediaType = item.media_type || defaultType;
+        const isCollection = item.media_type === 'collection' || (!item.media_type && item.name && item.parts);
+        const mediaType = isCollection ? 'collection' : (item.media_type || defaultType);
+
         if (!mediaType) return;
         
         const card = document.createElement('div'); 
         card.className = 'content-card';
-        card.onclick = () => openItemModal(item.id, mediaType, item.backdrop_path);
         
-        const isFav = isFavorite(item.id, mediaType);
         const title = item.title || item.name || 'Título';
         const imageUrl = item.poster_path
             ? `${TMDB_IMAGE_BASE_URL}w400${item.poster_path}`
@@ -1169,21 +1293,42 @@ function displayResults(items, defaultType, targetEl, replace, showTags = false)
 
         let tagsHTML = '';
         if (showTags) {
-            const tagText = mediaType === 'movie' ? 'Filme' : 'Série';
-            tagsHTML = `<div class="tags">${tagText}</div>`;
+            let tagText = '';
+            if (mediaType === 'movie') tagText = 'Filme';
+            else if (mediaType === 'tv') tagText = 'Série';
+            // A tag de coleção é tratada de forma diferente ou não mostrada aqui
+            if(tagText) tagsHTML = `<div class="tags">${tagText}</div>`;
+        }
+        
+        let watchedOverlayHTML = '';
+        if (checkWatched && mediaType === 'movie') {
+            const isWatched = watchHistory.some(h => h.id.toString() === item.id.toString());
+            if (isWatched) {
+                watchedOverlayHTML = `<div class="watched-overlay" title="Visto"><i class="fas fa-eye"></i></div>`;
+            }
         }
 
-        card.innerHTML = `
-            <img src="${imageUrl}" alt="${title}" loading="lazy" width="400" height="600" style="aspect-ratio: 2/3;">
-            <div class="title-overlay">
-                <div class="title">${title}</div>
+        if (mediaType === 'collection') {
+            card.onclick = () => showCollectionDetails(item);
+            card.innerHTML = `
+                <img src="${imageUrl}" alt="${title}" loading="lazy" width="400" height="600" style="aspect-ratio: 2/3;">
+                <div class="title-overlay"><div class="title">${title}</div></div>
+                <div class="tags">Coleção</div>
+                `;
+        } else {
+            card.onclick = () => openItemModal(item.id, mediaType, item.backdrop_path);
+            const isFav = isFavorite(item.id, mediaType);
+            card.innerHTML = `
+                ${watchedOverlayHTML}
+                <img src="${imageUrl}" alt="${title}" loading="lazy" width="400" height="600" style="aspect-ratio: 2/3;">
+                <div class="title-overlay"><div class="title">${title}</div></div>
                 ${tagsHTML}
-            </div>
-            <button class="favorite-button ${isFav ? 'active' : ''}" data-id="${item.id}" data-type="${mediaType}">
-                <i class="${isFav ? 'fas fa-heart' : 'far fa-heart'}"></i>
-            </button>`;
+                <button class="favorite-button ${isFav ? 'active' : ''}" data-id="${item.id}" data-type="${mediaType}">
+                    <i class="${isFav ? 'fas fa-heart' : 'far fa-heart'}"></i>
+                </button>`;
+            card.querySelector('.favorite-button').onclick = (e) => { e.stopPropagation(); toggleFavorite(item, mediaType); };
+        }
             
-        card.querySelector('.favorite-button').onclick = (e) => { e.stopPropagation(); toggleFavorite(item, mediaType); };
         fragment.appendChild(card);
     });
     
@@ -1238,6 +1383,7 @@ function openCombinedModal() {
             <button class="swal-tab-button" data-tab="history"><i class="fas fa-history"></i> Histórico</button>
         </div>
         <div id="swal-tab-content"></div>
+        <div id="swal-lazy-loader" class="lazy-loader" style="display: none;"><div class="loader-spinner"></div></div>
     `;
 
     Swal.fire({
@@ -1249,125 +1395,152 @@ function openCombinedModal() {
         didOpen: () => {
             const tabButtons = document.querySelectorAll('.swal-tab-button');
             const tabContent = document.getElementById('swal-tab-content');
+            const loader = document.getElementById('swal-lazy-loader');
             let activeTab = 'favorites';
+            
+            const ITEMS_PER_PAGE = 15;
+            let pages = { favorites: 1, history: 1 };
+            let isLoading = false;
 
-            const renderTabContent = (tab) => {
-                activeTab = tab;
-                tabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tab));
-                tabContent.innerHTML = '<div class="loader mx-auto my-5"></div>';
+            const renderItems = (list, container, type) => {
+                const fragment = document.createDocumentFragment();
+                list.forEach(item => {
+                    let cardHTML = '';
+                    const title = item.title || item.name || 'Título';
+                    const imageUrl = item.poster_path 
+                        ? `${TMDB_IMAGE_BASE_URL}w342${item.poster_path}`
+                        : `https://placehold.co/342x513/0F071A/F3F4F6?text=${encodeURIComponent(title)}&font=inter`;
 
-                if (tab === 'favorites') {
-                    const favoriteMovies = favorites.filter(item => item.media_type === 'movie');
-                    const favoriteSeries = favorites.filter(item => item.media_type === 'tv');
-                    
-                    let favsHtml = '';
-
-                    // Seção de Filmes
-                    if (favoriteMovies.length > 0) {
-                        favsHtml += '<h3 class="favorites-section-title">Filmes</h3>';
-                        favsHtml += `<div class="favorites-grid">${favoriteMovies.map(item => {
-                            const title = item.title || '';
-                            const imageUrl = item.poster_path 
-                                ? `${TMDB_IMAGE_BASE_URL}w342${item.poster_path}`
-                                : `https://placehold.co/342x513/0F071A/F3F4F6?text=${encodeURIComponent(title)}&font=inter`;
-                            return `
+                    if (type === 'favorites') {
+                        cardHTML = `
                             <div class="content-card favorite-card" data-id="${item.id}" data-type="${item.media_type}" data-backdrop="${item.backdrop_path || ''}">
-                                <img src="${imageUrl}" alt="${title}" loading="lazy" width="342" height="513" style="aspect-ratio: 342/513;">
+                                <img src="${imageUrl}" alt="${title}" loading="lazy" width="342" height="513" style="aspect-ratio: 2/3;">
                                 <div class="title-overlay"><div class="title">${title}</div></div>
                                 <button class="remove-favorite-button" data-id="${item.id}" data-type="${item.media_type}"><i class="fas fa-times-circle"></i></button>
                             </div>`;
-                        }).join('')}</div>`;
-                    }
-
-                    // Seção de Séries
-                    if (favoriteSeries.length > 0) {
-                        favsHtml += '<h3 class="favorites-section-title">Séries</h3>';
-                        favsHtml += `<div class="favorites-grid">${favoriteSeries.map(item => {
-                            const title = item.title || '';
-                            const imageUrl = item.poster_path 
-                                ? `${TMDB_IMAGE_BASE_URL}w342${item.poster_path}`
-                                : `https://placehold.co/342x513/0F071A/F3F4F6?text=${encodeURIComponent(title)}&font=inter`;
-                            return `
-                            <div class="content-card favorite-card" data-id="${item.id}" data-type="${item.media_type}" data-backdrop="${item.backdrop_path || ''}">
-                                <img src="${imageUrl}" alt="${title}" loading="lazy" width="342" height="513" style="aspect-ratio: 342/513;">
-                                <div class="title-overlay"><div class="title">${title}</div></div>
-                                <button class="remove-favorite-button" data-id="${item.id}" data-type="${item.media_type}"><i class="fas fa-times-circle"></i></button>
-                            </div>`;
-                        }).join('')}</div>`;
-                    }
-
-                    if (favsHtml === '') {
-                        favsHtml = '<p class="text-center text-gray-400 py-5">Não tem favoritos.</p>';
-                    }
-
-                    tabContent.innerHTML = favsHtml;
-                    
-                    document.querySelectorAll('.favorite-card').forEach(card => {
-                        card.addEventListener('click', (e) => {
-                            if (e.target.closest('.remove-favorite-button')) return;
-                            Swal.close();
-                            openItemModal(card.dataset.id, card.dataset.type, card.dataset.backdrop);
-                        });
-                    });
-
-                    document.querySelectorAll('.remove-favorite-button').forEach(button => {
-                        button.addEventListener('click', e => {
-                            e.stopPropagation();
-                            const itemToRemove = favorites.find(fav => fav.id.toString() === button.dataset.id && fav.media_type === button.dataset.type);
-                            if (itemToRemove) {
-                                toggleFavorite(itemToRemove, itemToRemove.media_type);
-                                setTimeout(() => renderTabContent('favorites'), 50);
-                            }
-                        });
-                    });
-                } else if (tab === 'history') {
-                    let historyItemsHTML = '<p class="text-center text-gray-400 py-5">O seu histórico está vazio.</p>';
-                    if (watchHistory && watchHistory.length > 0) {
-                        historyItemsHTML = watchHistory.map(item => {
-                            const title = item.title || 'Título';
-                            const imageUrl = item.poster_path 
-                                ? `${TMDB_IMAGE_BASE_URL}w92${item.poster_path}`
-                                : `https://placehold.co/92x138/0F071A/F3F4F6?text=${encodeURIComponent(title)}&font=inter`;
-                            const detailText = item.media_type === 'tv' && item.season && item.episode
+                    } else { // history
+                        const detailText = item.media_type === 'tv' && item.season && item.episode
                                 ? `T${item.season} E${item.episode}`
                                 : `Visto em ${new Date(item.date).toLocaleDateString('pt-BR')}`;
-
-                            return `
-                                <div class="history-list-item" data-id="${item.id}" data-type="${item.media_type}">
-                                    <img src="${imageUrl}" alt="Poster" class="history-list-poster" loading="lazy" width="92" height="138">
-                                    <div class="history-list-info">
-                                        <div class="history-list-title">${title}</div>
-                                        <div class="history-list-details">${detailText}</div>
-                                    </div>
-                                    <div class="history-list-actions">
-                                        <button class="remove-history-button" data-id="${item.id}" title="Remover do histórico">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </div>
+                        cardHTML = `
+                            <div class="history-list-item" data-id="${item.id}" data-type="${item.media_type}">
+                                <img src="${item.poster_path ? TMDB_IMAGE_BASE_URL + 'w92' + item.poster_path : `https://placehold.co/92x138/0F071A/F3F4F6?text=${encodeURIComponent(title)}&font=inter`}" alt="Poster" class="history-list-poster" loading="lazy" width="92" height="138">
+                                <div class="history-list-info">
+                                    <div class="history-list-title">${title}</div>
+                                    <div class="history-list-details">${detailText}</div>
                                 </div>
-                            `;
-                        }).join('');
+                                <div class="history-list-actions">
+                                    <button class="remove-history-button" data-id="${item.id}" title="Remover do histórico"><i class="fas fa-times"></i></button>
+                                </div>
+                            </div>`;
                     }
-                    tabContent.innerHTML = `<div class="history-list">${historyItemsHTML}</div>`;
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = cardHTML;
+                    fragment.appendChild(tempDiv.firstElementChild);
+                });
+                container.appendChild(fragment);
+            };
+
+            const loadMore = () => {
+                if (isLoading) return;
+                
+                const list = activeTab === 'favorites' ? favorites : watchHistory;
+                const page = pages[activeTab];
+                const container = tabContent.querySelector(activeTab === 'favorites' ? '.favorites-container' : '.history-list');
+
+                if (!container || (page * ITEMS_PER_PAGE >= list.length)) {
+                    return; // No more items to load
+                }
+
+                isLoading = true;
+                loader.style.display = 'flex';
+
+                setTimeout(() => { // Simulate network delay
+                    const nextPageItems = list.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE);
+                    renderItems(nextPageItems, container, activeTab);
+                    pages[activeTab]++;
+                    loader.style.display = 'none';
+                    isLoading = false;
+                }, 300);
+            };
+            
+            const renderTabContent = (tab) => {
+                activeTab = tab;
+                pages = { favorites: 1, history: 1 };
+                tabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tab));
+                tabContent.innerHTML = '';
+
+                if (tab === 'favorites') {
+                    const favoriteCollections = favorites.filter(item => item.media_type === 'collection');
+                    const favoriteMovies = favorites.filter(item => item.media_type === 'movie');
+                    const favoriteSeries = favorites.filter(item => item.media_type === 'tv');
+
+                    let favsHtml = '';
+                    if (favoriteCollections.length > 0) {
+                        favsHtml += '<h3 class="favorites-section-title">Franquias</h3><div class="favorites-grid collections-container"></div>';
+                    }
+                    if (favoriteMovies.length > 0) {
+                        favsHtml += '<h3 class="favorites-section-title">Filmes</h3><div class="favorites-grid movies-container"></div>';
+                    }
+                    if (favoriteSeries.length > 0) {
+                        favsHtml += '<h3 class="favorites-section-title">Séries</h3><div class="favorites-grid series-container"></div>';
+                    }
                     
-                    document.querySelectorAll('.history-list-item').forEach(itemEl => {
-                        itemEl.addEventListener('click', (e) => {
-                            if (e.target.closest('.remove-history-button')) return;
-                            Swal.close();
-                            openItemModal(itemEl.dataset.id, itemEl.dataset.type);
-                        });
-                    });
-                    
-                    document.querySelectorAll('.remove-history-button').forEach(button => {
-                        button.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            const itemId = button.dataset.id;
-                            removeFromWatchHistory(itemId);
-                            setTimeout(() => renderTabContent('history'), 50);
-                        });
-                    });
+                    if (favsHtml === '') {
+                        tabContent.innerHTML = '<p class="text-center text-gray-400 py-5">Não tem favoritos.</p>';
+                    } else {
+                        tabContent.innerHTML = favsHtml;
+                        if (favoriteCollections.length > 0) renderItems(favoriteCollections.slice(0, ITEMS_PER_PAGE), tabContent.querySelector('.collections-container'), 'favorites');
+                        if (favoriteMovies.length > 0) renderItems(favoriteMovies.slice(0, ITEMS_PER_PAGE), tabContent.querySelector('.movies-container'), 'favorites');
+                        if (favoriteSeries.length > 0) renderItems(favoriteSeries.slice(0, ITEMS_PER_PAGE), tabContent.querySelector('.series-container'), 'favorites');
+                    }
+                } else if (tab === 'history') {
+                    tabContent.innerHTML = '<div class="history-list"></div>';
+                    const initialItems = watchHistory.slice(0, ITEMS_PER_PAGE);
+                     if (initialItems.length > 0) {
+                        renderItems(initialItems, tabContent.querySelector('.history-list'), 'history');
+                    } else {
+                       tabContent.innerHTML = '<p class="text-center text-gray-400 py-5">O seu histórico está vazio.</p>';
+                    }
                 }
             };
+            
+            tabContent.addEventListener('scroll', () => {
+                if (tabContent.scrollTop + tabContent.clientHeight >= tabContent.scrollHeight - 50) {
+                    loadMore();
+                }
+            });
+
+            tabContent.addEventListener('click', (e) => {
+                const favoriteCard = e.target.closest('.favorite-card');
+                const historyItem = e.target.closest('.history-list-item');
+                const removeFavButton = e.target.closest('.remove-favorite-button');
+                const removeHistButton = e.target.closest('.remove-history-button');
+
+                if (removeFavButton) {
+                    e.stopPropagation();
+                    const itemToRemove = favorites.find(fav => fav.id.toString() === removeFavButton.dataset.id && fav.media_type === removeFavButton.dataset.type);
+                    if (itemToRemove) {
+                        toggleFavorite(itemToRemove, itemToRemove.media_type);
+                        setTimeout(() => renderTabContent('favorites'), 50);
+                    }
+                } else if (removeHistButton) {
+                    e.stopPropagation();
+                    removeFromWatchHistory(removeHistButton.dataset.id);
+                    setTimeout(() => renderTabContent('history'), 50);
+                } else if (favoriteCard) {
+                    Swal.close();
+                    const item = favorites.find(fav => fav.id.toString() === favoriteCard.dataset.id && fav.media_type === favoriteCard.dataset.type);
+                    if (item.media_type === 'collection') {
+                        showCollectionDetails(item);
+                    } else {
+                        openItemModal(favoriteCard.dataset.id, favoriteCard.dataset.type, favoriteCard.dataset.backdrop);
+                    }
+                } else if (historyItem) {
+                    Swal.close();
+                    openItemModal(historyItem.dataset.id, historyItem.dataset.type);
+                }
+            });
 
             if (currentUser) {
                 document.getElementById('modalSignOutButton')?.addEventListener('click', signOut);
