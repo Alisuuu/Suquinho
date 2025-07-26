@@ -38,7 +38,7 @@ const db = firebase.firestore();
 
 let currentUser = null;
 let firestoreListener = null; 
-let isInitialSyncDone = false; 
+let initialAuthCheckCompleted = false; // Flag to check if the initial auth state has been processed.
 
 const pageBackdrop = document.getElementById('pageBackdrop');
 const searchInput = document.getElementById('searchInput');
@@ -84,21 +84,7 @@ let topRatedTvShowsCurrentPage = 1;
 let topRatedTvShowsTotalPages = 1;
 let isLoadingMoreTopRatedTvShows = false;
 
-function mergeUnique(local, remote, key = 'id') {
-    const map = new Map();
-    (remote || []).forEach(item => {
-        const itemKey = `${item[key]}-${item.media_type || item.type}`;
-        map.set(itemKey, item);
-    });
-    (local || []).forEach(item => {
-        const itemKey = `${item[key]}-${item.media_type || item.type}`;
-        if (!map.has(itemKey)) {
-            map.set(itemKey, item);
-        }
-    });
-    return Array.from(map.values());
-}
-
+// SINCRONIZA UM OBJETO DE DADOS ESPECÍFICO PARA O FIREBASE
 function syncToFirebase(dataToSync) {
     if (currentUser) {
         db.collection("users").doc(currentUser.uid).update(dataToSync)
@@ -109,6 +95,7 @@ function syncToFirebase(dataToSync) {
     }
 }
 
+// FUNÇÕES DE AUTENTICAÇÃO (LOGIN, LOGOUT, ETC.)
 function signInWithGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider).catch(error => {
@@ -274,82 +261,100 @@ function signInWithEmail() {
 
 auth.getRedirectResult().catch((error) => console.error("Erro no getRedirectResult:", error));
 
+// --- LÓGICA DE AUTENTICAÇÃO E SINCRONIZAÇÃO EM PARALELO ---
 auth.onAuthStateChanged(user => {
+    // Se a verificação inicial já foi feita, qualquer mudança de estado (login/logout) recarrega a página.
+    if (initialAuthCheckCompleted) {
+        location.reload();
+        return; // Para a execução para aguardar o recarregamento
+    }
+    // Na primeira execução, marca a verificação como concluída e continua o carregamento normal.
+    initialAuthCheckCompleted = true;
+
     if (firestoreListener) {
         firestoreListener();
         firestoreListener = null;
     }
-
     currentUser = user;
 
-    if (user) {
+    if (user) { // --- USUÁRIO LOGADO ---
+        const userDocRef = db.collection("users").doc(user.uid);
+
+        // Atualiza a interface do usuário
         const photoURL = user.photoURL || `https://ui-avatars.com/api/?name=${user.email.split('@')[0]}&background=random&color=fff`;
         if (floatingCombinedButton) {
             floatingCombinedButton.innerHTML = `<img src="${photoURL}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block;">`;
             floatingCombinedButton.title = user.displayName || user.email;
         }
 
-        isInitialSyncDone = false; 
-        
-        let localFavorites = JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY)) || [];
-        let localWatchHistory = JSON.parse(localStorage.getItem(WATCH_HISTORY_STORAGE_KEY)) || [];
-        let localRaffleHistory = JSON.parse(localStorage.getItem(RAFFLE_HISTORY_STORAGE_KEY)) || [];
-
-        firestoreListener = db.collection("users").doc(user.uid).onSnapshot(doc => {
+        // Anexa o listener para atualizações em tempo real
+        firestoreListener = userDocRef.onSnapshot(doc => {
+            console.log("Sincronizando com Firestore...");
             const firebaseData = doc.data() || {};
-            
-            if (!isInitialSyncDone) {
-                const mergedFavorites = mergeUnique(localFavorites, firebaseData.favorites, 'id');
-                const mergedWatchHistory = mergeUnique(localWatchHistory, firebaseData.watchHistory, 'id');
-                const mergedRaffleHistory = mergeUnique(localRaffleHistory, firebaseData.pickedMediaHistory, 'id');
+            favorites = firebaseData.favorites || [];
+            watchHistory = (firebaseData.watchHistory || []).slice(0, 100);
+            pickedMediaHistory = (firebaseData.pickedMediaHistory || []).slice(0, MAX_RAFFLE_HISTORY_SIZE);
 
-                mergedWatchHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
-                mergedRaffleHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-                favorites = mergedFavorites;
-                watchHistory = mergedWatchHistory.slice(0, 100);
-                pickedMediaHistory = mergedRaffleHistory.slice(0, MAX_RAFFLE_HISTORY_SIZE);
-
-                db.collection("users").doc(user.uid).set({
-                    favorites: favorites,
-                    watchHistory: watchHistory,
-                    pickedMediaHistory: pickedMediaHistory
-                }, { merge: true });
-
-                isInitialSyncDone = true;
-            } else {
-                favorites = firebaseData.favorites || [];
-                watchHistory = (firebaseData.watchHistory || []).slice(0, 100);
-                pickedMediaHistory = (firebaseData.pickedMediaHistory || []).slice(0, MAX_RAFFLE_HISTORY_SIZE);
-            }
-
+            // Atualiza o cache local e a UI
             localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
             localStorage.setItem(WATCH_HISTORY_STORAGE_KEY, JSON.stringify(watchHistory));
             localStorage.setItem(RAFFLE_HISTORY_STORAGE_KEY, JSON.stringify(pickedMediaHistory));
-            
-            updateHistoryButtonVisibility();
-            displayContinueWatching();
-            updateAllFavoriteButtonsUI();
-
+            updateAllUI();
         }, error => {
             console.error("Erro no ouvinte do Firestore:", error);
             showCustomToast('Erro de conexão com a nuvem.', 'info');
         });
+        
+        // Verifica se é um usuário novo para migrar os dados (apenas uma vez)
+        userDocRef.get().then(doc => {
+            if (!doc.exists) {
+                console.log("Novo usuário. Migrando dados do localStorage para o Firebase.");
+                let localFavorites = JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY)) || [];
+                let localWatchHistory = JSON.parse(localStorage.getItem(WATCH_HISTORY_STORAGE_KEY)) || [];
+                let localRaffleHistory = JSON.parse(localStorage.getItem(RAFFLE_HISTORY_STORAGE_KEY)) || [];
 
-    } else {
+                userDocRef.set({
+                    favorites: localFavorites,
+                    watchHistory: localWatchHistory,
+                    pickedMediaHistory: localRaffleHistory
+                }).then(() => {
+                    localStorage.removeItem(FAVORITES_STORAGE_KEY);
+                    localStorage.removeItem(WATCH_HISTORY_STORAGE_KEY);
+                    localStorage.removeItem(RAFFLE_HISTORY_STORAGE_KEY);
+                });
+            }
+        });
+
+    } else { // --- USUÁRIO DESLOGADO ---
         if (floatingCombinedButton) {
             floatingCombinedButton.innerHTML = `<i class="fas fa-list-alt"></i>`;
             floatingCombinedButton.title = "Meus Salvos";
         }
-        favorites = JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY)) || [];
-        watchHistory = JSON.parse(localStorage.getItem(WATCH_HISTORY_STORAGE_KEY)) || [];
-        pickedMediaHistory = JSON.parse(localStorage.getItem(RAFFLE_HISTORY_STORAGE_KEY)) || [];
-        
-        updateHistoryButtonVisibility();
-        displayContinueWatching();
-        updateAllFavoriteButtonsUI();
+        loadStateFromLocalStorage();
+        updateAllUI();
     }
 });
+
+/**
+ * Carrega o estado do aplicativo a partir do localStorage.
+ * Usado para carregar dados rapidamente antes da sincronização com o Firebase.
+ */
+function loadStateFromLocalStorage() {
+    favorites = JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY)) || [];
+    watchHistory = JSON.parse(localStorage.getItem(WATCH_HISTORY_STORAGE_KEY)) || [];
+    pickedMediaHistory = JSON.parse(localStorage.getItem(RAFFLE_HISTORY_STORAGE_KEY)) || [];
+}
+
+/**
+ * Agrupa as chamadas de atualização da interface.
+ */
+function updateAllUI() {
+    updateHistoryButtonVisibility();
+    displayContinueWatching();
+    updateAllFavoriteButtonsUI();
+}
+// --- FIM DA LÓGICA DE AUTENTICAÇÃO ---
+
 
 function getCompanyConfigForQuery(query) {
     const normalizedQuery = query.toLowerCase().trim();
@@ -741,7 +746,6 @@ async function openItemModal(itemId, mediaType, backdropPath = null, fromSorteio
     const logoPathForPlayer = selectBestLogo(details.images?.logos);
     const logoHTML = logoPathForPlayer ? `<div class="details-logo-container"><img src="${TMDB_IMAGE_BASE_URL}w500${logoPathForPlayer}" class="details-logo-img" alt="Logo"></div>` : '';
     
-    // PERFORMANCE: Added loading="lazy" to the cover image
     const headerContentHTML = `<div class="details-trailer-container"><div class="trailer-cover"><img src="${coverImagePath}" alt="Capa" class="trailer-cover-img" loading="lazy">${logoHTML}<div class="cover-elements-overlay"><div id="modal-play-button" class="play-icon-wrapper" style="${isTV ? 'display: none;' : ''}"><i class="fas fa-play"></i></div></div></div></div>`;
     
     const overview = details.overview || 'Sinopse não disponível.';
@@ -1034,8 +1038,11 @@ function toggleFavorite(item, type) {
         showCustomToast('Adicionado aos Favoritos', 'success');
     }
     
-    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
-    syncToFirebase({ favorites: favorites });
+    if (currentUser) {
+        syncToFirebase({ favorites: favorites });
+    } else {
+        localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
+    }
     updateFavoriteButtonsState(item.id, type);
 }
 
@@ -1087,7 +1094,6 @@ function displayContinueWatching() {
                 ? `T${item.season} E${item.episode}`
                 : `Visto em ${new Date(item.date).toLocaleDateString('pt-BR')}`;
             
-            // PERFORMANCE: Added loading="lazy" and dimensions to history images
             card.innerHTML = `
                 <img src="${imageUrl}" alt="${title}" loading="lazy" width="120" height="180" style="aspect-ratio: 120/180;">
                 <div class="title-overlay">
@@ -1126,18 +1132,23 @@ function addToWatchHistory(item, mediaType, seasonInfo = null, episodeInfo = nul
     watchHistory.unshift(entry);
     if (watchHistory.length > 100) watchHistory.pop();
     
-    localStorage.setItem(WATCH_HISTORY_STORAGE_KEY, JSON.stringify(watchHistory));
-    syncToFirebase({ watchHistory: watchHistory });
+    if (currentUser) {
+        syncToFirebase({ watchHistory: watchHistory });
+    } else {
+        localStorage.setItem(WATCH_HISTORY_STORAGE_KEY, JSON.stringify(watchHistory));
+    }
     
-    updateHistoryButtonVisibility();
-    displayContinueWatching();
+    updateAllUI();
 }
 
 function removeFromWatchHistory(itemId) {
     watchHistory = watchHistory.filter(h => h.id.toString() !== itemId.toString());
     
-    localStorage.setItem(WATCH_HISTORY_STORAGE_KEY, JSON.stringify(watchHistory));
-    syncToFirebase({ watchHistory: watchHistory });
+    if (currentUser) {
+        syncToFirebase({ watchHistory: watchHistory });
+    } else {
+        localStorage.setItem(WATCH_HISTORY_STORAGE_KEY, JSON.stringify(watchHistory));
+    }
 
     showCustomToast('Removido do histórico', 'info');
     displayContinueWatching();
@@ -1172,7 +1183,6 @@ function displayResults(items, defaultType, targetEl, replace) {
         const tags = mediaType === 'movie' ? 'Filme' : 'Série';
         const tagsHTML = `<div class="tags">${tags}</div>`;
 
-        // PERFORMANCE: Added loading="lazy" and dimensions to prevent layout shift
         card.innerHTML = `
             <img src="${imageUrl}" alt="${title}" loading="lazy" width="400" height="600" style="aspect-ratio: 2/3;">
             <div class="title-overlay">
@@ -1188,6 +1198,8 @@ function displayResults(items, defaultType, targetEl, replace) {
     });
     
     targetEl.appendChild(fragment);
+    // Após exibir os resultados, garante que os botões de favorito estejam corretos
+    updateAllFavoriteButtonsUI();
 }
 
 function copyToClipboard(text) {
@@ -1263,7 +1275,6 @@ function openCombinedModal() {
                             const imageUrl = item.poster_path 
                                 ? `${TMDB_IMAGE_BASE_URL}w342${item.poster_path}`
                                 : `https://placehold.co/342x513/0F071A/F3F4F6?text=${encodeURIComponent(title)}&font=inter`;
-                            // PERFORMANCE: Added loading="lazy" and dimensions to favorite images
                             return `
                             <div class="content-card favorite-card" data-id="${item.id}" data-type="${item.media_type}" data-backdrop="${item.backdrop_path || ''}">
                                 <img src="${imageUrl}" alt="${title}" loading="lazy" width="342" height="513" style="aspect-ratio: 342/513;">
@@ -1303,7 +1314,6 @@ function openCombinedModal() {
                                 ? `T${item.season} E${item.episode}`
                                 : `Visto em ${new Date(item.date).toLocaleDateString('pt-BR')}`;
 
-                            // PERFORMANCE: Added loading="lazy" and dimensions to history list images
                             return `
                                 <div class="history-list-item" data-id="${item.id}" data-type="${item.media_type}">
                                     <img src="${imageUrl}" alt="Poster" class="history-list-poster" loading="lazy" width="92" height="138">
@@ -1376,6 +1386,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
     
+    // Carrega dados locais imediatamente para uma UI inicial responsiva
+    loadStateFromLocalStorage();
+
     let originalSearchInputListener = debounce(() => performSearch(searchInput.value), 500);
     if (searchInput) {
         searchInput.addEventListener('input', () => {
@@ -1478,12 +1491,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // --- OTIMIZAÇÃO DE PERFORMANCE: Inicia o carregamento do conteúdo imediatamente ---
     const urlParams = new URLSearchParams(window.location.search);
     const typeParam = urlParams.get('type');
     const idParam = urlParams.get('id');
+
     if (typeParam && idParam) {
         openItemModal(idParam, typeParam);
     } else {
         loadMainPageContent();
     }
+    // A lógica do onAuthStateChanged roda em paralelo para carregar os dados do usuário e atualizar a UI.
 });
