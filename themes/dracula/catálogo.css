@@ -8,18 +8,18 @@
 }
 
 /* =================================================
-  === SONHO DE SAKURA THEME (Rosa Claro e Gradiente) ===
+  === TEMA NÉVOA VIOLETA (Roxo e Gradiente) ===
   =================================================
-  Um tema suave e sonhador com tons de rosa claro e lavanda.
+  Um tema elegante e moderno com tons de roxo e lavanda.
 */
 :root {
     --background-color: #17181C;
     --surface-color: #4F4C7A;    /* Roxo suave */
     --card-bg: #3E3C61;          /* Fundo do card roxo escuro */
     
-    --primary-color: #bd93f9;    /* Lilac */
-    --primary-hover-color: #d8bcfc; /* Lilac mais claro para hover */
-    --on-primary-color: #2C2A4A;  /* Cor do texto sobre o primário (escuro) */
+    --primary-color: #593BA2;    /* Roxo principal */
+    --primary-hover-color: #7048C4; /* Roxo mais claro para hover */
+    --on-primary-color: #F3F3FF;  /* Cor do texto sobre o primário (claro) */
     --icon-color: #A6D9F7;       /* Azul céu suave para ícones */
 
     --secondary-accent: #A6D9F7; /* Azul céu para detalhes */
@@ -27,8 +27,8 @@
     --text-primary: #F3F3FF;     /* Branco lavanda */
     --text-secondary: #A4A1CC;   /* Lavanda suave */
     
-    --border-color: rgba(189, 147, 249, 0.2); /* Borda lilás sutil */
-    --border-highlight: var(--primary-color); /* Borda destacada em lilás */
+    --border-color: rgba(89, 59, 162, 0.2); /* Borda roxa sutil */
+    --border-highlight: var(--primary-color); /* Borda destacada em roxo */
 
     --danger-red: #ff5555;
     --danger-red-hover: #ff6e6e;
@@ -36,7 +36,7 @@
     --info-blue: #8be9fd;
 
     /* Gradientes */
-    --primary-gradient: linear-gradient(45deg, rgba(189, 147, 249, 0.7), rgba(160, 110, 200, 0.7));
+    --primary-gradient: linear-gradient(45deg, rgba(89, 59, 162, 0.7), rgba(112, 72, 196, 0.7));
     --header-gradient: linear-gradient(160deg, var(--background-color), var(--surface-color));
 
     --header-height-mobile: 5rem;
@@ -44,7 +44,7 @@
     /* Sombras e Brilhos */
     --expressive-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
     --subtle-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-    --modal-shadow-neutral-glow: 0 0 40px rgba(189, 147, 249, 0.25); /* Brilho lilás */
+    --modal-shadow-neutral-glow: 0 0 40px rgba(89, 59, 162, 0.25); /* Brilho roxo */
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
@@ -73,7 +73,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     left: 0;
     width: 100vw;
     height: 100vh;
-    z-index: 500;
+    z-index: -2;
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
@@ -128,7 +128,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 }
 .content-card:hover {
     transform: translateY(-8px) scale(1.05);
-        box-shadow: 0 0 20px rgba(189, 147, 249, 0.2), 0 4px 15px rgba(0,0,0,0.5);
+    box-shadow: 0 0 20px rgba(89, 59, 162, 0.2), 0 4px 15px rgba(0,0,0,0.5);
     border-color: var(--border-highlight);
 }
 .content-card img {
@@ -216,7 +216,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     background: var(--primary-gradient);
     border-color: var(--primary-color);
     color: var(--on-primary-color);
-    box-shadow: 0 6px 20px rgba(189, 147, 249, 0.2), 0 2px 8px rgba(0,0,0,0.5);
+    box-shadow: 0 6px 20px rgba(89, 59, 162, 0.2), 0 2px 8px rgba(0,0,0,0.5);
 }
 
 .swal-genre-filter-type-selector button.active,
@@ -224,7 +224,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     background: var(--primary-gradient);
     color: var(--on-primary-color);
     border-color: var(--primary-color);
-    box-shadow: 0 0 20px rgba(189, 147, 249, 0.3);
+    box-shadow: 0 0 20px rgba(89, 59, 162, 0.3);
     transform: scale(1.02);
 }
 
@@ -232,13 +232,13 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     background: var(--primary-gradient) !important;
     color: var(--on-primary-color) !important;
     border: 1px solid var(--primary-color) !important;
-    box-shadow: 0 4px 15px rgba(189, 147, 249, 0.25) !important;
+    box-shadow: 0 4px 15px rgba(89, 59, 162, 0.25) !important;
 }
 .swal-filter-actions .swal2-confirm:hover {
     background: var(--primary-gradient) !important;
     filter: brightness(1.1);
     border-color: var(--primary-hover-color) !important;
-    box-shadow: 0 6px 20px rgba(189, 147, 249, 0.35) !important;
+    box-shadow: 0 6px 20px rgba(89, 59, 162, 0.35) !important;
 }
 .swal-filter-actions .swal2-deny {
     background-color: var(--danger-red) !important;
@@ -346,7 +346,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 .play-icon-wrapper .fa-play {
     font-size: 4.5rem;
     color: rgba(255, 255, 255, 0.9);
-    text-shadow: 0 0 25px rgba(189, 147, 249, 0.5);
+    text-shadow: 0 0 25px rgba(89, 59, 162, 0.5);
     transition: transform 0.3s ease, color 0.3s ease;
 }
 
@@ -430,10 +430,10 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 #filterToggleButton:hover {
     filter: brightness(1.1);
     border-color: var(--primary-hover-color);
-    box-shadow: 0 6px 20px rgba(189, 147, 249, 0.2), 0 2px 8px rgba(0,0,0,0.5);
+    box-shadow: 0 6px 20px rgba(89, 59, 162, 0.2), 0 2px 8px rgba(0,0,0,0.5);
 }
 #filterToggleButton.active {
-    box-shadow: 0 0 20px rgba(189, 147, 249, 0.3);
+    box-shadow: 0 0 20px rgba(89, 59, 162, 0.3);
     border-color: var(--secondary-accent);
     background: var(--secondary-accent);
     color: #000;
@@ -460,7 +460,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     font-size: 0.95rem;
     transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
 }
-.input-search:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(189, 147, 249, 0.2); }
+.input-search:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(89, 59, 162, 0.2); }
 .input-search::placeholder { color: var(--text-secondary); }
 .input-search:disabled { background-color: var(--border-color); cursor: not-allowed; }
 #searchButton { position: absolute; right: 0; top: 0; height: 100%; padding: 0 1.1rem; color: var(--text-secondary); background-color: transparent; border: none; cursor: pointer; transition: color 0.2s; }
@@ -506,7 +506,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 .home-button:hover {
     filter: brightness(1.1);
     border-color: var(--primary-hover-color);
-    box-shadow: 0 6px 20px rgba(189, 147, 249, 0.2), 0 2px 8px rgba(0,0,0,0.5);
+    box-shadow: 0 6px 20px rgba(89, 59, 162, 0.2), 0 2px 8px rgba(0,0,0,0.5);
 }
 
 .home-button .fas {
@@ -546,6 +546,44 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     background-color: rgba(255, 85, 85, 0.4);
     color: var(--icon-color);
 }
+.content-card .tags {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    background-color: rgba(23, 24, 28, 0.7);
+    backdrop-filter: blur(4px);
+    color: var(--text-primary);
+    padding: 0.2rem 0.6rem;
+    border-radius: 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    z-index: 5;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+.watched-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    border-radius: 0.75rem;
+    z-index: 4;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.content-card:hover .watched-overlay {
+    opacity: 1;
+}
+
 
 .modal-actions-wrapper {
     display: flex;
@@ -579,7 +617,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     background: var(--primary-gradient);
     color: var(--on-primary-color);
     border-color: var(--primary-color);
-    box-shadow: 0 4px 15px rgba(189, 147, 249, 0.25);
+    box-shadow: 0 4px 15px rgba(89, 59, 162, 0.25);
     transform: scale(1.1);
 }
 
@@ -616,7 +654,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 }
 .favorites-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 1rem;
     padding: 1rem;
 }
@@ -628,7 +666,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     top: 0.2rem;
     right: 0.2rem;
     background-color: rgba(44, 42, 74, 0.7);
-    border: 1px solid rgba(189, 147, 249, 0.2);
+    border: 1px solid rgba(89, 59, 162, 0.2);
     color: var(--icon-color);
     border-radius: 50%;
     width: 28px;
@@ -807,7 +845,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     background: var(--primary-gradient);
     color: var(--on-primary-color);
     border-color: var(--primary-color);
-    box-shadow: 0 0 10px rgba(189, 147, 249, 0.3);
+    box-shadow: 0 0 10px rgba(89, 59, 162, 0.3);
     transform: translateY(-2px);
 }
 
@@ -996,7 +1034,7 @@ button {
     border: 1px solid var(--border-color);
     background: var(--surface-color);
     color: var(--text-primary);
-    transition: background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, color 0.3s ease, filter 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     box-shadow: none;
     line-height: 1.1;
     white-space: nowrap;
@@ -1012,7 +1050,7 @@ button:hover {
     background: var(--primary-gradient);
     border-color: var(--primary-color);
     color: var(--on-primary-color);
-    box-shadow: 0 3px 10px rgba(189, 147, 249, 0.2);
+    box-shadow: 0 3px 10px rgba(89, 59, 162, 0.2);
 }
 
 button:hover .fas, button:hover .far {
@@ -1072,7 +1110,7 @@ button:disabled {
     color: var(--on-primary-color);
     border-color: var(--primary-color);
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(189, 147, 249, 0.3), 0 0 16px rgba(189, 147, 249, 0.2);
+    box-shadow: 0 6px 16px rgba(89, 59, 162, 0.3), 0 0 16px rgba(89, 59, 162, 0.2);
 }
 
 /* --- Base do Botão e Container do Trailer --- */
@@ -1087,7 +1125,7 @@ button:disabled {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     border: 2px solid var(--primary-color);
     background: var(--primary-gradient);
     color: var(--on-primary-color);
@@ -1196,7 +1234,7 @@ button:disabled {
     color: var(--on-primary-color);
     border-color: var(--primary-color);
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(189, 147, 249, 0.3), 0 0 16px rgba(189, 147, 249, 0.2);
+    box-shadow: 0 6px 16px rgba(89, 59, 162, 0.3), 0 0 16px rgba(89, 59, 162, 0.2);
 }
 
 .swal2-container {
@@ -1276,7 +1314,7 @@ body.swal2-shown header {
     top: 5px;
     right: 5px;
     background-color: rgba(0, 0, 0, 0.6);
-    border: 1px solid rgba(189, 147, 249, 0.2);
+    border: 1px solid rgba(89, 59, 162, 0.2);
     color: #FFF;
     border-radius: 50%;
     width: 24px;
@@ -1435,7 +1473,7 @@ body.swal2-shown header {
     background: var(--primary-gradient);
     color: var(--on-primary-color);
     border-color: var(--primary-color);
-    box-shadow: 0 4px 15px rgba(189, 147, 249, 0.25);
+    box-shadow: 0 4px 15px rgba(89, 59, 162, 0.25);
     transform: scale(1.1);
 }
 
@@ -1444,4 +1482,131 @@ body.swal2-shown header {
 .modal-copy-link-button .fas,
 .modal-download-button .fas {
     margin-right: 0;
+}
+.swal-collection-popup {
+    width: 90vw !important;
+    max-width: 1200px !important;
+    max-height: 90vh !important;
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden;
+}
+
+.swal-collection-container {
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex;
+    flex-direction: column;
+}
+
+.collection-modal-header {
+    min-height: 200px;
+    max-height: 30vh;
+    background-size: cover;
+    background-position: center 25%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 1.5rem;
+    color: white;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+    flex-shrink: 0;
+}
+
+.collection-modal-title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.collection-modal-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0;
+    order: 2;
+}
+
+.collection-modal-header .collection-favorite-button {
+    position: static;
+    flex-shrink: 0;
+    order: 1;
+}
+
+.swal-collection-close-button {
+    color: white !important;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+    top: 1.5rem !important;
+    right: 1.5rem !important;
+}
+.swal-collection-close-button:hover {
+    color: var(--primary-color) !important;
+}
+
+.collection-modal-body {
+    padding: 1.5rem;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.collection-modal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .collection-modal-title {
+        font-size: 1.8rem;
+    }
+    .collection-modal-header {
+        padding: 1rem;
+        min-height: 150px;
+    }
+    .collection-modal-body {
+        padding: 1rem;
+    }
+}
+/* --- Base do Botão e Container do Trailer --- */
+.modal-trailer-button, .modal-collection-button {
+    flex-grow: 1;
+    padding: 0.6rem 1.2rem;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border: 2px solid var(--primary-color);
+    background: var(--primary-gradient);
+    color: var(--on-primary-color);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px -5px rgba(0, 0, 0, 0.3);
+    -webkit-tap-highlight-color: transparent;
+}
+.modal-collection-wrapper {
+    margin-top: 1rem;
+}
+.modal-collection-button {
+    width: 100%;
+    background: var(--surface-color);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+.modal-collection-button:hover {
+    background: var(--primary-gradient);
+    border-color: var(--primary-color);
+    color: var(--on-primary-color);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px -8px var(--primary-color);
+}
+
+
+.modal-trailer-button .fas, .modal-collection-button .fas {
+    font-size: 1rem;
 }
