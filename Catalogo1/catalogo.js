@@ -263,12 +263,10 @@ auth.getRedirectResult().catch((error) => console.error("Erro no getRedirectResu
 
 // --- LÓGICA DE AUTENTICAÇÃO E SINCRONIZAÇÃO EM PARALELO ---
 auth.onAuthStateChanged(user => {
-    // Se a verificação inicial já foi feita, qualquer mudança de estado (login/logout) recarrega a página.
     if (initialAuthCheckCompleted) {
         location.reload();
-        return; // Para a execução para aguardar o recarregamento
+        return; 
     }
-    // Na primeira execução, marca a verificação como concluída e continua o carregamento normal.
     initialAuthCheckCompleted = true;
 
     if (firestoreListener) {
@@ -280,14 +278,12 @@ auth.onAuthStateChanged(user => {
     if (user) { // --- USUÁRIO LOGADO ---
         const userDocRef = db.collection("users").doc(user.uid);
 
-        // Atualiza a interface do usuário
         const photoURL = user.photoURL || `https://ui-avatars.com/api/?name=${user.email.split('@')[0]}&background=random&color=fff`;
         if (floatingCombinedButton) {
             floatingCombinedButton.innerHTML = `<img src="${photoURL}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block;">`;
             floatingCombinedButton.title = user.displayName || user.email;
         }
 
-        // Anexa o listener para atualizações em tempo real
         firestoreListener = userDocRef.onSnapshot(doc => {
             console.log("Sincronizando com Firestore...");
             const firebaseData = doc.data() || {};
@@ -295,7 +291,6 @@ auth.onAuthStateChanged(user => {
             watchHistory = (firebaseData.watchHistory || []).slice(0, 100);
             pickedMediaHistory = (firebaseData.pickedMediaHistory || []).slice(0, MAX_RAFFLE_HISTORY_SIZE);
 
-            // Atualiza o cache local e a UI
             localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites));
             localStorage.setItem(WATCH_HISTORY_STORAGE_KEY, JSON.stringify(watchHistory));
             localStorage.setItem(RAFFLE_HISTORY_STORAGE_KEY, JSON.stringify(pickedMediaHistory));
@@ -305,7 +300,6 @@ auth.onAuthStateChanged(user => {
             showCustomToast('Erro de conexão com a nuvem.', 'info');
         });
         
-        // Verifica se é um usuário novo para migrar os dados (apenas uma vez)
         userDocRef.get().then(doc => {
             if (!doc.exists) {
                 console.log("Novo usuário. Migrando dados do localStorage para o Firebase.");
@@ -335,19 +329,12 @@ auth.onAuthStateChanged(user => {
     }
 });
 
-/**
- * Carrega o estado do aplicativo a partir do localStorage.
- * Usado para carregar dados rapidamente antes da sincronização com o Firebase.
- */
 function loadStateFromLocalStorage() {
     favorites = JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY)) || [];
     watchHistory = JSON.parse(localStorage.getItem(WATCH_HISTORY_STORAGE_KEY)) || [];
     pickedMediaHistory = JSON.parse(localStorage.getItem(RAFFLE_HISTORY_STORAGE_KEY)) || [];
 }
 
-/**
- * Agrupa as chamadas de atualização da interface.
- */
 function updateAllUI() {
     updateHistoryButtonVisibility();
     displayContinueWatching();
@@ -425,14 +412,14 @@ async function loadMainPageContent() {
     if (moviesResultsGrid) {
         if (moviesData && !moviesData.error && moviesData.results) {
             popularMoviesTotalPages = moviesData.total_pages || 1;
-            displayResults(moviesData.results, 'movie', moviesResultsGrid, true);
+            displayResults(moviesData.results, 'movie', moviesResultsGrid, true, false); // showTags = false
             moviesData.results.forEach(movie => { if (movie.backdrop_path) mainPageBackdropPaths.push(movie.backdrop_path); });
         } else { moviesResultsGrid.innerHTML = `<p class="text-center col-span-full text-[var(--text-secondary)] py-5">Não foi possível carregar os filmes populares. ${moviesData?.message || ''}</p>`; }
     }
     if (tvShowsResultsGrid) {
         if (tvShowsData && !tvShowsData.error && tvShowsData.results) {
             topRatedTvShowsTotalPages = tvShowsData.total_pages || 1;
-            displayResults(tvShowsData.results, 'tv', tvShowsResultsGrid, true);
+            displayResults(tvShowsData.results, 'tv', tvShowsResultsGrid, true, false); // showTags = false
             tvShowsData.results.forEach(show => { if (show.backdrop_path) mainPageBackdropPaths.push(show.backdrop_path); });
         } else { tvShowsResultsGrid.innerHTML = `<p class="text-center col-span-full text-[var(--text-secondary)] py-5">Não foi possível carregar as séries populares. ${tvShowsData?.message || ''}</p>`; }
     }
@@ -450,7 +437,7 @@ async function loadMorePopularMovies() {
         popularMoviesCurrentPage++;
         const data = await fetchTMDB('/movie/popular', { page: popularMoviesCurrentPage });
         if (data && !data.error && data.results && data.results.length > 0) {
-            displayResults(data.results, 'movie', moviesResultsGrid, false);
+            displayResults(data.results, 'movie', moviesResultsGrid, false, false); // showTags = false
             data.results.forEach(movie => { if (movie.backdrop_path && !mainPageBackdropPaths.includes(movie.backdrop_path)) mainPageBackdropPaths.push(movie.backdrop_path); });
             popularMoviesTotalPages = data.total_pages || popularMoviesTotalPages;
         } else if (data && data.error) {
@@ -474,7 +461,7 @@ async function loadMoreTopRatedTvShows() {
         topRatedTvShowsCurrentPage++;
         const data = await fetchTMDB('/tv/top_rated', { page: topRatedTvShowsCurrentPage });
         if (data && !data.error && data.results && data.results.length > 0) {
-            displayResults(data.results, 'tv', tvShowsResultsGrid, false);
+            displayResults(data.results, 'tv', tvShowsResultsGrid, false, false); // showTags = false
             data.results.forEach(show => { if (show.backdrop_path && !mainPageBackdropPaths.includes(show.backdrop_path)) mainPageBackdropPaths.push(show.backdrop_path); });
             topRatedTvShowsTotalPages = data.total_pages || topRatedTvShowsTotalPages;
         } else if (data && data.error) {
@@ -558,7 +545,7 @@ async function performSearch(query) {
         uniqueResults.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
 
         if (singleResultsGrid) {
-            displayResults(uniqueResults, null, singleResultsGrid, true);
+            displayResults(uniqueResults, null, singleResultsGrid, true, true); // showTags = true
             if (uniqueResults.length === 0) {
                 const baseErrorMsg = companyConfig ? `Nenhum conteúdo de ${companyConfig.name} ou resultados diretos encontrados.` : `Nenhum filme ou série relevante encontrado.`;
                 singleResultsGrid.innerHTML = `<p class="text-center col-span-full">${multiSearchData?.error ? multiSearchData.message : baseErrorMsg}</p>`;
@@ -604,7 +591,7 @@ async function applyGenreFilterFromSA() {
 
     if (singleResultsGrid) {
         if (data && data.results) {
-            displayResults(data.results, activeAppliedGenre.type, singleResultsGrid, true);
+            displayResults(data.results, activeAppliedGenre.type, singleResultsGrid, true, true); // showTags = true
             if (data.results.length === 0) {
                 singleResultsGrid.innerHTML = `<p class="text-center col-span-full">Nenhum item encontrado para o gênero ${activeAppliedGenre.name || 'selecionado'}.</p>`;
             } else {
@@ -887,7 +874,7 @@ function launchAdvancedPlayer(url, logoPath, itemData, mediaType, seasonInfo = n
     }
 
     const logoForPlayerHTML = logoPath 
-        ? `<img src="${TMDB_IMAGE_BASE_URL}w300${logoPath}" id="player-logo" alt="logo">`
+        ? `<img src="${TMDB_IMAGE_BASE_URL}w300${logoPath}" id="player-logo" alt="Logo">`
         : '';
 
     wrapper.innerHTML = `
@@ -983,7 +970,7 @@ async function loadMoreItems() {
             nextPageData = await fetchTMDB('/search/multi', { query: searchInput.value, page: searchCurrentPage });
             if (nextPageData && !nextPageData.error && nextPageData.results) {
                 totalPages.search = nextPageData.total_pages || totalPages.search;
-                displayResults(nextPageData.results, null, singleResultsGrid, false);
+                displayResults(nextPageData.results, null, singleResultsGrid, false, true); // showTags = true
             } else { searchCurrentPage--; }
         } else if (currentContentContext === 'filter' && filterCurrentPage < totalPages.filter) {
             filterCurrentPage++;
@@ -997,7 +984,7 @@ async function loadMoreItems() {
             nextPageData = await fetchTMDB(`/discover/${endpointType}`, params);
             if (nextPageData && !nextPageData.error && nextPageData.results) {
                 totalPages.filter = nextPageData.total_pages || totalPages.filter;
-                displayResults(nextPageData.results, activeAppliedGenre.type, singleResultsGrid, false);
+                displayResults(nextPageData.results, activeAppliedGenre.type, singleResultsGrid, false, true); // showTags = true
             } else { filterCurrentPage--; }
         }
     } catch (error) {
@@ -1160,7 +1147,7 @@ function updateHistoryButtonVisibility() {
     }
 }
 
-function displayResults(items, defaultType, targetEl, replace) {
+function displayResults(items, defaultType, targetEl, replace, showTags = false) {
     if (!targetEl) return;
     if (replace) targetEl.innerHTML = '';
     const fragment = document.createDocumentFragment();
@@ -1180,8 +1167,11 @@ function displayResults(items, defaultType, targetEl, replace) {
             ? `${TMDB_IMAGE_BASE_URL}w400${item.poster_path}`
             : `https://placehold.co/400x600/0F071A/F3F4F6?text=${encodeURIComponent(title)}&font=inter`;
 
-        const tags = mediaType === 'movie' ? 'Filme' : 'Série';
-        const tagsHTML = `<div class="tags">${tags}</div>`;
+        let tagsHTML = '';
+        if (showTags) {
+            const tagText = mediaType === 'movie' ? 'Filme' : 'Série';
+            tagsHTML = `<div class="tags">${tagText}</div>`;
+        }
 
         card.innerHTML = `
             <img src="${imageUrl}" alt="${title}" loading="lazy" width="400" height="600" style="aspect-ratio: 2/3;">
@@ -1198,7 +1188,6 @@ function displayResults(items, defaultType, targetEl, replace) {
     });
     
     targetEl.appendChild(fragment);
-    // Após exibir os resultados, garante que os botões de favorito estejam corretos
     updateAllFavoriteButtonsUI();
 }
 
@@ -1268,9 +1257,15 @@ function openCombinedModal() {
                 tabContent.innerHTML = '<div class="loader mx-auto my-5"></div>';
 
                 if (tab === 'favorites') {
-                    let favsHtml = '<p class="text-center text-gray-400 py-5">Não tem favoritos.</p>';
-                    if (favorites && favorites.length > 0) {
-                        favsHtml = `<div class="favorites-grid" style="grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));">${favorites.map(item => {
+                    const favoriteMovies = favorites.filter(item => item.media_type === 'movie');
+                    const favoriteSeries = favorites.filter(item => item.media_type === 'tv');
+                    
+                    let favsHtml = '';
+
+                    // Seção de Filmes
+                    if (favoriteMovies.length > 0) {
+                        favsHtml += '<h3 class="favorites-section-title">Filmes</h3>';
+                        favsHtml += `<div class="favorites-grid">${favoriteMovies.map(item => {
                             const title = item.title || '';
                             const imageUrl = item.poster_path 
                                 ? `${TMDB_IMAGE_BASE_URL}w342${item.poster_path}`
@@ -1280,8 +1275,31 @@ function openCombinedModal() {
                                 <img src="${imageUrl}" alt="${title}" loading="lazy" width="342" height="513" style="aspect-ratio: 342/513;">
                                 <div class="title-overlay"><div class="title">${title}</div></div>
                                 <button class="remove-favorite-button" data-id="${item.id}" data-type="${item.media_type}"><i class="fas fa-times-circle"></i></button>
-                            </div>`}).join('')}</div>`;
+                            </div>`;
+                        }).join('')}</div>`;
                     }
+
+                    // Seção de Séries
+                    if (favoriteSeries.length > 0) {
+                        favsHtml += '<h3 class="favorites-section-title">Séries</h3>';
+                        favsHtml += `<div class="favorites-grid">${favoriteSeries.map(item => {
+                            const title = item.title || '';
+                            const imageUrl = item.poster_path 
+                                ? `${TMDB_IMAGE_BASE_URL}w342${item.poster_path}`
+                                : `https://placehold.co/342x513/0F071A/F3F4F6?text=${encodeURIComponent(title)}&font=inter`;
+                            return `
+                            <div class="content-card favorite-card" data-id="${item.id}" data-type="${item.media_type}" data-backdrop="${item.backdrop_path || ''}">
+                                <img src="${imageUrl}" alt="${title}" loading="lazy" width="342" height="513" style="aspect-ratio: 342/513;">
+                                <div class="title-overlay"><div class="title">${title}</div></div>
+                                <button class="remove-favorite-button" data-id="${item.id}" data-type="${item.media_type}"><i class="fas fa-times-circle"></i></button>
+                            </div>`;
+                        }).join('')}</div>`;
+                    }
+
+                    if (favsHtml === '') {
+                        favsHtml = '<p class="text-center text-gray-400 py-5">Não tem favoritos.</p>';
+                    }
+
                     tabContent.innerHTML = favsHtml;
                     
                     document.querySelectorAll('.favorite-card').forEach(card => {
@@ -1386,7 +1404,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
     
-    // Carrega dados locais imediatamente para uma UI inicial responsiva
     loadStateFromLocalStorage();
 
     let originalSearchInputListener = debounce(() => performSearch(searchInput.value), 500);
@@ -1491,7 +1508,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- OTIMIZAÇÃO DE PERFORMANCE: Inicia o carregamento do conteúdo imediatamente ---
     const urlParams = new URLSearchParams(window.location.search);
     const typeParam = urlParams.get('type');
     const idParam = urlParams.get('id');
@@ -1501,5 +1517,4 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         loadMainPageContent();
     }
-    // A lógica do onAuthStateChanged roda em paralelo para carregar os dados do usuário e atualizar a UI.
 });
