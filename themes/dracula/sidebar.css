@@ -5,21 +5,14 @@
   box-sizing: border-box;
 }
 
-:root {
-  --primary-gradient: linear-gradient(135deg, #bd93f9, #bd93f9);
-  --on-primary-color: #f8f8f2;
-  --on-primary-color-rgb: 248, 248, 242;
-  --primary-color: #bd93f9;
-}
-
 body {
-  background: #282a36; /* Dracula background */
-  color: #f8f8f2;
-  font-family: 'sans-serif'; /* Dracula font */
+  background: black;
+  color: white;
+  font-family: 'Inter', sans-serif;
   min-height: 100vh;
   width: 100vw;
   position: relative;
-  overflow-x: hidden; /* Prevent horizontal scrollbars */
+  overflow-x: hidden;
 }
 
 /* Iframe for News Content */
@@ -31,60 +24,56 @@ body {
   height: 100%;
   border: none;
   z-index: 0;
-  background-color: #282a36; /* Fallback background for iframe area */
+  background-color: #1a1a1a;
 }
 
 /* Sidebar Buttons Container */
 .sidebar-buttons {
   position: fixed;
   left: 18px;
-  top: 50%; /* Default position */
-  transform: translateY(-50%); /* Default vertical centering */
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   flex-direction: column;
   align-items: center; 
-  padding: 15px 8px; /* Increased padding for better spacing */
+  padding: 15px 8px;
   z-index: 999; 
   gap: 28px; 
-  pointer-events: none; /* Container itself doesn't receive clicks unless children do */
-  /* Updated: Reintroduced and increased blur for the sidebar container */
-  
+  pointer-events: none;
 }
 
 /* Modifier for sidebar container when condensed */
 .sidebar-container-condensed {
-  top: auto; /* Override default top */
-  bottom: 1%; /* Position at bottom */
-  transform: translateY(0); /* Reset vertical centering */
+  top: auto;
+  bottom: 1%;
+  transform: translateY(0);
 }
 
 .sidebar-buttons > * {
-    pointer-events: auto; /* Children (buttons) are clickable */
+    pointer-events: auto;
 }
 
 /* Individual Icon Buttons */
 .icon-button {
-  background: var(--primary-gradient); /* Use theme's primary gradient */
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.1); 
-  border-radius: 20%; /* Changed to match floating buttons */
-  width: 3.5rem; /* Changed to match floating buttons */
-  height: 3.5rem; /* Changed to match floating buttons */
+  background-color: #593BA2;
+  border: 1px solid #3A2B5C; 
+  border-radius: 20%;
+  width: 3.5rem;
+  height: 3.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.3rem; /* Changed to match floating buttons */
-  color: var(--on-primary-color); /* Use theme's on-primary color */
+  font-size: 1.3rem;
+  color: white;
   cursor: pointer;
   text-decoration: none; 
-  box-shadow: 0 4px 15px rgba(189, 147, 249, 0.15), 
-              0 1px 5px rgba(0, 0, 0, 0.15); 
+  box-shadow: 0 4px 15px rgba(130, 0, 255, 0.15),
+              0 1px 5px rgba(0, 0, 0, 0.15);
   position: relative; 
   overflow: hidden; 
   -webkit-tap-highlight-color: transparent;
   opacity: 1;
-  transform: translateX(0) scale(1) rotate(0deg); 
+  transform: translateX(0) scale(1) rotate(0deg);
   transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 1),
               background 0.35s ease-out, 
               box-shadow 0.35s ease-out, 
@@ -101,9 +90,9 @@ body {
 
 /* Modifier for toggle button when sidebar is condensed */
 #toggleSidebarBtn.toggle-btn-shrunk {
-    width: 60px; /* Smaller width */
-    height: 60px; /* Smaller height */
-    font-size: 28px; /* Smaller icon */
+    width: 60px;
+    height: 60px;
+    font-size: 28px;
 }
 
 
@@ -111,9 +100,7 @@ body {
 .icon-button i {
   position: relative;
   z-index: 2; 
-  color: var(--on-primary-color); /* Explicitly set icon color */
-  /* Updated: More subtle drop shadow for icons */
-  filter: drop-shadow(0 0 2px rgba(var(--on-primary-color-rgb), 0.1));
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.1));
 }
 
 .icon-button img {
@@ -122,18 +109,14 @@ body {
 }
 
 .icon-button:hover {
-  transform: scale(1.1) translateY(-3px) rotate(2deg); /* Slightly less pronounced hover */
-  background: var(--primary-gradient); /* Use theme's primary gradient */
-  filter: brightness(1.1); /* Make it brighter on hover */
-  border-color: var(--primary-color); /* Use theme's primary color for border */
-  /* Updated: Softer box-shadow on hover */
-  box-shadow: 0 6px 20px rgba(189, 147, 249, 0.3), /* Slightly stronger glowing shadow */
-              0 2px 8px rgba(0, 0, 0, 0.25); /* More defined base shadow */
-  color: var(--on-primary-color); /* Use theme's on-primary color */
+  transform: scale(1.1) translateY(-3px) rotate(2deg);
+  background-color: #8c70c8;
+  border-color: #593BA2;
+  box-shadow: 0 6px 20px rgba(130, 0, 255, 0.3),
+              0 2px 8px rgba(0, 0, 0, 0.25);
 }
- /* Specific hover for shrunk toggle button to avoid translateY fighting with positioning */
-#toggleSidebarBtn.toggle-btn-shrunk:hover {
-    transform: scale(1.1) rotate(0deg); /* No translateY for shrunk button */
+ #toggleSidebarBtn.toggle-btn-shrunk:hover {
+    transform: scale(1.1) rotate(0deg);
 }
 
 
@@ -145,15 +128,14 @@ body {
   0% {
     transform: translate(-50%, -50%) scale(0.3);
     opacity: 0.6;
-    /* Updated: More subtle smoke puff glow */
-    box-shadow: 0 0 8px 4px rgba(189, 147, 249, 0.3), /* Softer lilac glow */
-                0 0 15px 7px rgba(189, 147, 249, 0.2); /* Softer violet accent */
+    box-shadow: 0 0 8px 4px rgba(180, 0, 255, 0.3),
+                0 0 15px 7px rgba(255, 0, 200, 0.2);
   }
   100% {
-    transform: translate(-50%, -50%) scale(2.0); /* Slightly smaller puff */
+    transform: translate(-50%, -50%) scale(2.0);
     opacity: 0;
-    box-shadow: 0 0 20px 10px rgba(189, 147, 249, 0), 
-                0 0 30px 15px rgba(189, 147, 249, 0); 
+    box-shadow: 0 0 20px 10px rgba(180, 0, 255, 0), 
+                0 0 30px 15px rgba(255, 0, 200, 0); 
   }
 }
 
@@ -164,8 +146,7 @@ body {
   left: 50%;
   width: 100%;
   height: 100%;
-  /* Updated: More subtle background color for puff */
-  background-color: rgba(189, 147, 249, 0.1); /* Lighter lilac tint */
+  background-color: rgba(180, 0, 255, 0.1);
   border-radius: 50%;
   transform: translate(-50%, -50%) scale(0);
   opacity: 0;
@@ -206,12 +187,12 @@ body {
 @media screen and (max-width: 768px) {
   .sidebar-buttons { 
     left: 10px; 
-    padding: 12px 6px; /* Adjusted padding */
+    padding: 12px 6px;
     gap: 15px; 
-    border-radius: 20px; /* Consistent with main */
+    border-radius: 20px;
   }
   .sidebar-container-condensed {
-    bottom: 10px; /* Adjust for smaller screens */
+    bottom: 10px;
   }
   .icon-button {
     width: 55px; 
@@ -232,19 +213,19 @@ body {
 @media screen and (max-width: 480px) { 
   .sidebar-buttons { 
     left: 8px; 
-    padding: 10px 5px; /* Adjusted padding */
+    padding: 10px 5px;
     gap: 15px; 
-    border-radius: 18px; /* Consistent with main */
+    border-radius: 18px;
   }
   .sidebar-container-condensed {
-    bottom: 8px; /* Adjust for smaller screens */
+    bottom: 8px;
   }
-  .icon-button { /* Default size for small screens */
+  .icon-button {
     width: 50px; 
     height: 50px; 
     font-size: 24px; 
   }
-   #toggleSidebarBtn.toggle-btn-shrunk { /* Shrunk size for small screens */
+   #toggleSidebarBtn.toggle-btn-shrunk {
     width: 40px; 
     height: 40px; 
     font-size: 20px; 
@@ -255,11 +236,10 @@ body {
   }
 }
 
-/* NEW MEDIA QUERY FOR SHORTER SCREEN HEIGHTS */
 @media screen and (max-height: 550px) {
   .sidebar-buttons { 
-    gap: 10px; /* Reduce gap for shorter screens */
-    padding: 10px 5px; /* Adjusted padding */
+    gap: 10px;
+    padding: 10px 5px;
   }
   .icon-button {
     width: 45px; 
@@ -267,7 +247,7 @@ body {
     font-size: 22px; 
   }
   #toggleSidebarBtn.toggle-btn-shrunk {
-    width: 38px; /* Adjust shrunk toggle button for consistency */
+    width: 38px;
     height: 38px; 
     font-size: 18px; 
   }
@@ -276,17 +256,16 @@ body {
     height: 25px; 
   }
 }
-/* END OF NEW MEDIA QUERY */
 
 @media screen and (max-height: 450px) and (orientation: landscape) and (max-width: 900px) {
     .sidebar-buttons { 
         gap: 8px; 
-        padding: 8px 4px; /* Adjusted padding */
+        padding: 8px 4px;
         left: 5px; 
-        border-radius: 15px; /* Consistent with main */
+        border-radius: 15px;
     }
     .sidebar-container-condensed {
-        bottom: 5px; /* Adjust for landscape */
+        bottom: 5px;
      }
     .icon-button {
         width: 40px; 
@@ -308,49 +287,18 @@ body {
   position: fixed;
   top: 10px;
   right: 10px;
-  background: var(--primary-gradient);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #1E1E1E;
+  border: none;
+  padding: 10px;
   border-radius: 50%;
-  width: 3.5rem;
-  height: 3.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.3rem;
-  color: var(--on-primary-color);
+  z-index: 9999;
   cursor: pointer;
-  text-decoration: none;
-  box-shadow: 0 4px 15px rgba(189, 147, 249, 0.15),
-              0 1px 5px rgba(0, 0, 0, 0.15);
-  position: relative;
-  overflow: hidden;
-  -webkit-tap-highlight-color: transparent;
-  opacity: 1;
-  transform: translateX(0) scale(1) rotate(0deg);
-  transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 1),
-              background 0.35s ease-out,
-              box-shadow 0.35s ease-out,
-              opacity 0.3s ease-out,
-              height 0.35s cubic-bezier(0.23, 1, 0.32, 1),
-              width 0.35s cubic-bezier(0.23, 1, 0.32, 1),
-              font-size 0.35s cubic-bezier(0.23, 1, 0.32, 1),
-              margin-top 0.35s ease-out,
-              margin-bottom 0.35s ease-out,
-              padding-top 0.35s ease-out,
-              padding-bottom 0.35s ease-out,
-              border-width 0.35s ease-out;
+  color: #fff;
+  transition: background 0.2s;
 }
 
 .fullscreen-toggle:hover {
-  transform: scale(1.1) translateY(-3px) rotate(2deg);
-  background: var(--primary-gradient);
-  filter: brightness(1.1);
-  border-color: var(--primary-color);
-  box-shadow: 0 6px 20px rgba(189, 147, 249, 0.3),
-              0 2px 8px rgba(0, 0, 0, 0.25);
-  color: var(--on-primary-color);
+  background: #3a3a3a;
 }
 
 @media (max-width: 768px) {
@@ -359,100 +307,71 @@ body {
   }
 }
 
-/* Donate Button - Similar style to fullscreen button */
 .donate-toggle {
   position: fixed;
-  bottom: 15px; /* Position at the bottom */
+  bottom: 15px;
   right: 10px;
-  background: var(--primary-gradient);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #1E1E1E;
+  border: none;
+  padding: 10px;
   border-radius: 50%;
-  width: 3.5rem;
-  height: 3.5rem;
+  z-index: 9999;
+  cursor: pointer;
+  color: #fff;
+  transition: background 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.3rem;
-  color: var(--on-primary-color);
-  cursor: pointer;
-  text-decoration: none;
-  box-shadow: 0 4px 15px rgba(189, 147, 249, 0.15),
-              0 1px 5px rgba(0, 0, 0, 0.15);
-  position: relative;
-  overflow: hidden;
+  font-size: 24px;
   -webkit-tap-highlight-color: transparent;
-  opacity: 1;
-  transform: translateX(0) scale(1) rotate(0deg);
-  transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 1),
-              background 0.35s ease-out,
-              box-shadow 0.35s ease-out,
-              opacity 0.3s ease-out,
-              height 0.35s cubic-bezier(0.23, 1, 0.32, 1),
-              width 0.35s cubic-bezier(0.23, 1, 0.32, 1),
-              font-size 0.35s cubic-bezier(0.23, 1, 0.32, 1),
-              margin-top 0.35s ease-out,
-              margin-bottom 0.35s ease-out,
-              padding-top 0.35s ease-out,
-              padding-bottom 0.35s ease-out,
-              border-width 0.35s ease-out;
+  user-select: none;
 }
 
 .donate-toggle:hover {
-  transform: scale(1.1) translateY(-3px) rotate(2deg);
-  background: var(--primary-gradient);
-  filter: brightness(1.1);
-  border-color: var(--primary-color);
-  box-shadow: 0 6px 20px rgba(189, 147, 249, 0.3),
-              0 2px 8px rgba(0, 0, 0, 0.25);
-  color: var(--on-primary-color);
+  background: #3a3a3a;
 }
 
-/* Ensure donate button is visible on mobile */
 @media (max-width: 768px) {
   .donate-toggle {
-    display: flex; /* Always show on mobile */
+    display: flex;
   }
 }
 
 /* Modal Styles */
 .modal-overlay {
-  display: none; /* Hidden by default - ESTA LINHA É CRUCIAL PARA INICIAR ESCONDIDO */
+  display: none;
   position: fixed;
-  z-index: 10000; /* Higher than other elements */
+  z-index: 10000;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
-  overflow: auto; /* Enable scroll if content is too long */
-  background-color: rgba(0, 0, 0, 0.7); /* Black with opacity */
-  
-  /* Removido `display: flex;` daqui. Ele será adicionado via JS quando o modal for aberto. */
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.7);
   justify-content: center;
   align-items: center;
 }
 
 .modal-content {
-  background-color: rgba(0, 0, 0, 0.9); /* Black background for modal */
-  margin: auto; /* Centering */
+  background-color: #1a1a1a;
+  margin: auto;
   padding: 25px;
-  border: 1px solid rgba(189, 147, 249, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 15px;
-  width: 90%; /* Responsive width */
-  max-width: 500px; /* Max width for larger screens */
-  box-shadow: 0 8px 30px rgba(189, 147, 249, 0.4), /* Glowing shadow */
-              0 2px 10px rgba(0, 0, 0, 0.3); /* Base shadow */
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 8px 30px rgba(130, 0, 255, 0.4),
+              0 2px 10px rgba(0, 0, 0, 0.3);
   position: relative;
   text-align: center;
-  animation: fadeInScale 0.3s cubic-bezier(0.23, 1, 0.32, 1); /* Animation for modal entry */
+  animation: fadeInScale 0.3s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .modal-content h2 {
   color: #fff;
   margin-bottom: 20px;
   font-size: 1.8em;
-  text-shadow: 0 0 5px rgba(189, 147, 249, 0.5); /* Subtle text glow */
+  text-shadow: 0 0 5px rgba(180, 0, 255, 0.5);
 }
 
 .modal-content img {
@@ -473,7 +392,7 @@ body {
   cursor: pointer;
   transition: color 0.2s;
   -webkit-tap-highlight-color: transparent;
-user-select: none;
+  user-select: none;
 }
 
 .close-button:hover,
@@ -482,7 +401,6 @@ user-select: none;
   text-decoration: none;
 }
 
-/* Animation for modal entry */
 @keyframes fadeInScale {
   from {
     opacity: 0;
@@ -494,12 +412,11 @@ user-select: none;
   }
 }
 
-/* Media queries for donate button and modal */
 @media (max-width: 768px) {
   .donate-toggle {
     bottom: 8px;
     right: 8px;
-    width: 55px; /* Adjust size for smaller screens */
+    width: 55px;
     height: 55px;
     font-size: 28px;
   }
@@ -526,4 +443,4 @@ user-select: none;
   .modal-content h2 {
     font-size: 1.3em;
   }
-  }
+}
