@@ -8,18 +8,18 @@
 }
 
 /* =================================================
-  === TEMA NÉVOA VIOLETA (Roxo e Gradiente) ===
+  === TEMA SONHO DE LAVANDA (Lilás Escuro e Gradiente) ===
   =================================================
-  Um tema elegante e moderno com tons de roxo e lavanda.
+  Um tema elegante e moderno com tons de lilás e lavanda.
 */
 :root {
     --background-color: #17181C;
     --surface-color: #4F4C7A;    /* Roxo suave */
     --card-bg: #3E3C61;          /* Fundo do card roxo escuro */
     
-    --primary-color: #593BA2;    /* Roxo principal */
-    --primary-hover-color: #7048C4; /* Roxo mais claro para hover */
-    --on-primary-color: #F3F3FF;  /* Cor do texto sobre o primário (claro) */
+    --primary-color: #A78BFA;    /* Lilás principal */
+    --primary-hover-color: #C4B5FD; /* Lilás mais claro para hover */
+    --on-primary-color: #f8f8f2;  /* Cor do texto sobre o primário (claro) */
     --icon-color: #A6D9F7;       /* Azul céu suave para ícones */
 
     --secondary-accent: #A6D9F7; /* Azul céu para detalhes */
@@ -27,8 +27,8 @@
     --text-primary: #F3F3FF;     /* Branco lavanda */
     --text-secondary: #A4A1CC;   /* Lavanda suave */
     
-    --border-color: rgba(89, 59, 162, 0.2); /* Borda roxa sutil */
-    --border-highlight: var(--primary-color); /* Borda destacada em roxo */
+    --border-color: rgba(167, 139, 250, 0.2); /* Borda lilás sutil */
+    --border-highlight: var(--primary-color); /* Borda destacada em lilás */
 
     --danger-red: #ff5555;
     --danger-red-hover: #ff6e6e;
@@ -36,7 +36,7 @@
     --info-blue: #8be9fd;
 
     /* Gradientes */
-    --primary-gradient: linear-gradient(45deg, rgba(89, 59, 162, 0.7), rgba(112, 72, 196, 0.7));
+    --primary-gradient: linear-gradient(45deg, rgba(167, 139, 250, 0.8), rgba(139, 92, 246, 0.8));
     --header-gradient: linear-gradient(160deg, var(--background-color), var(--surface-color));
 
     --header-height-mobile: 5rem;
@@ -44,7 +44,7 @@
     /* Sombras e Brilhos */
     --expressive-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
     --subtle-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-    --modal-shadow-neutral-glow: 0 0 40px rgba(89, 59, 162, 0.25); /* Brilho roxo */
+    --modal-shadow-neutral-glow: 0 0 40px rgba(167, 139, 250, 0.25); /* Brilho lilás */
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
@@ -128,7 +128,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 }
 .content-card:hover {
     transform: translateY(-8px) scale(1.05);
-    box-shadow: 0 0 20px rgba(89, 59, 162, 0.2), 0 4px 15px rgba(0,0,0,0.5);
+    box-shadow: 0 0 20px rgba(167, 139, 250, 0.2), 0 4px 15px rgba(0,0,0,0.5);
     border-color: var(--border-highlight);
 }
 .content-card img {
@@ -182,14 +182,14 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 .swal2-popup {
     color: var(--text-primary) !important;
     border-radius: 1.2rem !important;
-    border: 1px solid var(--border-color) !important;
     max-width: 90vw !important;
     width: auto !important;
-    background: #17181C !important;
-    box-shadow: var(--expressive-shadow), var(--modal-shadow-neutral-glow) !important;
+    background: rgba(23, 24, 28, 0.45) !important; /* Mais transparente */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important; /* Sombra bem mais leve */
     z-index: 2001;
     will-change: transform, opacity;
     contain: layout paint;
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Borda sutil */
 }
 .swal2-title { color: var(--text-primary) !important; font-size: 1.6rem !important; padding-top: 1.5rem !important; margin-bottom: 0 !important; }
 .swal2-html-container { color: var(--text-primary) !important; margin: 0 !important; padding: 0 !important; text-align: left !important; }
@@ -216,7 +216,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     background: var(--primary-gradient);
     border-color: var(--primary-color);
     color: var(--on-primary-color);
-    box-shadow: 0 6px 20px rgba(89, 59, 162, 0.2), 0 2px 8px rgba(0,0,0,0.5);
+    box-shadow: 0 6px 20px rgba(167, 139, 250, 0.2), 0 2px 8px rgba(0,0,0,0.5);
 }
 
 .swal-genre-filter-type-selector button.active,
@@ -224,7 +224,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     background: var(--primary-gradient);
     color: var(--on-primary-color);
     border-color: var(--primary-color);
-    box-shadow: 0 0 20px rgba(89, 59, 162, 0.3);
+    box-shadow: 0 0 20px rgba(167, 139, 250, 0.3);
     transform: scale(1.02);
 }
 
@@ -232,13 +232,13 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     background: var(--primary-gradient) !important;
     color: var(--on-primary-color) !important;
     border: 1px solid var(--primary-color) !important;
-    box-shadow: 0 4px 15px rgba(89, 59, 162, 0.25) !important;
+    box-shadow: 0 4px 15px rgba(167, 139, 250, 0.25) !important;
 }
 .swal-filter-actions .swal2-confirm:hover {
     background: var(--primary-gradient) !important;
     filter: brightness(1.1);
     border-color: var(--primary-hover-color) !important;
-    box-shadow: 0 6px 20px rgba(89, 59, 162, 0.35) !important;
+    box-shadow: 0 6px 20px rgba(167, 139, 250, 0.35) !important;
 }
 .swal-filter-actions .swal2-deny {
     background-color: var(--danger-red) !important;
@@ -259,6 +259,11 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 .swal-genre-buttons-panel::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 0.6rem; }
 .swal-genre-buttons-panel::-webkit-scrollbar-thumb { background-color: var(--primary-color); border-radius: 8px; }
 
+/* Deixa o modal de salvos/perfil menos transparente */
+.swal-combined-popup.swal2-popup {
+    background: rgba(23, 24, 28, 0.85) !important;
+}
+
 .swal-details-popup.swal2-popup {
     width: 850px !important;
     max-width: 95vw !important;
@@ -276,12 +281,12 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 
 .details-trailer-container {
     position: relative;
-    background-color: #000;
-    border-radius: 1rem;
+    background-color: transparent;
+    border-radius: 1.2rem 1.2rem 0 0; /* Match popup radius on top */
     overflow: hidden;
-    margin: 1rem 1rem 1.5rem 1rem;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7), 0 0 15px rgba(166, 217, 247, 0.15);
-    border: 1px solid var(--border-color);
+    margin: 0 0 1.5rem 0; /* Remove top/left/right margin */
+    box-shadow: none;
+    border: none;
     padding-top: 56.25%; /* 16:9 Aspect Ratio */
 }
 
@@ -346,7 +351,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 .play-icon-wrapper .fa-play {
     font-size: 4.5rem;
     color: rgba(255, 255, 255, 0.9);
-    text-shadow: 0 0 25px rgba(89, 59, 162, 0.5);
+    text-shadow: 0 0 25px rgba(167, 139, 250, 0.5);
     transition: transform 0.3s ease, color 0.3s ease;
 }
 
@@ -430,10 +435,10 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 #filterToggleButton:hover {
     filter: brightness(1.1);
     border-color: var(--primary-hover-color);
-    box-shadow: 0 6px 20px rgba(89, 59, 162, 0.2), 0 2px 8px rgba(0,0,0,0.5);
+    box-shadow: 0 6px 20px rgba(167, 139, 250, 0.2), 0 2px 8px rgba(0,0,0,0.5);
 }
 #filterToggleButton.active {
-    box-shadow: 0 0 20px rgba(89, 59, 162, 0.3);
+    box-shadow: 0 0 20px rgba(167, 139, 250, 0.3);
     border-color: var(--secondary-accent);
     background: var(--secondary-accent);
     color: #000;
@@ -460,7 +465,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     font-size: 0.95rem;
     transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
 }
-.input-search:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(89, 59, 162, 0.2); }
+.input-search:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.2); }
 .input-search::placeholder { color: var(--text-secondary); }
 .input-search:disabled { background-color: var(--border-color); cursor: not-allowed; }
 #searchButton { position: absolute; right: 0; top: 0; height: 100%; padding: 0 1.1rem; color: var(--text-secondary); background-color: transparent; border: none; cursor: pointer; transition: color 0.2s; }
@@ -506,7 +511,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 .home-button:hover {
     filter: brightness(1.1);
     border-color: var(--primary-hover-color);
-    box-shadow: 0 6px 20px rgba(89, 59, 162, 0.2), 0 2px 8px rgba(0,0,0,0.5);
+    box-shadow: 0 6px 20px rgba(167, 139, 250, 0.2), 0 2px 8px rgba(0,0,0,0.5);
 }
 
 .home-button .fas {
@@ -617,7 +622,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     background: var(--primary-gradient);
     color: var(--on-primary-color);
     border-color: var(--primary-color);
-    box-shadow: 0 4px 15px rgba(89, 59, 162, 0.25);
+    box-shadow: 0 4px 15px rgba(167, 139, 250, 0.25);
     transform: scale(1.1);
 }
 
@@ -666,7 +671,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     top: 0.2rem;
     right: 0.2rem;
     background-color: rgba(44, 42, 74, 0.7);
-    border: 1px solid rgba(89, 59, 162, 0.2);
+    border: 1px solid rgba(167, 139, 250, 0.2);
     color: var(--icon-color);
     border-radius: 50%;
     width: 28px;
@@ -845,7 +850,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     background: var(--primary-gradient);
     color: var(--on-primary-color);
     border-color: var(--primary-color);
-    box-shadow: 0 0 10px rgba(89, 59, 162, 0.3);
+    box-shadow: 0 0 10px rgba(167, 139, 250, 0.3);
     transform: translateY(-2px);
 }
 
@@ -1050,7 +1055,7 @@ button:hover {
     background: var(--primary-gradient);
     border-color: var(--primary-color);
     color: var(--on-primary-color);
-    box-shadow: 0 3px 10px rgba(89, 59, 162, 0.2);
+    box-shadow: 0 3px 10px rgba(167, 139, 250, 0.2);
 }
 
 button:hover .fas, button:hover .far {
@@ -1081,22 +1086,25 @@ button:disabled {
     z-index: 1000;
 }
 
+/* Esconde os botões flutuantes e o calendário quando o modal está aberto */
+body.swal2-shown #floatingButtonWrapper,
+body.swal2-shown #calendar-panel {
+    display: none !important;
+}
+
 #floatingCombinedButton,
 #open-calendar-btn,
 #floatingCombinedButton {
     width: 3.5rem;
     height: 3.5rem;
-    border-radius: 20%;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.3rem;
     background: rgba(44, 42, 74, 0.7); /* Semi-transparent background */
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
     color: var(--icon-color);
     border: 1px solid var(--border-color);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 0 10px rgba(166, 217, 247, 0.1);
     transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;
     position: relative;
@@ -1110,7 +1118,7 @@ button:disabled {
     color: var(--on-primary-color);
     border-color: var(--primary-color);
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(89, 59, 162, 0.3), 0 0 16px rgba(89, 59, 162, 0.2);
+    box-shadow: 0 6px 16px rgba(167, 139, 250, 0.3), 0 0 16px rgba(167, 139, 250, 0.2);
 }
 
 /* --- Base do Botão e Container do Trailer --- */
@@ -1234,7 +1242,7 @@ button:disabled {
     color: var(--on-primary-color);
     border-color: var(--primary-color);
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(89, 59, 162, 0.3), 0 0 16px rgba(89, 59, 162, 0.2);
+    box-shadow: 0 6px 16px rgba(167, 139, 250, 0.3), 0 0 16px rgba(167, 139, 250, 0.2);
 }
 
 .swal2-container {
@@ -1243,6 +1251,21 @@ button:disabled {
 
 body.swal2-shown header {
     z-index: auto !important;
+}
+
+/* Hide main content when modal is open to only show the backdrop */
+body.swal2-shown:not(.combined-modal-open):not(.filter-modal-open) #main-content,
+body.swal2-shown:not(.combined-modal-open):not(.filter-modal-open) #floating-header-controls {
+    visibility: hidden;
+}
+
+body.swal2-shown:not(.combined-modal-open):not(.filter-modal-open) #pageBackdrop {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+body.swal2-shown:not(.combined-modal-open):not(.filter-modal-open) #pageBackdrop::before {
+    background-color: transparent; /* Remove overlay */
 }
 
 .continue-watching-grid {
@@ -1314,7 +1337,7 @@ body.swal2-shown header {
     top: 5px;
     right: 5px;
     background-color: rgba(0, 0, 0, 0.6);
-    border: 1px solid rgba(89, 59, 162, 0.2);
+    border: 1px solid rgba(167, 139, 250, 0.2);
     color: #FFF;
     border-radius: 50%;
     width: 24px;
@@ -1473,7 +1496,7 @@ body.swal2-shown header {
     background: var(--primary-gradient);
     color: var(--on-primary-color);
     border-color: var(--primary-color);
-    box-shadow: 0 4px 15px rgba(89, 59, 162, 0.25);
+    box-shadow: 0 4px 15px rgba(167, 139, 250, 0.25);
     transform: scale(1.1);
 }
 
@@ -1491,6 +1514,9 @@ body.swal2-shown header {
     display: flex !important;
     flex-direction: column !important;
     overflow: hidden;
+    background: rgba(23, 24, 28, 0.45) !important; /* Aplicando a transparência */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important; /* Aplicando a sombra */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Aplicando a borda */
 }
 
 .swal-collection-container {
@@ -1498,40 +1524,60 @@ body.swal2-shown header {
     margin: 0 !important;
     display: flex;
     flex-direction: column;
+    height: 100%;
 }
 
 .collection-modal-header {
-    min-height: 200px;
-    max-height: 30vh;
+    min-height: 250px;
+    max-height: 40vh;
     background-size: cover;
-    background-position: center 25%;
+    background-position: center 20%;
     position: relative;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    padding: 1.5rem;
+    padding: 2rem;
     color: white;
     text-shadow: 0 2px 8px rgba(0,0,0,0.8);
     flex-shrink: 0;
+    z-index: 1;
+    transition: background-image 0.5s ease-in-out;
+}
+
+.collection-modal-header-content {
+    position: relative;
+    z-index: 2;
 }
 
 .collection-modal-title-wrapper {
     display: flex;
     align-items: center;
     gap: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .collection-modal-title {
-    font-size: 2.5rem;
-    font-weight: 700;
+    font-size: 2.8rem;
+    font-weight: 800;
     margin-bottom: 0;
     order: 2;
+}
+
+.collection-modal-overview {
+    font-size: 1rem;
+    line-height: 1.5;
+    max-width: 70ch;
+    color: rgba(255, 255, 255, 0.9);
+    margin-top: 1rem;
 }
 
 .collection-modal-header .collection-favorite-button {
     position: static;
     flex-shrink: 0;
     order: 1;
+    width: 48px;
+    height: 48px;
+    font-size: 1.5rem;
 }
 
 .swal-collection-close-button {
@@ -1539,21 +1585,96 @@ body.swal2-shown header {
     text-shadow: 0 1px 4px rgba(0,0,0,0.7);
     top: 1.5rem !important;
     right: 1.5rem !important;
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+    z-index: 3;
 }
 .swal-collection-close-button:hover {
     color: var(--primary-color) !important;
 }
 
 .collection-modal-body {
-    padding: 1.5rem;
+    padding: 1.5rem 2rem;
     overflow-y: auto;
     flex-grow: 1;
+    -webkit-overflow-scrolling: touch;
+}
+
+.collection-modal-body-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
 }
 
 .collection-modal-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1.5rem;
+}
+
+.collection-item-card {
+    background-color: var(--card-bg);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.collection-item-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    border-color: var(--primary-color);
+}
+
+.collection-item-poster-wrapper {
+    position: relative;
+}
+
+.collection-item-poster {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 2/3;
+    object-fit: cover;
+    display: block;
+}
+
+.collection-item-info {
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.collection-item-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+    flex-grow: 1;
+}
+
+.collection-item-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.collection-item-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.collection-item-rating .fa-star {
+    color: var(--primary-color);
 }
 
 @media (max-width: 768px) {
@@ -1566,6 +1687,10 @@ body.swal2-shown header {
     }
     .collection-modal-body {
         padding: 1rem;
+    }
+    .collection-modal-grid {
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+        gap: 0.75rem;
     }
 }
 /* --- Base do Botão e Container do Trailer --- */
@@ -1609,4 +1734,10 @@ body.swal2-shown header {
 
 .modal-trailer-button .fas, .modal-collection-button .fas {
     font-size: 1rem;
+}
+
+/* Hide SweetAlert modal and backdrop when the player is active */
+body.player-active .swal2-container,
+body.player-active .swal2-backdrop {
+    display: none !important;
 }

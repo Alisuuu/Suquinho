@@ -6,10 +6,10 @@
 }
 
 :root {
-  --primary-gradient: linear-gradient(135deg, #bd93f9, #bd93f9);
-  --on-primary-color: #f8f8f2;
-  --on-primary-color-rgb: 248, 248, 242;
-  --primary-color: #bd93f9;
+  --primary-gradient: linear-gradient(135deg, #A78BFA, #8B5CF6);
+  --on-primary-color: #FFFFFF; /* Cor do ícone alterada para branco puro */
+  --on-primary-color-rgb: 255, 255, 255; /* Cor do ícone alterada para branco puro */
+  --primary-color: #A78BFA;
 }
 
 body {
@@ -64,18 +64,18 @@ body {
 
 /* Individual Icon Buttons */
 .icon-button {
-  background: var(--primary-gradient); /* Use theme's primary gradient */
+  background: var(--primary-gradient); /* Fundo lilás original */
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
   border: 1px solid rgba(255, 255, 255, 0.1); 
-  border-radius: 20%; /* Changed to match floating buttons */
-  width: 3.5rem; /* Changed to match floating buttons */
-  height: 3.5rem; /* Changed to match floating buttons */
+  border-radius: 20%;
+  width: 3.5rem;
+  height: 3.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.3rem; /* Changed to match floating buttons */
-  color: var(--on-primary-color); /* Use theme's on-primary color */
+  font-size: 1.3rem;
+  color: var(--on-primary-color); 
   cursor: pointer;
   text-decoration: none; 
   box-shadow: 0 4px 15px rgba(189, 147, 249, 0.15), 
@@ -101,9 +101,9 @@ body {
 
 /* Modifier for toggle button when sidebar is condensed */
 #toggleSidebarBtn.toggle-btn-shrunk {
-    width: 60px; /* Smaller width */
-    height: 60px; /* Smaller height */
-    font-size: 28px; /* Smaller icon */
+    width: 60px; 
+    height: 60px; 
+    font-size: 28px; 
 }
 
 
@@ -111,9 +111,8 @@ body {
 .icon-button i {
   position: relative;
   z-index: 2; 
-  color: var(--on-primary-color); /* Explicitly set icon color */
-  /* Updated: More subtle drop shadow for icons */
-  filter: drop-shadow(0 0 2px rgba(var(--on-primary-color-rgb), 0.1));
+  color: #333333 !important; /* Cor do ícone definida como cinza escuro */
+  filter: none; 
 }
 
 .icon-button img {
@@ -122,14 +121,13 @@ body {
 }
 
 .icon-button:hover {
-  transform: scale(1.1) translateY(-3px) rotate(2deg); /* Slightly less pronounced hover */
-  background: var(--primary-gradient); /* Use theme's primary gradient */
-  filter: brightness(1.1); /* Make it brighter on hover */
-  border-color: var(--primary-color); /* Use theme's primary color for border */
-  /* Updated: Softer box-shadow on hover */
-  box-shadow: 0 6px 20px rgba(189, 147, 249, 0.3), /* Slightly stronger glowing shadow */
-              0 2px 8px rgba(0, 0, 0, 0.25); /* More defined base shadow */
-  color: var(--on-primary-color); /* Use theme's on-primary color */
+  transform: scale(1.1) translateY(-3px) rotate(2deg); 
+  background: var(--primary-gradient); 
+  filter: brightness(1.1); 
+  border-color: var(--primary-color); 
+  box-shadow: 0 6px 20px rgba(167, 139, 250, 0.3), 
+              0 2px 8px rgba(0, 0, 0, 0.25); 
+  color: var(--on-primary-color); 
 }
  /* Specific hover for shrunk toggle button to avoid translateY fighting with positioning */
 #toggleSidebarBtn.toggle-btn-shrunk:hover {
@@ -146,13 +144,13 @@ body {
     transform: translate(-50%, -50%) scale(0.3);
     opacity: 0.6;
     /* Updated: More subtle smoke puff glow */
-    box-shadow: 0 0 8px 4px rgba(189, 147, 249, 0.3), /* Softer lilac glow */
+    box-shadow: 0 0 8px 4px rgba(167, 139, 250, 0.3), /* Softer lilac glow */
                 0 0 15px 7px rgba(189, 147, 249, 0.2); /* Softer violet accent */
   }
   100% {
     transform: translate(-50%, -50%) scale(2.0); /* Slightly smaller puff */
     opacity: 0;
-    box-shadow: 0 0 20px 10px rgba(189, 147, 249, 0), 
+    box-shadow: 0 0 20px 10px rgba(167, 139, 250, 0), 
                 0 0 30px 15px rgba(189, 147, 249, 0); 
   }
 }
@@ -165,7 +163,7 @@ body {
   width: 100%;
   height: 100%;
   /* Updated: More subtle background color for puff */
-  background-color: rgba(189, 147, 249, 0.1); /* Lighter lilac tint */
+  background-color: rgba(167, 139, 250, 0.1); /* Lighter lilac tint */
   border-radius: 50%;
   transform: translate(-50%, -50%) scale(0);
   opacity: 0;
@@ -348,7 +346,7 @@ body {
   background: var(--primary-gradient);
   filter: brightness(1.1);
   border-color: var(--primary-color);
-  box-shadow: 0 6px 20px rgba(189, 147, 249, 0.3),
+  box-shadow: 0 6px 20px rgba(167, 139, 250, 0.3),
               0 2px 8px rgba(0, 0, 0, 0.25);
   color: var(--on-primary-color);
 }
@@ -404,7 +402,7 @@ body {
   background: var(--primary-gradient);
   filter: brightness(1.1);
   border-color: var(--primary-color);
-  box-shadow: 0 6px 20px rgba(189, 147, 249, 0.3),
+  box-shadow: 0 6px 20px rgba(167, 139, 250, 0.3),
               0 2px 8px rgba(0, 0, 0, 0.25);
   color: var(--on-primary-color);
 }
@@ -434,10 +432,10 @@ body {
 }
 
 .modal-content {
-  background-color: rgba(0, 0, 0, 0.9); /* Black background for modal */
+  background-color: #44475a; /* Dark background for modal */
   margin: auto; /* Centering */
   padding: 25px;
-  border: 1px solid rgba(189, 147, 249, 0.2);
+  border: 1px solid rgba(167, 139, 250, 0.2);
   border-radius: 15px;
   width: 90%; /* Responsive width */
   max-width: 500px; /* Max width for larger screens */
@@ -452,7 +450,7 @@ body {
   color: #fff;
   margin-bottom: 20px;
   font-size: 1.8em;
-  text-shadow: 0 0 5px rgba(189, 147, 249, 0.5); /* Subtle text glow */
+  text-shadow: 0 0 5px rgba(167, 139, 250, 0.5); /* Subtle text glow */
 }
 
 .modal-content img {
