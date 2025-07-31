@@ -42,7 +42,16 @@
 </script>
 <style>
   #player-fullscreen-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
     z-index: 99999; /* Garante que o player esteja sempre no topo */
+    display: none; /* Controlado via JS */
+    align-items: center;
+    justify-content: center;
   }
   #calendar-panel {
     z-index: 99; /* Garante que o painel do calendário fique abaixo do player */
@@ -229,6 +238,8 @@
 <body>
 <div id="pageBackdrop"></div>
 <div class="loader-overlay" id="loader" style="display: none;"><div class="loader"></div></div>
+<!-- Container para o player em tela cheia (movido para cá para melhor funcionamento) -->
+<div id="player-fullscreen-wrapper"></div>
 <!-- Conteúdo Principal do Catálogo -->
 <div id="main-content">
 <div id="floating-header-controls" class="container mx-auto flex flex-col lg:flex-row justify-between items-center space-y-4 lg:space-y-0 py-2 px-4">
@@ -305,8 +316,7 @@
 <button aria-label="Abrir Calendário" id="toggle-calendar-btn"><i class="fas fa-calendar-alt"></i></button>
 <button aria-label="Meus Salvos" id="floatingCombinedButton" style="display: flex !important; visibility: visible !important; opacity: 1 !important;"><i class="fas fa-list-alt"></i></button>
 <button aria-label="Abrir Sorteio" id="toggleSorteioButtons"><i class="fas fa-dice"></i></button>
-<!-- Container para o player em tela cheia -->
-<div id="player-fullscreen-wrapper"></div>
+
 <!-- Container para os botões de sorteio (inicialmente oculto) -->
 <div id="sorteioButtonsContainer" style="display: none; position: absolute; bottom: 100%; right: 0; background-color: var(--bg-dark); padding: 10px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); flex-direction: column; gap: 10px;">
     <button id="randomMovieButton" class="random-button">
@@ -318,6 +328,7 @@
     <button id="historyButton" class="random-button">
         <i class="fas fa-history"></i> Histórico
     </button>
+</div>
 </div>
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

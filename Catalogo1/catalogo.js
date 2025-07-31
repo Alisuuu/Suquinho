@@ -3,8 +3,8 @@ const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/';
 const LANGUAGE = 'pt-BR';
 const PLACEHOLDER_PERSON_IMAGE = 'p2.png';
-const PLAYER_BASE_URL_MOVIE = 'https://playerflixapi.com/filme/';
-const PLAYER_BASE_URL_SERIES = 'https://playerflixapi.com/serie/';
+const PLAYER_BASE_URL_MOVIE = 'https://megaembed.com/embed/';
+const PLAYER_BASE_URL_SERIES = 'https://megaembed.com/embed/';
 const FAVORITES_STORAGE_KEY = 'suquin_favorites_v2';
 const WATCH_HISTORY_STORAGE_KEY = 'suquin_watch_history_v1';
 const RAFFLE_HISTORY_STORAGE_KEY = 'pickedMediaHistory_v2';
@@ -85,6 +85,8 @@ let isLoadingMorePopularMovies = false;
 let topRatedTvShowsCurrentPage = 1;
 let topRatedTvShowsTotalPages = 1;
 let isLoadingMoreTopRatedTvShows = false;
+let isTransitioningModals = false;
+let parentCollectionContext = null;
 
 // SINCRONIZA UM OBJETO DE DADOS ESPECÍFICO PARA O FIREBASE
 function syncToFirebase(dataToSync) {
@@ -733,9 +735,10 @@ async function fetchAndDisplayEpisodes(tvId, seasonNumber, container) {
     });
 }
 
-async function openItemModal(itemId, mediaType, backdropPath = null, fromSorteio = false) {
+async function openItemModal(itemId, mediaType, backdropPath = null, fromSorteio = false, parentCollection = null) {
     stopMainPageBackdropSlideshow();
     updatePageBackground(backdropPath);
+    parentCollectionContext = parentCollection; // Salva o contexto da coleção pai
 
     currentOpenSwalRef = Swal.fire({
         title: 'A carregar detalhes...',
@@ -743,6 +746,15 @@ async function openItemModal(itemId, mediaType, backdropPath = null, fromSorteio
         showConfirmButton: false, showCloseButton: true, allowOutsideClick: true,
         customClass: { popup: 'swal2-popup swal-details-popup' },
         willClose: () => {
+            if (isTransitioningModals || document.body.classList.contains('player-active')) return;
+
+            // Se existe uma coleção pai, volta para ela
+            if (parentCollectionContext) {
+                showCollectionDetails(parentCollectionContext);
+                parentCollectionContext = null; // Limpa o contexto
+                return;
+            }
+
             updatePageBackground(null);
             currentOpenSwalRef = null;
             const urlParams = new URLSearchParams(window.location.search);
@@ -871,8 +883,12 @@ async function openItemModal(itemId, mediaType, backdropPath = null, fromSorteio
     document.getElementById('modalCopyLinkButton')?.addEventListener('click', () => copyToClipboard(shareUrl));
     if (collectionButtonHTML) {
         document.getElementById('modalCollectionButton')?.addEventListener('click', () => {
+            isTransitioningModals = true;
             Swal.close();
-            setTimeout(() => showCollectionDetails(details.belongs_to_collection), 200); // Delay to allow modal to close
+            setTimeout(() => {
+                showCollectionDetails(details.belongs_to_collection);
+                isTransitioningModals = false;
+            }, 150);
         });
     }
 
@@ -917,11 +933,7 @@ function closeAdvancedPlayer() {
         wrapper.style.display = 'none';
         wrapper.innerHTML = ''; 
     }
-
-    const swalContainer = Swal.getContainer();
-    if (swalContainer) {
-        swalContainer.style.display = '';
-    }
+    // Remove a classe do body para reexibir o modal via regras de CSS
     document.body.classList.remove('player-active');
 }
 
@@ -943,14 +955,11 @@ function launchAdvancedPlayer(url, logoPath, itemData, mediaType, seasonInfo = n
         <button id="player-close-btn" title="Voltar"><i class="fas fa-arrow-left"></i></button>
         ${logoForPlayerHTML}`;
 
-    const swalContainer = Swal.getContainer();
-    if (swalContainer) {
-        swalContainer.style.display = 'none';
-    }
-
-    wrapper.style.display = 'flex';
-    wrapper.style.zIndex = '9999';
+    // Adiciona a classe ao body, que irá acionar a regra de CSS para esconder o modal
     document.body.classList.add('player-active');
+    
+    // Exibe o wrapper do player
+    wrapper.style.display = 'flex';
 
     document.getElementById('player-close-btn')?.addEventListener('click', e => {
         e.stopPropagation();
@@ -966,11 +975,15 @@ async function openFilterSweetAlert() {
         denyButtonText: 'Limpar Filtro', confirmButtonText: 'Aplicar Filtro',
         customClass: { popup: 'swal2-popup' },
         didOpen: () => {
+            document.body.classList.add('filter-modal-open');
             const genrePanel = document.getElementById('swalGenreButtonsPanel');
             document.getElementById('swalMovieGenreTypeButton')?.addEventListener('click', () => fetchAndDisplayGenresInSA('movie', genrePanel));
             document.getElementById('swalTvGenreTypeButton')?.addEventListener('click', () => fetchAndDisplayGenresInSA('tv', genrePanel));
             document.getElementById('swalAnimeGenreTypeButton')?.addEventListener('click', () => fetchAndDisplayGenresInSA('anime', genrePanel));
             fetchAndDisplayGenresInSA(currentFilterTypeSA, genrePanel);
+        },
+        willClose: () => {
+            document.body.classList.remove('filter-modal-open');
         },
         preConfirm: () => selectedGenreSA,
     }).then(async (result) => {
@@ -1215,6 +1228,7 @@ function updateHistoryButtonVisibility() {
 }
 
 async function showCollectionDetails(collection) {
+    stopMainPageBackdropSlideshow();
     const collectionData = await fetchTMDB(`/collection/${collection.id}`);
     if (!collectionData || collectionData.error) {
         Swal.fire('Erro', `Não foi possível carregar os detalhes da coleção: ${collectionData?.message || 'Tente novamente.'}`, 'error');
@@ -1234,23 +1248,54 @@ async function showCollectionDetails(collection) {
         const isWatched = watchHistory.some(h => h.id.toString() === movie.id.toString());
         const watchedOverlayHTML = isWatched ? `<div class="watched-overlay" title="Visto"><i class="fas fa-eye"></i></div>` : '';
         const imageUrl = movie.poster_path ? `${TMDB_IMAGE_BASE_URL}w400${movie.poster_path}` : `https://placehold.co/400x600/0F071A/F3F4F6?text=${encodeURIComponent(movie.title)}&font=inter`;
+        const releaseYear = movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A';
+        const rating = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
+
         return `
-            <div class="content-card" onclick="Swal.close(); openItemModal(${movie.id}, 'movie', '${movie.backdrop_path || ''}')">
-                ${watchedOverlayHTML}
-                <img src="${imageUrl}" alt="${movie.title}" loading="lazy" width="400" height="600" style="aspect-ratio: 2/3;">
-                <div class="title-overlay"><div class="title">${movie.title}</div></div>
+            <div class="collection-item-card" data-movie-id="${movie.id}" data-movie-backdrop="${movie.backdrop_path || ''}" data-backdrop="${movie.backdrop_path || ''}">
+                <div class="collection-item-poster-wrapper">
+                    ${watchedOverlayHTML}
+                    <img src="${imageUrl}" alt="${movie.title}" class="collection-item-poster" loading="lazy">
+                </div>
+                <div class="collection-item-info">
+                    <h4 class="collection-item-title">${movie.title}</h4>
+                    <div class="collection-item-meta">
+                        <span class="collection-item-year">${releaseYear}</span>
+                        ${rating !== 'N/A' ? `
+                        <span class="collection-item-rating">
+                            <i class="fas fa-star"></i> ${rating}
+                        </span>` : ''}
+                    </div>
+                </div>
             </div>
         `;
     }).join('')}</div>`;
 
+    let primaryBackdropPath = collectionData.backdrop_path;
+    if (!primaryBackdropPath && sortedParts.length > 0) {
+        const firstMovieWithBackdrop = sortedParts.find(movie => movie.backdrop_path);
+        if (firstMovieWithBackdrop) {
+            primaryBackdropPath = firstMovieWithBackdrop.backdrop_path;
+        }
+    }
+    updatePageBackground(primaryBackdropPath);
+
+    const overviewHTML = collectionData.overview ? `<p class="collection-modal-overview">${collectionData.overview}</p>` : '';
+
     const modalHTML = `
-        <div class="collection-modal-header" style="background-image: linear-gradient(to top, rgba(23, 24, 28, 1) 10%, rgba(23, 24, 28, 0.7) 50%, rgba(23, 24, 28, 0.4) 100%), url(${collectionData.backdrop_path ? TMDB_IMAGE_BASE_URL + 'w1280' + collectionData.backdrop_path : ''});">
-            <div class="collection-modal-title-wrapper">
-                 <h2 class="collection-modal-title">${collection.name}</h2>
-                 ${favButtonHTML}
+        <div class="collection-modal-header" style="background-image: linear-gradient(to top, rgba(23, 24, 28, 1) 20%, rgba(23, 24, 28, 0.7) 60%, rgba(23, 24, 28, 0.2) 100%), url(${primaryBackdropPath ? TMDB_IMAGE_BASE_URL + 'w1280' + primaryBackdropPath : ''});">
+            <div class="collection-modal-header-content">
+                <div class="collection-modal-title-wrapper">
+                    <h2 class="collection-modal-title">${collection.name}</h2>
+                    ${favButtonHTML}
+                </div>
+                ${overviewHTML}
             </div>
         </div>
-        <div class="collection-modal-body">${collectionMoviesHTML}</div>
+        <div class="collection-modal-body">
+             <h3 class="collection-modal-body-title">Filmes da Franquia</h3>
+            ${collectionMoviesHTML}
+        </div>
     `;
 
     Swal.fire({
@@ -1262,10 +1307,38 @@ async function showCollectionDetails(collection) {
             htmlContainer: 'swal-collection-container',
             closeButton: 'swal-collection-close-button'
         },
+        willClose: () => {
+            updatePageBackground(null);
+            if (defaultContentSections.style.display === 'block') {
+                startMainPageBackdropSlideshow();
+            }
+        },
         didOpen: () => {
+            const collectionHeader = document.querySelector('.collection-modal-header');
+            const originalBackdrop = primaryBackdropPath ? `${TMDB_IMAGE_BASE_URL}w1280${primaryBackdropPath}` : '';
+
             document.getElementById(`collectionFavoriteButton-${collection.id}`).addEventListener('click', (e) => {
                 e.stopPropagation();
                 toggleFavorite(collection, 'collection');
+            });
+
+            document.querySelectorAll('.collection-item-card').forEach(card => {
+                const movieBackdrop = card.dataset.backdrop;
+                if (movieBackdrop) {
+                    card.addEventListener('mouseenter', () => {
+                        collectionHeader.style.backgroundImage = `linear-gradient(to top, rgba(23, 24, 28, 1) 20%, rgba(23, 24, 28, 0.7) 60%, rgba(23, 24, 28, 0.2) 100%), url(${TMDB_IMAGE_BASE_URL}w1280${movieBackdrop})`;
+                    });
+                    card.addEventListener('mouseleave', () => {
+                        collectionHeader.style.backgroundImage = `linear-gradient(to top, rgba(23, 24, 28, 1) 20%, rgba(23, 24, 28, 0.7) 60%, rgba(23, 24, 28, 0.2) 100%), url(${originalBackdrop})`;
+                    });
+                }
+
+                // Adiciona o evento de clique para abrir o modal do filme
+                card.addEventListener('click', () => {
+                    const movieId = card.dataset.movieId;
+                    const movieBackdropPath = card.dataset.movieBackdrop;
+                    openItemModal(movieId, 'movie', movieBackdropPath, false, collectionData);
+                });
             });
         }
     });
@@ -1309,7 +1382,10 @@ function displayResults(items, defaultType, targetEl, replace, showTags = false,
         }
 
         if (mediaType === 'collection') {
-            card.onclick = () => showCollectionDetails(item);
+            card.onclick = () => {
+                Swal.close();
+                setTimeout(() => showCollectionDetails(item), 150);
+            };
             card.innerHTML = `
                 <img src="${imageUrl}" alt="${title}" loading="lazy" width="400" height="600" style="aspect-ratio: 2/3;">
                 <div class="title-overlay"><div class="title">${title}</div></div>
@@ -1392,7 +1468,11 @@ function openCombinedModal() {
         showConfirmButton: false,
         showCloseButton: true,
         customClass: { popup: 'swal-combined-popup' },
+        willClose: () => {
+            document.body.classList.remove('combined-modal-open');
+        },
         didOpen: () => {
+            document.body.classList.add('combined-modal-open');
             const tabButtons = document.querySelectorAll('.swal-tab-button');
             const tabContent = document.getElementById('swal-tab-content');
             const loader = document.getElementById('swal-lazy-loader');
@@ -1530,15 +1610,17 @@ function openCombinedModal() {
                     setTimeout(() => renderTabContent('history'), 50);
                 } else if (favoriteCard) {
                     Swal.close();
-                    const item = favorites.find(fav => fav.id.toString() === favoriteCard.dataset.id && fav.media_type === favoriteCard.dataset.type);
-                    if (item.media_type === 'collection') {
-                        showCollectionDetails(item);
-                    } else {
-                        openItemModal(favoriteCard.dataset.id, favoriteCard.dataset.type, favoriteCard.dataset.backdrop);
-                    }
+                    setTimeout(() => {
+                        const item = favorites.find(fav => fav.id.toString() === favoriteCard.dataset.id && fav.media_type === favoriteCard.dataset.type);
+                        if (item.media_type === 'collection') {
+                            showCollectionDetails(item);
+                        } else {
+                            openItemModal(favoriteCard.dataset.id, favoriteCard.dataset.type, favoriteCard.dataset.backdrop);
+                        }
+                    }, 150);
                 } else if (historyItem) {
                     Swal.close();
-                    openItemModal(historyItem.dataset.id, historyItem.dataset.type);
+                    setTimeout(() => openItemModal(historyItem.dataset.id, historyItem.dataset.type), 150);
                 }
             });
 
