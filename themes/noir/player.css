@@ -1,105 +1,121 @@
-/* ========= Player Styles ========= */
+/* Styles for the full-screen player wrapper */
 #player-fullscreen-wrapper {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #000;
-    z-index: 9999;
-    display: none;
-    overflow: hidden;
-    box-sizing: border-box;
-    padding-top: env(safe-area-inset-top);
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
-    padding-bottom: env(safe-area-inset-bottom);
+    background-color: #000; /* Black background for the player */
+    z-index: 99999; /* Ensure player is on top */
+    display: flex; /* Use flexbox for centering content */
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* Prevent content from overflowing */
 }
 
-#player-fullscreen-wrapper iframe {
+/* Styles for the player container (iframe wrapper) */
+#player-container {
     width: 100%;
     height: 100%;
-    border: none;
-    position: absolute;
-    transition: transform 0.3s ease-in-out;
-    object-fit: contain;
-    top: 0;
-    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-#player-logo {
-    position: fixed !important;
-    top: calc(0px + env(safe-area-inset-top)) !important;
-    right: calc(0px + env(safe-area-inset-right)) !important;
-    z-index: 10000 !important;
-    
-    /* Fundo sólido adicionado para destacar o logo */
-    background-color: #000000 !important; /* Cor sólida e escura */
-    padding: 8px !important;
-    border-radius: 20px !important;
-    border: 0px solid rgba(255, 255, 255, 0);
-    box-sizing: border-box;
-
-    /* Estilos de tamanho e imagem */
-    height: auto !important;
-    max-height: 70px !important; /* Ajustado para o novo padding */
-    width: auto !important;
-    max-width: 200px !important; /* Ajustado para o novo padding */
-    object-fit: contain !important;
-    pointer-events: none;
-    
-    /* Remove estilos antigos desnecessários */
-    box-shadow: none !important;
-    filter: none;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
+/* Styles for the player iframe */
+#player-iframe {
+    width: 100%;
+    height: 100%;
+    border: none; /* Remove iframe border */
 }
 
-/* Estilo base para o botão de fechar */
+/* Styles for the player close button */
 #player-close-btn {
-    position: fixed !important;
-    z-index: 10000 !important;
+    position: absolute;
+    top: 300px;
+    left: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     color: #fff;
     border: none;
-    border-radius: 0; /* Removida a borda arredondada para grudar melhor no canto */
-    width: 44px; /* Ajuste de tamanho para melhor toque */
-    height: 44px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
     font-size: 1.2em;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 10001;
     transition: background-color 0.3s ease;
-    /* O posicionamento é removido do estilo base e tratado pelas classes abaixo */
 }
 
 #player-close-btn:hover {
     background-color: rgba(0, 0, 0, 0.8);
 }
 
-
-/* --- Posições do Botão de Fechar --- */
-/* Adicione uma das classes a seguir ao seu elemento de botão de fechar no HTML */
-/* Exemplo: <button id="player-close-btn" class="player-close-btn-top-left">X</button> */
-
-
-/* Posição: Topo Esquerdo (Grudado) */
-.player-close-btn-top-left {
-    top: 0 !important;
-    left: 0 !important;
+/* Styles for the player logo wrapper */
+#player-logo-wrapper {
+    position: absolute;
+    top: 50%; /* Vertically center */
+    right: 20px; /* Align to the right */
+    transform: translateY(-50%); /* Adjust for perfect vertical centering */
+    z-index: 10000; /* Ensure logo is above player but below close button */
+    background: none; /* No background */
+    border: none; /* No border */
+    padding: 0; /* No padding */
+    box-shadow: none; /* No shadow */
+    outline: none; /* No outline on focus */
+    cursor: default; /* Default cursor, not pointer */
+    width: auto; /* Allow image to define width */
+    height: auto; /* Allow image to define height */
+    max-width: 200px; /* Max width for the logo */
 }
 
-/* Posição: Topo Central */
-.player-close-btn-top-center {
-    top: calc(20px + env(safe-area-inset-top)) !important;
-    left: 50% !important;
+/* Styles for the player logo image */
+#player-logo {
+    max-width: 100%; /* Ensure image scales within its wrapper */
+    height: auto; /* Maintain aspect ratio */
+    display: block; /* Remove extra space below image */
+}
+
+/* Styles for player controls (sandbox warning/button) */
+#player-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
     transform: translateX(-50%);
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
 }
 
-/* Posição: Topo Direito */
-.player-close-btn-top-right {
-    top: calc(20px + env(safe-area-inset-top)) !important;
-    right: calc(20px + env(safe-area-inset-right)) !important;
-    left: auto !important; /* remove a propriedade left */
+.sandbox-warning {
+    background-color: rgba(255, 255, 0, 0.8);
+    color: #333;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.player-control-button {
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.player-control-button:hover {
+    background-color: rgba(0, 0, 0, 0.9);
+    border-color: #fff;
 }
