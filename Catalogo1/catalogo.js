@@ -6,6 +6,8 @@ const PLACEHOLDER_PERSON_IMAGE = 'p2.png';
 // Player URLs - agora configuráveis e salvas no localStorage
 let PLAYER_BASE_URL_MOVIE = localStorage.getItem('player_base_url_movie') || 'https://megaembed.com/embed/';
 let PLAYER_BASE_URL_SERIES = localStorage.getItem('player_base_url_series') || 'https://megaembed.com/embed/';
+let isSandboxDisabled = localStorage.getItem('isSandboxDisabled') === 'true';
+
 const FAVORITES_STORAGE_KEY = 'suquin_favorites_v2';
 const WATCH_HISTORY_STORAGE_KEY = 'suquin_watch_history_v1';
 const RAFFLE_HISTORY_STORAGE_KEY = 'pickedMediaHistory_v2';
@@ -338,6 +340,7 @@ function loadStateFromLocalStorage() {
     favorites = JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY)) || [];
     watchHistory = JSON.parse(localStorage.getItem(WATCH_HISTORY_STORAGE_KEY)) || [];
     pickedMediaHistory = JSON.parse(localStorage.getItem(RAFFLE_HISTORY_STORAGE_KEY)) || [];
+    isSandboxDisabled = localStorage.getItem('isSandboxDisabled') === 'true';
 }
 
 function updateAllUI() {
@@ -934,7 +937,6 @@ function closeAdvancedPlayer() {
         wrapper.style.display = 'none';
         wrapper.innerHTML = ''; 
     }
-    // Remove a classe do body para reexibir o modal via regras de CSS
     document.body.classList.remove('player-active');
 }
 
@@ -951,20 +953,40 @@ function launchAdvancedPlayer(url, logoPath, itemData, mediaType, seasonInfo = n
         ? `<img src="${TMDB_IMAGE_BASE_URL}w300${logoPath}" id="player-logo" alt="Logo">`
         : '';
 
-    wrapper.innerHTML = `
-        <iframe src="${url}" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"></iframe>
-        <button id="player-close-btn" title="Voltar"><i class="fas fa-arrow-left"></i></button>
-        ${logoForPlayerHTML}`;
+    const sandboxAttributes = isSandboxDisabled 
+        ? "allow-scripts allow-same-origin allow-presentation allow-popups allow-popups-to-escape-sandbox allow-top-navigation allow-forms"
+        : "allow-scripts allow-same-origin allow-presentation";
 
-    // Adiciona a classe ao body, que irá acionar a regra de CSS para esconder o modal
+    wrapper.innerHTML = `
+        <div id="player-container">
+            <iframe id="player-iframe" src="${url}" allowfullscreen sandbox="${sandboxAttributes}"></iframe>
+        </div>
+        <button id="player-close-btn" title="Voltar"><i class="fas fa-arrow-left"></i></button>
+        ${logoForPlayerHTML}
+        <div id="player-controls">
+            <div class="sandbox-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Desativar a proteção pode resultar em anúncios, pop-ups e redirecionamentos.</span>
+            </div>
+            <button id="toggle-sandbox-btn" class="player-control-button">
+                <i class="fas ${isSandboxDisabled ? 'fa-lock-open' : 'fa-shield-alt'}"></i>
+                <span>${isSandboxDisabled ? 'Ativar Proteção' : 'Desativar Proteção'}</span>
+            </button>
+        </div>
+    `;
+
     document.body.classList.add('player-active');
-    
-    // Exibe o wrapper do player
     wrapper.style.display = 'flex';
 
     document.getElementById('player-close-btn')?.addEventListener('click', e => {
         e.stopPropagation();
         closeAdvancedPlayer();
+    });
+
+    document.getElementById('toggle-sandbox-btn')?.addEventListener('click', () => {
+        isSandboxDisabled = !isSandboxDisabled;
+        localStorage.setItem('isSandboxDisabled', isSandboxDisabled);
+        launchAdvancedPlayer(url, logoPath, itemData, mediaType, seasonInfo, episodeInfo);
     });
 }
 
@@ -1526,7 +1548,6 @@ function openCombinedModal() {
             settingsButton.id = 'modalSettingsButton';
             settingsButton.title = 'Configurações';
             settingsButton.innerHTML = '<i class="fas fa-cog"></i>';
-            // Correção: Adicionar o botão ao elemento de título, que já existe
             const titleElement = popup.querySelector('.swal2-title');
             if (titleElement) {
                 titleElement.style.display = 'flex';
@@ -1534,7 +1555,6 @@ function openCombinedModal() {
                 titleElement.style.alignItems = 'center';
                 titleElement.appendChild(settingsButton);
             }
-
 
             settingsButton.addEventListener('click', () => {
                 Swal.close();
@@ -1547,7 +1567,7 @@ function openCombinedModal() {
             const loader = document.getElementById('swal-lazy-loader');
             let activeTab = 'favorites';
             
-            let ITEMS_PER_PAGE = calculateItemsPerPage(); // CORREÇÃO: Usar let em vez de const
+            let ITEMS_PER_PAGE = calculateItemsPerPage();
             let pages = { history: 1 };
             let isLoading = false;
 
@@ -1640,7 +1660,7 @@ function openCombinedModal() {
                             </select>
                         </div>
                         <div class="favorites-grid favorites-grid-container"></div>
-                    `; // CORREÇÃO: Adicionada a classe favorites-grid
+                    `;
                     tabContent.innerHTML = filtersHTML;
 
                     const renderFavorites = () => {
