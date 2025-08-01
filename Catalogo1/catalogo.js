@@ -3,8 +3,9 @@ const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/';
 const LANGUAGE = 'pt-BR';
 const PLACEHOLDER_PERSON_IMAGE = 'p2.png';
-const PLAYER_BASE_URL_MOVIE = 'https://megaembed.com/embed/';
-const PLAYER_BASE_URL_SERIES = 'https://megaembed.com/embed/';
+// Player URLs - agora configuráveis e salvas no localStorage
+let PLAYER_BASE_URL_MOVIE = localStorage.getItem('player_base_url_movie') || 'https://megaembed.com/embed/';
+let PLAYER_BASE_URL_SERIES = localStorage.getItem('player_base_url_series') || 'https://megaembed.com/embed/';
 const FAVORITES_STORAGE_KEY = 'suquin_favorites_v2';
 const WATCH_HISTORY_STORAGE_KEY = 'suquin_watch_history_v1';
 const RAFFLE_HISTORY_STORAGE_KEY = 'pickedMediaHistory_v2';
@@ -1437,6 +1438,47 @@ function copyToClipboard(text) {
     }
 }
 
+function openSettingsModal() {
+    Swal.fire({
+        title: 'Configurações do Player',
+        html: `
+            <div class="settings-form">
+                <label for="movie-url-input">URL do Player de Filmes</label>
+                <input id="movie-url-input" class="swal2-input" value="${PLAYER_BASE_URL_MOVIE}">
+                <label for="series-url-input">URL do Player de Séries</label>
+                <input id="series-url-input" class="swal2-input" value="${PLAYER_BASE_URL_SERIES}">
+            </div>
+        `,
+        confirmButtonText: 'Salvar',
+        showCancelButton: true,
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            popup: 'login-popup' // Re-using a similar style
+        },
+        preConfirm: () => {
+            const movieUrl = document.getElementById('movie-url-input').value;
+            const seriesUrl = document.getElementById('series-url-input').value;
+            if (!movieUrl || !seriesUrl) {
+                Swal.showValidationMessage('Os campos não podem estar vazios.');
+                return false;
+            }
+            return { movieUrl, seriesUrl };
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const { movieUrl, seriesUrl } = result.value;
+            
+            PLAYER_BASE_URL_MOVIE = movieUrl;
+            PLAYER_BASE_URL_SERIES = seriesUrl;
+
+            localStorage.setItem('player_base_url_movie', movieUrl);
+            localStorage.setItem('player_base_url_series', seriesUrl);
+
+            showCustomToast('Configurações salvas!', 'success');
+        }
+    });
+}
+
 function openCombinedModal() {
     const userSectionHTML = currentUser ? `
         <div class="user-profile-section" style="background: var(--modal-background-color);">
@@ -1463,7 +1505,12 @@ function openCombinedModal() {
     `;
 
     Swal.fire({
-        title: 'Perfil',
+        title: `
+            <div class="swal-title-with-settings">
+                <span>Perfil</span>
+                <button id="modalSettingsButton" title="Configurações"><i class="fas fa-cog"></i></button>
+            </div>
+        `,
         html: modalHTML,
         showConfirmButton: false,
         showCloseButton: true,
@@ -1622,6 +1669,11 @@ function openCombinedModal() {
                     Swal.close();
                     setTimeout(() => openItemModal(historyItem.dataset.id, historyItem.dataset.type), 150);
                 }
+            });
+            
+            document.getElementById('modalSettingsButton')?.addEventListener('click', () => {
+                Swal.close();
+                setTimeout(openSettingsModal, 200);
             });
 
             if (currentUser) {
