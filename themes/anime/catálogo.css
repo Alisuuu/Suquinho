@@ -266,6 +266,10 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     background: rgba(23, 24, 28, 0.85) !important;
 }
 
+.swal-filter-popup.swal2-popup {
+    background: rgba(23, 24, 28, 0.85) !important;
+}
+
 .swal-details-popup.swal2-popup {
     width: 850px !important;
     max-width: 95vw !important;
