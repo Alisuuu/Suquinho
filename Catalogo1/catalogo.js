@@ -974,7 +974,7 @@ async function openFilterSweetAlert() {
     Swal.fire({
         title: 'Filtrar por Gênero', html: swalHTML, showCloseButton: true, showDenyButton: true,
         denyButtonText: 'Limpar Filtro', confirmButtonText: 'Aplicar Filtro',
-        customClass: { popup: 'swal2-popup swal-filter-popup' },
+        customClass: { popup: 'swal2-popup' },
         didOpen: () => {
             document.body.classList.add('filter-modal-open');
             const genrePanel = document.getElementById('swalGenreButtonsPanel');
@@ -1453,7 +1453,6 @@ function openSettingsModal() {
                     <input id="series-url-input" class="swal2-input" value="${PLAYER_BASE_URL_SERIES}" placeholder="Ex: https://meuplayer.com/embed/">
                 </div>
             </div>
-            
         `,
         confirmButtonText: 'Salvar',
         showCancelButton: true,
@@ -1461,36 +1460,26 @@ function openSettingsModal() {
         customClass: {
             popup: 'swal-settings-popup'
         },
-        didOpen: () => {
-            
-        },
         preConfirm: () => {
             const movieUrl = document.getElementById('movie-url-input').value;
             const seriesUrl = document.getElementById('series-url-input').value;
-            const selectedTheme = document.getElementById('theme-select').value;
 
             if (!movieUrl || !seriesUrl) {
                 Swal.showValidationMessage('As URLs dos players não podem estar vazias.');
                 return false;
             }
-            return { movieUrl, seriesUrl, selectedTheme };
+            return { movieUrl, seriesUrl };
         }
     }).then((result) => {
         if (result.isConfirmed) {
-            const { movieUrl, seriesUrl, selectedTheme } = result.value;
+            const { movieUrl, seriesUrl } = result.value;
             
             PLAYER_BASE_URL_MOVIE = movieUrl;
             PLAYER_BASE_URL_SERIES = seriesUrl;
             localStorage.setItem('player_base_url_movie', movieUrl);
             localStorage.setItem('player_base_url_series', seriesUrl);
 
-            if (selectedTheme !== localStorage.getItem('selectedTheme')) {
-                localStorage.setItem('selectedTheme', selectedTheme);
-                // Reload the page to apply the new theme
-                location.reload();
-            } else {
-                showCustomToast('Configurações salvas!', 'success');
-            }
+            showCustomToast('Configurações salvas!', 'success');
         }
     });
 }
@@ -1537,7 +1526,15 @@ function openCombinedModal() {
             settingsButton.id = 'modalSettingsButton';
             settingsButton.title = 'Configurações';
             settingsButton.innerHTML = '<i class="fas fa-cog"></i>';
-            popup.querySelector('.swal2-title').prepend(settingsButton);
+            // Correção: Adicionar o botão ao elemento de título, que já existe
+            const titleElement = popup.querySelector('.swal2-title');
+            if (titleElement) {
+                titleElement.style.display = 'flex';
+                titleElement.style.justifyContent = 'space-between';
+                titleElement.style.alignItems = 'center';
+                titleElement.appendChild(settingsButton);
+            }
+
 
             settingsButton.addEventListener('click', () => {
                 Swal.close();
@@ -1550,19 +1547,15 @@ function openCombinedModal() {
             const loader = document.getElementById('swal-lazy-loader');
             let activeTab = 'favorites';
             
-            const ITEMS_PER_PAGE = calculateItemsPerPage();
-            let pages = { history: 1 }; // Favorites doesn't use pagination anymore
+            let ITEMS_PER_PAGE = calculateItemsPerPage(); // CORREÇÃO: Usar let em vez de const
+            let pages = { history: 1 };
             let isLoading = false;
 
             function calculateItemsPerPage() {
                 const screenWidth = window.innerWidth;
-                if (screenWidth < 600) {
-                    return 10;
-                } else if (screenWidth < 900) {
-                    return 15;
-                } else {
-                    return 20;
-                }
+                if (screenWidth < 600) return 10;
+                if (screenWidth < 900) return 15;
+                return 20;
             }
 
             const renderItems = (list, container, type) => {
@@ -1575,7 +1568,6 @@ function openCombinedModal() {
                         : `https://placehold.co/342x513/0F071A/F3F4F6?text=${encodeURIComponent(title)}&font=inter`;
 
                     if (type === 'favorites') {
-                        // The container is now a grid, so we add the card directly
                         cardHTML = `
                             <div class="content-card favorite-card" data-id="${item.id}" data-type="${item.media_type}" data-backdrop="${item.backdrop_path || ''}">
                                 <img src="${imageUrl}" alt="${title}" loading="lazy" width="342" height="513" style="aspect-ratio: 2/3;">
@@ -1606,20 +1598,18 @@ function openCombinedModal() {
             };
 
             const loadMore = () => {
-                if (isLoading || activeTab !== 'history') return; // Only for history
+                if (isLoading || activeTab !== 'history') return;
                 
                 const list = watchHistory;
                 const page = pages.history;
                 const container = tabContent.querySelector('.history-list');
 
-                if (!container || (page * ITEMS_PER_PAGE >= list.length)) {
-                    return; // No more items to load
-                }
+                if (!container || (page * ITEMS_PER_PAGE >= list.length)) return;
 
                 isLoading = true;
                 loader.style.display = 'flex';
 
-                setTimeout(() => { // Simulate network delay
+                setTimeout(() => {
                     const nextPageItems = list.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE);
                     renderItems(nextPageItems, container, 'history');
                     pages.history++;
@@ -1630,7 +1620,7 @@ function openCombinedModal() {
             
             const renderTabContent = (tab) => {
                 activeTab = tab;
-                pages = { history: 1 }; // Reset history page
+                pages = { history: 1 };
                 tabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tab));
                 tabContent.innerHTML = '';
 
@@ -1649,8 +1639,8 @@ function openCombinedModal() {
                                 <option value="title_desc">Título (Z-A)</option>
                             </select>
                         </div>
-                        <div class="favorites-grid-container"></div>
-                    `;
+                        <div class="favorites-grid favorites-grid-container"></div>
+                    `; // CORREÇÃO: Adicionada a classe favorites-grid
                     tabContent.innerHTML = filtersHTML;
 
                     const renderFavorites = () => {
@@ -1670,27 +1660,25 @@ function openCombinedModal() {
                                     return (b.title || b.name).localeCompare(a.title || a.name);
                                 case 'date_added':
                                 default:
-                                    // The default order is already recent first because of unshift
                                     return 0; 
                             }
                         });
 
                         const container = tabContent.querySelector('.favorites-grid-container');
-                        container.innerHTML = ''; // Clear previous items
+                        container.innerHTML = '';
 
                         if (filteredFavorites.length === 0) {
                             container.innerHTML = '<p class="text-center text-gray-400 py-5">Nenhum favorito encontrado com estes filtros.</p>';
                             return;
                         }
                         
-                        // Favorites are not paginated, render all
                         renderItems(filteredFavorites, container, 'favorites');
                     };
 
                     document.getElementById('fav-filter-type').addEventListener('change', renderFavorites);
                     document.getElementById('fav-sort-by').addEventListener('change', renderFavorites);
 
-                    renderFavorites(); // Initial render
+                    renderFavorites();
 
                 } else if (tab === 'history') {
                     tabContent.innerHTML = '<div class="history-list"></div>';
@@ -1704,7 +1692,6 @@ function openCombinedModal() {
             };
             
             tabContent.addEventListener('scroll', () => {
-                // Only trigger for history tab
                 if (activeTab === 'history' && tabContent.scrollTop + tabContent.clientHeight >= tabContent.scrollHeight - 50) {
                     loadMore();
                 }
@@ -1721,7 +1708,6 @@ function openCombinedModal() {
                     const itemToRemove = favorites.find(fav => fav.id.toString() === removeFavButton.dataset.id && fav.media_type === removeFavButton.dataset.type);
                     if (itemToRemove) {
                         toggleFavorite(itemToRemove, itemToRemove.media_type);
-                        // Re-render the favorites tab to reflect the change
                         if (activeTab === 'favorites') {
                            setTimeout(() => renderTabContent('favorites'), 50);
                         }
@@ -1729,7 +1715,6 @@ function openCombinedModal() {
                 } else if (removeHistButton) {
                     e.stopPropagation();
                     removeFromWatchHistory(removeHistButton.dataset.id);
-                    // Re-render the history tab
                      if (activeTab === 'history') {
                         setTimeout(() => renderTabContent('history'), 50);
                      }
@@ -1749,11 +1734,6 @@ function openCombinedModal() {
                 }
             });
             
-            document.getElementById('modalSettingsButton')?.addEventListener('click', () => {
-                Swal.close();
-                setTimeout(openSettingsModal, 200);
-            });
-
             if (currentUser) {
                 document.getElementById('modalSignOutButton')?.addEventListener('click', signOut);
             } else {
