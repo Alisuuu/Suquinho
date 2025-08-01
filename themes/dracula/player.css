@@ -56,8 +56,8 @@
 /* Styles for the player logo wrapper */
 #player-logo-wrapper {
     position: absolute;
-    top: 50%; /* Vertically center */
-    right: 20px; /* Align to the right */
+    top: 60%; /* Vertically center */
+    right: 90px; /* Align to the right */
     transform: translateY(-50%); /* Adjust for perfect vertical centering */
     z-index: 10000; /* Ensure logo is above player but below close button */
     background: none; /* No background */
