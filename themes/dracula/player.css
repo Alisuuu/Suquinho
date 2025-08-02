@@ -32,7 +32,7 @@
 /* Styles for the player close button */
 #player-close-btn {
     position: absolute;
-    top: 300px;
+    top: 400px;
     left: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     color: #fff;
@@ -57,7 +57,7 @@
 #player-logo-wrapper {
     position: absolute;
     top: 60%; /* Vertically center */
-    right: 90px; /* Align to the right */
+    right: 100px; /* Align to the right */
     transform: translateY(-50%); /* Adjust for perfect vertical centering */
     z-index: 10000; /* Ensure logo is above player but below close button */
     background: none; /* No background */
@@ -73,7 +73,7 @@
 
 /* Styles for the player logo image */
 #player-logo {
-    max-width: 100%; /* Ensure image scales within its wrapper */
+    max-width: 80%; /* Ensure image scales within its wrapper */
     height: auto; /* Maintain aspect ratio */
     display: block; /* Remove extra space below image */
 }
@@ -97,9 +97,9 @@
     padding: 8px 15px;
     border-radius: 5px;
     font-size: 0.9em;
-    display: flex;
-    align-items: center;
+    display: none;
     gap: 5px;
+    left: 100%;
 }
 
 .player-control-button {
