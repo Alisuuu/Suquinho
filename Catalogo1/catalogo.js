@@ -1895,11 +1895,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    document.addEventListener('fullscreenchange', () => {
-        if (!document.fullscreenElement) {
-            closeAdvancedPlayer();
-        }
-    });
+    
 
     const urlParams = new URLSearchParams(window.location.search);
     const typeParam = urlParams.get('type');
