@@ -32,19 +32,15 @@
 /* Styles for the player close button */
 #player-close-btn {
     position: absolute;
-    top: 200px;
-    left: 100%;
+    top: 20px;
+    right: 20px;
     background-color: rgba(0, 0, 0, 0.5);
     color: #fff;
     border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    font-size: 1.2em;
+    border-radius: 5px;
+    padding: 12px 25px;
+    font-size: 1em;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     z-index: 10001;
     transition: background-color 0.3s ease;
 }
