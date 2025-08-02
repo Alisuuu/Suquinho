@@ -950,7 +950,7 @@ function launchAdvancedPlayer(url, logoPath, itemData, mediaType, seasonInfo = n
     }
 
     const logoForPlayerHTML = logoPath 
-        ? `<div id="player-logo-wrapper"><img src="${TMDB_IMAGE_BASE_URL}w300${logoPath}" id="player-logo" alt="Logo"></div>`
+        ? `<div id="player-logo-wrapper"><img src="${TMDB_IMAGE_BASE_URL}original${logoPath}" id="player-logo" alt="Logo"></div>`
         : '';
 
     const sandboxAttributes = isSandboxDisabled 
