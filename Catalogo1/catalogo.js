@@ -4,8 +4,8 @@ const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/';
 const LANGUAGE = 'pt-BR';
 const PLACEHOLDER_PERSON_IMAGE = 'p2.png';
 // Player URLs - agora configuráveis e salvas no localStorage
-let PLAYER_BASE_URL_MOVIE = localStorage.getItem('player_base_url_movie') || 'https://superflixapi.mom/filme/';
-let PLAYER_BASE_URL_SERIES = localStorage.getItem('player_base_url_series') || 'https://superflixapi.mom/serie/';
+let PLAYER_BASE_URL_MOVIE = localStorage.getItem('player_base_url_movie') || 'https://megaembed.com/embed/';
+let PLAYER_BASE_URL_SERIES = localStorage.getItem('player_base_url_series') || 'https://megaembed.com/embed/';
 let isSandboxDisabled = localStorage.getItem('isSandboxDisabled') === 'true';
 
 const FAVORITES_STORAGE_KEY = 'suquin_favorites_v2';
