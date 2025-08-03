@@ -14,7 +14,7 @@ window.addEventListener('load', () => {
   const backButtonText = iframeBackButton.querySelector('.button-text');
   // --- FIM DA MODIFICAÇÃO ---
 
-  const HOME_PAGE = 'Catalogo1/index.html';
+  const HOME_PAGE = 'catalogo1/index.html';
   
   const urlParams = new URLSearchParams(window.location.search);
   const paginaParaCarregar = urlParams.get('pagina');
