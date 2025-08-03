@@ -8,19 +8,18 @@
 }
 
 /* =================================================
-  === TEMA SONHO DE LAVANDA (Lilás Escuro e Gradiente) ===
+  === TEMA ÍNDIGO PROFUNDO (Azul-arroxeado e Gradiente) ===
   =================================================
-  Um tema elegante e moderno com tons de lilás e lavanda.
+  Um tema vibrante e moderno com um tom de índigo profundo.
 */
 :root {
     --background-color: #17181C;
     --surface-color: #4F4C7A;    /* Roxo suave */
     --card-bg: #3E3C61;          /* Fundo do card roxo escuro */
     
-    --primary-color: #A78BFA;    /* Lilás principal */
-    --primary-color-rgb: 167, 139, 250;
-    --primary-hover-color: #C4B5FD; /* Lilás mais claro para hover */
-    --on-primary-color: #f8f8f2;  /* Cor do texto sobre o primário (claro) */
+    --primary-color: #593BA2;    /* Índigo Profundo */
+    --primary-hover-color: #6A4EC1; /* Índigo mais claro para hover */
+    --on-primary-color: #F3F3FF;  /* Cor do texto sobre o primário (claro) */
     --icon-color: #A6D9F7;       /* Azul céu suave para ícones */
 
     --secondary-accent: #A6D9F7; /* Azul céu para detalhes */
@@ -28,8 +27,8 @@
     --text-primary: #F3F3FF;     /* Branco lavanda */
     --text-secondary: #A4A1CC;   /* Lavanda suave */
     
-    --border-color: rgba(167, 139, 250, 0.2); /* Borda lilás sutil */
-    --border-highlight: var(--primary-color); /* Borda destacada em lilás */
+    --border-color: rgba(89, 59, 162, 0.2); /* Borda índigo sutil */
+    --border-highlight: var(--primary-color); /* Borda destacada em índigo */
 
     --danger-red: #ff5555;
     --danger-red-hover: #ff6e6e;
@@ -37,7 +36,7 @@
     --info-blue: #8be9fd;
 
     /* Gradientes */
-    --primary-gradient: linear-gradient(45deg, rgba(167, 139, 250, 0.8), rgba(139, 92, 246, 0.8));
+    --primary-gradient: linear-gradient(45deg, rgba(89, 59, 162, 0.8), rgba(106, 78, 193, 0.8));
     --header-gradient: linear-gradient(160deg, var(--background-color), var(--surface-color));
 
     --header-height-mobile: 5rem;
@@ -45,7 +44,7 @@
     /* Sombras e Brilhos */
     --expressive-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
     --subtle-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-    --modal-shadow-neutral-glow: 0 0 40px rgba(167, 139, 250, 0.25); /* Brilho lilás */
+    --modal-shadow-neutral-glow: 0 0 40px rgba(89, 59, 162, 0.25); /* Brilho índigo */
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
@@ -59,7 +58,7 @@ html, body {
 
 body {
     font-family: 'Inter', sans-serif;
-    background-color: var(--background-color);
+    background-color: rgba(23, 24, 28, 0.2); /* Mais transparente */
     color: var(--text-primary);
     transition: background-image 0.5s ease-in-out;
 }
@@ -90,7 +89,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(44, 42, 74, 0.4); /* Sobreposição índigo */
+    background-color: rgba(44, 42, 74, 0.1); /* Sobreposição índigo mais transparente */
     box-shadow: none;
     z-index: -1;
 }
@@ -103,7 +102,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 .main-results-grid,
 #singleResultsGrid {
     display: grid;
-    /* --- CORREÇÃO: Tamanho mínimo unificado em 120px para consistência --- */
+    /* --- CORREÇÃO: Tamanho mínimo unificado em 100px para consistência --- */
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     gap: 1rem;
     padding-bottom: 1rem;
@@ -129,7 +128,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 }
 .content-card:hover {
     transform: translateY(-8px) scale(1.05);
-    box-shadow: 0 0 20px rgba(167, 139, 250, 0.2), 0 4px 15px rgba(0,0,0,0.5);
+    box-shadow: 0 0 20px rgba(89, 59, 162, 0.2), 0 4px 15px rgba(0,0,0,0.5);
     border-color: var(--border-highlight);
 }
 .content-card img {
@@ -185,7 +184,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     border-radius: 1.2rem !important;
     max-width: 90vw !important;
     width: auto !important;
-    background: rgba(23, 24, 28, 0.45) !important; /* Mais transparente */
+    background: rgba(23, 24, 28, 0.85) !important; /* Usando o fundo dos salvos */
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important; /* Sombra bem mais leve */
     z-index: 2001;
     will-change: transform, opacity;
@@ -217,7 +216,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     background: var(--primary-gradient);
     border-color: var(--primary-color);
     color: var(--on-primary-color);
-    box-shadow: 0 6px 20px rgba(167, 139, 250, 0.2), 0 2px 8px rgba(0,0,0,0.5);
+    box-shadow: 0 6px 20px rgba(89, 59, 162, 0.2), 0 2px 8px rgba(0,0,0,0.5);
 }
 
 .swal-genre-filter-type-selector button.active,
@@ -225,7 +224,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     background: var(--primary-gradient);
     color: var(--on-primary-color);
     border-color: var(--primary-color);
-    box-shadow: 0 0 20px rgba(167, 139, 250, 0.3);
+    box-shadow: 0 0 20px rgba(89, 59, 162, 0.3);
     transform: scale(1.02);
 }
 
@@ -233,13 +232,13 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     background: var(--primary-gradient) !important;
     color: var(--on-primary-color) !important;
     border: 1px solid var(--primary-color) !important;
-    box-shadow: 0 4px 15px rgba(167, 139, 250, 0.25) !important;
+    box-shadow: 0 4px 15px rgba(89, 59, 162, 0.25) !important;
 }
 .swal-filter-actions .swal2-confirm:hover {
     background: var(--primary-gradient) !important;
     filter: brightness(1.1);
     border-color: var(--primary-hover-color) !important;
-    box-shadow: 0 6px 20px rgba(167, 139, 250, 0.35) !important;
+    box-shadow: 0 6px 20px rgba(89, 59, 162, 0.35) !important;
 }
 .swal-filter-actions .swal2-deny {
     background-color: var(--danger-red) !important;
@@ -263,6 +262,10 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 /* Deixa o modal de salvos/perfil menos transparente */
 .swal-combined-popup.swal2-popup,
 .swal-details-popup.swal2-popup,
+.swal-filter-popup.swal2-popup {
+    background: rgba(23, 24, 28, 0.85) !important;
+}
+
 .swal-filter-popup.swal2-popup {
     background: rgba(23, 24, 28, 0.85) !important;
 }
@@ -354,7 +357,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 .play-icon-wrapper .fa-play {
     font-size: 4.5rem;
     color: rgba(255, 255, 255, 0.9);
-    text-shadow: 0 0 25px rgba(167, 139, 250, 0.5);
+    text-shadow: 0 0 25px rgba(89, 59, 162, 0.5);
     transition: transform 0.3s ease, color 0.3s ease;
 }
 
@@ -438,10 +441,10 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 #filterToggleButton:hover {
     filter: brightness(1.1);
     border-color: var(--primary-hover-color);
-    box-shadow: 0 6px 20px rgba(167, 139, 250, 0.2), 0 2px 8px rgba(0,0,0,0.5);
+    box-shadow: 0 6px 20px rgba(89, 59, 162, 0.2), 0 2px 8px rgba(0,0,0,0.5);
 }
 #filterToggleButton.active {
-    box-shadow: 0 0 20px rgba(167, 139, 250, 0.3);
+    box-shadow: 0 0 20px rgba(89, 59, 162, 0.3);
     border-color: var(--secondary-accent);
     background: var(--secondary-accent);
     color: #000;
@@ -468,7 +471,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     font-size: 0.95rem;
     transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
 }
-.input-search:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.2); }
+.input-search:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(89, 59, 162, 0.2); }
 .input-search::placeholder { color: var(--text-secondary); }
 .input-search:disabled { background-color: var(--border-color); cursor: not-allowed; }
 #searchButton { position: absolute; right: 0; top: 0; height: 100%; padding: 0 1.1rem; color: var(--text-secondary); background-color: transparent; border: none; cursor: pointer; transition: color 0.2s; }
@@ -514,7 +517,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 .home-button:hover {
     filter: brightness(1.1);
     border-color: var(--primary-hover-color);
-    box-shadow: 0 6px 20px rgba(167, 139, 250, 0.2), 0 2px 8px rgba(0,0,0,0.5);
+    box-shadow: 0 6px 20px rgba(89, 59, 162, 0.2), 0 2px 8px rgba(0,0,0,0.5);
 }
 
 .home-button .fas {
@@ -625,7 +628,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     background: var(--primary-gradient);
     color: var(--on-primary-color);
     border-color: var(--primary-color);
-    box-shadow: 0 4px 15px rgba(167, 139, 250, 0.25);
+    box-shadow: 0 4px 15px rgba(89, 59, 162, 0.25);
     transform: scale(1.1);
 }
 
@@ -696,7 +699,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 .favorites-filter-controls select:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.2);
+    box-shadow: 0 0 0 3px rgba(89, 59, 162, 0.2);
 }
 
 .favorite-card {
@@ -708,7 +711,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     top: 0.2rem;
     right: 0.2rem;
     background-color: rgba(44, 42, 74, 0.7);
-    border: 1px solid rgba(167, 139, 250, 0.2);
+    border: 1px solid rgba(89, 59, 162, 0.2);
     color: var(--icon-color);
     border-radius: 50%;
     width: 28px;
@@ -726,7 +729,6 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     background-color: var(--danger-red-hover);
     transform: scale(1.15);
 }
-
 
 /* Custom Toast Notification Styles */
 .custom-toast {
@@ -889,7 +891,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     background: var(--primary-gradient);
     color: var(--on-primary-color);
     border-color: var(--primary-color);
-    box-shadow: 0 0 10px rgba(167, 139, 250, 0.3);
+    box-shadow: 0 0 10px rgba(89, 59, 162, 0.3);
     transform: translateY(-2px);
 }
 
@@ -1046,23 +1048,23 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
         height: auto;
         padding: 1rem;
     }
-    /* --- CORREÇÃO: Removido o override para manter o tamanho base de 120px --- */
+    /* --- CORREÇÃO: Removido o override para manter o tamanho base de 100px --- */
 }
 
 /* Laptops / Desktops Pequenos */
 @media (min-width: 1024px) {
-    /* --- CORREÇÃO: Removido o override para manter o tamanho base de 120px --- */
+    /* --- CORREÇÃO: Removido o override para manter o tamanho base de 100px --- */
 }
 
 /* Desktops Maiores */
 @media (min-width: 1280px) {
     header .container { max-width: 1400px; }
-    /* --- CORREÇÃO: Removido o override para manter o tamanho base de 120px --- */
+    /* --- CORREÇÃO: Removido o override para manter o tamanho base de 100px --- */
 }
 
 /* Desktops Extra Grandes */
 @media (min-width: 1536px) {
-    /* --- CORREÇÃO: Removido o override para manter o tamanho base de 120px --- */
+    /* --- CORREÇÃO: Removido o override para manter o tamanho base de 100px --- */
 }
 
 
@@ -1094,7 +1096,7 @@ button:hover {
     background: var(--primary-gradient);
     border-color: var(--primary-color);
     color: var(--on-primary-color);
-    box-shadow: 0 3px 10px rgba(167, 139, 250, 0.2);
+    box-shadow: 0 3px 10px rgba(89, 59, 162, 0.2);
 }
 
 button:hover .fas, button:hover .far {
@@ -1157,7 +1159,7 @@ body.swal2-shown #calendar-panel {
     color: var(--on-primary-color);
     border-color: var(--primary-color);
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(167, 139, 250, 0.3), 0 0 16px rgba(167, 139, 250, 0.2);
+    box-shadow: 0 6px 16px rgba(89, 59, 162, 0.3), 0 0 16px rgba(89, 59, 162, 0.2);
 }
 
 /* --- Base do Botão e Container do Trailer --- */
@@ -1281,7 +1283,7 @@ body.swal2-shown #calendar-panel {
     color: var(--on-primary-color);
     border-color: var(--primary-color);
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(167, 139, 250, 0.3), 0 0 16px rgba(167, 139, 250, 0.2);
+    box-shadow: 0 6px 16px rgba(89, 59, 162, 0.3), 0 0 16px rgba(89, 59, 162, 0.2);
 }
 
 .swal2-container {
@@ -1376,7 +1378,7 @@ body.swal2-shown:not(.combined-modal-open):not(.filter-modal-open) #pageBackdrop
     top: 5px;
     right: 5px;
     background-color: rgba(0, 0, 0, 0.6);
-    border: 1px solid rgba(167, 139, 250, 0.2);
+    border: 1px solid rgba(89, 59, 162, 0.2);
     color: #FFF;
     border-radius: 50%;
     width: 24px;
@@ -1398,7 +1400,7 @@ body.swal2-shown:not(.combined-modal-open):not(.filter-modal-open) #pageBackdrop
 /* Estilos para o Pop-up de Login com Email */
 
 .login-popup {
-    background-color: var(12,12,12 0.9) !important;
+    background-color: rgba(23, 24, 28, 0.85) !important;
     color: var(--text-primary) !important;
     border-radius: 12px !important;
     border: 1px solid var(--border-color);
@@ -1535,7 +1537,7 @@ body.swal2-shown:not(.combined-modal-open):not(.filter-modal-open) #pageBackdrop
     background: var(--primary-gradient);
     color: var(--on-primary-color);
     border-color: var(--primary-color);
-    box-shadow: 0 4px 15px rgba(167, 139, 250, 0.25);
+    box-shadow: 0 4px 15px rgba(89, 59, 162, 0.25);
     transform: scale(1.1);
 }
 
@@ -1553,7 +1555,7 @@ body.swal2-shown:not(.combined-modal-open):not(.filter-modal-open) #pageBackdrop
     display: flex !important;
     flex-direction: column !important;
     overflow: hidden;
-    background: rgba(23, 24, 28, 0.45) !important; /* Aplicando a transparência */
+    background: rgba(23, 24, 28, 0.85) !important; /* Aplicando a transparência */
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important; /* Aplicando a sombra */
     border: 1px solid rgba(255, 255, 255, 0.1); /* Aplicando a borda */
 }
@@ -1808,7 +1810,9 @@ body.player-active .swal2-backdrop {
     padding: 20px; /* Add some padding */
     border-radius: 10px; /* Slightly rounded corners */
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Add a subtle shadow */
-    background-color: var(--background-color); /* Use theme background color */
+    background: rgba(23, 24, 28, 0.85) !important; /* Use semi-transparent background for consistency */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
     color: var(--text-primary); /* Use theme text color */
     overflow-x: hidden;
     max-height: 90vh; /* Set max height for the modal */

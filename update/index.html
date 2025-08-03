@@ -10,6 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,400;8..144,500;8..144,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
 
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
     <!-- Folhas de Estilo - Carregamento Dinâmico -->
     <script>
       const loadThemeCss = () => {
@@ -39,6 +41,24 @@
         opacity: 0;
         transition: opacity 0.5s ease-in-out;
       }
+      .changelog-container, .history-container {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: rgba(0,0,0,0.2);
+        border-radius: 10px;
+      }
+      .changelog-content, .history-list {
+        margin-top: 10px;
+      }
+      .history-list li {
+        list-style-type: none;
+        padding: 5px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+      }
+    .history-button-container {
+        margin-top: 20px;
+        text-align: center;
+      }
     </style>
 </head>
 <body>
@@ -56,13 +76,18 @@
             <h2 id="status-text">Verificando...</h2>
             <p id="version-info"></p>
         </div>
-        
-        <div id="download-container">
-            </div>
 
-        <button id="refresh-button" class="fab" aria-label="Verificar Atualizações">
-            <span class="material-symbols-outlined">refresh</span>
-        </button>
+        <div id="download-container">
+        </div>
+        
+        <div id="changelog-container" class="changelog-container">
+            <h3>Última Atualização</h3>
+            <div id="changelog-content" class="changelog-content"></div>
+        </div>
+
+        
+
+        
     </div>
 
     <script>
@@ -74,8 +99,9 @@
         const statusIcon = document.getElementById('status-icon');
         const statusText = document.getElementById('status-text');
         const versionInfo = document.getElementById('version-info');
-        const refreshButton = document.getElementById('refresh-button');
+        
         const downloadContainer = document.getElementById('download-container');
+        const changelogContent = document.getElementById('changelog-content');
 
         function setLoadingState(isLoading) {
             if (isLoading) {
@@ -84,9 +110,8 @@
                 statusIcon.className = 'icon-loading';
                 statusIcon.innerHTML = '<span class="material-symbols-outlined">sync</span>';
                 downloadContainer.innerHTML = '';
-                refreshButton.disabled = true;
+                changelogContent.innerHTML = '';
             } else {
-                refreshButton.disabled = false;
                 statusIcon.classList.remove('icon-loading');
             }
         }
@@ -111,23 +136,21 @@
 
                 if (latestRelease.tag_name !== lastSeenVersion) {
                     statusIcon.innerHTML = '<span class="material-symbols-outlined">sparkle</span>';
-                    statusIcon.style.color = 'var(--md-sys-color-tertiary)';
                     statusText.textContent = 'Nova atualização!';
                     localStorage.setItem(localStorageKey, latestRelease.tag_name);
                 } else {
                     statusIcon.innerHTML = '<span class="material-symbols-outlined">verified</span>';
-                    statusIcon.style.color = 'var(--md-sys-color-primary)';
-                    statusText.textContent = 'Usem o pwa do site, o app ta com problemas';
+                    statusText.textContent = '';
                 }
                 
-                // Exibe a versão com data e hora
                 const releaseDate = new Date(latestRelease.published_at).toLocaleString('pt-BR', {
                     day: '2-digit', month: '2-digit', year: 'numeric',
                     hour: '2-digit', minute: '2-digit'
                 });
                 versionInfo.innerHTML = `Versão <strong>${latestRelease.tag_name}</strong> &bull; ${releaseDate}`;
 
-                // Procura e exibe o link de download do primeiro arquivo (asset)
+                changelogContent.innerHTML = latestRelease.body.replace(/\n/g, '<br>');
+
                 if (latestRelease.assets && latestRelease.assets.length > 0) {
                     const firstAsset = latestRelease.assets[0];
                     downloadContainer.innerHTML = `
@@ -140,16 +163,14 @@
 
             } catch (error) {
                 console.error('Falha ao buscar atualizações:', error);
-                statusIcon.innerHTML = '<span class="material-symbols-outlined">error</span>';
-                statusIcon.style.color = 'var(--md-sys-color-error)';
-                statusText.textContent = 'Erro de Rede';
-                versionInfo.textContent = 'Não foi possível conectar à API do GitHub.';
+                statusIcon.innerHTML = '<span class="material-symbols-outlined">wifi_off</span>';
+                statusText.textContent = 'Erro de Conexão';
+                versionInfo.innerHTML = 'Não foi possível buscar atualizações. <br>Verifique sua conexão e tente novamente.';
             } finally {
                 setLoadingState(false);
             }
         }
 
-        refreshButton.addEventListener('click', checkForUpdates);
         document.addEventListener('DOMContentLoaded', checkForUpdates);
     </script>
     <script>
@@ -158,5 +179,6 @@
         document.body.style.opacity = '1';
       });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
 </body>
 </html>

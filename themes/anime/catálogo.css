@@ -58,7 +58,7 @@ html, body {
 
 body {
     font-family: 'Inter', sans-serif;
-    background-color: var(--background-color);
+    background-color: rgba(23, 24, 28, 0.2); /* Mais transparente */
     color: var(--text-primary);
     transition: background-image 0.5s ease-in-out;
 }
@@ -89,7 +89,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(44, 42, 74, 0.4); /* Sobreposição índigo */
+    background-color: rgba(44, 42, 74, 0.1); /* Sobreposição índigo mais transparente */
     box-shadow: none;
     z-index: -1;
 }
@@ -184,7 +184,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     border-radius: 1.2rem !important;
     max-width: 90vw !important;
     width: auto !important;
-    background: rgba(23, 24, 28, 0.45) !important; /* Mais transparente */
+    background: rgba(23, 24, 28, 0.85) !important; /* Usando o fundo dos salvos */
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important; /* Sombra bem mais leve */
     z-index: 2001;
     will-change: transform, opacity;
@@ -1400,7 +1400,7 @@ body.swal2-shown:not(.combined-modal-open):not(.filter-modal-open) #pageBackdrop
 /* Estilos para o Pop-up de Login com Email */
 
 .login-popup {
-    background-color: var(12,12,12 0.9) !important;
+    background-color: rgba(23, 24, 28, 0.85) !important;
     color: var(--text-primary) !important;
     border-radius: 12px !important;
     border: 1px solid var(--border-color);
@@ -1555,7 +1555,7 @@ body.swal2-shown:not(.combined-modal-open):not(.filter-modal-open) #pageBackdrop
     display: flex !important;
     flex-direction: column !important;
     overflow: hidden;
-    background: rgba(23, 24, 28, 0.45) !important; /* Aplicando a transparência */
+    background: rgba(23, 24, 28, 0.85) !important; /* Aplicando a transparência */
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important; /* Aplicando a sombra */
     border: 1px solid rgba(255, 255, 255, 0.1); /* Aplicando a borda */
 }
@@ -1810,7 +1810,9 @@ body.player-active .swal2-backdrop {
     padding: 20px; /* Add some padding */
     border-radius: 10px; /* Slightly rounded corners */
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Add a subtle shadow */
-    background-color: var(--background-color); /* Use theme background color */
+    background: rgba(23, 24, 28, 0.85) !important; /* Use semi-transparent background for consistency */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
     color: var(--text-primary); /* Use theme text color */
     overflow-x: hidden;
     max-height: 90vh; /* Set max height for the modal */

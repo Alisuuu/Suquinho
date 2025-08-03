@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Página Inicial</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Folhas de Estilo - Carregamento Dinâmico -->
+    <script>
+      const loadThemeCss = () => {
+          const selectedTheme = localStorage.getItem('selectedTheme') || 'dracula'; // 'dracula' as fallback
+          const cssFiles = [
+              'ocultos.css'
+          ];
+
+          // Remove existing theme stylesheets to prevent duplicates on theme change
+          document.querySelectorAll('link[data-theme-css]').forEach(link => link.remove());
+
+          cssFiles.forEach(file => {
+              const link = document.createElement('link');
+              link.rel = 'stylesheet';
+              link.href = `../themes/${selectedTheme}/${file}`; // Adjusted path
+              link.setAttribute('data-theme-css', ''); // Mark as theme CSS
+              document.head.appendChild(link);
+          });
+      };
+
+      // Load theme immediately
+      loadThemeCss();
+    </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+      body {
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+      }
+    </style>
+</head>
+<body>
+
+    <div class="stars" id="stars"></div>
+
+    <div class="container">
+        <div class="icons">
+            <a href="https://hyperbeam.com/app" target="_blank" class="icon-link">
+                <i class="fas fa-user icon-img"></i> <span class="icon-label">Conta</span>
+            </a>
+        </div>
+
+        <div class="link-box">
+            <input type="text" id="link-input" placeholder="Insira o link aqui" class="link-input">
+            <button id="go-btn" class="go-btn">
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="exclamation-button" id="exclamationButton">!</div>
+    <div class="notification-message-box" id="notificationMessageBox">
+        O botão de convidar por link não está funcionando, adicione o seu amigo para o chamar.
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <script>
+        // Lógica para o campo de link e botão "Ir"
+        const goBtn = document.getElementById('go-btn');
+        const linkInput = document.getElementById('link-input');
+
+        if (goBtn && linkInput) {
+            goBtn.addEventListener('click', () => {
+                const link = linkInput.value.trim();
+                if (link) {
+                    window.location.href = link;
+                } else {
+                    Swal.fire({
+                      icon: 'warning',
+                      title: 'Atenção!',
+                      text: 'Por favor, insira um link válido.',
+                    });
+                }
+            });
+
+            linkInput.addEventListener('keypress', (event) => {
+                if (event.key === 'Enter') {
+                    goBtn.click();
+                }
+            });
+        }
+
+        // Lógica para as estrelas dinâmicas
+        const starContainer = document.getElementById('stars');
+        const colors = ['#ffffff', '#ffd700', '#00ffff', '#ff69b4', '#ffa07a'];
+
+        if (starContainer) {
+            for (let i = 0; i < 40; i++) {
+                const star = document.createElement('div');
+                const size = Math.random() * 3 + 1;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                star.classList.add('star');
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.background = color;
+                star.style.animationDuration = `${Math.random() * 2 + 1}s`;
+                starContainer.appendChild(star);
+            }
+        }
+
+        // Lógica para o botão de exclamação e a caixa de mensagem
+        const exclamationButton = document.getElementById('exclamationButton');
+        const notificationMessageBox = document.getElementById('notificationMessageBox');
+
+        if (exclamationButton && notificationMessageBox) {
+            exclamationButton.addEventListener('click', () => {
+                notificationMessageBox.classList.toggle('show');
+            });
+        } else {
+            console.warn('Um dos elementos (exclamationButton ou notificationMessageBox) não foi encontrado no DOM.');
+        }
+    </script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        document.body.style.visibility = 'visible';
+        document.body.style.opacity = '1';
+      });
+    </script>
+</body>
+</html>
