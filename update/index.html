@@ -136,7 +136,7 @@
 
                 if (latestRelease.tag_name !== lastSeenVersion) {
                     statusIcon.innerHTML = '<span class="material-symbols-outlined">sparkle</span>';
-                    statusText.textContent = 'Nova atualização!';
+                    statusText.textContent = '';
                     localStorage.setItem(localStorageKey, latestRelease.tag_name);
                 } else {
                     statusIcon.innerHTML = '<span class="material-symbols-outlined">verified</span>';
