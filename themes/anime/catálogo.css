@@ -1881,6 +1881,7 @@ body.player-active .swal2-backdrop {
     max-height: 90vh; /* Set max height for the modal */
     display: flex; /* Enable flexbox */
     flex-direction: column; /* Stack children vertically */
+    height: 100%; /* Added to ensure it takes full height */
 }
 
 .swal-help-popup.swal2-popup .swal2-html-container {
