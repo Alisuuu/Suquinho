@@ -241,6 +241,9 @@ body {
 .swal2-html-container {
     color: var(--text-primary) !important;
     font-size: 1.05rem !important;
+    max-height: 60vh; /* Define uma altura máxima para o conteúdo */
+    overflow-y: auto; /* Habilita a rolagem vertical */
+    -webkit-overflow-scrolling: touch; /* Para rolagem suave em iOS */
 }
 .swal2-confirm {
     background: var(--primary-color) !important;

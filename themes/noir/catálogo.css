@@ -265,7 +265,8 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 
 .swal-combined-popup.swal2-popup,
 .swal-details-popup.swal2-popup,
-.swal-filter-popup.swal2-popup {
+.swal-filter-popup.swal2-popup,
+.swal-help-popup.swal2-popup {
     background: rgba(20, 20, 20, 0.95) !important;
 }
 
@@ -1817,7 +1818,7 @@ body.player-active .swal2-backdrop {
 }
 .settings-section {
     margin-bottom: 20px;
-    padding: 15px;
+    padding: 10px;
     background-color: rgba(255, 255, 255, 0.05);
     border-radius: 8px;
 }
@@ -1847,6 +1848,7 @@ body.player-active .swal2-backdrop {
     color: var(--text-primary);
     font-size: 1rem;
     box-sizing: border-box;
+    word-break: break-word;
 }
 .swal-settings-popup .swal2-input::placeholder {
     color: rgba(255, 255, 255, 0.5);
@@ -1864,4 +1866,28 @@ body.player-active .swal2-backdrop {
 .swal-settings-popup .swal2-cancel {
     background-color: var(--surface-color);
     color: var(--text-primary);
+}
+
+.swal-help-popup.swal2-popup {
+    max-height: 90vh; /* Set max height for the modal */
+    display: flex; /* Enable flexbox */
+    flex-direction: column; /* Stack children vertically */
+}
+
+.swal-help-popup.swal2-popup .swal2-html-container {
+    overflow-y: auto !important;
+    flex-grow: 1 !important;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-color) var(--border-color);
+}
+.swal-help-popup.swal2-popup .swal2-html-container::-webkit-scrollbar {
+    width: 8px;
+}
+.swal-help-popup.swal2-popup .swal2-html-container::-webkit-scrollbar-track {
+    background: var(--border-color);
+    border-radius: 10px;
+}
+.swal-help-popup.swal2-popup .swal2-html-container::-webkit-scrollbar-thumb {
+    background-color: var(--primary-color);
+    border-radius: 10px;
 }
