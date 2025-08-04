@@ -236,8 +236,7 @@ body {
 .swal2-popup {
     /* Fundo com gradiente sutil e desfoque mais intenso */
     background: var(--expressive-gradient-dark) !important;
-    backdrop-filter: blur(25px) saturate(1.8) !important; /* Blur mais forte */
-    -webkit-backdrop-filter: blur(25px) saturate(1.8) !important;
+    
     width: 85% !important; /* Adjusted width */
     max-width: 500px !important; /* Max width for larger screens */
     border-radius: 1.5rem !important; /* Mais arredondado */
@@ -253,6 +252,9 @@ body {
 .swal2-html-container {
     color: var(--dracula-foreground) !important; /* Using variable */
     font-size: 1.05rem !important; /* Slightly larger text */
+    max-height: 60vh; /* Define uma altura máxima para o conteúdo */
+    overflow-y: auto; /* Habilita a rolagem vertical */
+    -webkit-overflow-scrolling: touch; /* Para rolagem suave em iOS */
 }
 .swal2-confirm {
     background: linear-gradient(45deg, var(--dracula-pink), var(--dracula-purple)) !important; /* Gradient for confirm */

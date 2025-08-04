@@ -8,15 +8,24 @@
     --primary-gradient: linear-gradient(45deg, rgba(89, 59, 162, 0.8), rgba(106, 78, 193, 0.8));
 }
 
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: auto; /* Ensure scrolling is enabled for the iframe content */
+}
+
 body {
     background-color: var(--background-color);
     color: var(--text-primary);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    margin: 0;
     padding: 1rem;
+    display: flex;
+    flex-direction: column;
 }
 
 .container {
+    flex-grow: 1;
     max-width: 800px;
     margin: 2rem auto;
     padding: 2rem;
@@ -24,6 +33,9 @@ body {
     border-radius: 15px;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
     border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto; /* Ensure scrolling is enabled for the container */
 }
 
 .top-section {
@@ -131,4 +143,29 @@ body {
 .copy-button:hover {
     background-color: #7e57c2;
     transform: scale(1.05);
+}
+
+/* SweetAlert2 specific styles for the links modal */
+.swal2-popup.swal-wide {
+    padding: 0 !important;
+    overflow: hidden;
+}
+
+.swal2-popup.swal-wide .swal2-html-container {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.swal2-popup.swal-wide .swal2-close {
+    color: var(--text-primary) !important;
+    font-size: 1.8rem !important;
+    top: 1rem !important;
+    right: 1rem !important;
+    z-index: 10;
+}
+
+.swal2-popup.swal-wide .swal2-close:hover {
+    color: var(--primary-color) !important;
 }
