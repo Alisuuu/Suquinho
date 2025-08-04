@@ -10,7 +10,8 @@
     const loadThemeCss = () => {
         const selectedTheme = localStorage.getItem('selectedTheme') || 'dracula'; // 'dracula' as fallback
         const cssFiles = [
-            'ocultos.css'
+            'ocultos.css',
+            'links.css'
         ];
 
         // Remove existing theme stylesheets to prevent duplicates on theme change
@@ -39,8 +40,6 @@
   </style>
 </head>
 <body>
-
-
   <div class="container">
     <div class="top-section">
       <div class="icons">
@@ -53,8 +52,10 @@
       </button>
     </div>
 
-    <!-- Lista de links (será preenchida com conteúdo do arquivo .txt) -->
     <div class="link-list-container">
+      <div id="last-updated-container">
+        Última atualização: <span id="last-updated">Buscando...</span>
+      </div>
       <ul id="link-list">
         <!-- Links serão carregados aqui -->
       </ul>
@@ -91,26 +92,25 @@
 
             const li = document.createElement('li');
             const a = document.createElement('a');
-            a.href = link.trim(); // Trim whitespace
             a.textContent = link.trim();
+            a.style.cursor = 'pointer'; // Change cursor to indicate it's clickable
+
             const button = document.createElement('button');
             button.className = 'copy-button';
             button.textContent = 'Copiar';
+
             li.appendChild(a);
             li.appendChild(button);
             ul.appendChild(li);
 
-            // Função para copiar o link
-            button.addEventListener('click', () => {
-              // Using document.execCommand('copy') for better iframe compatibility
+            const copyLink = () => {
               const tempInput = document.createElement('textarea');
               tempInput.value = link.trim();
               document.body.appendChild(tempInput);
               tempInput.select();
               document.execCommand('copy');
               document.body.removeChild(tempInput);
-              
-              // Simple message box instead of alert
+
               const messageBox = document.createElement('div');
               messageBox.textContent = 'Link copiado!';
               messageBox.style.cssText = `
@@ -134,7 +134,11 @@
                 messageBox.style.opacity = 0;
                 messageBox.addEventListener('transitionend', () => messageBox.remove());
               }, 2000); // Hide after 2 seconds
-            });
+            };
+
+            // Copy when clicking the link text or the button
+            a.addEventListener('click', copyLink);
+            button.addEventListener('click', copyLink);
           });
         })
         .catch(error => {
@@ -144,8 +148,28 @@
         });
     }
 
+    function fetchLastUpdated() {
+      fetch('https://api.github.com/repos/Alisuuu/Suquinho/commits?path=links/links.txt&page=1&per_page=1')
+        .then(response => response.json())
+        .then(data => {
+          if (data && data.length > 0) {
+            const lastUpdated = new Date(data[0].commit.committer.date);
+            document.getElementById('last-updated').textContent = lastUpdated.toLocaleString('pt-BR');
+          } else {
+            document.getElementById('last-updated').textContent = 'Não foi possível obter a data.';
+          }
+        })
+        .catch(error => {
+          console.error('Erro ao buscar a data de atualização:', error);
+          document.getElementById('last-updated').textContent = 'Erro ao buscar a data.';
+        });
+    }
+
     // Load links on page load
-    window.onload = atualizarLinks;
+    window.onload = () => {
+      atualizarLinks();
+      fetchLastUpdated();
+    };
   </script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
