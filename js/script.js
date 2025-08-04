@@ -149,7 +149,7 @@ window.addEventListener('load', () => {
     updateIframeBackButtonVisibility();
   });
 
-  const iframeButtonLinks = sidebarButtonsContainer.querySelectorAll('a.icon-button:not(#sidebarToggleBtn):not(#iframeBackButton):not(#openThemeModalBtn)');
+  const iframeButtonLinks = sidebarButtonsContainer.querySelectorAll('a.icon-button:not(#sidebarToggleBtn):not(#iframeBackButton):not(#openThemeModalBtn):not(#helpButton)');
   
   iframeButtonLinks.forEach(button => {
     const href = button.getAttribute('href');
@@ -256,6 +256,39 @@ document.addEventListener('DOMContentLoaded', () => {
   const openThemeModalBtn = document.getElementById('openThemeModalBtn');
   const closeThemeModalBtn = themeModal ? themeModal.querySelector('.theme-modal-close') : null;
   const themeButtons = themeModal ? themeModal.querySelectorAll('.theme-modal-button') : [];
+
+  const helpButton = document.getElementById('helpButton');
+
+  if (helpButton) {
+    helpButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      Swal.fire({
+        title: 'Como Usar o Suquinho',
+        html: `
+          <div style="text-align: left; padding: 1rem;">
+            <h3 style="color: var(--primary-color); margin-top: 1rem;">Configurando o Player</h3>
+            <p>1. Digite <strong>lk</strong> na barra de busca do catálogo para acessar a página de fontes de player.</p>
+            <p>2. Copie o link de uma das fontes.</p>
+            <p>3. Volte para o catálogo, acesse seu perfil e clique no ícone de engrenagem para abrir as configurações.</p>
+            <p>4. Cole o link copiado no campo apropriado (filmes ou séries) e salve.</p>
+            <p><strong>Dica:</strong> Se um player não funcionar, tente outra fonte da lista. A lista é atualizada periodicamente.</p>
+
+            <h3 style="color: var(--primary-color); margin-top: 1rem;">Navegação e Temas</h3>
+            <p>Use os botões na barra lateral para navegar e o ícone da paleta para trocar de tema.</p>
+
+            <h3 style="color: var(--primary-color); margin-top: 1rem;">Aviso Legal</h3>
+            <p>O Suquinho não armazena e não tem responsabilidade sobre quaisquer conteúdos. Todo o conteúdo é proveniente de fontes configuradas pelos próprios usuários. O Suquinho não hospeda nada e a intenção não é a de ter conteúdo pirata.</p>
+          </div>
+        `,
+        icon: 'info',
+        showConfirmButton: false,
+        showCloseButton: true, // Adiciona o botão 'X'
+        customClass: {
+          popup: 'swal-wide swal-help-popup',
+        }
+      });
+    });
+  }
 
   if (openThemeModalBtn && themeModal && closeThemeModalBtn) {
     openThemeModalBtn.addEventListener('click', (e) => {
