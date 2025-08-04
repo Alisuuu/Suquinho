@@ -133,3 +133,53 @@ body {
     background-color: #FFC0CB;
     transform: scale(1.05);
 }
+
+/* SweetAlert2 specific styles for the links modal */
+.swal2-popup.swal-wide {
+    padding: 0 !important;
+    overflow: hidden;
+}
+
+.swal2-popup.swal-wide .swal2-html-container {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.swal2-popup.swal-wide .swal2-close {
+    color: var(--text-primary) !important;
+    font-size: 1.8rem !important;
+    top: 1rem !important;
+    right: 1rem !important;
+    z-index: 10;
+}
+
+.swal2-popup.swal-wide .swal2-close:hover {
+    color: var(--primary-color) !important;
+}
+
+/* SweetAlert2 specific styles for the help modal */
+.swal-help-popup.swal2-popup {
+    max-height: 90vh; /* Set max height for the modal */
+    display: flex; /* Enable flexbox */
+    flex-direction: column; /* Stack children vertically */
+}
+
+.swal-help-popup.swal2-popup .swal2-html-container {
+    overflow-y: auto !important;
+    flex-grow: 1 !important;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-color) var(--border-color);
+}
+.swal-help-popup.swal2-popup .swal2-html-container::-webkit-scrollbar {
+    width: 8px;
+}
+.swal-help-popup.swal2-popup .swal2-html-container::-webkit-scrollbar-track {
+    background: var(--border-color);
+    border-radius: 10px;
+}
+.swal-help-popup.swal2-popup .swal2-html-container::-webkit-scrollbar-thumb {
+    background-color: var(--primary-color);
+    border-radius: 10px;
+}
