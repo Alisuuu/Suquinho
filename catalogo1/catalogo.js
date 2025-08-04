@@ -539,7 +539,20 @@ async function performSearch(query) {
     if (trimmedQuery === 'sq') { window.location.href = '../hyper/hyper.html'; return; }
     if (trimmedQuery === 'yt') { window.location.href = '../yt/yt.html'; return; }
     if (trimmedQuery === 'suquin') { window.location.href = '../game/index.html'; return; }
-    if (trimmedQuery === 'lk') { window.location.href = '../links/links.html'; return; }
+    if (trimmedQuery.includes('lk')) {
+        Swal.fire({
+            title: 'Página de Links',
+            html: '<iframe src="../links/links.html" style="width: 100%; height: 80vh; border: none; overflow-y: auto;"></iframe>',
+            showCloseButton: true,
+            showConfirmButton: false,
+            width: '90%',
+            maxWidth: '900px',
+            customClass: {
+                popup: 'swal-wide',
+            }
+        });
+        return;
+    }
 
     stopMainPageBackdropSlideshow();
     if (pageBackdrop.style.opacity !== '0') updatePageBackground(null);
@@ -1468,11 +1481,11 @@ function openSettingsModal() {
                 <h3 class="settings-section-title">Configurações do Player</h3>
                 <div class="settings-form-group">
                     <label for="movie-url-input">URL do Player de Filmes</label>
-                    <input id="movie-url-input" class="swal2-input" value="${PLAYER_BASE_URL_MOVIE}" placeholder="Ex: https://meuplayer.com/embed/">
+                    <input id="movie-url-input" class="swal2-input" value="${PLAYER_BASE_URL_MOVIE}" placeholder="Ex: https://meuplayer.com/embed/" style="box-sizing: border-box;">
                 </div>
                 <div class="settings-form-group">
                     <label for="series-url-input">URL do Player de Séries</label>
-                    <input id="series-url-input" class="swal2-input" value="${PLAYER_BASE_URL_SERIES}" placeholder="Ex: https://meuplayer.com/embed/">
+                    <input id="series-url-input" class="swal2-input" value="${PLAYER_BASE_URL_SERIES}" placeholder="Ex: https://meuplayer.com/embed/" style="box-sizing: border-box;">
                 </div>
             </div>
         `,
