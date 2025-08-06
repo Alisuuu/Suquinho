@@ -32,21 +32,23 @@
 /* Styles for the player close button */
 #player-close-btn {
     position: absolute;
-    top: 20px;
-    right: 20px;
-    background-color: rgba(0, 0, 0, 0.5);
-    color: #fff;
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+    background-color: rgba(0, 0, 0, 0.7);
     border: none;
-    border-radius: 5px;
-    padding: 12px 25px;
-    font-size: 1em;
+    border-radius: 50%; /* Make it circular */
+    color: white;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.7);
     cursor: pointer;
     z-index: 10001;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 #player-close-btn:hover {
-    background-color: rgba(0, 0, 0, 0.8);
+    color: var(--primary-color);
 }
 
 /* Styles for the player logo wrapper */
