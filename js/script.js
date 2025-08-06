@@ -280,7 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <p>O Suquinho não armazena e não tem responsabilidade sobre quaisquer conteúdos. Todo o conteúdo é proveniente de fontes configuradas pelos próprios usuários. O Suquinho não hospeda nada e a intenção não é a de ter conteúdo pirata.</p>
           </div>
         `,
-        icon: 'info',
+        // icon: 'info', // Removido para não exibir o ícone de exclamação
         showConfirmButton: false,
         showCloseButton: true, // Adiciona o botão 'X'
         customClass: {
