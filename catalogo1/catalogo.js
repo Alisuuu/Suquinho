@@ -975,7 +975,7 @@ function launchAdvancedPlayer(url, logoPath, itemData, mediaType, seasonInfo = n
         <div id="player-container">
             <iframe id="player-iframe" src="${url}" allowfullscreen sandbox="${sandboxAttributes}"></iframe>
         </div>
-        <button id="player-close-btn" title="Voltar">Fechar</button>
+        <button id="player-close-btn" title="Voltar"><i class="fas fa-times"></i></button>
         ${logoForPlayerHTML}
         <div id="player-controls">
             <div class="sandbox-warning">
