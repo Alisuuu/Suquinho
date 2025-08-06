@@ -103,7 +103,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 #singleResultsGrid {
     display: grid;
     /* --- CORREÇÃO: Tamanho mínimo unificado em 100px para consistência --- */
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     gap: 1rem;
     padding-bottom: 1rem;
     width: 100%;
@@ -731,13 +731,14 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
 
 .favorites-grid-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     gap: 1rem;
     padding: 1rem 0;
 }
 
 .favorites-filter-controls {
     display: flex;
+    flex-wrap: wrap; /* Allow items to wrap to the next line */
     gap: 1rem;
     margin-bottom: 1rem;
     padding: 0.75rem;
@@ -762,6 +763,7 @@ body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
     background-repeat: no-repeat;
     background-position: right 0.7rem center;
     background-size: 1.2em;
+    box-sizing: border-box; /* Ensure padding and border are included in the element's total width */
 }
 
 .favorites-filter-controls select:hover {
