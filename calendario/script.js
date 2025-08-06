@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const apiURL = 'https://superflixapi.mom/calendario.php';
+    const apiURL = 'https://superflixapi.digital/calendario.php';
     let data = []; // Armazena todos os dados da API
     let periodo = 'semana'; // 'semana' ou 'mes'
     let itemsByDay = {}; // Objeto para agrupar itens por data (chave: 'YYYY-MM-DD')
