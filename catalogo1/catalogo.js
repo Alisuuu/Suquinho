@@ -805,7 +805,8 @@ async function openItemModal(itemId, mediaType, backdropPath = null, fromSorteio
     const imdbId = details.external_ids?.imdb_id;
     const mainPlayerUrl = !isTV && imdbId ? `${PLAYER_BASE_URL_MOVIE}${imdbId}` : null;
     
-    const shareUrl = `https://alisuuu.github.io/Suquinho/?pagina=Catalogo1%2Findex.html%3Ftype%3D${mediaType}%26id%3D${itemId}`;
+    const pageUrl = `catalogo1/index.html?type=${mediaType}&id=${itemId}`;
+    const shareUrl = `https://alisuuu.github.io/Suquinho/?pagina=${encodeURIComponent(pageUrl)}`;
     
     const titleText = details.title || details.name || "N/A";
     const coverImagePath = details.backdrop_path ? `${TMDB_IMAGE_BASE_URL}w780${details.backdrop_path}` : (details.poster_path ? `${TMDB_IMAGE_BASE_URL}w780${details.poster_path}` : 'https://placehold.co/1280x720/0A0514/F0F0F0?text=Indispon%C3%ADvel');
@@ -1449,27 +1450,20 @@ function displayResults(items, defaultType, targetEl, replace, showTags = false,
 }
 
 function copyToClipboard(text) {
-    if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(text).then(() => {
-            showCustomToast('Link copiado!', 'success');
-        }).catch(() => {
-            showCustomToast('Erro ao copiar.', 'info');
-        });
-    } else {
-        const textArea = document.createElement('textarea');
-        textArea.value = text;
-        textArea.style.position = 'fixed';
-        textArea.style.left = '-9999px';
-        document.body.appendChild(textArea);
-        textArea.select();
-        try {
-            document.execCommand('copy');
-            showCustomToast('Link copiado!', 'success');
-        } catch (err) {
-            showCustomToast('Erro ao copiar.', 'info');
-        } finally {
-            document.body.removeChild(textArea);
-        }
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-9999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+        document.execCommand('copy');
+        showCustomToast('Link copiado!', 'success');
+    } catch (err) {
+        showCustomToast('Erro ao copiar.', 'info');
+    } finally {
+        document.body.removeChild(textArea);
     }
 }
 
