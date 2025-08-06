@@ -536,9 +536,9 @@ async function performSearch(query) {
         }
     }
 
-    if (trimmedQuery === 'sq') { window.location.href = '../hyper/hyper.html'; return; }
-    if (trimmedQuery === 'yt') { window.location.href = '../yt/yt.html'; return; }
-    if (trimmedQuery === 'suquin') { window.location.href = '../game/index.html'; return; }
+    if (trimmedQuery === 'sq') { window.parent.location.href = '../hyper/hyper.html'; return; }
+    if (trimmedQuery === 'yt') { window.parent.location.href = '../yt/yt.html'; return; }
+    if (trimmedQuery === 'suquin') { window.parent.location.href = '../game/index.html'; return; }
     if (trimmedQuery.includes('lk')) {
         Swal.fire({
             title: 'Página de Links',
@@ -1199,7 +1199,7 @@ function displayContinueWatching() {
                 : `Visto em ${new Date(item.date).toLocaleDateString('pt-BR')}`;
             
             card.innerHTML = `
-                <img src="${imageUrl}" alt="${title}" loading="lazy" width="120" height="180" style="aspect-ratio: 120/180;">
+                <img src="${imageUrl}" alt="${title}" loading="lazy" width="200" height="180" style="aspect-ratio: 120/180;">
                 <div class="title-overlay">
                     <div class="title">${title}</div>
                     <div class="subtitle">${detailText}</div>
