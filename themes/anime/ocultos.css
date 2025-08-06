@@ -19,8 +19,8 @@
     /* Novas variáveis para gradientes sutis e blur */
     --expressive-gradient-light: linear-gradient(135deg, rgba(255, 121, 198, 0.4), rgba(189, 147, 249, 0.4));
     --expressive-gradient-dark: linear-gradient(160deg, rgba(40, 42, 54, 0.7), rgba(68, 71, 90, 0.7));
-    --expressive-shadow: 0 8px 30px rgba(189, 147, 249, 0.3), 0 2px 10px rgba(0, 0, 0, 0.4);
-    --subtle-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 0 10px rgba(189, 147, 249, 0.1);
+    --expressive-shadow: 0 0px 0px rgba(189, 147, 249, 0.3), 0 2px 10px rgba(0, 0, 0, 0.4);
+    --subtle-shadow: 0 0px 0px rgba(0, 0, 0, 0.2), 0 0 10px rgba(189, 147, 249, 0.1);
 }
 
 body {
@@ -236,8 +236,7 @@ body {
 .swal2-popup {
     /* Fundo com gradiente sutil e desfoque mais intenso */
     background: var(--expressive-gradient-dark) !important;
-    backdrop-filter: blur(25px) saturate(1.8) !important; /* Blur mais forte */
-    -webkit-backdrop-filter: blur(25px) saturate(1.8) !important;
+    
     width: 85% !important; /* Adjusted width */
     max-width: 500px !important; /* Max width for larger screens */
     border-radius: 1.5rem !important; /* Mais arredondado */
