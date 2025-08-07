@@ -1,6 +1,12 @@
 const TMDB_API_KEY = '5e5da432e96174227b25086fe8637985';
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/';
+
+// Helper function to get optimized TMDB image URLs
+function getOptimizedImageUrl(path, width) {
+    if (!path) return ''; // Return empty string if no path
+    return `${TMDB_IMAGE_BASE_URL}w${width}${path}`;
+}
 const LANGUAGE = 'pt-BR';
 const PLACEHOLDER_PERSON_IMAGE = 'p2.png';
 // Player URLs - agora configuráveis e salvas no localStorage
@@ -542,13 +548,19 @@ async function performSearch(query) {
     if (trimmedQuery.includes('lk')) {
         Swal.fire({
             title: 'Página de Links',
-            html: '<iframe src="../links/links.html" style="width: 100%; height: 80vh; border: none; overflow-y: auto;"></iframe>',
+            html: '<iframe id="links-iframe" src="about:blank" style="width: 100%; height: 80vh; border: none; overflow-y: auto;"></iframe>',
             showCloseButton: true,
             showConfirmButton: false,
             width: '90%',
             maxWidth: '900px',
             customClass: {
                 popup: 'swal-wide',
+            },
+            didOpen: () => {
+                const linksIframe = document.getElementById('links-iframe');
+                if (linksIframe) {
+                    linksIframe.src = '../links/links.html';
+                }
             }
         });
         return;
@@ -737,8 +749,10 @@ async function fetchAndDisplayEpisodes(tvId, seasonNumber, container) {
 
     container.innerHTML = `<div class="episodes-list">${episodesHTML}</div>`;
 
-    container.querySelectorAll('.episode-play-button').forEach(button => {
-        button.addEventListener('click', () => {
+    // Event delegation for episode play buttons
+    container.querySelector('.episodes-list').addEventListener('click', (event) => {
+        const button = event.target.closest('.episode-play-button');
+        if (button) {
             const episodeNumber = button.dataset.episodeNumber;
             const episodeData = seasonDetails.episodes.find(e => e.episode_number == episodeNumber);
             const seriesData = currentOpenSwalRef.seriesData; 
@@ -748,7 +762,7 @@ async function fetchAndDisplayEpisodes(tvId, seasonNumber, container) {
                 const logoPath = selectBestLogo(seriesData.images?.logos);
                 launchAdvancedPlayer(playerUrl, logoPath, seriesData, 'tv', seasonDetails, episodeData);
             }
-        });
+        }
     });
 }
 
@@ -1017,6 +1031,17 @@ async function openFilterSweetAlert() {
             document.getElementById('swalMovieGenreTypeButton')?.addEventListener('click', () => fetchAndDisplayGenresInSA('movie', genrePanel));
             document.getElementById('swalTvGenreTypeButton')?.addEventListener('click', () => fetchAndDisplayGenresInSA('tv', genrePanel));
             document.getElementById('swalAnimeGenreTypeButton')?.addEventListener('click', () => fetchAndDisplayGenresInSA('anime', genrePanel));
+            
+            genrePanel.addEventListener('click', (event) => {
+                const clickedButton = event.target.closest('button[data-genre-id]');
+                if (clickedButton) {
+                    const genreId = clickedButton.dataset.genreId === '' ? null : parseInt(clickedButton.dataset.genreId, 10);
+                    const genreName = clickedButton.dataset.genreName;
+                    const genreType = clickedButton.dataset.genreType;
+                    selectedGenreSA = { id: genreId, name: genreName, type: genreType };
+                    updateGenreButtonsInSAUI(genrePanel);
+                }
+            });
             fetchAndDisplayGenresInSA(currentFilterTypeSA, genrePanel);
         },
         willClose: () => {
@@ -1046,13 +1071,16 @@ async function fetchAndDisplayGenresInSA(mediaType, genrePanelElement) {
         if (mediaType === 'anime') {
             const allBtn = document.createElement('button');
             allBtn.textContent = 'Todos os Animes'; allBtn.dataset.genreId = '';
-            allBtn.onclick = () => { selectedGenreSA = { id: null, name: 'Todos', type: 'anime' }; updateGenreButtonsInSAUI(genrePanelElement); };
+            allBtn.dataset.genreId = '';
+            allBtn.dataset.genreName = 'Todos';
+            allBtn.dataset.genreType = 'anime';
             genrePanelElement.appendChild(allBtn);
         }
         data.genres.forEach(genre => {
             const button = document.createElement('button');
             button.textContent = genre.name; button.dataset.genreId = genre.id;
-            button.onclick = () => { selectedGenreSA = { id: genre.id, name: genre.name, type: mediaType }; updateGenreButtonsInSAUI(genrePanelElement); };
+            button.dataset.genreName = genre.name;
+            button.dataset.genreType = mediaType;
             genrePanelElement.appendChild(button);
         });
         updateGenreButtonsInSAUI(genrePanelElement);
@@ -1118,7 +1146,19 @@ function showCustomToast(message, type = 'info') {
 function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[array[i], array[j]] = [array[j], array[i]]; } }
 function showLoader() { if (loader) loader.style.display = 'flex'; }
 function hideLoader() { if (loader) loader.style.display = 'none'; }
-function updatePageBackground(path) { if (pageBackdrop) pageBackdrop.style.backgroundImage = path ? `url(${TMDB_IMAGE_BASE_URL}w1280${path})` : ''; }
+function updatePageBackground(path) {
+    if (!pageBackdrop) return;
+    if (path) {
+        const screenWidth = window.innerWidth;
+        let imageWidth = 1280; // Default for larger screens
+        if (screenWidth <= 768) { // Example breakpoint for smaller screens
+            imageWidth = 780;
+        }
+        pageBackdrop.style.backgroundImage = `url(${TMDB_IMAGE_BASE_URL}w${imageWidth}${path})`;
+    } else {
+        pageBackdrop.style.backgroundImage = '';
+    }
+}
 
 function isFavorite(id, type) {
     return favorites.some(fav => fav.id.toString() === id.toString() && fav.media_type === type);
@@ -1191,7 +1231,7 @@ function displayContinueWatching() {
 
             const title = item.title || item.name || 'Título';
             const imageUrl = item.poster_path
-                ? `${TMDB_IMAGE_BASE_URL}w400${item.poster_path}`
+                ? getOptimizedImageUrl(item.poster_path, 185)
                 : `https://placehold.co/400x600/0F071A/F3F4F6?text=${encodeURIComponent(title)}&font=inter`;
 
             const detailText = item.media_type === 'tv' && item.season && item.episode
@@ -1359,17 +1399,23 @@ async function showCollectionDetails(collection) {
                 toggleFavorite(collection, 'collection');
             });
 
-            document.querySelectorAll('.collection-item-card').forEach(card => {
-                const movieBackdrop = card.dataset.backdrop;
-                if (movieBackdrop) {
-                    card.addEventListener('mouseenter', () => {
-                        collectionHeader.style.backgroundImage = `linear-gradient(to top, rgba(23, 24, 28, 1) 20%, rgba(23, 24, 28, 0.7) 60%, rgba(23, 24, 28, 0.2) 100%), url(${TMDB_IMAGE_BASE_URL}w1280${movieBackdrop})`;
-                    });
-                    card.addEventListener('mouseleave', () => {
+            const collectionGrid = document.querySelector('.collection-modal-grid');
+            if (collectionGrid) {
+                collectionGrid.addEventListener('mouseover', (e) => {
+                    const card = e.target.closest('.collection-item-card');
+                    if (card && card.dataset.backdrop) {
+                        collectionHeader.style.backgroundImage = `linear-gradient(to top, rgba(23, 24, 28, 1) 20%, rgba(23, 24, 28, 0.7) 60%, rgba(23, 24, 28, 0.2) 100%), url(${TMDB_IMAGE_BASE_URL}w1280${card.dataset.backdrop})`;
+                    }
+                });
+                collectionGrid.addEventListener('mouseout', (e) => {
+                    const card = e.target.closest('.collection-item-card');
+                    if (card) {
                         collectionHeader.style.backgroundImage = `linear-gradient(to top, rgba(23, 24, 28, 1) 20%, rgba(23, 24, 28, 0.7) 60%, rgba(23, 24, 28, 0.2) 100%), url(${originalBackdrop})`;
-                    });
-                }
+                    }
+                });
+            }
 
+            document.querySelectorAll('.collection-item-card').forEach(card => {
                 // Adiciona o evento de clique para abrir o modal do filme
                 card.addEventListener('click', () => {
                     const movieId = card.dataset.movieId;
@@ -1398,7 +1444,7 @@ function displayResults(items, defaultType, targetEl, replace, showTags = false,
         
         const title = item.title || item.name || 'Título';
         const imageUrl = item.poster_path
-            ? `${TMDB_IMAGE_BASE_URL}w400${item.poster_path}`
+            ? getOptimizedImageUrl(item.poster_path, 342)
             : `https://placehold.co/400x600/0F071A/F3F4F6?text=${encodeURIComponent(title)}&font=inter`;
 
         let tagsHTML = '';
@@ -1419,17 +1465,18 @@ function displayResults(items, defaultType, targetEl, replace, showTags = false,
         }
 
         if (mediaType === 'collection') {
-            card.onclick = () => {
-                Swal.close();
-                setTimeout(() => showCollectionDetails(item), 150);
-            };
+            card.dataset.itemId = item.id;
+            card.dataset.mediaType = mediaType;
+            card.dataset.backdropPath = item.backdrop_path || '';
             card.innerHTML = `
                 <img src="${imageUrl}" alt="${title}" loading="lazy" width="400" height="600" style="aspect-ratio: 2/3;">
                 <div class="title-overlay"><div class="title">${title}</div></div>
                 <div class="tags">Coleção</div>
                 `;
         } else {
-            card.onclick = () => openItemModal(item.id, mediaType, item.backdrop_path);
+            card.dataset.itemId = item.id;
+            card.dataset.mediaType = mediaType;
+            card.dataset.backdropPath = item.backdrop_path || '';
             const isFav = isFavorite(item.id, mediaType);
             card.innerHTML = `
                 ${watchedOverlayHTML}
@@ -1439,14 +1486,12 @@ function displayResults(items, defaultType, targetEl, replace, showTags = false,
                 <button class="favorite-button ${isFav ? 'active' : ''}" data-id="${item.id}" data-type="${mediaType}">
                     <i class="${isFav ? 'fas fa-heart' : 'far fa-heart'}"></i>
                 </button>`;
-            card.querySelector('.favorite-button').onclick = (e) => { e.stopPropagation(); toggleFavorite(item, mediaType); };
         }
             
         fragment.appendChild(card);
     });
     
     targetEl.appendChild(fragment);
-    updateAllFavoriteButtonsUI();
 }
 
 function copyToClipboard(text) {
@@ -1597,7 +1642,7 @@ function openCombinedModal() {
                     if (type === 'favorites') {
                         cardHTML = `
                             <div class="content-card favorite-card" data-id="${item.id}" data-type="${item.media_type}" data-backdrop="${item.backdrop_path || ''}">
-                                <img src="${imageUrl}" alt="${title}" loading="lazy" width="342" height="513" style="aspect-ratio: 2/3;">
+                                <img src="${getOptimizedImageUrl(item.poster_path, 342)}" alt="${title}" loading="lazy" width="342" height="513" style="aspect-ratio: 2/3;">
                                 <div class="title-overlay"><div class="title">${title}</div></div>
                                 <button class="remove-favorite-button" data-id="${item.id}" data-type="${item.media_type}"><i class="fas fa-times-circle"></i></button>
                             </div>`;
@@ -1607,7 +1652,7 @@ function openCombinedModal() {
                                 : `Visto em ${new Date(item.date).toLocaleDateString('pt-BR')}`;
                         cardHTML = `
                             <div class="history-list-item" data-id="${item.id}" data-type="${item.media_type}">
-                                <img src="${item.poster_path ? TMDB_IMAGE_BASE_URL + 'w92' + item.poster_path : `https://placehold.co/92x138/0F071A/F3F4F6?text=${encodeURIComponent(title)}&font=inter`}" alt="Poster" class="history-list-poster" loading="lazy" width="92" height="138">
+                                <img src="${item.poster_path ? getOptimizedImageUrl(item.poster_path, 92) : `https://placehold.co/92x138/0F071A/F3F4F6?text=${encodeURIComponent(title)}&font=inter`}" alt="Poster" class="history-list-poster" loading="lazy" width="92" height="138">
                                 <div class="history-list-info">
                                     <div class="history-list-title">${title}</div>
                                     <div class="history-list-details">${detailText}</div>
@@ -1859,6 +1904,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const icon = toggleCalendarBtn.querySelector('i');
             icon.className = isCalendarOpen ? 'fas fa-times' : 'fas fa-calendar-alt';
             toggleCalendarBtn.setAttribute('aria-label', isCalendarOpen ? 'Fechar Calendário' : 'Abrir Calendário');
+
+            // Lazy load the calendar iframe
+            const calendarIframe = document.getElementById('calendar-iframe');
+            if (isCalendarOpen && calendarIframe && calendarIframe.src === 'about:blank') {
+                calendarIframe.src = '../calendario/index.html';
+            }
         });
     }
 
@@ -1901,6 +1952,39 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Event delegation for content grids
+    const handleGridClick = (event) => {
+        const card = event.target.closest('.content-card');
+        const favoriteButton = event.target.closest('.favorite-button');
+
+        if (favoriteButton) {
+            event.stopPropagation();
+            const itemId = favoriteButton.dataset.id;
+            const mediaType = favoriteButton.dataset.type;
+            // To toggle favorite, we need the full item object. 
+            // Since we only have ID and type here, we'll need to fetch it or 
+            // ensure toggleFavorite can handle partial data and fetch if necessary.
+            // For now, we'll create a minimal item object.
+            const item = { id: itemId, media_type: mediaType }; 
+            toggleFavorite(item, mediaType);
+        } else if (card) {
+            const itemId = card.dataset.itemId;
+            const mediaType = card.dataset.mediaType;
+            const backdropPath = card.dataset.backdropPath;
+
+            if (mediaType === 'collection') {
+                showCollectionDetails({ id: itemId });
+            } else {
+                openItemModal(itemId, mediaType, backdropPath);
+            }
+        }
+    };
+
+    if(moviesResultsGrid) moviesResultsGrid.addEventListener('click', handleGridClick);
+    if(tvShowsResultsGrid) tvShowsResultsGrid.addEventListener('click', handleGridClick);
+    if(singleResultsGrid) singleResultsGrid.addEventListener('click', handleGridClick);
+    if(collectionsGrid) collectionsGrid.addEventListener('click', handleGridClick);
 
     
 
