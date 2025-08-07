@@ -37,17 +37,21 @@
     width: 40px;
     height: 40px;
     font-size: 1.5rem;
-    background: var(--primary-hover-color);
-    border: none;
+    background: transparent !important;
+    border: none !important;
     color: white;
     text-shadow: 0 1px 4px rgba(0,0,0,0.7);
     cursor: pointer;
     z-index: 10001;
     transition: color 0.3s ease;
+    box-shadow: none !important;
 }
 
 #player-close-btn:hover {
     color: var(--primary-hover-color);
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 /* Styles for the player logo wrapper */

@@ -60,18 +60,20 @@ body.calendar-open #calendar-panel {
     align-items: center;
     justify-content: center;
     font-size: 1.3rem;
-    background: linear-gradient(135deg, #bd93f9, #bd93f9);
+    background: transparent !important;
     color: var(--dracula-foreground);
-    border: 1px solid rgba(189, 147, 249, 0.25);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 0 10px rgba(189, 147, 249, 0.2);
+    border: none !important;
+    box-shadow: none !important;
     transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;
     position: relative;
     z-index: 1;
 }
 #close-calendar-btn:hover {
-    background-color: rgba(229, 62, 62, 0.8); /* Vermelho no hover */
+    background-color: transparent !important;
     transform: scale(1.1) rotate(90deg);
+    border: none !important;
+    box-shadow: none !important;
 }
 
 /* Responsividade */

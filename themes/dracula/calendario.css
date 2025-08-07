@@ -296,7 +296,9 @@ input:-webkit-autofill {
     line-height: 30px;
     text-align: center;
     border-radius: 50%;
-    background-color: transparent;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
     transition: color 0.2s ease, transform 0.2s ease !important;
     will-change: color, transform;
 }
@@ -304,6 +306,9 @@ input:-webkit-autofill {
 .swal2-close:hover {
     color: var(--dracula-foreground) !important;
     transform: scale(1.1) !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 /* --- INÍCIO: ESTILOS EXATOS PARA O FILTRO DE GÊNERO --- */

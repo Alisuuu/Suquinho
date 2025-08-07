@@ -13,7 +13,7 @@
 }
 
 body {
-  background: #282a36; /* Dracula background */
+      background-color: transparent;
   color: #f8f8f2;
   font-family: 'sans-serif'; /* Dracula font */
   min-height: 100vh;
@@ -471,13 +471,20 @@ body {
   cursor: pointer;
   transition: color 0.2s;
   -webkit-tap-highlight-color: transparent;
-user-select: none;
+  user-select: none;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
 }
 
 .close-button:hover,
 .close-button:focus {
   color: #fff;
   text-decoration: none;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 /* Animation for modal entry */
