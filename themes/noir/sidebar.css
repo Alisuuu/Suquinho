@@ -405,12 +405,19 @@ body {
   transition: color 0.2s;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
 }
 
 .close-button:hover,
 .close-button:focus {
   color: #AAAAAA;
   text-decoration: none;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 @keyframes fadeInScale {
