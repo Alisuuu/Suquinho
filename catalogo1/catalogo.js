@@ -1523,7 +1523,7 @@ function openCombinedModal() {
     ` : `
         <div class="user-profile-section no-user" style="background: var(--modal-background-color);">
             <p>Faça login para sincronizar seus dados!</p>
-            <button id="modalLoginButton" class="modal-action-button"><i class="fab fa-google"></i> Login com Google</button>
+            <button id="modalLoginButton" class="modal-action-button"><img src="Google.webp" alt="Google Icon" class="google-icon"> Login com Google</button>
             <button id="modalLoginEmailButton" class="modal-action-button email-login"><i class="fas fa-envelope"></i> Login com Email</button>
         </div>
     `;
