@@ -191,12 +191,16 @@ h1 {
     line-height: 35px;
     text-align: center;
     border-radius: 50%;
-    background-color: #282a36;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 .swal2-close:hover {
     color: var(--dracula-pink) !important;
     transform: scale(1.15) !important;
-    background-color: #282a36;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 .swal-genre-filter-type-selector button,
 .swal-genre-buttons-panel button,
