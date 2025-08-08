@@ -328,3 +328,126 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+// --- Lógica para Background Sync (Adicionado) ---
+const DB_NAME = 'suquinho-db';
+const DB_VERSION = 1;
+const STORE_NAME = 'offline-messages';
+
+function openDb() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+    request.onupgradeneeded = event => {
+      const db = event.target.result;
+      db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+    };
+
+    request.onsuccess = event => {
+      resolve(event.target.result);
+    };
+
+    request.onerror = event => {
+      reject('IndexedDB error: ' + event.target.errorCode);
+    };
+  });
+}
+
+async function addMessage(message) {
+  const db = await openDb();
+  const tx = db.transaction(STORE_NAME, 'readwrite');
+  const store = tx.objectStore(STORE_NAME);
+  store.add(message);
+  return tx.complete;
+}
+
+async function getMessages() {
+  const db = await openDb();
+  const tx = db.transaction(STORE_NAME, 'readonly');
+  const store = tx.objectStore(STORE_NAME);
+  return store.getAll();
+}
+
+async function clearMessages() {
+  const db = await openDb();
+  const tx = db.transaction(STORE_NAME, 'readwrite');
+  const store = tx.objectStore(STORE_NAME);
+  store.clear();
+  return tx.complete;
+}
+
+async function sendOfflineMessage(message) {
+  if (!navigator.onLine) {
+    console.log('Offline: Storing message for sync.', message);
+    await addMessage(message);
+    if ('serviceWorker' in navigator && 'SyncManager' in window) {
+      navigator.serviceWorker.ready.then(registration => {
+        registration.sync.register('new-message-sync')
+          .then(() => console.log('Sync registered!'))
+          .catch(err => console.error('Sync registration failed:', err));
+      });
+    } else {
+      console.warn('Background Sync not supported. Message stored but may not sync automatically.');
+    }
+  } else {
+    console.log('Online: Sending message directly.', message);
+    try {
+      // Substitua esta URL pelo seu endpoint real
+      const response = await fetch('/api/send-message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(message)
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      console.log('Message sent successfully.');
+    } catch (error) {
+      console.error('Failed to send message directly:', error);
+      // Se falhar mesmo online, considere armazenar para sync
+      await addMessage(message);
+      if ('serviceWorker' in navigator && 'SyncManager' in window) {
+        navigator.serviceWorker.ready.then(registration => {
+          registration.sync.register('new-message-sync');
+        });
+      }
+    }
+  }
+}
+
+// Exemplo de como você chamaria sendOfflineMessage (apenas para demonstração)
+// Você precisaria integrar isso a um evento real do usuário, como um clique de botão ou envio de formulário.
+/*
+document.getElementById('your-send-button-id').addEventListener('click', async () => {
+  const messageContent = document.getElementById('your-message-input-id').value;
+  if (messageContent) {
+    await sendOfflineMessage({ text: messageContent, timestamp: Date.now() });
+    document.getElementById('your-message-input-id').value = ''; // Limpar input
+  }
+});
+*/
+// --- Fim da Lógica para Background Sync ---
+
+// --- Lógica para Periodic Background Sync (Adicionado) ---
+async function registerPeriodicSync() {
+  if ('serviceWorker' in navigator && 'PeriodicSyncManager' in window) {
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      await registration.periodicSync.register('periodic-update-content', {
+        minInterval: 24 * 60 * 60 * 1000, // Exemplo: a cada 24 horas
+      });
+      console.log('Periodic Background Sync registered!');
+    } catch (error) {
+      console.error('Periodic Background Sync registration failed:', error);
+    }
+  } else {
+    console.warn('Periodic Background Sync not supported.');
+  }
+}
+
+// Chame esta função quando for apropriado, por exemplo, após o usuário interagir com o PWA
+// ou após a instalação bem-sucedida do Service Worker.
+// registerPeriodicSync(); // Descomente para ativar
+// --- Fim da Lógica para Periodic Background Sync ---
