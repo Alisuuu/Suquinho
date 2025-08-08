@@ -1468,6 +1468,9 @@ function displayResults(items, defaultType, targetEl, replace, showTags = false,
             card.dataset.itemId = item.id;
             card.dataset.mediaType = mediaType;
             card.dataset.backdropPath = item.backdrop_path || '';
+            card.dataset.title = item.title || '';
+            card.dataset.name = item.name || '';
+            card.dataset.posterPath = item.poster_path || '';
             card.innerHTML = `
                 <img src="${imageUrl}" alt="${title}" loading="lazy" width="400" height="600" style="aspect-ratio: 2/3;">
                 <div class="title-overlay"><div class="title">${title}</div></div>
@@ -1477,6 +1480,9 @@ function displayResults(items, defaultType, targetEl, replace, showTags = false,
             card.dataset.itemId = item.id;
             card.dataset.mediaType = mediaType;
             card.dataset.backdropPath = item.backdrop_path || '';
+            card.dataset.title = item.title || '';
+            card.dataset.name = item.name || '';
+            card.dataset.posterPath = item.poster_path || '';
             const isFav = isFavorite(item.id, mediaType);
             card.innerHTML = `
                 ${watchedOverlayHTML}
@@ -1962,11 +1968,18 @@ document.addEventListener('DOMContentLoaded', () => {
             event.stopPropagation();
             const itemId = favoriteButton.dataset.id;
             const mediaType = favoriteButton.dataset.type;
-            // To toggle favorite, we need the full item object. 
-            // Since we only have ID and type here, we'll need to fetch it or 
-            // ensure toggleFavorite can handle partial data and fetch if necessary.
-            // For now, we'll create a minimal item object.
-            const item = { id: itemId, media_type: mediaType }; 
+            const itemTitle = card.dataset.title;
+            const itemName = card.dataset.name;
+            const itemPosterPath = card.dataset.posterPath;
+            const itemBackdropPath = card.dataset.backdropPath;
+            const item = { 
+                id: itemId, 
+                media_type: mediaType, 
+                title: itemTitle, 
+                name: itemName, 
+                poster_path: itemPosterPath, 
+                backdrop_path: itemBackdropPath 
+            }; 
             toggleFavorite(item, mediaType);
         } else if (card) {
             const itemId = card.dataset.itemId;
