@@ -1140,7 +1140,7 @@ function showCustomToast(message, type = 'info') {
     toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}"></i><span>${message}</span>`;
     document.body.appendChild(toast);
     setTimeout(() => toast.classList.add('show'), 10);
-    setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 2500);
+    setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 2500); }, 2500);
 }
 
 function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[array[i], array[j]] = [array[j], array[i]]; } }
@@ -1199,7 +1199,7 @@ function updateFavoriteButtonsState(id, type) {
     const collectionBtn = document.getElementById(`collectionFavoriteButton-${id}`);
     if (collectionBtn && type === 'collection') {
         collectionBtn.classList.toggle('active', isFav);
-        collectionBtn.title = isFav ? 'Remover Coleção dos Favoritos' : 'Adicionar Coleção aos Favoritos';
+        collectionBtn.title = isFav ? 'Remover Coleção dos Favoritos' : 'Adicionar Coleção dos Favoritos';
         collectionBtn.innerHTML = isFav ? '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>';
     }
 }
@@ -1427,46 +1427,63 @@ async function showCollectionDetails(collection) {
     });
 }
 
+/**
+ * Displays results in a target element.
+ * @param {Array} items - The array of items to display.
+ * @param {string|null} defaultType - The default media type to use if not present on the item.
+ * @param {HTMLElement} targetEl - The element to append the results to.
+ * @param {boolean} replace - Whether to clear the target element before appending.
+ * @param {boolean} [showTags=false] - Whether to show media type tags on the cards.
+ * @param {boolean} [checkWatched=false] - Whether to show a "watched" overlay.
+ */
 function displayResults(items, defaultType, targetEl, replace, showTags = false, checkWatched = false) {
     if (!targetEl) return;
     if (replace) targetEl.innerHTML = '';
     const fragment = document.createDocumentFragment();
-    if (!items || items.length === 0) { if (replace) targetEl.innerHTML = `<p class="col-span-full text-center">Nenhum item para exibir.</p>`; return; }
-    
+    if (!items || items.length === 0) {
+        if (replace) targetEl.innerHTML = `<p class="col-span-full text-center">Nenhum item para exibir.</p>`;
+        return;
+    }
+
     items.forEach(item => {
         const isCollection = item.media_type === 'collection' || (!item.media_type && item.name && item.parts);
-        const mediaType = isCollection ? 'collection' : (item.media_type || defaultType);
+        const mediaTypeForDisplay = isCollection ? 'collection' : (item.media_type || defaultType);
 
-        if (!mediaType) return;
-        
-        const card = document.createElement('div'); 
+        if (!mediaTypeForDisplay) return;
+
+        // FIX: Map 'anime' to 'tv' for API and data purposes, but keep it for display.
+        const apiMediaType = mediaTypeForDisplay === 'anime' ? 'tv' : mediaTypeForDisplay;
+
+        const card = document.createElement('div');
         card.className = 'content-card';
-        
+
         const title = item.title || item.name || 'Título';
-        const imageUrl = item.poster_path
-            ? getOptimizedImageUrl(item.poster_path, 342)
-            : `https://placehold.co/400x600/0F071A/F3F4F6?text=${encodeURIComponent(title)}&font=inter`;
+        const imageUrl = item.poster_path ?
+            getOptimizedImageUrl(item.poster_path, 342) :
+            `https://placehold.co/400x600/0F071A/F3F4F6?text=${encodeURIComponent(title)}&font=inter`;
 
         let tagsHTML = '';
         if (showTags) {
             let tagText = '';
-            if (mediaType === 'movie') tagText = 'Filme';
-            else if (mediaType === 'tv') tagText = 'Série';
-            // A tag de coleção é tratada de forma diferente ou não mostrada aqui
-            if(tagText) tagsHTML = `<div class="tags">${tagText}</div>`;
+            // Use the display type to show the correct tag to the user
+            if (mediaTypeForDisplay === 'movie') tagText = 'Filme';
+            else if (mediaTypeForDisplay === 'tv') tagText = 'Série';
+            else if (mediaTypeForDisplay === 'anime') tagText = 'Anime';
+
+            if (tagText) tagsHTML = `<div class="tags">${tagText}</div>`;
         }
-        
+
         let watchedOverlayHTML = '';
-        if (checkWatched && mediaType === 'movie') {
+        if (checkWatched && apiMediaType === 'movie') {
             const isWatched = watchHistory.some(h => h.id.toString() === item.id.toString());
             if (isWatched) {
                 watchedOverlayHTML = `<div class="watched-overlay" title="Visto"><i class="fas fa-eye"></i></div>`;
             }
         }
 
-        if (mediaType === 'collection') {
+        if (apiMediaType === 'collection') {
             card.dataset.itemId = item.id;
-            card.dataset.mediaType = mediaType;
+            card.dataset.mediaType = apiMediaType; // 'collection'
             card.dataset.backdropPath = item.backdrop_path || '';
             card.dataset.title = item.title || '';
             card.dataset.name = item.name || '';
@@ -1478,27 +1495,28 @@ function displayResults(items, defaultType, targetEl, replace, showTags = false,
                 `;
         } else {
             card.dataset.itemId = item.id;
-            card.dataset.mediaType = mediaType;
+            card.dataset.mediaType = apiMediaType; // Sets 'tv' for animes
             card.dataset.backdropPath = item.backdrop_path || '';
             card.dataset.title = item.title || '';
             card.dataset.name = item.name || '';
             card.dataset.posterPath = item.poster_path || '';
-            const isFav = isFavorite(item.id, mediaType);
+            const isFav = isFavorite(item.id, apiMediaType); // Uses 'tv' for animes
             card.innerHTML = `
                 ${watchedOverlayHTML}
                 <img src="${imageUrl}" alt="${title}" loading="lazy" width="400" height="600" style="aspect-ratio: 2/3;">
                 <div class="title-overlay"><div class="title">${title}</div></div>
                 ${tagsHTML}
-                <button class="favorite-button ${isFav ? 'active' : ''}" data-id="${item.id}" data-type="${mediaType}">
+                <button class="favorite-button ${isFav ? 'active' : ''}" data-id="${item.id}" data-type="${apiMediaType}">
                     <i class="${isFav ? 'fas fa-heart' : 'far fa-heart'}"></i>
                 </button>`;
         }
-            
+
         fragment.appendChild(card);
     });
-    
+
     targetEl.appendChild(fragment);
 }
+
 
 function copyToClipboard(text) {
     const textArea = document.createElement('textarea');
