@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const apiURL = 'https://superflixapi.digital/calendario.php';
+    
     let data = []; // Armazena todos os dados da API
     let periodo = 'semana'; // 'semana' ou 'mes'
     let itemsByDay = {}; // Objeto para agrupar itens por data (chave: 'YYYY-MM-DD')
@@ -53,44 +53,111 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     async function fetchData() {
         contentArea.innerHTML = `<p class="text-center col-span-full p-10 text-[var(--on-surface-variant-color)]">A carregar lançamentos...</p>`;
-        
-        const cacheKey = 'calendarData';
-        const cached = sessionStorage.getItem(cacheKey);
-        const cacheDuration = 10 * 60 * 1000; // 10 minutos
 
-        if (cached) {
-            const { timestamp, payload } = JSON.parse(cached);
-            if (Date.now() - timestamp < cacheDuration) {
-                console.log("A carregar dados do cache da sessão.");
-                data = payload;
-                render();
-                return; // Interrompe a função se o cache for válido
-            }
-        }
+    const TMDB_API_KEY = '5e5da432e96174227b25086fe8637985';
+    const cacheKey = 'calendarData_tmdb';
+    const cacheDuration = 10 * 60 * 1000; // 10 minutos
 
-        try {
-            const response = await fetch(apiURL);
-            if (!response.ok) throw new Error(`Erro na API: ${response.statusText}`);
-            const payload = await response.json();
-            if (!Array.isArray(payload) || payload.length === 0) {
-                 throw new Error('API não retornou dados válidos.');
-            }
-            
+    const cached = sessionStorage.getItem(cacheKey);
+    if (cached) {
+        const { timestamp, payload } = JSON.parse(cached);
+        if (Date.now() - timestamp < cacheDuration) {
+            console.log("A carregar dados do cache da sessão.");
             data = payload;
-            
-            // Armazena os novos dados e o timestamp no cache
-            const cacheData = {
-                timestamp: Date.now(),
-                payload: data
-            };
-            sessionStorage.setItem(cacheKey, JSON.stringify(cacheData));
-            console.log("Dados da API obtidos e armazenados em cache.");
-
             render();
-        } catch (error) {
-            console.error('Erro ao buscar dados da API:', error);
-            contentArea.innerHTML = `<p class="text-center col-span-full p-10 text-[var(--status-atrasado)]">Não foi possível carregar os dados. Tente novamente mais tarde.</p>`;
+            return;
         }
+    }
+
+    try {
+        const today = new Date();
+        const nextMonth = new Date(today);
+        nextMonth.setMonth(today.getMonth() + 1);
+
+        const formatDate = (date) => date.toISOString().split('T')[0];
+
+        const upcomingMoviesUrl = `https://api.themoviedb.org/3/movie/upcoming?api_key=${TMDB_API_KEY}&language=pt-BR&region=BR`;
+        const upcomingTvUrl = `https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_API_KEY}&language=pt-BR&air_date.gte=${formatDate(today)}&air_date.lte=${formatDate(nextMonth)}`;
+        const upcomingAnimesUrl = `https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_API_KEY}&language=pt-BR&with_genres=16&with_origin_country=JP&air_date.gte=${formatDate(today)}&air_date.lte=${formatDate(nextMonth)}`;
+
+        const [moviesResponse, tvResponse, animesResponse] = await Promise.all([
+            fetch(upcomingMoviesUrl),
+            fetch(upcomingTvUrl),
+            fetch(upcomingAnimesUrl)
+        ]);
+
+        if (!moviesResponse.ok || !tvResponse.ok || !animesResponse.ok) {
+            throw new Error('Erro ao buscar dados do TMDb');
+        }
+
+        const moviesData = await moviesResponse.json();
+        const tvData = await tvResponse.json();
+        const animesData = await animesResponse.json();
+
+        const getStatus = (releaseDate) => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const release = new Date(releaseDate);
+            release.setHours(0, 0, 0, 0);
+
+            if (release < today) {
+                return 'Atrasado';
+            } else if (release.getTime() === today.getTime()) {
+                return 'Hoje';
+            } else {
+                return 'Futuro';
+            }
+        };
+
+        const transformMovie = (item) => ({
+            tmdb_id: item.id,
+            title: item.title,
+            poster: item.poster_path,
+            backdrop: item.backdrop_path,
+            air_date: item.release_date,
+            type: '1', // 1 for movie
+            status: getStatus(item.release_date),
+            episode: '',
+            season: '',
+            number: ''
+        });
+
+        const transformTv = (item, type) => ({
+            tmdb_id: item.id,
+            title: item.name,
+            poster: item.poster_path,
+            backdrop: item.backdrop_path,
+            air_date: item.first_air_date,
+            type: type, // 2 for series, 3 for anime
+            status: getStatus(item.first_air_date),
+            episode: '',
+            season: '',
+            number: ''
+        });
+
+        const movies = moviesData.results.map(item => transformMovie(item));
+        const tvShows = tvData.results.map(item => transformTv(item, '2'));
+        const animes = animesData.results.map(item => transformTv(item, '3'));
+
+        const combinedData = [...movies, ...tvShows, ...animes];
+
+        // Remove duplicates
+        const uniqueData = Array.from(new Map(combinedData.map(item => [item.tmdb_id, item])).values());
+
+        data = uniqueData;
+
+        const cacheData = {
+            timestamp: Date.now(),
+            payload: data
+        };
+        sessionStorage.setItem(cacheKey, JSON.stringify(cacheData));
+        console.log("Dados do TMDb obtidos e armazenados em cache.");
+
+        render();
+    } catch (error) {
+        console.error('Erro ao buscar dados da API:', error);
+        contentArea.innerHTML = `<p class="text-center col-span-full p-10 text-[var(--status-atrasado)]">Não foi possível carregar os dados. Tente novamente mais tarde.</p>`;
+    }
     }
 
     // ========================================================================
