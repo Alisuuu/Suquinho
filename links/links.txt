@@ -4,3 +4,4 @@ https://superflixapi.mom/serie/
 https://embedder.net/e/
 https://playerflixapi.com/filme/
 https://playerflixapi.com/serie/
+https://fembed.sx/e/
