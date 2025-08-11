@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * A resposta da API é armazenada em `sessionStorage` por 10 minutos para evitar
      * pedidos de rede desnecessários ao recarregar a página, melhorando a velocidade.
      */
-    async function fetchData() {
+        async function fetchData() {
         contentArea.innerHTML = `<p class="text-center col-span-full p-10 text-[var(--on-surface-variant-color)]">A carregar lançamentos...</p>`;
 
     const TMDB_API_KEY = '5e5da432e96174227b25086fe8637985';
@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
             confirmButtonText: 'Aplicar Filtros',
             showCloseButton: true,
             background: 'var(--translucent-bg, rgba(30, 30, 40, 0.5))',
-            customClass: { popup: 'translucent-surface' },
+            customClass: { popup: 'translucent-surface', container: 'calendar-modal-container' },
             didOpen: () => {
                 const popup = Swal.getPopup();
                 
@@ -305,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showConfirmButton: false,
             showCloseButton: true,
             background: 'var(--translucent-bg, rgba(30, 30, 40, 0.5))',
-            customClass: { popup: 'translucent-surface' },
+            customClass: { popup: 'translucent-surface', container: 'calendar-modal-container' },
             didOpen: () => {
                 contentContainer.querySelectorAll('.lazy-load').forEach(lazyImage => {
                     lazyImageObserver.observe(lazyImage);
@@ -335,6 +335,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const backdropURL = item.backdrop ? `https://image.tmdb.org/t/p/none${item.backdrop}` : '';
         const watchButtonHTML = `<div class="mt-4"><span class="inline-block bg-[var(--primary-color)] text-[var(--on-primary-color)] px-4 py-2 rounded-full text-xs font-semibold pointer-events-none">Ver Detalhes</span></div>`;
         const statusTagHTML = `<span class="status-tag status-tag-${item.status.toLowerCase()}">${item.status}</span>`;
+
+        let typeTagHTML = '';
+        if (item.type === '1') {
+            typeTagHTML = `<span class="type-tag type-tag-movie">Filme</span>`;
+        } else if (item.type === '2') {
+            typeTagHTML = `<span class="type-tag type-tag-series">Série</span>`;
+        } else if (item.type === '3') {
+            typeTagHTML = `<span class="type-tag type-tag-anime">Anime</span>`;
+        }
         
         let borderColor = 'var(--outline-color)';
         if (item.status === 'Atualizado') borderColor = 'var(--status-atualizado)';
@@ -361,7 +370,10 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         itemEl.innerHTML = `
-            ${statusTagHTML}
+            <div class="tags-container">
+                ${statusTagHTML}
+                ${typeTagHTML}
+            </div>
             ${favoriteButtonHTML}
             <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/80 via-black/50 to-transparent z-10"></div>
             <div class="relative z-20 p-4 flex flex-col justify-end flex-grow">

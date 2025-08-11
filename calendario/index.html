@@ -39,6 +39,62 @@
       opacity: 0;
       transition: opacity 0.5s ease-in-out;
     }
+    .tags-container {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 30;
+        display: flex;
+        gap: 5px;
+    }
+
+    .status-tag, .type-tag {
+        padding: 4px 10px;
+        border-radius: 15px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        border: 1px solid var(--outline-color);
+    }
+
+    .status-tag {
+        position: static !important;
+    }
+
+    .type-tag {
+        color: white;
+    }
+
+    .type-tag-movie {
+        background-color: #4CAF50; /* Green */
+    }
+
+    .type-tag-series {
+        background-color: #2196F3; /* Blue */
+    }
+
+    .type-tag-anime {
+        background-color: #FF9800; /* Orange */
+    }
+    .calendar-modal-container {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 9999 !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+    }
+    .swal2-popup {
+        position: relative !important;
+    }
+    .swal2-popup .swal2-close {
+        position: absolute !important;
+        top: 10px !important;
+        right: 10px !important;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col font-sans text-gray-200">
