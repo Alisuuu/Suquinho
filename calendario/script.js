@@ -333,7 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const posterURL = item.poster ? `https://image.tmdb.org/t/p/w185${item.poster}` : 'https://placehold.co/185x278/111827/FFFFFF?text=N/A';
         const backdropURL = item.backdrop ? `https://image.tmdb.org/t/p/none${item.backdrop}` : '';
-        const watchButtonHTML = `<div class="mt-4"><span class="inline-block bg-[var(--primary-color)] text-[var(--on-primary-color)] px-4 py-2 rounded-full text-xs font-semibold pointer-events-none">Ver Detalhes</span></div>`;
+        const watchButtonHTML = `<div><span class="inline-block bg-[var(--primary-color)] text-[var(--on-primary-color)] px-4 py-2 rounded-full text-xs font-semibold pointer-events-none">Ver Detalhes</span></div>`;
         const statusTagHTML = `<span class="status-tag status-tag-${item.status.toLowerCase()}">${item.status}</span>`;
 
         let typeTagHTML = '';
@@ -376,14 +376,14 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             ${favoriteButtonHTML}
             <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/80 via-black/50 to-transparent z-10"></div>
-            <div class="relative z-20 p-4 flex flex-col justify-end flex-grow">
-                <div class="flex items-start gap-4">
-                    <img class="w-20 sm:w-24 h-auto object-cover flex-shrink-0 rounded-lg shadow-lg border border-white/10 lazy-load" data-src="${posterURL}" src="https://placehold.co/185x278/1f2937/FFFFFF?text=Carregando..." alt="Poster" onerror="this.src='https://placehold.co/185x278/1f2937/FFFFFF?text=N/A'">
-                    <div class="flex-grow pt-2 flex flex-col justify-between self-stretch">
-                        <div>
-                            <h3 class="font-bold text-base sm:text-lg text-[var(--on-surface-color)]">${item.title}</h3>
-                            <p class="text-sm text-[var(--on-surface-variant-color)] mt-1">${item.episode} (T${item.season}E${item.number})</p>
-                        </div>
+            <div class="relative z-20 p-4 flex items-center gap-4 flex-grow">
+                <img class="w-20 sm:w-24 h-auto object-cover flex-shrink-0 rounded-lg shadow-lg border border-white/10 lazy-load" data-src="${posterURL}" src="https://placehold.co/185x278/1f2937/FFFFFF?text=Carregando..." alt="Poster" onerror="this.src='https://placehold.co/185x278/1f2937/FFFFFF?text=N/A'">
+                <div class="flex-grow flex items-center justify-between">
+                    <div>
+                        <h3 class="font-bold text-base sm:text-lg text-[var(--on-surface-color)]">${item.title}</h3>
+                        <p class="text-sm text-[var(--on-surface-variant-color)] mt-1">${item.episode} (T${item.season}E${item.number})</p>
+                    </div>
+                    <div class="ml-4">
                         ${watchButtonHTML}
                     </div>
                 </div>
