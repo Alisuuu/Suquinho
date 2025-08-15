@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
+    const apiURL = 'https://superflixapi.digital/calendario.php';
     let data = []; // Armazena todos os dados da API
     let periodo = 'semana'; // 'semana' ou 'mes'
     let itemsByDay = {}; // Objeto para agrupar itens por data (chave: 'YYYY-MM-DD')
@@ -51,113 +51,46 @@ document.addEventListener('DOMContentLoaded', () => {
      * A resposta da API é armazenada em `sessionStorage` por 10 minutos para evitar
      * pedidos de rede desnecessários ao recarregar a página, melhorando a velocidade.
      */
-        async function fetchData() {
+    async function fetchData() {
         contentArea.innerHTML = `<p class="text-center col-span-full p-10 text-[var(--on-surface-variant-color)]">A carregar lançamentos...</p>`;
+        
+        const cacheKey = 'calendarData';
+        const cached = sessionStorage.getItem(cacheKey);
+        const cacheDuration = 10 * 60 * 1000; // 10 minutos
 
-    const TMDB_API_KEY = '5e5da432e96174227b25086fe8637985';
-    const cacheKey = 'calendarData_tmdb';
-    const cacheDuration = 10 * 60 * 1000; // 10 minutos
-
-    const cached = sessionStorage.getItem(cacheKey);
-    if (cached) {
-        const { timestamp, payload } = JSON.parse(cached);
-        if (Date.now() - timestamp < cacheDuration) {
-            console.log("A carregar dados do cache da sessão.");
-            data = payload;
-            render();
-            return;
-        }
-    }
-
-    try {
-        const today = new Date();
-        const nextMonth = new Date(today);
-        nextMonth.setMonth(today.getMonth() + 1);
-
-        const formatDate = (date) => date.toISOString().split('T')[0];
-
-        const upcomingMoviesUrl = `https://api.themoviedb.org/3/movie/upcoming?api_key=${TMDB_API_KEY}&language=pt-BR&region=BR`;
-        const upcomingTvUrl = `https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_API_KEY}&language=pt-BR&air_date.gte=${formatDate(today)}&air_date.lte=${formatDate(nextMonth)}`;
-        const upcomingAnimesUrl = `https://api.themoviedb.org/3/discover/tv?api_key=${TMDB_API_KEY}&language=pt-BR&with_genres=16&with_origin_country=JP&air_date.gte=${formatDate(today)}&air_date.lte=${formatDate(nextMonth)}`;
-
-        const [moviesResponse, tvResponse, animesResponse] = await Promise.all([
-            fetch(upcomingMoviesUrl),
-            fetch(upcomingTvUrl),
-            fetch(upcomingAnimesUrl)
-        ]);
-
-        if (!moviesResponse.ok || !tvResponse.ok || !animesResponse.ok) {
-            throw new Error('Erro ao buscar dados do TMDb');
-        }
-
-        const moviesData = await moviesResponse.json();
-        const tvData = await tvResponse.json();
-        const animesData = await animesResponse.json();
-
-        const getStatus = (releaseDate) => {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const release = new Date(releaseDate);
-            release.setHours(0, 0, 0, 0);
-
-            if (release < today) {
-                return 'Atrasado';
-            } else if (release.getTime() === today.getTime()) {
-                return 'Hoje';
-            } else {
-                return 'Futuro';
+        if (cached) {
+            const { timestamp, payload } = JSON.parse(cached);
+            if (Date.now() - timestamp < cacheDuration) {
+                console.log("A carregar dados do cache da sessão.");
+                data = payload;
+                render();
+                return; // Interrompe a função se o cache for válido
             }
-        };
+        }
 
-        const transformMovie = (item) => ({
-            tmdb_id: item.id,
-            title: item.title,
-            poster: item.poster_path,
-            backdrop: item.backdrop_path,
-            air_date: item.release_date,
-            type: '1', // 1 for movie
-            status: getStatus(item.release_date),
-            episode: '',
-            season: '',
-            number: ''
-        });
+        try {
+            const response = await fetch(apiURL);
+            if (!response.ok) throw new Error(`Erro na API: ${response.statusText}`);
+            const payload = await response.json();
+            if (!Array.isArray(payload) || payload.length === 0) {
+                 throw new Error('API não retornou dados válidos.');
+            }
+            
+            data = payload;
+            
+            // Armazena os novos dados e o timestamp no cache
+            const cacheData = {
+                timestamp: Date.now(),
+                payload: data
+            };
+            sessionStorage.setItem(cacheKey, JSON.stringify(cacheData));
+            console.log("Dados da API obtidos e armazenados em cache.");
 
-        const transformTv = (item, type) => ({
-            tmdb_id: item.id,
-            title: item.name,
-            poster: item.poster_path,
-            backdrop: item.backdrop_path,
-            air_date: item.first_air_date,
-            type: type, // 2 for series, 3 for anime
-            status: getStatus(item.first_air_date),
-            episode: '',
-            season: '',
-            number: ''
-        });
-
-        const movies = moviesData.results.map(item => transformMovie(item));
-        const tvShows = tvData.results.map(item => transformTv(item, '2'));
-        const animes = animesData.results.map(item => transformTv(item, '3'));
-
-        const combinedData = [...movies, ...tvShows, ...animes];
-
-        // Remove duplicates
-        const uniqueData = Array.from(new Map(combinedData.map(item => [item.tmdb_id, item])).values());
-
-        data = uniqueData;
-
-        const cacheData = {
-            timestamp: Date.now(),
-            payload: data
-        };
-        sessionStorage.setItem(cacheKey, JSON.stringify(cacheData));
-        console.log("Dados do TMDb obtidos e armazenados em cache.");
-
-        render();
-    } catch (error) {
-        console.error('Erro ao buscar dados da API:', error);
-        contentArea.innerHTML = `<p class="text-center col-span-full p-10 text-[var(--status-atrasado)]">Não foi possível carregar os dados. Tente novamente mais tarde.</p>`;
-    }
+            render();
+        } catch (error) {
+            console.error('Erro ao buscar dados da API:', error);
+            contentArea.innerHTML = `<p class="text-center col-span-full p-10 text-[var(--status-atrasado)]">Não foi possível carregar os dados. Tente novamente mais tarde.</p>`;
+        }
     }
 
     // ========================================================================
@@ -249,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
             confirmButtonText: 'Aplicar Filtros',
             showCloseButton: true,
             background: 'var(--translucent-bg, rgba(30, 30, 40, 0.5))',
-            customClass: { popup: 'translucent-surface', container: 'calendar-modal-container' },
+            customClass: { popup: 'translucent-surface' },
             didOpen: () => {
                 const popup = Swal.getPopup();
                 
@@ -305,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showConfirmButton: false,
             showCloseButton: true,
             background: 'var(--translucent-bg, rgba(30, 30, 40, 0.5))',
-            customClass: { popup: 'translucent-surface', container: 'calendar-modal-container' },
+            customClass: { popup: 'translucent-surface' },
             didOpen: () => {
                 contentContainer.querySelectorAll('.lazy-load').forEach(lazyImage => {
                     lazyImageObserver.observe(lazyImage);
@@ -333,17 +266,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const posterURL = item.poster ? `https://image.tmdb.org/t/p/w185${item.poster}` : 'https://placehold.co/185x278/111827/FFFFFF?text=N/A';
         const backdropURL = item.backdrop ? `https://image.tmdb.org/t/p/none${item.backdrop}` : '';
-        const watchButtonHTML = `<div><span class="inline-block bg-[var(--primary-color)] text-[var(--on-primary-color)] px-4 py-2 rounded-full text-xs font-semibold pointer-events-none">Ver Detalhes</span></div>`;
+        const watchButtonHTML = `<div class="mt-4"><span class="inline-block bg-[var(--primary-color)] text-[var(--on-primary-color)] px-4 py-2 rounded-full text-xs font-semibold pointer-events-none">Ver Detalhes</span></div>`;
         const statusTagHTML = `<span class="status-tag status-tag-${item.status.toLowerCase()}">${item.status}</span>`;
-
-        let typeTagHTML = '';
-        if (item.type === '1') {
-            typeTagHTML = `<span class="type-tag type-tag-movie">Filme</span>`;
-        } else if (item.type === '2') {
-            typeTagHTML = `<span class="type-tag type-tag-series">Série</span>`;
-        } else if (item.type === '3') {
-            typeTagHTML = `<span class="type-tag type-tag-anime">Anime</span>`;
-        }
         
         let borderColor = 'var(--outline-color)';
         if (item.status === 'Atualizado') borderColor = 'var(--status-atualizado)';
@@ -370,20 +294,17 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         itemEl.innerHTML = `
-            <div class="tags-container">
-                ${statusTagHTML}
-                ${typeTagHTML}
-            </div>
+            ${statusTagHTML}
             ${favoriteButtonHTML}
             <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/80 via-black/50 to-transparent z-10"></div>
-            <div class="relative z-20 p-4 flex items-center gap-4 flex-grow">
-                <img class="w-20 sm:w-24 h-auto object-cover flex-shrink-0 rounded-lg shadow-lg border border-white/10 lazy-load" data-src="${posterURL}" src="https://placehold.co/185x278/1f2937/FFFFFF?text=Carregando..." alt="Poster" onerror="this.src='https://placehold.co/185x278/1f2937/FFFFFF?text=N/A'">
-                <div class="flex-grow flex items-center justify-between">
-                    <div>
-                        <h3 class="font-bold text-base sm:text-lg text-[var(--on-surface-color)]">${item.title}</h3>
-                        <p class="text-sm text-[var(--on-surface-variant-color)] mt-1">${item.episode} (T${item.season}E${item.number})</p>
-                    </div>
-                    <div class="ml-4">
+            <div class="relative z-20 p-4 flex flex-col justify-end flex-grow">
+                <div class="flex items-start gap-4">
+                    <img class="w-20 sm:w-24 h-auto object-cover flex-shrink-0 rounded-lg shadow-lg border border-white/10 lazy-load" data-src="${posterURL}" src="https://placehold.co/185x278/1f2937/FFFFFF?text=Carregando..." alt="Poster" onerror="this.src='https://placehold.co/185x278/1f2937/FFFFFF?text=N/A'">
+                    <div class="flex-grow pt-2 flex flex-col justify-between self-stretch">
+                        <div>
+                            <h3 class="font-bold text-base sm:text-lg text-[var(--on-surface-color)]">${item.title}</h3>
+                            <p class="text-sm text-[var(--on-surface-variant-color)] mt-1">${item.episode} (T${item.season}E${item.number})</p>
+                        </div>
                         ${watchButtonHTML}
                     </div>
                 </div>
