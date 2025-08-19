@@ -58,6 +58,11 @@
         margin-top: 20px;
         text-align: center;
       }
+      #download-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
     </style>
 </head>
 <body>
@@ -134,11 +139,11 @@
                 const lastSeenVersion = localStorage.getItem(localStorageKey);
 
                 if (latestRelease.tag_name !== lastSeenVersion) {
-                    statusIcon.innerHTML = '<span class="material-symbols-outlined">sparkle</span>';
+                    statusIcon.innerHTML = '';
                     statusText.textContent = '';
                     localStorage.setItem(localStorageKey, latestRelease.tag_name);
                 } else {
-                    statusIcon.innerHTML = '<span class="material-symbols-outlined">verified</span>';
+                    statusIcon.innerHTML = '';
                     statusText.textContent = '';
                 }
                 
@@ -151,13 +156,12 @@
                 changelogContent.innerHTML = latestRelease.body.replace(/\n/g, '<br>');
 
                 if (latestRelease.assets && latestRelease.assets.length > 0) {
-                    const firstAsset = latestRelease.assets[0];
-                    downloadContainer.innerHTML = `
-                        <a href="${firstAsset.browser_download_url}" class="download-button" target="_blank">
+                    downloadContainer.innerHTML = latestRelease.assets.map(asset => `
+                        <a href="${asset.browser_download_url}" class="download-button" target="_blank">
                             <span class="material-symbols-outlined">download</span>
-                            Baixar: ${firstAsset.name}
+                            Baixar: ${asset.name}
                         </a>
-                    `;
+                    `).join('');
                 }
 
             } catch (error) {
