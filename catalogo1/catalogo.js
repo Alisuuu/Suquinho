@@ -12,7 +12,6 @@ const PLACEHOLDER_PERSON_IMAGE = 'p2.png';
 // Player URLs - agora configuráveis e salvas no localStorage
 let PLAYER_BASE_URL_MOVIE = localStorage.getItem('player_base_url_movie') || 'https://megaembed.com/embed/';
 let PLAYER_BASE_URL_SERIES = localStorage.getItem('player_base_url_series') || 'https://megaembed.com/embed/';
-let isSandboxDisabled = localStorage.getItem('isSandboxDisabled') === 'true';
 
 const FAVORITES_STORAGE_KEY = 'suquin_favorites_v2';
 const WATCH_HISTORY_STORAGE_KEY = 'suquin_watch_history_v1';
@@ -346,7 +345,6 @@ function loadStateFromLocalStorage() {
     favorites = JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY)) || [];
     watchHistory = JSON.parse(localStorage.getItem(WATCH_HISTORY_STORAGE_KEY)) || [];
     pickedMediaHistory = JSON.parse(localStorage.getItem(RAFFLE_HISTORY_STORAGE_KEY)) || [];
-    isSandboxDisabled = localStorage.getItem('isSandboxDisabled') === 'true';
 }
 
 function updateAllUI() {
@@ -981,9 +979,14 @@ function launchAdvancedPlayer(url, logoPath, itemData, mediaType, seasonInfo = n
         ? `<div id="player-logo-wrapper"><img src="${TMDB_IMAGE_BASE_URL}original${logoPath}" id="player-logo" alt="Logo"></div>`
         : '';
 
-    const sandboxAttributes = isSandboxDisabled 
-        ? "allow-scripts allow-same-origin allow-presentation allow-popups allow-popups-to-escape-sandbox allow-top-navigation allow-forms"
-        : "allow-scripts allow-same-origin allow-presentation";
+    const sandboxAttributes = "allow-scripts allow-same-origin allow-presentation";
+
+    let nextEpisodeButtonHTML = '';
+    if (mediaType === 'tv' && seasonInfo && episodeInfo) {
+        nextEpisodeButtonHTML = `
+            <button id="next-episode-btn" class="player-control-button" title="Próximo Episódio">Próximo ep</button>
+        `;
+    }
 
     wrapper.innerHTML = `
         <div id="player-container">
@@ -992,14 +995,7 @@ function launchAdvancedPlayer(url, logoPath, itemData, mediaType, seasonInfo = n
         <button id="player-close-btn" title="Voltar"><i class="fas fa-times"></i></button>
         ${logoForPlayerHTML}
         <div id="player-controls">
-            <div class="sandbox-warning">
-                <i class="fas fa-exclamation-triangle"></i>
-                <span>Desativar a proteção pode resultar em anúncios, pop-ups e redirecionamentos.</span>
-            </div>
-            <button id="toggle-sandbox-btn" class="player-control-button">
-                <i class="fas ${isSandboxDisabled ? 'fa-lock-open' : 'fa-shield-alt'}"></i>
-                <span>${isSandboxDisabled ? 'Ativar Proteção' : 'Desativar Proteção'}</span>
-            </button>
+            ${nextEpisodeButtonHTML}
         </div>
     `;
 
@@ -1011,11 +1007,26 @@ function launchAdvancedPlayer(url, logoPath, itemData, mediaType, seasonInfo = n
         closeAdvancedPlayer();
     });
 
-    document.getElementById('toggle-sandbox-btn')?.addEventListener('click', () => {
-        isSandboxDisabled = !isSandboxDisabled;
-        localStorage.setItem('isSandboxDisabled', isSandboxDisabled);
-        launchAdvancedPlayer(url, logoPath, itemData, mediaType, seasonInfo, episodeInfo);
-    });
+    if (mediaType === 'tv' && seasonInfo && episodeInfo) {
+        const nextEpisodeBtn = document.getElementById('next-episode-btn');
+        if (nextEpisodeBtn) {
+            nextEpisodeBtn.addEventListener('click', async () => {
+                const currentEpisodeNumber = parseInt(episodeInfo.episode_number, 10);
+                const seasonDetails = await fetchTMDB(`/tv/${itemData.id}/season/${seasonInfo.season_number}`);
+                
+                if (seasonDetails && seasonDetails.episodes) {
+                    const nextEpisode = seasonDetails.episodes.find(e => e.episode_number === currentEpisodeNumber + 1);
+
+                    if (nextEpisode) {
+                        const nextPlayerUrl = `${PLAYER_BASE_URL_SERIES}${itemData.id}/${seasonInfo.season_number}/${nextEpisode.episode_number}`;
+                        launchAdvancedPlayer(nextPlayerUrl, logoPath, itemData, 'tv', seasonInfo, nextEpisode);
+                    } else {
+                        showCustomToast('Você chegou ao final desta temporada.', 'info');
+                    }
+                }
+            });
+        }
+    }
 }
 
 

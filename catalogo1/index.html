@@ -255,6 +255,52 @@
     margin-right: 10px;
   }
 </style>
+<style>
+  #player-controls {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    z-index: 100001;
+  }
+
+  .player-control-button {
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    transition: background-color 0.3s;
+  }
+
+  .player-control-button:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+
+  #next-episode-btn {
+    background-color: var(--primary-color, rgba(0, 0, 0, 0.7)); /* Themed with fallback */
+    color: var(--on-primary-color, white); /* Themed with fallback */
+    border: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  #next-episode-btn:hover {
+    background-color: var(--primary-color-dark, rgba(0, 0, 0, 0.9)); /* Assuming a darker theme variable */
+    filter: brightness(0.9);
+  }
+  #next-episode-btn:active {
+      transform: scale(0.95);
+  }
+</style>
 </head>
 <body>
 <div id="pageBackdrop"></div>
