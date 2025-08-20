@@ -10,8 +10,8 @@ function getOptimizedImageUrl(path, width) {
 const LANGUAGE = 'pt-BR';
 const PLACEHOLDER_PERSON_IMAGE = 'p2.png';
 // Player URLs - agora configuráveis e salvas no localStorage
-let PLAYER_BASE_URL_MOVIE = localStorage.getItem('player_base_url_movie') || 'https://megaembed.com/embed/';
-let PLAYER_BASE_URL_SERIES = localStorage.getItem('player_base_url_series') || 'https://megaembed.com/embed/';
+let PLAYER_BASE_URL_MOVIE = localStorage.getItem('player_base_url_movie') || 'https://playerflixapi.com/filme/';
+let PLAYER_BASE_URL_SERIES = localStorage.getItem('player_base_url_series') || 'https://playerflixapi.com/serie/';
 
 const FAVORITES_STORAGE_KEY = 'suquin_favorites_v2';
 const WATCH_HISTORY_STORAGE_KEY = 'suquin_watch_history_v1';
