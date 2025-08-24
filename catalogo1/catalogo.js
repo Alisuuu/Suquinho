@@ -984,7 +984,7 @@ function launchAdvancedPlayer(url, logoPath, itemData, mediaType, seasonInfo = n
     let nextEpisodeButtonHTML = '';
     if (mediaType === 'tv' && seasonInfo && episodeInfo) {
         nextEpisodeButtonHTML = `
-            <button id="next-episode-btn" class="player-control-button" title="Próximo Episódio">Próximo ep</button>
+            <button id="next-episode-btn" class="player-control-button" title="Próximo Episódio">Próximo</button>
         `;
     }
 
