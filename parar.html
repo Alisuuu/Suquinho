@@ -1,69 +1,257 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="h-full">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <!-- Meta tag para desabilitar o zoom -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Em Manutenção</title>
-    <!-- Carregando o Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Carregando a fonte Inter do Google Fonts -->
-    <link href="./assets/fonts/inter.css" rel="stylesheet">
-    <style>
-        /* Definindo a fonte Inter como padrão e removendo o realce de toque */
-        body {
-            font-family: 'Inter', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-    </style>
+  <!-- Metatags Essenciais -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  
+  <!-- Título da Página -->
+  <title>Suquinho</title>
+
+  <!-- Configuração do PWA -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Meta Tags para iOS (Safari) -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Suquinho">
+
+  <!-- Ícones para iOS -->
+  <link rel="apple-touch-icon" href="./p.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./p.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="./p2.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="./p2.png">
+  <link rel="apple-touch-icon" href="./p2.png" purpose="maskable">
+
+  <!-- Meta Tags para Windows -->
+  <meta name="msapplication-TileColor" content="#000000">
+  <meta name="msapplication-TileImage" content="./p2.png">
+
+  <!-- Cor da Barra de Endereço para Navegadores (Theme Color) -->
+  <meta name="theme-color" content="#000000">
+
+  <!-- Folhas de Estilo - Carregamento Dinâmico (SUA LÓGICA ORIGINAL) -->
+  <script>
+    const loadThemeCss = () => {
+        const selectedTheme = localStorage.getItem('selectedTheme') || 'dracula'; // 'dracula' as fallback
+        const cssFiles = [
+            'sidebar.css',
+            'ocultos.css',
+            'integration.css',
+            'catálogo.css',
+            'update.css',
+            'sorteio.css',
+            'calendario.css'
+        ];
+
+        // Remove existing theme stylesheets to prevent duplicates on theme change
+        document.querySelectorAll('link[data-theme-css]').forEach(link => link.remove());
+
+        cssFiles.forEach(file => {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = `themes/${selectedTheme}/${file}`;
+            link.setAttribute('data-theme-css', ''); // Mark as theme CSS
+            document.head.appendChild(link);
+        });
+    };
+
+    // Load theme immediately
+    loadThemeCss();
+  </script>
+  <link rel="stylesheet" href="./assets/fontawesome/css/custom-fontawesome.css">
+
+  <!-- Estilos para o Loader e Modal de Seleção de Tema -->
+  <style>
+    /* === ESTILOS DO LOADER (ADICIONADO) === */
+    #loader-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background-color: #121212; z-index: 99999;
+        display: flex; justify-content: center; align-items: center;
+        opacity: 1; visibility: visible;
+        transition: opacity 0.5s ease, visibility 0s linear 0.5s;
+    }
+    #loader-overlay.hidden { opacity: 0; visibility: hidden; }
+    .loader-spinner {
+        border: 8px solid rgba(255, 255, 255, 0.2);
+        border-top: 8px solid #bd93f9;
+        border-radius: 50%; width: 60px; height: 60px;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    /* === FIM DOS ESTILOS DO LOADER === */
+
+    .theme-modal-overlay {
+        display: none; /* Hidden by default */
+        position: fixed;
+        z-index: 10000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.7);
+        justify-content: center;
+        align-items: center;
+    }
+    .theme-modal-content {
+        background-color: #282a36; /* Dracula background as default for modal */
+        margin: auto;
+        padding: 25px;
+        border: 1px solid #bd93f9;
+        border-radius: 15px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 8px 30px rgba(189, 147, 249, 0.4), 0 2px 10px rgba(0, 0, 0, 0.3);
+        position: relative;
+        text-align: center;
+        animation: fadeInScale 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .theme-modal-content h2 {
+        color: #f8f8f2;
+        margin-bottom: 20px;
+        font-size: 1.8em;
+        text-shadow: 0 0 5px rgba(255, 121, 198, 0.5);
+    }
+    .theme-modal-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .theme-modal-button {
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        flex: 1;
+        min-width: 120px;
+    }
+    .theme-modal-button.default {
+        background-color: #121212;
+        color: #ffffff;
+        border: 2px solid #ffffff;
+    }
+    .theme-modal-button.dracula {
+        background-color: #282a36;
+        color: #f8f8f2;
+        border: 2px solid #bd93f9;
+    }
+    .theme-modal-button.anime {
+        background-color: #ff69b4;
+        color: #ffffff;
+        border: 2px solid #ff69b4;
+    }
+    .theme-modal-button:hover {
+        opacity: 0.8;
+        transform: translateY(-2px);
+    }
+    .theme-modal-close {
+        color: #aaa;
+        position: absolute;
+        top: 15px;
+        right: 25px;
+        font-size: 35px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+    .theme-modal-close:hover, .theme-modal-close:focus {
+        color: #fff;
+        text-decoration: none;
+    }
+    @keyframes fadeInScale {
+        from { opacity: 0; transform: scale(0.8); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    /* --- CSS ADICIONADO PARA O BOTÃO DE TEXTO --- */
+    .icon-button.text-button-mode {
+        width: auto; /* Largura automática para caber o texto */
+        padding: 10px 20px; /* Mais preenchimento horizontal */
+        border-radius: 25px; /* Manter arredondado */
+    }
+    .icon-button .button-text {
+        display: none; /* Escondido por padrão */
+        font-size: 16px;
+        font-weight: bold;
+        font-family: sans-serif;
+    }
+    /* --- FIM DO CSS ADICIONADO --- */
+  </style>
+
+  <!-- Registro do Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(registration => {
+            console.log('Service Worker registrado com sucesso:', registration);
+          })
+          .catch(error => {
+            console.log('Falha ao registrar o Service Worker:', error);
+          });
+      });
+    }
+  </script>
 </head>
-<!-- Classe 'overflow-hidden' para impedir a rolagem -->
-<body class="bg-black h-full flex items-center justify-center text-center p-4 overflow-hidden">
+<body>
 
-    <!-- Container principal -->
-    <div class="bg-gray-900 p-8 sm:p-12 rounded-2xl shadow-2xl max-w-md w-full border border-purple-900/50">
-        <!-- Ícone de Ferramentas (SVG) -->
-        <div class="mx-auto mb-6 h-16 w-16 text-purple-500">
-             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-full h-full">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l5.653-4.655M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0 0h.01Z" />
-            </svg>
-        </div>
+  <!-- Overlay de Carregamento (ADICIONADO) -->
+  <div id="loader-overlay">
+    <div class="loader-spinner"></div>
+  </div>
 
-        <!-- Título principal -->
-        <h1 class="text-3xl sm:text-4xl font-bold text-white mb-3">
-            Em Manutenção
-        </h1>
+  <!-- Iframe principal para conteúdo -->
+  <iframe id="newsFrame" src="catalogo1/index.html" title="Início"></iframe>
 
-        <!-- Mensagem de subtítulo -->
-        <p class="text-gray-300 mb-8 text-base sm:text-lg">
-            Estamos a fazer algumas melhorias. Voltaremos em breve!
-        </p>
+  <!-- Barra lateral com botões de navegação -->
+  <div class="sidebar-buttons">
+    <a href="#" class="icon-button" id="sidebarToggleBtn" title="Mostrar Menu">
+      <i class="fas fa-bars"></i>
+    </a>
+    <!-- BOTÃO MODIFICADO -->
+    <a href="#" class="icon-button" id="iframeBackButton" title="Voltar" style="display: none;">
+      <i class="fas fa-arrow-left"></i>
+      <span class="button-text"></span>
+    </a>
+    <!-- FIM DA MODIFICAÇÃO -->
+    
+    
+    <a href="#" class="icon-button" id="openThemeModalBtn" title="Selecionar Tema">
+      <i class="fas fa-palette"></i>
+    </a>
+    <a href="./update/index.html" class="icon-button" title="Atualizações">
+      <i class="fa-solid fa-circle-down"></i>
+    </a>
+    <a href="#" class="icon-button" id="helpButton" title="Ajuda">
+      <i class="fas fa-question-circle"></i>
+    </a>
+  </div>
+  
+  <!-- Botão de tela cheia para Desktop -->
+  <button id="fullscreenBtn" class="fullscreen-toggle" title="Tela cheia">
+    <i class="fas fa-expand"></i>
+  </button>
 
-        <!-- Animação de carregamento -->
-        <div class="flex items-center justify-center space-x-2">
-            <div class="w-4 h-4 rounded-full bg-purple-500 animate-pulse [animation-delay:-0.3s]"></div>
-            <div class="w-4 h-4 rounded-full bg-purple-500 animate-pulse [animation-delay:-0.15s]"></div>
-            <div class="w-4 h-4 rounded-full bg-purple-500 animate-pulse"></div>
-        </div>
+  <!-- Modal de Seleção de Tema -->
+  <div id="themeSelectionModal" class="theme-modal-overlay">
+    <div class="theme-modal-content">
+      <span class="theme-modal-close">&times;</span>
+      <h2>Escolha seu Tema</h2>
+      <div class="theme-modal-buttons">
+        <button class="theme-modal-button dracula" data-theme="dracula">Dracula</button>
+        <button class="theme-modal-button noir" data-theme="noir">Noir</button>
+        <button class="theme-modal-button anime" data-theme="anime">Anime</button>
+      </div>
     </div>
-
-    <!-- Script robusto para desativar o zoom em todos os dispositivos -->
-    <script>
-        // Impede a rolagem e o zoom por toque
-        document.addEventListener('touchmove', function(event) {
-            if (event.scale !== 1) { 
-                event.preventDefault(); 
-            }
-        }, { passive: false });
-
-        // Impede o zoom com a roda do mouse (Ctrl + Roda do Mouse)
-        document.addEventListener('wheel', function(event) {
-            if (event.ctrlKey) {
-                event.preventDefault();
-            }
-        }, { passive: false });
-    </script>
+  </div>
+  
+  <!-- Script principal do seu site -->
+  <script src="./assets/sweetalert2/sweetalert2.min.js"></script>
+  <script src="./js/script.js"></script>
 
 </body>
 </html>
-
