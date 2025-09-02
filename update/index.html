@@ -63,6 +63,19 @@
         flex-direction: column;
         gap: 10px;
       }
+      .copy-button {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 12px;
+        margin-left: 10px;
+        cursor: pointer;
+        border-radius: 5px;
+      }
     </style>
 </head>
 <body>
@@ -120,6 +133,24 @@
             }
         }
 
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Link copiado!',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }, (err) => {
+                console.error('Falha ao copiar o link: ', err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...', 
+                    text: 'Falha ao copiar o link!'
+                });
+            });
+        }
+
         async function checkForUpdates() {
             setLoadingState(true);
 
@@ -153,7 +184,10 @@
                 });
                 versionInfo.innerHTML = `Versão <strong>${latestRelease.tag_name}</strong> &bull; ${releaseDate}`;
 
-                changelogContent.innerHTML = latestRelease.body.replace(/\n/g, '<br>');
+                const urlRegex = /(https?:\/\/[^\s]+)/g;
+                changelogContent.innerHTML = latestRelease.body.replace(urlRegex, (url) => {
+                    return `<a href="${url}" target="_blank">${url}</a><button class="copy-button" onclick="copyToClipboard('${url}')">Copiar</button>`;
+                }).replace(/\\n/g, '<br>');
 
                 if (latestRelease.assets && latestRelease.assets.length > 0) {
                     downloadContainer.innerHTML = latestRelease.assets.map(asset => `
