@@ -40,7 +40,7 @@ body {
   left: 18px;
   top: 50%; /* Default position */
   transform: translateY(-50%); /* Default vertical centering */
-  display: flex;
+  display: none;
   flex-direction: column;
   align-items: center; 
   padding: 15px 8px; /* Increased padding for better spacing */
