@@ -1,547 +1,246 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0" name="viewport"/>
-<title>Suquinho Play</title>
-<link rel="preload" as="image" href="p2.png"> <!-- Added for LCP image -->
-<link rel="preconnect" href="https://megaembed.com">
-<link rel="dns-prefetch" href="https://megaembed.com">
-
-<!-- Folhas de Estilo Refatoradas -->
-<!-- 1. Estilos Base (sem variáveis de cor) -->
-<link href="./themes/catálogo.css" rel="stylesheet"/>
-<link href="./themes/integration.css" rel="stylesheet"/>
-
-<!-- 2. Placeholder para o Tema (carregado via JS) -->
-<link id="theme-style" rel="stylesheet" href=""/>
-
-<script>
-    /**
-     * Aplica um arquivo de tema CSS à página.
-     * @param {string} themeName - O nome do tema (ex: 'dracula', 'anime').
-     */
-    function applyTheme(themeName) {
-        const themeStyle = document.getElementById('theme-style');
-        if (themeStyle) {
-            themeStyle.setAttribute('href', `./themes/${themeName}.css`);
-        }
-    }
-
-    /**
-     * Função global para trocar de tema. Salva a preferência e aplica o novo tema.
-     * @param {string} themeName - O nome do novo tema.
-     */
-    function switchTheme(themeName) {
-        const currentTheme = localStorage.getItem('selectedTheme') || 'dracula';
-        if (themeName !== currentTheme) {
-            localStorage.setItem('selectedTheme', themeName);
-            location.reload();
-        }
-    }
-
-    // Carrega o tema selecionado no carregamento inicial da página
-    const selectedTheme = localStorage.getItem('selectedTheme') || 'dracula';
-    applyTheme(selectedTheme);
-</script>
-
-
-<style>
-  /* --- ESTILOS DO PRELOADER INICIAL E DE TEMA --- */
-  #preloader {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #10111a; /* Cor de fundo escura para combinar com os temas */
-    z-index: 99999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: opacity 0.4s ease-out, visibility 0.4s ease-out;
-    opacity: 1;
-    visibility: visible;
-  }
-
-  #preloader .loader {
-    border: 6px solid rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    border-top-color: #FFF;
-    width: 60px;
-    height: 60px;
-    animation: spin 1s linear infinite;
-  }
-  /* --- FIM DOS ESTILOS DO PRELOADER --- */
-
-  #player-fullscreen-wrapper {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #000;
-    z-index: 99999; /* Garante que o player esteja sempre no topo */
-    display: none; /* Controlado via JS */
-    align-items: center;
-    justify-content: center;
-  }
-  .player-loader {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border: 4px solid rgba(255, 255, 255, 0.3);
-    border-top: 4px solid #fff;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-    z-index: 1; /* Ensure it's above the iframe initially */
-  }
+  <!-- Metatags Essenciais -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   
-  /* CORREÇÃO: Removida a regra conflitante para #calendar-panel daqui */
+  <!-- Título da Página -->
+  <title>Suquinho</title>
 
-</style>
-<!-- Estilos para os Loaders -->
-<style>
-        .horizontal-loader {
-            position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            width: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(to left, rgba(10, 5, 20, 0.8), rgba(10, 5, 20, 0));
-            pointer-events: none;
-            
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease-in-out, visibility 0s linear 0.3s;
-        }
+  <!-- Configuração do PWA -->
+  <link rel="manifest" href="manifest.json">
 
-        .horizontal-loader.loading {
-            opacity: 1;
-            visibility: visible;
-            transition: opacity 0.3s ease-in-out;
-        }
+  <!-- Meta Tags para iOS (Safari) -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Suquinho">
 
-        .loader-spinner {
-            border: 4px solid var(--border-color);
-            border-radius: 50%;
-            border-top-color: var(--primary-color);
-            width: 36px;
-            height: 36px;
-            animation: spin 1s linear infinite;
-        }
+  <!-- Ícone para iOS -->
+  <link rel="apple-touch-icon" href="./p2">
 
-        .image-loader {
-            background-image: url('p2.png'); 
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
+  <!-- Folhas de Estilo - Carregamento Dinâmico (SUA LÓGICA ORIGINAL) -->
+  <script>
+    const loadThemeCss = () => {
+        const selectedTheme = localStorage.getItem('selectedTheme') || 'dracula'; // 'dracula' as fallback
+        const cssFiles = [
+            'sidebar.css',
+            'ocultos.css',
+            'integration.css',
+            'catálogo.css',
+            'update.css',
+            'sorteio.css',
+            'calendario.css'
+        ];
 
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-</style>
+        // Remove existing theme stylesheets to prevent duplicates on theme change
+        document.querySelectorAll('link[data-theme-css]').forEach(link => link.remove());
 
-<style>
-  #floatingCombinedButton {
-    display: flex !important; /* Ensure button is always visible */
-  }
-</style>
-<style>
-      .swal-combined-popup #swal-tab-content {
-        overflow-y: auto;
-        overflow-x: hidden; 
-      }
-      .swal-combined-popup .swal2-html-container {
-        padding: 0 !important; /* Remove default padding */
-        display: flex; /* Use flexbox for internal layout */
-        flex-direction: column;
-        overflow-y: auto; /* Make the html container itself scrollable */
-        overflow-x: hidden;
-      }
-      .swal-combined-popup .swal-tabs {
-        flex-shrink: 0; /* Prevent tabs from shrinking */
-      }
-      .user-profile-section {
-        flex-shrink: 0; /* Prevent user section from shrinking */
-      }
-      .swal-combined-popup {
-        max-height: 90vh; /* Set a max height for the entire popup */
-        display: flex !important;
-        flex-direction: column;
-      }
-      .swal-combined-popup .swal2-title {
-        flex-shrink: 0; /* Prevent title from shrinking */
-      }
-      .swal-combined-popup .swal2-actions {
-        flex-shrink: 0; /* Prevent actions from shrinking */
-      }
-      .favorites-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-        gap: 1rem;
-        padding: 1rem;
-      }
-      .history-list {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        padding: 1rem;
-      }
-      .history-list-item {
-        display: flex;
-        align-items: center;
-        background-color: var(--surface-color);
-        border-radius: 8px;
-        padding: 0.5rem;
-        cursor: pointer;
-        transition: background-color 0.2s ease;
-      }
-      .history-list-item:hover {
-        background-color: var(--card-bg);
-      }
-      .history-list-poster {
-        width: 60px;
-        height: 90px;
-        border-radius: 4px;
-        margin-right: 0.75rem;
-        object-fit: cover;
-      }
-      .history-list-info {
-        flex-grow: 1;
-      }
-      .history-list-title {
-        font-weight: 600;
-        color: var(--text-primary);
-        font-size: 0.95rem;
-      }
-      .history-list-details {
-        font-size: 0.8rem;
-        color: var(--text-secondary);
-      }
-      .history-list-actions {
-        margin-left: 0.75rem;
-      }
-      .remove-history-button {
-        background: none;
-        border: none;
-        color: var(--text-secondary);
-        cursor: pointer;
-        font-size: 1.1rem;
-        transition: color 0.2s ease;
-        width: 28px; /* Make it circular */
-        height: 28px; /* Make it circular */
-        border-radius: 50%; /* Make it circular */
-        display: flex; /* Center the icon */
-        align-items: center;
-        justify-content: center;
-      }
-      .remove-history-button:hover {
-        color: var(--primary-color);
-      }
-</style>
+        cssFiles.forEach(file => {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = `themes/${selectedTheme}/${file}`;
+            link.setAttribute('data-theme-css', ''); // Mark as theme CSS
+            document.head.appendChild(link);
+        });
+    };
 
-<style>
-    .custom-toast {
-        z-index: 100000 !important;
+    // Load theme immediately
+    loadThemeCss();
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Estilos para o Loader e Modal de Seleção de Tema -->
+  <style>
+    /* === ESTILOS DO LOADER (ADICIONADO) === */
+    #loader-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background-color: #121212; z-index: 99999;
+        display: flex; justify-content: center; align-items: center;
+        opacity: 1; visibility: visible;
+        transition: opacity 0.5s ease, visibility 0s linear 0.5s;
     }
-</style>
-<style>
-  .swal-sort-again-button {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    padding: 15px;
-    background-color: var(--primary-color); /* Usa a cor primária do tema */
-    color: var(--on-primary-color); /* Usa a cor de texto sobre a cor primária do tema */
-    border: none;
-    font-size: 1.1rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    border-radius: 0 0 8px 8px; /* Match modal border-radius */
-    z-index: 1000; /* Ensure it's above other modal content */
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3); /* Add a subtle shadow */
-  }
+    #loader-overlay.hidden { opacity: 0; visibility: hidden; }
+    .loader-spinner {
+        border: 8px solid rgba(255, 255, 255, 0.2);
+        border-top: 8px solid #bd93f9;
+        border-radius: 50%; width: 60px; height: 60px;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    /* === FIM DOS ESTILOS DO LOADER === */
 
-  .swal-sort-again-button:hover {
-    filter: brightness(0.9); /* Escurece um pouco no hover */
-  }
-  .swal-sort-again-button .fas {
-    color: var(--on-primary-color);
-  }
+    .theme-modal-overlay {
+        display: none; /* Hidden by default */
+        position: fixed;
+        z-index: 10000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        justify-content: center;
+        align-items: center;
+    }
+    .theme-modal-content {
+        background-color: #282a36; /* Dracula background as default for modal */
+        margin: auto;
+        padding: 25px;
+        border: 1px solid #bd93f9;
+        border-radius: 15px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 8px 30px rgba(189, 147, 249, 0.4), 0 2px 10px rgba(0, 0, 0, 0.3);
+        position: relative;
+        text-align: center;
+        animation: fadeInScale 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .theme-modal-content h2 {
+        color: #f8f8f2;
+        margin-bottom: 20px;
+        font-size: 1.8em;
+        text-shadow: 0 0 5px rgba(255, 121, 198, 0.5);
+    }
+    .theme-modal-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .theme-modal-button {
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        flex: 1;
+        min-width: 120px;
+    }
+    .theme-modal-button.default {
+        background-color: #121212;
+        color: #ffffff;
+        border: 2px solid #ffffff;
+    }
+    .theme-modal-button.dracula {
+        background-color: #282a36;
+        color: #f8f8f2;
+        border: 2px solid #bd93f9;
+    }
+    .theme-modal-button.anime {
+        background-color: #ff69b4;
+        color: #ffffff;
+        border: 2px solid #ff69b4;
+    }
+    .theme-modal-button:hover {
+        opacity: 0.8;
+        transform: translateY(-2px);
+    }
+    .theme-modal-close {
+        color: #aaa;
+        position: absolute;
+        top: 15px;
+        right: 25px;
+        font-size: 35px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+    .theme-modal-close:hover, .theme-modal-close:focus {
+        color: #fff;
+        text-decoration: none;
+    }
+    @keyframes fadeInScale {
+        from { opacity: 0; transform: scale(0.8); }
+        to { opacity: 1; transform: scale(1); }
+    }
 
-  /* Adjust swal2-popup padding to make space for the button */
-  .swal2-popup.swal-details-popup {
-    padding-bottom: 60px; /* Height of the button + some margin */
-  }
-</style>
-<style>
-  /* Estilo para o ícone do Google no botão de login */
-  .modal-action-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .google-icon {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
-  }
-</style>
-<style>
-  #next-episode-btn {
-    position: absolute;
-    top: 50%;
-    right: 10px; /* Adjusted position */
-    transform: translateY(-50%);
-    background-color: var(--primary-color, rgba(0, 0, 0, 0.7)); /* Themed with fallback */
-    color: var(--on-primary-color, white); /* Themed with fallback */
-    border: none;
-    border-radius: 8px;
-    width: auto;
-    height: 40px; /* Made smaller */
-    font-size: 14px; /* Made smaller */
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100000;
-    padding: 0 12px; /* Made smaller */
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    transition: background-color 0.3s ease, transform 0.2s ease;
-  }
-  #next-episode-btn:hover {
-    background-color: var(--primary-hover-color, rgba(0, 0, 0, 0.9)); /* Assuming a darker theme variable */
-    filter: brightness(0.9);
-  }
-  #next-episode-btn:active {
-      transform: translateY(-50%) scale(0.95);
-  }
-</style>
-<style>
-  /* --- UNIFIED CLOSE BUTTON STYLES --- */
-  .swal2-close, #player-close-btn, .theme-modal-close, .swal-collection-close-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 20px;
-    transition: background-color 0.3s ease;
-    z-index: 10;
-  }
+    /* --- CSS ADICIONADO PARA O BOTÃO DE TEXTO --- */
+    .icon-button.text-button-mode {
+        width: auto; /* Largura automática para caber o texto */
+        padding: 10px 20px; /* Mais preenchimento horizontal */
+        border-radius: 25px; /* Manter arredondado */
+    }
+    .icon-button .button-text {
+        display: none; /* Escondido por padrão */
+        font-size: 16px;
+        font-weight: bold;
+        font-family: sans-serif;
+    }
+    /* --- FIM DO CSS ADICIONADO --- */
+  </style>
 
-  .swal2-close:hover, #player-close-btn:hover {
-    background-color: rgba(0, 0, 0, 0.8);
-  }
-
-  /* Specific adjustments */
-  .swal2-popup .swal2-close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 40px;
-    height: 40px;
-  }
-</style>
+  <!-- Registro do Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(registration => {
+            console.log('Service Worker registrado com sucesso:', registration);
+          })
+          .catch(error => {
+            console.log('Falha ao registrar o Service Worker:', error);
+          });
+      });
+    }
+  </script>
 </head>
 <body>
 
-<!-- Preloader para carregamento inicial e de tema -->
-<div id="preloader">
-    <div class="image-loader"></div>
-</div>
+  <!-- Overlay de Carregamento (ADICIONADO) -->
+  <div id="loader-overlay">
+    <div class="loader-spinner"></div>
+  </div>
 
-<div id="pageBackdrop"></div>
-<div class="loader-overlay" id="loader" style="display: none;"><div class="image-loader"></div></div>
-<!-- Container para o player em tela cheia (movido para cá para melhor funcionamento) -->
-<div id="player-fullscreen-wrapper"></div>
-<!-- Conteúdo Principal do Catálogo -->
-<div id="main-content">
-<div id="floating-header-controls" class="container mx-auto flex flex-col lg:flex-row justify-between items-center space-y-4 lg:space-y-0 py-2 px-4">
-<div class="header-controls-wrapper w-full lg:w-auto">
-<div class="header-controls w-full lg:w-auto flex items-center justify-center lg:justify-end">
-<div class="input-search-wrapper relative">
-<input class="input-search" id="searchInput" placeholder="Buscar filmes, séries e animes..." type="text"/>
-<button aria-label="Limpar busca" id="clearSearchButton"><i class="fas fa-times-circle"></i></button>
-<button aria-label="Buscar" id="searchButton"><i class="fas fa-search"></i></button>
-</div>
-<button aria-label="Filtrar por gênero" id="filterToggleButton">
-                        Filtro
-                        </button>
+  <!-- Iframe principal para conteúdo -->
+  <iframe id="newsFrame" src="Catalogo1/index.html" title="Início"></iframe>
 
-</div>
-</div>
-</div>
-<main class="container mx-auto p-4 lg:p-6" id="contentArea">
-<div id="continueWatchingSection" class="content-section" style="display: none;">
-    <h2 class="section-title">Continuar Assistindo</h2>
-    <div id="continueWatchingGrid" class="continue-watching-grid">
-        <!-- History items will be injected here -->
+  <!-- Barra lateral com botões de navegação -->
+  <div class="sidebar-buttons">
+    <a href="#" class="icon-button" id="sidebarToggleBtn" title="Mostrar Menu">
+      <i class="fas fa-bars"></i>
+    </a>
+    <!-- BOTÃO MODIFICADO -->
+    <a href="#" class="icon-button" id="iframeBackButton" title="Voltar" style="display: none;">
+      <i class="fas fa-arrow-left"></i>
+      <span class="button-text"></span>
+    </a>
+    <!-- FIM DA MODIFICAÇÃO -->
+    <a href="https://feed-pearl.vercel.app/" class="icon-button" title="Notícias">
+      <i class="fas fa-newspaper"></i>
+    </a>
+    
+    <a href="#" class="icon-button" id="openThemeModalBtn" title="Selecionar Tema">
+      <i class="fas fa-palette"></i>
+    </a>
+    <a href="./update/index.html" class="icon-button" title="Atualizações">
+      <i class="fa-solid fa-circle-down"></i>
+    </a>
+  </div>
+  
+  <!-- Botão de tela cheia para Desktop -->
+  <button id="fullscreenBtn" class="fullscreen-toggle" title="Tela cheia">
+    <i class="fas fa-expand"></i>
+  </button>
+
+  <!-- Modal de Seleção de Tema -->
+  <div id="themeSelectionModal" class="theme-modal-overlay">
+    <div class="theme-modal-content">
+      <span class="theme-modal-close">&times;</span>
+      <h2>Escolha seu Tema</h2>
+      <div class="theme-modal-buttons">
+        <button class="theme-modal-button dracula" data-theme="dracula">Dracula</button>
+        <button class="theme-modal-button noir" data-theme="noir">Noir</button>
+        <button class="theme-modal-button anime" data-theme="anime">Anime</button>
+      </div>
     </div>
-</div>
+  </div>
+  
+  <!-- Script principal do seu site -->
+  <script src="./js/script.js"></script>
 
-<div id="collectionsSection" class="content-section" style="display: none;">
-    <h2 class="section-title">Coleções Populares</h2>
-    <div class="horizontal-scroll-grid" id="collectionsGrid">
-        <!-- Collection cards will be injected here -->
-    </div>
-</div>
-
-<div id="defaultContentSections">
-<div class="content-section">
-<h2 class="section-title">Filmes Populares</h2>
-<div class="relative">
-<div class="horizontal-scroll-grid" id="moviesResultsGrid"></div>
-<div class="horizontal-loader" id="popularMoviesLoader">
-<div class="image-loader"></div>
-</div>
-</div>
-</div>
-<div class="content-section">
-<h2 class="section-title">Séries em Alta</h2>
-<div class="relative">
-<div class="horizontal-scroll-grid" id="tvShowsResultsGrid"></div>
-<div class="horizontal-loader" id="topRatedTvShowsLoader">
-<div class="image-loader"></div>
-</div>
-</div>
-</div>
-</div>
-<div id="singleResultsSection" style="display: none;">
-    <div id="collectionResultsSection" class="content-section" style="display: none;">
-        <h2 class="section-title">Franquias</h2>
-        <div class="horizontal-scroll-grid" id="collectionResultsGrid"></div>
-    </div>
-    <h2 class="section-title" id="singleSectionTitle">Resultados</h2>
-    <div class="main-results-grid" id="singleResultsGrid"></div>
-    <div class="w-full flex justify-center py-4" id="searchResultsLoader" style="display: none;"><div class="image-loader"></div></div>
-</div>
-</main>
-</div>
-<!-- Painel Lateral do Calendário (Agora com Iframe dentro) -->
-<div id="calendar-panel">
-    <iframe id="calendar-iframe" src="about:blank" style="width: 100%; height: 100%; border: none;"></iframe>
-</div>
-<!-- Botões Flutuantes -->
-<div id="floatingButtonWrapper" style="z-index: 100;">
-<button aria-label="Página Inicial" id="homeFloatingButton" class="mobile-only"><i class="fas fa-home"></i></button>
-<button aria-label="Abrir Calendário" id="toggle-calendar-btn"><i class="fas fa-calendar-alt"></i></button>
-<button aria-label="Meus Salvos" id="floatingCombinedButton" style="display: flex !important; visibility: visible !important; opacity: 1 !important;"><i class="fas fa-list-alt"></i></button>
-<button aria-label="Abrir Sorteio" id="openSorteioModalButton"><i class="fas fa-dice"></i></button>
-</div>
-<!-- Scripts -->
-<script defer src="./js/script.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script defer src="./assets/firebase/firebase-app-compat.js"></script>
-<script defer src="./assets/firebase/firebase-auth-compat.js"></script>
-<script defer src="./assets/firebase/firebase-firestore-compat.js"></script>
-<script defer src="./catalogo1/catalogo.js"></script>
-<script defer src="./catalogo1/script.js"></script>
-<script defer src="https://cdn.tailwindcss.com"></script> <!-- Moved from head -->
-
-<!-- Deferred Stylesheets -->
-<link rel="stylesheet" href="./assets/fontawesome/css/custom-fontawesome.css" media="print" onload="this.media='all'"/>
-<link rel="stylesheet" href="./assets/fonts/inter.css" media="print" onload="this.media='all'"/>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" media="print" onload="this.media='all'"/>
-
-
-<!-- SCRIPT DE INTEGRAÇÃO DO CALENDÁRIO -->
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    try {
-        const searchInput = document.getElementById('searchInput');
-        const calendarFrame = document.getElementById('calendar-iframe');
-        const toggleCalendarBtn = document.getElementById('toggle-calendar-btn');
-
-        // Função para ser chamada pelo iframe do calendário
-        window.updateCalendarButtonCount = (count) => {
-            if (toggleCalendarBtn) {
-                let countSpan = toggleCalendarBtn.querySelector('.calendar-event-count');
-                if (!countSpan) {
-                    countSpan = document.createElement('span');
-                    countSpan.className = 'calendar-event-count';
-                    countSpan.style.cssText = "background-color:red;color:white;border-radius:50%;padding:1px 5px;font-size:10px;position:absolute;top:0;right:0;transform:translate(50%, -50%);";
-                    toggleCalendarBtn.style.position = 'relative';
-                    toggleCalendarBtn.appendChild(countSpan);
-                }
-                countSpan.textContent = count;
-                countSpan.style.display = count > 0 ? '' : 'none';
-            }
-        };
-
-        if (searchInput && calendarFrame) {
-            const filterCalendar = () => {
-                const query = searchInput.value;
-                if (calendarFrame.contentWindow && typeof calendarFrame.contentWindow.filterCalendar === 'function') {
-                    calendarFrame.contentWindow.filterCalendar(query);
-                }
-            };
-
-            let debounceTimeout;
-            searchInput.addEventListener('input', () => {
-                clearTimeout(debounceTimeout);
-                debounceTimeout = setTimeout(filterCalendar, 300);
-            });
-        }
-    } catch (e) {
-        console.error("Erro na integração da busca do calendário:", e);
-    }
-});
-</script>
-
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const paginaParam = urlParams.get('pagina');
-
-    if (paginaParam) {
-        try {
-            const decodedPagina = decodeURIComponent(paginaParam);
-            // Create a dummy URL to easily parse search params from the decoded string
-            const tempUrl = new URL(decodedPagina.startsWith('http') ? decodedPagina : `http://dummy.com/${decodedPagina}`);
-            const itemType = tempUrl.searchParams.get('type');
-            const itemId = tempUrl.searchParams.get('id');
-
-            if (itemType && itemId) {
-                // Ensure openItemModal is available before calling
-                // A small delay might be needed to ensure catalogo.js is fully parsed and functions are ready
-                setTimeout(() => {
-                    if (typeof openItemModal === 'function') {
-                        openItemModal(itemId, itemType);
-                    } else {
-                        console.error('openItemModal function not found. Make sure catalogo.js is loaded.');
-                    }
-                }, 100); // Small delay
-            }
-        } catch (e) {
-            console.error('Error parsing pagina parameter:', e);
-        }
-    }
-});
-</script>
 </body>
 </html>
